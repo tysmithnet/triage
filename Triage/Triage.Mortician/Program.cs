@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition.Hosting;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -27,9 +28,13 @@ namespace Triage.Mortician
                 using (var dt = DataTarget.LoadCrashDump(options.DumpFilePath))
                 {
                     var rt = dt.ClrVersions.Single().CreateRuntime();
+                    var stopWatch = Stopwatch.StartNew();
                     var dumpObjectRepository = new DumpObjectRepository(rt, heapObjectExtractors);
+                    log.Trace($"DumpObjectRepository created in {TimeSpan.FromMilliseconds(stopWatch.ElapsedMilliseconds).ToString()}");
                     var debuggerProxy = new DebuggerProxy(dt.DebuggerInterface);
+                    stopWatch.Restart();
                     var threadRepo = new DumpThreadRepository(rt, debuggerProxy, dumpObjectRepository);
+                    log.Trace($"DumpThreadRepository created in {TimeSpan.FromMilliseconds(stopWatch.ElapsedMilliseconds).ToString()}");
                 }
 
 #if DEBUG
