@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandLineOptions.cs" />
+    <Compile Include="DebuggerProxy.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="DumpObject.cs" />
     <Compile Include="DumpObjectRepository.cs" />
