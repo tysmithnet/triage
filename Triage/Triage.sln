@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician", "Triage.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician.Abstraction", "Triage.Mortician.Abstraction\Triage.Mortician.Abstraction.csproj", "{606CCB85-E47A-4B2C-B0A0-D36E95BCB32F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician.Analyzers", "Triage.Mortician.Analyzers\Triage.Mortician.Analyzers.csproj", "{0FD5BD27-A0CB-4253-ADD0-1386EF6026BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{606CCB85-E47A-4B2C-B0A0-D36E95BCB32F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{606CCB85-E47A-4B2C-B0A0-D36E95BCB32F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{606CCB85-E47A-4B2C-B0A0-D36E95BCB32F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FD5BD27-A0CB-4253-ADD0-1386EF6026BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FD5BD27-A0CB-4253-ADD0-1386EF6026BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FD5BD27-A0CB-4253-ADD0-1386EF6026BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FD5BD27-A0CB-4253-ADD0-1386EF6026BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
