@@ -71,8 +71,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandLineOptions.cs" />
+    <Compile Include="Engine.cs" />
+    <Compile Include="HeapObject.cs" />
+    <Compile Include="HeapObjectRepository.cs" />
+    <Compile Include="IHeapObjectExtractor.cs" />
+    <Compile Include="IObjectInspector.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringExtractor.cs" />
+    <Compile Include="StringHeapObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

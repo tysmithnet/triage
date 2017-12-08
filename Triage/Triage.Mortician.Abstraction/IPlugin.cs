@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,14 +13,14 @@ namespace Triage.Mortician.Abstraction
         Task Setup();
     }
 
-    public abstract class HeapObject
-    {
-        
-    }
-
     public interface IObjectInspector
     {
-        bool CanInspect(ClrObject clrobject);
-        HeapObject Insepct(ClrObject clrObject);
+        bool CanInspect(ClrObject clrObject, ClrRuntime runtime, DataTarget dataTarget);
+        IHeapObject Insepct(ClrObject clrObject, ClrRuntime runtime, DataTarget dataTarget);
+    }
+
+    public interface IHeapObjectRepository
+    {
+        IHeapObject Get(ulong address);           
     }
 }
