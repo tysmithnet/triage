@@ -28,11 +28,11 @@ namespace Triage.Mortician
                 {
                     var rt = dt.ClrVersions.Single().CreateRuntime();
                     var heapRepo = new HeapObjectRepository(rt, heapObjectExtractors);
-
                 }
-                    
 
+#if DEBUG
                 Console.ReadKey();
+#endif
             });
         }      
     }

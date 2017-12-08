@@ -4,7 +4,7 @@
     {
         public string Value { get; internal set; }
 
-        public StringHeapObject(ulong address, string fullTypeName, string value) : base(address, fullTypeName)
+        public StringHeapObject(ulong address, string fullTypeName, ulong size, string value) : base(address, fullTypeName, size)
         {
             Value = value;
         }

@@ -12,9 +12,9 @@ namespace Triage.Mortician
         }
 
         public HeapObject Extract(ClrObject clrObject, ClrRuntime clrRuntime)
-        {
+        {   
             string value = (string)clrObject.Type.GetValue(clrObject.Address);
-            var heapObject = new StringHeapObject(clrObject.Address, "System.String", value);
+            var heapObject = new StringHeapObject(clrObject.Address, "System.String", clrObject.Size, value);
             return heapObject;
         }
     }

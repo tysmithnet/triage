@@ -6,6 +6,7 @@ namespace Triage.Mortician.Abstraction
     {
         ulong Address { get; }
         string FullTypeName { get; }
+        ulong Size { get; }
         IReadOnlyCollection<IHeapObject> References { get; }
         void AddReference(IHeapObject obj);
     }

@@ -74,6 +74,7 @@
     <Compile Include="CommandLineOptions.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="HeapObject.cs" />
+    <Compile Include="HeapObjectInspectorBase.cs" />
     <Compile Include="HeapObjectRepository.cs" />
     <Compile Include="IHeapObjectExtractor.cs" />
     <Compile Include="IObjectInspector.cs" />
