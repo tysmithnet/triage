@@ -38,7 +38,7 @@ namespace Triage.Mortician
         private void PopulateRunawayData(DebuggerProxy debuggerProxy)
         {
             string runawayData = debuggerProxy.Execute("!runaway");
-            Log.Trace($"Calling !runaway returned: {runawayData}");
+            Log.Debug($"Calling !runaway returned: {runawayData}");
 
             bool isUserMode = false;
             bool isKernelMode = false;
@@ -58,7 +58,7 @@ namespace Triage.Mortician
                     @"(?<index>\d+):(?<id>[a-zA-Z0-9]+)\s*(?<days>\d+) days (?<time>\d+:\d{2}:\d{2}.\d{3})");
                 if (!match.Success) continue;
                 var index = UInt32.Parse(match.Groups["index"].Value);
-                var id = UInt32.Parse(match.Groups["id"].Value);
+                var id = Convert.ToUInt32(match.Groups["id"].Value, 16);
                 var days = UInt32.Parse(match.Groups["days"].Value);
                 var time = match.Groups["time"].Value;
                 TimeSpan timeSpan = TimeSpan.Parse(time, CultureInfo.CurrentCulture);
