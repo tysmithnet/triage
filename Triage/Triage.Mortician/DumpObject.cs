@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
+    [DebuggerDisplay("{FullTypeName} : {Size} : {Address}")]
     public class DumpObject : IDumpObject
     {
         public ulong Address { get; internal set; }

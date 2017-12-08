@@ -73,6 +73,8 @@
   <ItemGroup>
     <Compile Include="CommandLineOptions.cs" />
     <Compile Include="DebuggerProxy.cs" />
+    <Compile Include="DumpThread.cs" />
+    <Compile Include="DumpThreadRepository.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="DumpObject.cs" />
     <Compile Include="DumpObjectRepository.cs" />
