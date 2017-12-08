@@ -46,7 +46,7 @@
     <Compile Include="IDumpObject.cs" />
     <Compile Include="IDumpObjectRepository.cs" />
     <Compile Include="IObjectInspector.cs" />
-    <Compile Include="IPlugin.cs" />
+    <Compile Include="IAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

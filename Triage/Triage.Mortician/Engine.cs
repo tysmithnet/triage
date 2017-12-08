@@ -6,6 +6,6 @@ namespace Triage.Mortician
     public class Engine
     {
         [ImportMany]
-        public IPlugin[] Plugins { get; set; }
+        public IAnalyzer[] Analyzers { get; set; }
     }
 }
