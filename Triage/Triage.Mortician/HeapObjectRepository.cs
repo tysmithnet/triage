@@ -34,6 +34,8 @@ namespace Triage.Mortician
                         Log.Error(e);
                     }
                 }  
+                if(HeapObjects.ContainsKey(obj.Address)) continue;
+                HeapObjects.Add(obj.Address, new HeapObject(obj.Address, obj.Type.Name, obj.Size));
             }
 
             foreach (var obj in heap.EnumerateObjects().Where(x => !x.Type.IsFree && !x.IsNull))
