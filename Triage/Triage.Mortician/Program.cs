@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using System.Reflection;
@@ -23,11 +24,12 @@ namespace Triage.Mortician
                 var assemblyCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
                 var aggregateCatalog = new AggregateCatalog(assemblyCatalog);
                 var compositionContainer = new CompositionContainer(aggregateCatalog);
-                var heapObjectExtractors = compositionContainer.GetExportedValues<IHeapObjectExtractor>().ToList();
+                var heapObjectExtractors = compositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
                 using (var dt = DataTarget.LoadCrashDump(options.DumpFilePath))
                 {
                     var rt = dt.ClrVersions.Single().CreateRuntime();
-                    var heapRepo = new HeapObjectRepository(rt, heapObjectExtractors);
+                    var heapRepo = new DumpObjectRepository(rt, heapObjectExtractors);
+                    var threadRepo = new ThreadRepository(rt, heapRepo);
                 }
 
 #if DEBUG
@@ -35,5 +37,19 @@ namespace Triage.Mortician
 #endif
             });
         }      
+    }
+
+    internal class ThreadRepository
+    {
+        public Dictionary<int, DumpThread> Type { get; set; }
+
+        public ThreadRepository(ClrRuntime rt, DumpObjectRepository dumpRepo)
+        {
+            
+        }
+    }
+
+    internal class DumpThread
+    {
     }
 }

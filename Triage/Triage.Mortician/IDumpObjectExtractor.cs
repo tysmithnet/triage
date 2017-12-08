@@ -2,9 +2,9 @@
 
 namespace Triage.Mortician
 {
-    public interface IHeapObjectExtractor
+    public interface IDumpObjectExtractor
     {
         bool CanExtract(ClrObject clrObject, ClrRuntime clrRuntime);
-        HeapObject Extract(ClrObject clrObject, ClrRuntime clrRuntime);
+        DumpObject Extract(ClrObject clrObject, ClrRuntime clrRuntime);
     }
 }

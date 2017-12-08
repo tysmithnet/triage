@@ -19,7 +19,7 @@ namespace Triage.Mortician.Abstraction
         IHeapObject Insepct(ClrObject clrObject, ClrRuntime runtime, DataTarget dataTarget);
     }
 
-    public interface IHeapObjectRepository
+    public interface IDumpObjectRepository
     {
         IHeapObject Get(ulong address);           
     }

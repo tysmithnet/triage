@@ -7,13 +7,13 @@ using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
-    public class HeapObjectRepository : IHeapObjectRepository
+    internal class DumpObjectRepository : IDumpObjectRepository
     {
         protected internal Dictionary<ulong, IHeapObject> HeapObjects = new Dictionary<ulong, IHeapObject>();
 
-        protected internal ILog Log = LogManager.GetLogger(typeof(HeapObjectRepository));
+        protected internal ILog Log = LogManager.GetLogger(typeof(DumpObjectRepository));
 
-        public HeapObjectRepository(ClrRuntime runtime, List<IHeapObjectExtractor> heapObjectExtractors)
+        public DumpObjectRepository(ClrRuntime runtime, List<IDumpObjectExtractor> heapObjectExtractors)
         {
             var heap = runtime.Heap;
 
@@ -35,7 +35,7 @@ namespace Triage.Mortician
                     }
                 }  
                 if(HeapObjects.ContainsKey(obj.Address)) continue;
-                HeapObjects.Add(obj.Address, new HeapObject(obj.Address, obj.Type.Name, obj.Size));
+                HeapObjects.Add(obj.Address, new DumpObject(obj.Address, obj.Type.Name, obj.Size));
             }
 
             foreach (var obj in heap.EnumerateObjects().Where(x => !x.Type.IsFree && !x.IsNull))

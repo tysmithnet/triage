@@ -3,7 +3,7 @@ using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
-    public class HeapObject : IHeapObject
+    public class DumpObject : IHeapObject
     {
         public ulong Address { get; internal set; }
         public string FullTypeName { get; internal set; }
@@ -17,7 +17,7 @@ namespace Triage.Mortician
             ReferencesInternal.Add(obj);
         }
 
-        public HeapObject(ulong address, string fullTypeName, ulong size)
+        public DumpObject(ulong address, string fullTypeName, ulong size)
         {
             Address = address;
             FullTypeName = fullTypeName;
