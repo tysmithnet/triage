@@ -74,7 +74,7 @@
     <Compile Include="CommandLineOptions.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="DumpObject.cs" />
-    <Compile Include="HeapObjectRepository.cs" />
+    <Compile Include="DumpObjectRepository.cs" />
     <Compile Include="IDumpObjectExtractor.cs" />
     <Compile Include="IObjectInspector.cs" />
     <Compile Include="Program.cs" />

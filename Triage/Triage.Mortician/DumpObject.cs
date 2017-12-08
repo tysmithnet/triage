@@ -3,16 +3,16 @@ using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
-    public class DumpObject : IHeapObject
+    public class DumpObject : IDumpObject
     {
         public ulong Address { get; internal set; }
         public string FullTypeName { get; internal set; }
         public ulong Size { get; internal set; }
 
-        internal IList<IHeapObject> ReferencesInternal = new List<IHeapObject>();
-        public IReadOnlyCollection<IHeapObject> References { get; internal set; }
+        internal IList<IDumpObject> ReferencesInternal = new List<IDumpObject>();
+        public IReadOnlyCollection<IDumpObject> References { get; internal set; }
 
-        public void AddReference(IHeapObject obj)
+        public void AddReference(IDumpObject obj)
         {
             ReferencesInternal.Add(obj);
         }

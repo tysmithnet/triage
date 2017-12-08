@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CommandLine;
 using Common.Logging;
 using Microsoft.Diagnostics.Runtime;
+using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
@@ -29,7 +30,7 @@ namespace Triage.Mortician
                 {
                     var rt = dt.ClrVersions.Single().CreateRuntime();
                     var heapRepo = new DumpObjectRepository(rt, heapObjectExtractors);
-                    var threadRepo = new ThreadRepository(rt, heapRepo);
+                    var threadRepo = new DumpThreadRepository(rt, heapRepo);
                 }
 
 #if DEBUG
@@ -39,17 +40,32 @@ namespace Triage.Mortician
         }      
     }
 
-    internal class ThreadRepository
+    internal class DumpThreadRepository
     {
-        public Dictionary<int, DumpThread> Type { get; set; }
+        public Dictionary<int, DumpThread> DumpThreads { get; set; }
 
-        public ThreadRepository(ClrRuntime rt, DumpObjectRepository dumpRepo)
+        public ILog Log { get; set; } = LogManager.GetLogger(typeof(DumpThreadRepository));
+
+        public DumpThreadRepository(ClrRuntime rt, DumpObjectRepository dumpRepo)
         {
-            
+            var log = LogManager.GetLogger(typeof(DumpThreadRepository));
+            foreach (var clrThread in rt.Threads)
+            {
+                var dumpThread = new DumpThread();
+                
+                foreach (var clrThreadObject in clrThread.EnumerateStackObjects())
+                {
+                    if (dumpRepo.HeapObjects.TryGetValue(clrThreadObject.Address, out IDumpObject dumpObject))
+                        dumpThread.StackObjects.Add(dumpObject);
+                    else
+                        log.Warn($"Thread: {clrThread.OSThreadId} has a reference to {clrThreadObject.Address} but it was not in the heap repository");
+                }
+            }
         }
     }
 
     internal class DumpThread
     {
+        public IList<IDumpObject> StackObjects { get; set; } = new List<IDumpObject>();
     }
 }

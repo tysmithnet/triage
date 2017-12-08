@@ -16,11 +16,11 @@ namespace Triage.Mortician.Abstraction
     public interface IObjectInspector
     {
         bool CanInspect(ClrObject clrObject, ClrRuntime runtime, DataTarget dataTarget);
-        IHeapObject Insepct(ClrObject clrObject, ClrRuntime runtime, DataTarget dataTarget);
+        IDumpObject Insepct(ClrObject clrObject, ClrRuntime runtime, DataTarget dataTarget);
     }
 
     public interface IDumpObjectRepository
     {
-        IHeapObject Get(ulong address);           
+        IDumpObject Get(ulong address);           
     }
 }

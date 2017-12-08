@@ -9,7 +9,7 @@ namespace Triage.Mortician
 {
     internal class DumpObjectRepository : IDumpObjectRepository
     {
-        protected internal Dictionary<ulong, IHeapObject> HeapObjects = new Dictionary<ulong, IHeapObject>();
+        protected internal Dictionary<ulong, IDumpObject> HeapObjects = new Dictionary<ulong, IDumpObject>();
 
         protected internal ILog Log = LogManager.GetLogger(typeof(DumpObjectRepository));
 
@@ -44,7 +44,7 @@ namespace Triage.Mortician
 
                 foreach (var reference in obj.EnumerateObjectReferences())
                 {   
-                    if(HeapObjects.TryGetValue(reference.Address, out IHeapObject child))
+                    if(HeapObjects.TryGetValue(reference.Address, out IDumpObject child))
                         parent.AddReference(child);
                     else
                         Log.Warn($"{parent.Address:x} has a reference to {reference.Address:x}, but it was not found in the heap cache");
@@ -52,9 +52,9 @@ namespace Triage.Mortician
             }
         }
 
-        public IHeapObject Get(ulong address)
+        public IDumpObject Get(ulong address)
         {
-            if (HeapObjects.TryGetValue(address, out IHeapObject obj))
+            if (HeapObjects.TryGetValue(address, out IDumpObject obj))
                 return obj;
             throw new IndexOutOfRangeException($"There is no object matching address: {address:x}");
         }   
