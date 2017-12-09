@@ -64,6 +64,15 @@
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Reactive, Version=4.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.4.0.0-preview00001\lib\net45\System.Reactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Core, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Core.4.0.0-preview00001\lib\net45\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Linq.4.0.0-preview00001\lib\net45\System.Reactive.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -96,6 +105,10 @@
     <ProjectReference Include="..\Triage.Mortician.Abstraction\Triage.Mortician.Abstraction.csproj">
       <Project>{606ccb85-e47a-4b2c-b0a0-d36e95bcb32f}</Project>
       <Name>Triage.Mortician.Abstraction</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Triage.Mortician.Analyzers\Triage.Mortician.Analyzers.csproj">
+      <Project>{0fd5bd27-a0cb-4253-add0-1386ef6026bb}</Project>
+      <Name>Triage.Mortician.Analyzers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

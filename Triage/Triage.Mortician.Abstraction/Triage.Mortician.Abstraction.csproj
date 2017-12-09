@@ -43,8 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDebuggerProxy.cs" />
     <Compile Include="IDumpObject.cs" />
     <Compile Include="IDumpObjectRepository.cs" />
+    <Compile Include="IDumpThread.cs" />
+    <Compile Include="IDumpThreadRepository.cs" />
     <Compile Include="IObjectInspector.cs" />
     <Compile Include="IAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

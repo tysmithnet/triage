@@ -1,16 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
-    internal class DumpThread
+    internal class DumpThread : IDumpThread
     {
-        public IList<IDumpObject> StackObjects { get; set; } = new List<IDumpObject>();
         public uint OsId { get; set; }
         public TimeSpan KernelModeTime { get; set; }
         public TimeSpan UserModeTime { get; set; }
+        public IList<IDumpObject> StackObjectsInternal = new List<IDumpObject>();
+        public IReadOnlyCollection<IDumpObject> StackObjects { get; set; }
         public TimeSpan TotalTime { get; set; }
         public uint DebuggerIndex { get; set; }
+
+        public DumpThread()
+        {
+            StackObjects = new ReadOnlyCollection<IDumpObject>(StackObjectsInternal);
+        }
     }
 }

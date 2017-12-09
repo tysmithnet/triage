@@ -9,7 +9,7 @@ using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
-    internal class DumpThreadRepository
+    internal class DumpThreadRepository : IDumpThreadRepository
     {
         public Dictionary<uint, DumpThread> DumpThreads { get; set; } = new Dictionary<uint, DumpThread>();
 
@@ -25,7 +25,7 @@ namespace Triage.Mortician
                 foreach (var clrThreadObject in clrThread.EnumerateStackObjects())
                 {
                     if (dumpRepo.HeapObjects.TryGetValue(clrThreadObject.Object, out IDumpObject dumpObject))
-                        dumpThread.StackObjects.Add(dumpObject);
+                        dumpThread.StackObjectsInternal.Add(dumpObject);
                     else
                         log.Trace($"Thread: {clrThread.OSThreadId} has a reference to {clrThreadObject.Object} but it was not in the heap repository");
                 }
@@ -33,6 +33,14 @@ namespace Triage.Mortician
                 DumpThreads.Add(dumpThread.OsId, dumpThread);
             }
             PopulateRunawayData(debuggerProxy);
+        }
+
+        public IDumpThread Get(uint osId)
+        {
+            if(DumpThreads.ContainsKey(osId))
+                return DumpThreads[osId];
+            Log.Debug($"OsId: {osId} was requested, but not found");
+            throw new IndexOutOfRangeException($"There is no thread with os id = {osId} registered");
         }
 
         private void PopulateRunawayData(DebuggerProxy debuggerProxy)

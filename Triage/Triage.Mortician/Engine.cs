@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Reactive.Linq;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
@@ -26,42 +29,36 @@ namespace Triage.Mortician
             }
             
             Log.Trace("Engine starting...");
-
-            var tasks = new List<Task>();
-
-            foreach (var analyzer in Analyzers)
+            var tasks = Analyzers.Select(analyzer => Task.Run(async () =>
             {
-                var copy = analyzer;
-                var task = analyzer
-                    .Setup(cancellationToken)
-                    .ContinueWith(async t =>
-                    {
-                        if (t.IsCanceled)
-                        {
-                            await t;
-                        }
+                cancellationToken.ThrowIfCancellationRequested();
+                bool isSetup = false;
+                try
+                {   
+                    await analyzer.Setup(cancellationToken);
+                    isSetup = true;
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Anayler Setup Exception: {analyzer.GetType().FullName} thew {e.GetType().FullName} - {e.Message}", e);
+                }
 
-                        if (t.IsFaulted)
-                        {
-                            Log.Error($"Analyzer: {copy.GetType()} failed", t.Exception);
-                            await t;
-                        }
+                if (!isSetup)
+                    return;
 
-                        try
-                        {
-                            cancellationToken.ThrowIfCancellationRequested();
-                            await copy.Process(cancellationToken);
-                        }
-                        catch (Exception e)
-                        { 
-                            Log.Error($"Analyzer: {copy.GetType()} failed", e);
-                        }
-                    }, cancellationToken);
-
-                tasks.Add(task);
-            }
+                cancellationToken.ThrowIfCancellationRequested();
+                try
+                {
+                    await analyzer.Process(cancellationToken);
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Analyzer Process Exception: {analyzer.GetType().FullName} threw {e.GetType().FullName} - {e.Message}", e);
+                }
+            }, cancellationToken));
 
             return Task.WhenAll(tasks);
+
         }          
     }
 }

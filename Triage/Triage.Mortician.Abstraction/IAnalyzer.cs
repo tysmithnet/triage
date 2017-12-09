@@ -12,5 +12,15 @@ namespace Triage.Mortician.Abstraction
     {
         Task Setup(CancellationToken cancellationToken);
         Task Process(CancellationToken cancellationToken);
-    }            
+    }        
+
+    public interface ISignature
+    {
+        
+    }
+
+    public interface IReport
+    {
+        
+    }
 }

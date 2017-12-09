@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Diagnostics.Runtime.Interop;
+using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
     // https://github.com/Microsoft/clrmd/issues/79
-    internal class DebuggerProxy : IDebugOutputCallbacks, IDisposable
+    internal class DebuggerProxy : IDebugOutputCallbacks, IDisposable, IDebuggerProxy
     {
         private bool _disposed = false; // To detect redundant calls
         private IDebugOutputCallbacks _old;
