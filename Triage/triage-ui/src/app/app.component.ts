@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { DashComponent } from './dash/dash.component';
 
 @Component({
   selector: 'app-root',
