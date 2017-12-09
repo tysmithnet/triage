@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Common.Logging;
 
 namespace Triage.Mortician.Web
 {
@@ -16,6 +17,9 @@ namespace Triage.Mortician.Web
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            var log = LogManager.GetLogger(typeof(MvcApplication));
+            log.Trace("Hello world");
         }
     }
 }
