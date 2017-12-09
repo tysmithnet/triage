@@ -1,16 +1,10 @@
-/**
- * @license
- * Copyright Akveo. All Rights Reserved.
- * Licensed under the MIT License. See License.txt in the project root for license information.
- */
-
 import { Component } from '@angular/core';
 
-import 'style-loader!./app.themes.scss';
-
 @Component({
-  selector: 'nb-app-root',
-  template: `<router-outlet></router-outlet>`,
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
 })
-export class NbAppComponent {
+export class AppComponent {
+  title = 'app';
 }

@@ -8,12 +8,7 @@
     "types": [
       "jasmine",
       "node"
-    ],
-    "paths": {
-      "@nebular/*": [
-        "./framework/*"
-      ]
-    }
+    ]
   },
   "files": [
     "test.ts"
