@@ -1,18 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician.Api.Controllers
 {
+    [Export]
+    [PartCreationPolicy(CreationPolicy.NonShared)]
     public class ValuesController : ApiController
     {
+        [Import]
+        public IDumpObjectRepository DumpObjectRepository { get; set; }
+
         // GET api/values
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            return DumpObjectRepository.Get().Take(5).Select(x => x.FullTypeName);
         }
 
         // GET api/values/5

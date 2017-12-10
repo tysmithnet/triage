@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using Common.Logging;
 using Microsoft.Diagnostics.Runtime;
@@ -7,6 +8,7 @@ using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician.Api
 {
+    [Export(typeof(IDumpObjectRepository))]
     internal class DumpObjectRepository : IDumpObjectRepository
     {
         protected internal Dictionary<ulong, IDumpObject> HeapObjects = new Dictionary<ulong, IDumpObject>();
@@ -59,6 +61,11 @@ namespace Triage.Mortician.Api
             if (HeapObjects.TryGetValue(address, out obj))
                 return obj;
             throw new IndexOutOfRangeException($"There is no object matching address: {address:x}");
-        }   
+        }
+
+        public IEnumerable<IDumpObject> Get()
+        {
+            return HeapObjects.Values;
+        }
     }
 }
