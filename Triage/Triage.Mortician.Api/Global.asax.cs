@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -29,7 +30,10 @@ namespace Triage.Mortician.Api
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            BundleConfig.RegisterBundles(BundleTable.Bundles);    
+            BundleConfig.RegisterBundles(BundleTable.Bundles);                                     
+
+            var settingsRepository = new SettingsRepository();
+            settingsRepository.Set("ReportDirectory", Server.MapPath("~/App_Data"));
 
             log.Trace("Looking for MEF components");
             var catalogs = new[]
@@ -62,7 +66,7 @@ namespace Triage.Mortician.Api
             compositionContainer.ComposeExportedValue<IDumpObjectRepository>(dumpObjectRepository);
             compositionContainer.ComposeExportedValue<IDebuggerProxy>(debuggerProxy);
             compositionContainer.ComposeExportedValue<IDumpThreadRepository>(dumpThreadRepository);
-
+            compositionContainer.ComposeExportedValue<ISettingsRepository>(settingsRepository);
             var engine = compositionContainer.GetExportedValue<Engine>();
 
             log.Trace("Starting processing...");

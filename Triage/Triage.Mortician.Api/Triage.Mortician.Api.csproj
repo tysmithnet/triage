@@ -229,6 +229,7 @@
     <Compile Include="IDumpObjectExtractor.cs" />
     <Compile Include="IObjectInspector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SettingsRepository.cs" />
     <Compile Include="StringDumpObject.cs" />
     <Compile Include="StringExtractor.cs" />
   </ItemGroup>

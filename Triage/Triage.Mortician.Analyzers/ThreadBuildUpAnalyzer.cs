@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -15,8 +16,12 @@ namespace Triage.Mortician.Analyzers
     {                                 
         public ILog Log { get; set; } = LogManager.GetLogger(typeof(ThreadBuildUpAnalyzer));
 
+        [Import]
+        public IDumpThreadRepository DumpThreadRepository { get; set; }
+
+
         public async Task Setup(CancellationToken cancellationToken)
-        {
+        {                                                                         
             cancellationToken.ThrowIfCancellationRequested();
             Log.Trace("Hello world");
         }

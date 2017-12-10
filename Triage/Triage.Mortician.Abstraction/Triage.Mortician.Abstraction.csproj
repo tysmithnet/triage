@@ -50,6 +50,7 @@
     <Compile Include="IDumpThreadRepository.cs" />
     <Compile Include="IObjectInspector.cs" />
     <Compile Include="IAnalyzer.cs" />
+    <Compile Include="ISettingsRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
