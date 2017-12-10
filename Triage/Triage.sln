@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician", "Triage.Mortician\Triage.Mortician.csproj", "{8AA350BC-CF5F-4302-92AB-1997357049BA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician.Abstraction", "Triage.Mortician.Abstraction\Triage.Mortician.Abstraction.csproj", "{606CCB85-E47A-4B2C-B0A0-D36E95BCB32F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician.Analyzers", "Triage.Mortician.Analyzers\Triage.Mortician.Analyzers.csproj", "{0FD5BD27-A0CB-4253-ADD0-1386EF6026BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician.Api", "Triage.Mortician.Api\Triage.Mortician.Api.csproj", "{34B5DAAC-3260-42D8-BEA0-472E2DF636D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8AA350BC-CF5F-4302-92AB-1997357049BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8AA350BC-CF5F-4302-92AB-1997357049BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8AA350BC-CF5F-4302-92AB-1997357049BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8AA350BC-CF5F-4302-92AB-1997357049BA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{606CCB85-E47A-4B2C-B0A0-D36E95BCB32F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{606CCB85-E47A-4B2C-B0A0-D36E95BCB32F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{606CCB85-E47A-4B2C-B0A0-D36E95BCB32F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,6 +23,10 @@ Global
 		{0FD5BD27-A0CB-4253-ADD0-1386EF6026BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FD5BD27-A0CB-4253-ADD0-1386EF6026BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FD5BD27-A0CB-4253-ADD0-1386EF6026BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34B5DAAC-3260-42D8-BEA0-472E2DF636D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34B5DAAC-3260-42D8-BEA0-472E2DF636D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34B5DAAC-3260-42D8-BEA0-472E2DF636D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34B5DAAC-3260-42D8-BEA0-472E2DF636D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

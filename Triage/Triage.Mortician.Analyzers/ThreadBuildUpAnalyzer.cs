@@ -19,13 +19,11 @@ namespace Triage.Mortician.Analyzers
         {
             cancellationToken.ThrowIfCancellationRequested();
             Log.Trace("Hello world");
-            await Task.Delay(5000, cancellationToken);
         }
 
         public async Task Process(CancellationToken cancellationToken)
         {
-            Log.Trace("Processing...");
-            await Task.Delay(5000, cancellationToken);
+            Log.Trace("Processing...");                  
         }
     }  
 }
