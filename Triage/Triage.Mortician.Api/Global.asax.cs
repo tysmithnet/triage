@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Dependencies;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
@@ -68,6 +69,49 @@ namespace Triage.Mortician.Api
             engine.Process(CancellationToken.None).Wait();
             log.Trace("Processing complete!");
 
+            var resolver = new MefDependencyResolver(compositionContainer);
+            DependencyResolver.SetResolver(resolver);
+            GlobalConfiguration.Configuration.DependencyResolver = resolver;
+
         }
     }
+                          
+    public class MefDependencyResolver : System.Web.Http.Dependencies.IDependencyResolver, System.Web.Mvc.IDependencyResolver
+    {
+        private readonly CompositionContainer _container;
+
+        public MefDependencyResolver(CompositionContainer container)
+        {
+            _container = container;
+        }
+
+        public IDependencyScope BeginScope()
+        {
+            return this;
+        }
+                                                              
+        public object GetService(Type serviceType)
+        {
+            if (serviceType == null)
+                throw new ArgumentNullException(nameof(serviceType));
+
+            var name = AttributedModelServices.GetContractName(serviceType);
+            var export = _container.GetExportedValueOrDefault<object>(name);
+            return export;
+        }
+
+        public IEnumerable<object> GetServices(Type serviceType)
+        {
+            if (serviceType == null)
+                throw new ArgumentNullException(nameof(serviceType));
+
+            var exports = _container.GetExportedValues<object>(AttributedModelServices.GetContractName(serviceType));
+            return exports;
+        }
+
+        public void Dispose()
+        {
+        }
+    }
+
 }
