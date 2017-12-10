@@ -8,8 +8,22 @@ export const MENU_ITEMS: NbMenuItem[] = [
     home: true,
   },
   {
-    title: 'FEATURES',
-    group: true,
+    title: 'Reports',
+    icon: 'nb-bar-chart',
+    children: [
+      {
+        title: 'Echarts',
+        link: '/pages/charts/echarts',
+      },
+      {
+        title: 'Charts.js',
+        link: '/pages/charts/chartjs',
+      },
+      {
+        title: 'D3',
+        link: '/pages/charts/d3',
+      },
+    ],
   },
   {
     title: 'UI Features',
@@ -88,24 +102,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
       {
         title: 'Bubble Maps',
         link: '/pages/maps/bubble',
-      },
-    ],
-  },
-  {
-    title: 'Charts',
-    icon: 'nb-bar-chart',
-    children: [
-      {
-        title: 'Echarts',
-        link: '/pages/charts/echarts',
-      },
-      {
-        title: 'Charts.js',
-        link: '/pages/charts/chartjs',
-      },
-      {
-        title: 'D3',
-        link: '/pages/charts/d3',
       },
     ],
   },
