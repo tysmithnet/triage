@@ -22,15 +22,15 @@ namespace Triage.Mortician.Api
     {
         protected void Application_Start()
         {
+            var log = LogManager.GetLogger(typeof(WebApiApplication));
+
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-
-            var log = LogManager.GetLogger(typeof(WebApiApplication));
-
-            log.Trace("Hello world");
+            
+            log.Trace("Looking for MEF components");
             var catalogs = new[]
             {
                 new AssemblyCatalog(Assembly.GetAssembly(typeof(WebApiApplication))),
@@ -40,20 +40,23 @@ namespace Triage.Mortician.Api
             var aggregateCatalog = new AggregateCatalog(catalogs);
             var compositionContainer = new CompositionContainer(aggregateCatalog);
             var heapObjectExtractors = compositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
+
             DumpObjectRepository dumpObjectRepository;
             DebuggerProxy debuggerProxy;
             DumpThreadRepository dumpThreadRepository;
-            using (var dt = DataTarget.LoadCrashDump(@"C:\debug\x64\HelloWorld.exe_170803_222445.dmp"))
-            {
-                var rt = dt.ClrVersions.Single().CreateRuntime();
-                var stopWatch = Stopwatch.StartNew();
-                dumpObjectRepository = new DumpObjectRepository(rt, heapObjectExtractors);
-                log.Trace($"DumpObjectRepository created in {TimeSpan.FromMilliseconds(stopWatch.ElapsedMilliseconds).ToString()}");
-                debuggerProxy = new DebuggerProxy(dt.DebuggerInterface);
-                stopWatch.Restart();
-                dumpThreadRepository = new DumpThreadRepository(rt, debuggerProxy, dumpObjectRepository);
-                log.Trace($"DumpThreadRepository created in {TimeSpan.FromMilliseconds(stopWatch.ElapsedMilliseconds).ToString()}");
-            }
+            // todo: error handling
+            log.Trace("Loading memory dump");
+            DataTarget dt = DataTarget.LoadCrashDump(@"C:\debug\x64\HelloWorld.exe_170803_222445.dmp");
+
+            log.Trace("Creating CLR from dump");
+            var rt = dt.ClrVersions.Single().CreateRuntime();
+            var stopWatch = Stopwatch.StartNew();
+            dumpObjectRepository = new DumpObjectRepository(rt, heapObjectExtractors);
+            log.Trace($"DumpObjectRepository created in {TimeSpan.FromMilliseconds(stopWatch.ElapsedMilliseconds).ToString()}");
+            debuggerProxy = new DebuggerProxy(dt.DebuggerInterface);
+            stopWatch.Restart();
+            dumpThreadRepository = new DumpThreadRepository(rt, debuggerProxy, dumpObjectRepository);
+            log.Trace($"DumpThreadRepository created in {TimeSpan.FromMilliseconds(stopWatch.ElapsedMilliseconds).ToString()}");
 
             compositionContainer.ComposeExportedValue<IDumpObjectRepository>(dumpObjectRepository);
             compositionContainer.ComposeExportedValue<IDebuggerProxy>(debuggerProxy);
