@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Reactive.Linq;
+﻿using System;              
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;

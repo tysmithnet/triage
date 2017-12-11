@@ -18,7 +18,7 @@ namespace Triage.Mortician
         public DumpThreadRepository(ClrRuntime rt, DebuggerProxy debuggerProxy, DumpObjectRepository dumpRepo)
         {
             var log = LogManager.GetLogger(typeof(DumpThreadRepository));
-            foreach (var clrThread in rt.Threads)
+            foreach (var clrThread in rt.Threads.Where(t => t.IsAlive))
             {
                 var dumpThread = new DumpThread();
                 dumpThread.OsId = clrThread.OSThreadId;                
