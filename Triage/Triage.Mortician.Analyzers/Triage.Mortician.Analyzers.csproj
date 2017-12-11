@@ -150,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExcelAnalyzerHost.cs" />
+    <Compile Include="IExcelAnalyzer.cs" />
     <Compile Include="ThreadBuildUpAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
