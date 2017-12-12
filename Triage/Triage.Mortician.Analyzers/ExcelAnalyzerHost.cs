@@ -36,9 +36,8 @@ namespace Triage.Mortician.Analyzers
 
             Log.Trace("Engine starting...");
             
-            var faultedAnalyzers = new ConcurrentBag<IExcelAnalyzer>();
-            var tasks = new List<Task>();
-
+            var faultedAnalyzers = new ConcurrentBag<IExcelAnalyzer>();   
+            var analyzerSetupTasks = new Dictionary<Task, IExcelAnalyzer>();
             foreach (var analyzer in ExcelAnalyzers)
             {
                 var task = Task.Run(() => analyzer.Setup(cancellationToken), cancellationToken)
@@ -64,17 +63,22 @@ namespace Triage.Mortician.Analyzers
                             Log.Trace($"ExcelAnalyzer {analyzer.GetType().FullName} was successfully setup");
                         }
                     }, cancellationToken);
-                tasks.Add(task);
-            }
-            
-            await Task.WhenAll(tasks);
-
+                analyzerSetupTasks.Add(task, analyzer);
+            }    
             using (var stream = File.OpenRead("template.xlsx"))
             {
                 var doc = new SLDocument(stream);
-                foreach (var analyzer in ExcelAnalyzers.Except(faultedAnalyzers))
+                while (analyzerSetupTasks.Keys.Any())
                 {
+                    var task = await Task.WhenAny(analyzerSetupTasks.Keys);
+                    if (task.IsFaulted || task.IsCanceled)
+                    {
+                        analyzerSetupTasks.Remove(task);
+                        continue;
+                    }
+                    var analyzer = analyzerSetupTasks[task];
                     analyzer.Contribute(doc);
+                    analyzerSetupTasks.Remove(task);
                 }
                 doc.SaveAs("findme.xlsx");
             }    
