@@ -1,6 +1,5 @@
-﻿using System;              
+﻿using System;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,20 +23,22 @@ namespace Triage.Mortician
                 Log.Fatal("No analyzers were found!");
                 return Task.FromResult(0);
             }
-            
+
             Log.Trace("Engine starting...");
             var tasks = Analyzers.Select(analyzer => Task.Run(async () =>
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                bool isSetup = false;
+                var isSetup = false;
                 try
-                {   
+                {
                     await analyzer.Setup(cancellationToken);
                     isSetup = true;
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Anayler Setup Exception: {analyzer.GetType().FullName} thew {e.GetType().FullName} - {e.Message}", e);
+                    Log.Error(
+                        $"Anayler Setup Exception: {analyzer.GetType().FullName} thew {e.GetType().FullName} - {e.Message}",
+                        e);
                 }
 
                 if (!isSetup)
@@ -50,12 +51,13 @@ namespace Triage.Mortician
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Analyzer Process Exception: {analyzer.GetType().FullName} threw {e.GetType().FullName} - {e.Message}", e);
+                    Log.Error(
+                        $"Analyzer Process Exception: {analyzer.GetType().FullName} threw {e.GetType().FullName} - {e.Message}",
+                        e);
                 }
             }, cancellationToken));
 
             return Task.WhenAll(tasks);
-
-        }          
+        }
     }
 }

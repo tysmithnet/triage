@@ -16,10 +16,6 @@ namespace Triage.Mortician
 
     internal class DumpThreadRepository : IDumpThreadRepository
     {
-        public Dictionary<uint, DumpThread> DumpThreads { get; set; } = new Dictionary<uint, DumpThread>();
-
-        public ILog Log { get; set; } = LogManager.GetLogger(typeof(DumpThreadRepository));
-
         public DumpThreadRepository(ClrRuntime rt, DebuggerProxy debuggerProxy, DumpObjectRepository dumpRepo)
         {
             var log = LogManager.GetLogger(typeof(DumpThreadRepository));
@@ -32,21 +28,24 @@ namespace Triage.Mortician
                     DisplayString = x.DisplayString
                 }).Cast<IDumpStackFrame>().ToList();
                 foreach (var clrThreadObject in clrThread.EnumerateStackObjects())
-                {
-                    if (dumpRepo.HeapObjects.TryGetValue(clrThreadObject.Object, out IDumpObject dumpObject))
+                    if (dumpRepo.HeapObjects.TryGetValue(clrThreadObject.Object, out var dumpObject))
                         dumpThread.StackObjectsInternal.Add(dumpObject);
                     else
-                        log.Trace($"Thread: {clrThread.OSThreadId} has a reference to {clrThreadObject.Object} but it was not in the heap repository");
-                }
+                        log.Trace(
+                            $"Thread: {clrThread.OSThreadId} has a reference to {clrThreadObject.Object} but it was not in the heap repository");
 
                 DumpThreads.Add(dumpThread.OsId, dumpThread);
             }
             PopulateRunawayData(debuggerProxy);
         }
 
+        public Dictionary<uint, DumpThread> DumpThreads { get; set; } = new Dictionary<uint, DumpThread>();
+
+        public ILog Log { get; set; } = LogManager.GetLogger(typeof(DumpThreadRepository));
+
         public IDumpThread Get(uint osId)
         {
-            if(DumpThreads.ContainsKey(osId))
+            if (DumpThreads.ContainsKey(osId))
                 return DumpThreads[osId];
             Log.Debug($"OsId: {osId} was requested, but not found");
             throw new IndexOutOfRangeException($"There is no thread with os id = {osId} registered");
@@ -59,11 +58,11 @@ namespace Triage.Mortician
 
         private void PopulateRunawayData(DebuggerProxy debuggerProxy)
         {
-            string runawayData = debuggerProxy.Execute("!runaway");
+            var runawayData = debuggerProxy.Execute("!runaway");
             Log.Debug($"Calling !runaway returned: {runawayData}");
 
-            bool isUserMode = false;
-            bool isKernelMode = false;
+            var isUserMode = false;
+            var isKernelMode = false;
             foreach (var line in runawayData.Split('\n'))
             {
                 if (Regex.IsMatch(line, "User Mode Time"))
@@ -79,11 +78,11 @@ namespace Triage.Mortician
                 var match = Regex.Match(line,
                     @"(?<index>\d+):(?<id>[a-zA-Z0-9]+)\s*(?<days>\d+) days (?<time>\d+:\d{2}:\d{2}.\d{3})");
                 if (!match.Success) continue;
-                var index = UInt32.Parse(match.Groups["index"].Value);
+                var index = uint.Parse(match.Groups["index"].Value);
                 var id = Convert.ToUInt32(match.Groups["id"].Value, 16);
-                var days = UInt32.Parse(match.Groups["days"].Value);
+                var days = uint.Parse(match.Groups["days"].Value);
                 var time = match.Groups["time"].Value;
-                TimeSpan timeSpan = TimeSpan.Parse(time, CultureInfo.CurrentCulture);
+                var timeSpan = TimeSpan.Parse(time, CultureInfo.CurrentCulture);
                 timeSpan = timeSpan.Add(TimeSpan.FromDays(days));
                 var dumpThread = DumpThreads.Values.SingleOrDefault(x => x.OsId == id);
                 if (dumpThread == null)
@@ -92,15 +91,11 @@ namespace Triage.Mortician
                     continue;
                 }
                 dumpThread.DebuggerIndex = index;
-                
+
                 if (isUserMode)
-                {
                     dumpThread.UserModeTime = timeSpan;
-                }
-                else if(isKernelMode)
-                {
+                else if (isKernelMode)
                     dumpThread.KernelModeTime = timeSpan;
-                }
             }
         }
     }

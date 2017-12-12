@@ -5,9 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using CommandLine;
 using Common.Logging;
 using Microsoft.Diagnostics.Runtime;
@@ -15,9 +13,9 @@ using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var log = LogManager.GetLogger(typeof(Program));
 
@@ -33,8 +31,9 @@ namespace Triage.Mortician
                 foreach (var assembly in toLoad)
                     Assembly.LoadFile(assembly);
 
-                var aggregateCatalog = new AggregateCatalog(AppDomain.CurrentDomain.GetAssemblies().Where(x => x.FullName.StartsWith("Triage.Mortician")).Select(x => new AssemblyCatalog(x)));
-                var compositionContainer = new CompositionContainer(aggregateCatalog);                
+                var aggregateCatalog = new AggregateCatalog(AppDomain.CurrentDomain.GetAssemblies()
+                    .Where(x => x.FullName.StartsWith("Triage.Mortician")).Select(x => new AssemblyCatalog(x)));
+                var compositionContainer = new CompositionContainer(aggregateCatalog);
                 var heapObjectExtractors = compositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
                 DumpObjectRepository dumpObjectRepository;
                 DebuggerProxy debuggerProxy;
@@ -44,11 +43,13 @@ namespace Triage.Mortician
                     var rt = dt.ClrVersions.Single().CreateRuntime();
                     var stopWatch = Stopwatch.StartNew();
                     dumpObjectRepository = new DumpObjectRepository(rt, heapObjectExtractors);
-                    log.Trace($"DumpObjectRepository created in {TimeSpan.FromMilliseconds(stopWatch.ElapsedMilliseconds).ToString()}");
+                    log.Trace(
+                        $"DumpObjectRepository created in {TimeSpan.FromMilliseconds(stopWatch.ElapsedMilliseconds).ToString()}");
                     debuggerProxy = new DebuggerProxy(dt.DebuggerInterface);
                     stopWatch.Restart();
                     dumpThreadRepository = new DumpThreadRepository(rt, debuggerProxy, dumpObjectRepository);
-                    log.Trace($"DumpThreadRepository created in {TimeSpan.FromMilliseconds(stopWatch.ElapsedMilliseconds).ToString()}");
+                    log.Trace(
+                        $"DumpThreadRepository created in {TimeSpan.FromMilliseconds(stopWatch.ElapsedMilliseconds).ToString()}");
                 }
 
                 compositionContainer.ComposeExportedValue<IDumpObjectRepository>(dumpObjectRepository);
@@ -58,12 +59,12 @@ namespace Triage.Mortician
                 var engine = compositionContainer.GetExportedValue<Engine>();
                 engine.Process(CancellationToken.None).Wait();
 
-                
+
 #if DEBUG
                 Console.WriteLine("Success.. press any key");
                 Console.ReadKey();
 #endif
             });
-        }      
-    }              
+        }
+    }
 }

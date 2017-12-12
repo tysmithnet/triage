@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
@@ -32,17 +29,17 @@ namespace Triage.Mortician.Analyzers
                 .OrderByDescending(g => g.Count())
                 .ThenByDescending(g => g.Key.Length);
 
-            int curStackRow = 1;
-            int minNumLinesPerStack = 2;
-            int threadsColumn = 12;
+            var curStackRow = 1;
+            var minNumLinesPerStack = 2;
+            var threadsColumn = 12;
             foreach (var group in groups)
             {
-                int max = minNumLinesPerStack;
+                var max = minNumLinesPerStack;
                 sharedDocument.SetCellValue(curStackRow, 1, "Stack:");
                 sharedDocument.SetCellValue(curStackRow, threadsColumn, "Threads:");
 
-                int stackIndex = 0;
-                foreach(var line in group.First().StackFrames.Select(x => x.DisplayString))
+                var stackIndex = 0;
+                foreach (var line in group.First().StackFrames.Select(x => x.DisplayString))
                 {
                     sharedDocument.SetCellValue(curStackRow + 1 + stackIndex, 1, line);
                     stackIndex++;
@@ -51,7 +48,7 @@ namespace Triage.Mortician.Analyzers
                 if (stackIndex - 1 > max)
                     max = stackIndex - 1;
 
-                int threadIndex = 0;
+                var threadIndex = 0;
                 foreach (var thread in group.OrderByDescending(t => t.KernelModeTime + t.UserModeTime))
                 {
                     sharedDocument.SetCellValue(curStackRow + 1 + threadIndex, threadsColumn,
@@ -61,7 +58,7 @@ namespace Triage.Mortician.Analyzers
 
                 if (threadIndex - 1 > max)
                     max = threadIndex - 1;
-                           
+
                 curStackRow += max + 5;
             }
         }

@@ -17,25 +17,26 @@ namespace Triage.Mortician
         {
             var heap = runtime.Heap;
 
-            if(!heap.CanWalkHeap)
+            if (!heap.CanWalkHeap)
                 Log.Debug("Heap is not walkable - unexpected results might arise");
 
             foreach (var obj in heap.EnumerateObjects().Where(x => !x.Type.IsFree && !x.IsNull))
-            {                                                                                 
+            {
                 foreach (var extractor in heapObjectExtractors)
                 {
                     if (!extractor.CanExtract(obj, runtime)) continue;
                     try
-                    {   
+                    {
                         HeapObjects.Add(obj.Address, extractor.Extract(obj, runtime));
                     }
                     catch (Exception e)
                     {
                         Log.Error(e);
                     }
-                }  
-                if(HeapObjects.ContainsKey(obj.Address)) continue;
-                HeapObjects.Add(obj.Address, new DumpObject(obj.Address, obj.Type.Name, obj.Size, runtime.Heap.GetGeneration(obj.Address)));
+                }
+                if (HeapObjects.ContainsKey(obj.Address)) continue;
+                HeapObjects.Add(obj.Address,
+                    new DumpObject(obj.Address, obj.Type.Name, obj.Size, runtime.Heap.GetGeneration(obj.Address)));
             }
 
             foreach (var obj in heap.EnumerateObjects().Where(x => !x.Type.IsFree && !x.IsNull))
@@ -43,18 +44,17 @@ namespace Triage.Mortician
                 var parent = HeapObjects[obj.Address];
 
                 foreach (var reference in obj.EnumerateObjectReferences())
-                {   
-                    if(HeapObjects.TryGetValue(reference.Address, out IDumpObject child))
+                    if (HeapObjects.TryGetValue(reference.Address, out var child))
                         parent.AddReference(child);
                     else
-                        Log.Warn($"{parent.Address:x} has a reference to {reference.Address:x}, but it was not found in the heap cache");
-                }    
+                        Log.Warn(
+                            $"{parent.Address:x} has a reference to {reference.Address:x}, but it was not found in the heap cache");
             }
         }
 
         public IDumpObject Get(ulong address)
         {
-            if (HeapObjects.TryGetValue(address, out IDumpObject obj))
+            if (HeapObjects.TryGetValue(address, out var obj))
                 return obj;
             throw new IndexOutOfRangeException($"There is no object matching address: {address:x}");
         }

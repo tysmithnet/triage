@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
-using Triage.Mortician.Abstraction;      
 using SpreadsheetLight;
+using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician.Analyzers
 {
@@ -22,7 +20,7 @@ namespace Triage.Mortician.Analyzers
         public IExcelAnalyzer[] ExcelAnalyzers { get; set; }
 
         public Task Setup(CancellationToken cancellationToken)
-        {   
+        {
             return Task.CompletedTask;
         }
 
@@ -35,8 +33,8 @@ namespace Triage.Mortician.Analyzers
             }
 
             Log.Trace("Engine starting...");
-            
-            var faultedAnalyzers = new ConcurrentBag<IExcelAnalyzer>();   
+
+            var faultedAnalyzers = new ConcurrentBag<IExcelAnalyzer>();
             var analyzerSetupTasks = new Dictionary<Task, IExcelAnalyzer>();
             foreach (var analyzer in ExcelAnalyzers)
             {
@@ -64,7 +62,7 @@ namespace Triage.Mortician.Analyzers
                         }
                     }, cancellationToken);
                 analyzerSetupTasks.Add(task, analyzer);
-            }    
+            }
             using (var stream = File.OpenRead("template.xlsx"))
             {
                 var doc = new SLDocument(stream);
@@ -81,7 +79,7 @@ namespace Triage.Mortician.Analyzers
                     analyzerSetupTasks.Remove(task);
                 }
                 doc.SaveAs("findme.xlsx");
-            }    
+            }
         }
     }
 }
