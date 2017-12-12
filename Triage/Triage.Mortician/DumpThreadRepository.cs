@@ -9,13 +9,18 @@ using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
-    internal class DumpStackFrame : IDumpStackFrame
-    {
-        public string DisplayString { get; set; }
-    }
-
+    /// <summary>
+    /// Represents a repository that stores threads that were extracted from the memory dump
+    /// </summary>
+    /// <seealso cref="Triage.Mortician.Abstraction.IDumpThreadRepository" />
     internal class DumpThreadRepository : IDumpThreadRepository
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DumpThreadRepository"/> class.
+        /// </summary>
+        /// <param name="rt">The rt.</param>
+        /// <param name="debuggerProxy">The debugger proxy.</param>
+        /// <param name="dumpRepo">The dump repo.</param>
         public DumpThreadRepository(ClrRuntime rt, DebuggerProxy debuggerProxy, DumpObjectRepository dumpRepo)
         {
             var log = LogManager.GetLogger(typeof(DumpThreadRepository));
@@ -39,10 +44,25 @@ namespace Triage.Mortician
             PopulateRunawayData(debuggerProxy);
         }
 
+        /// <summary>
+        /// Gets or sets the dump threads.
+        /// </summary>
+        /// <value>
+        /// The dump threads.
+        /// </value>
         public Dictionary<uint, DumpThread> DumpThreads { get; set; } = new Dictionary<uint, DumpThread>();
 
-        public ILog Log { get; set; } = LogManager.GetLogger(typeof(DumpThreadRepository));
+        /// <summary>
+        /// The log
+        /// </summary>
+        protected ILog Log = LogManager.GetLogger(typeof(DumpThreadRepository));
 
+        /// <summary>
+        /// Gets the thread with the provided id
+        /// </summary>
+        /// <param name="osId">The os identifier.</param>
+        /// <returns>Get the thread with the operation system id provided</returns>
+        /// <exception cref="IndexOutOfRangeException">If the there isn't a thread registered with the specified id</exception>
         public IDumpThread Get(uint osId)
         {
             if (DumpThreads.ContainsKey(osId))
@@ -51,11 +71,19 @@ namespace Triage.Mortician
             throw new IndexOutOfRangeException($"There is no thread with os id = {osId} registered");
         }
 
+        /// <summary>
+        /// Gets all the threads extracted from the memory dump
+        /// </summary>
+        /// <returns>All the threads extracted from the memory dump</returns>
         public IEnumerable<IDumpThread> Get()
         {
             return DumpThreads.Values;
         }
 
+        /// <summary>
+        /// Populates the runaway data. This is the data on how long threads have been alive
+        /// </summary>
+        /// <param name="debuggerProxy">The debugger proxy.</param>
         private void PopulateRunawayData(DebuggerProxy debuggerProxy)
         {
             var runawayData = debuggerProxy.Execute("!runaway");

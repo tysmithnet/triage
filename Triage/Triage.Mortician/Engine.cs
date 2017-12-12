@@ -8,14 +8,32 @@ using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
+    /// <summary>
+    /// Represents the core execution component of the application. It is responsible for executing the analyzers
+    /// in concert with each other.
+    /// </summary>
     [Export]
     public class Engine
     {
+        /// <summary>
+        /// Gets or sets the analyzers.
+        /// </summary>
+        /// <value>
+        /// The analyzers.
+        /// </value>
         [ImportMany]
         public IAnalyzer[] Analyzers { get; set; }
 
-        protected internal ILog Log { get; set; } = LogManager.GetLogger(typeof(Engine));
+        /// <summary>
+        /// The log
+        /// </summary>
+        protected ILog Log = LogManager.GetLogger(typeof(Engine));
 
+        /// <summary>
+        /// Processes the analyzers
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A Task representing the completion of all the analyzers</returns>
         public Task Process(CancellationToken cancellationToken)
         {
             if (Analyzers == null || Analyzers.Length == 0)

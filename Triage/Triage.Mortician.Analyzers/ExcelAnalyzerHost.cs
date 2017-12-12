@@ -11,19 +11,49 @@ using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician.Analyzers
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// Represents an analyzer that provides an environment for other excel analyzers to work
+    /// </summary>
+    /// <seealso cref="T:Triage.Mortician.Abstraction.IAnalyzer" />
     [Export(typeof(IAnalyzer))]
     public class ExcelAnalyzerHost : IAnalyzer
     {
+        /// <summary>
+        /// The log
+        /// </summary>
         protected ILog Log = LogManager.GetLogger(typeof(ExcelAnalyzerHost));
 
+        /// <summary>
+        /// Gets or sets the excel analyzers.
+        /// </summary>
+        /// <value>
+        /// The excel analyzers.
+        /// </value>
         [ImportMany]
         public IExcelAnalyzer[] ExcelAnalyzers { get; set; }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Performs any necessary setup prior to processing
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// A Task that when complete will signal the completion of the setup procedure
+        /// </returns>
         public Task Setup(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Performs the analysis
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// A Task that when complete will signal the completion of the setup procedure
+        /// </returns>
         public async Task Process(CancellationToken cancellationToken)
         {
             if (ExcelAnalyzers == null || ExcelAnalyzers.Length == 0)

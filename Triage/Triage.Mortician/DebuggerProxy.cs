@@ -6,7 +6,14 @@ using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
-    // https://github.com/Microsoft/clrmd/issues/79
+
+    /// <summary>
+    /// https://github.com/Microsoft/clrmd/issues/79
+    /// Uses the debugger interface to execute arbitrary commands on the target
+    /// </summary>
+    /// <seealso cref="Microsoft.Diagnostics.Runtime.Interop.IDebugOutputCallbacks" />
+    /// <seealso cref="System.IDisposable" />
+    /// <seealso cref="Triage.Mortician.Abstraction.IDebuggerProxy" />
     internal class DebuggerProxy : IDebugOutputCallbacks, IDisposable, IDebuggerProxy
     {
         private readonly StringBuilder _builder = new StringBuilder();
@@ -15,6 +22,10 @@ namespace Triage.Mortician
         private bool _disposed; // To detect redundant calls
         private readonly IDebugOutputCallbacks _old;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DebuggerProxy"/> class.
+        /// </summary>
+        /// <param name="client">The debugging client provided by the OS</param>
         public DebuggerProxy(IDebugClient client)
         {
             _client = client;
@@ -27,13 +38,20 @@ namespace Triage.Mortician
             Debug.Assert(hr == 0);
         }
 
+        /// <summary>
+        /// Executes the specified command on the debug client
+        /// </summary>
+        /// <param name="cmd">The command to run.</param>
+        /// <returns>The result of the command</returns>
+        /// <example>!runaway</example>
+        /// <example>!dumpheap -stat</example>
+        /// <example>!dlk</example>
         public string Execute(string cmd)
         {
             lock (_builder)
             {
                 _builder.Clear();
             }
-
             var hr = _control.Execute(DEBUG_OUTCTL.THIS_CLIENT, cmd, DEBUG_EXECUTE.NOT_LOGGED);
             Debug.Assert(hr == 0);
             //todo:  Something with hr, it may be an error legitimately.
