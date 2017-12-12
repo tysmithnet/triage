@@ -9,6 +9,11 @@ using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
+    internal class DumpStackFrame : IDumpStackFrame
+    {
+        public string DisplayString { get; set; }
+    }
+
     internal class DumpThreadRepository : IDumpThreadRepository
     {
         public Dictionary<uint, DumpThread> DumpThreads { get; set; } = new Dictionary<uint, DumpThread>();
@@ -21,7 +26,11 @@ namespace Triage.Mortician
             foreach (var clrThread in rt.Threads.Where(t => t.IsAlive))
             {
                 var dumpThread = new DumpThread();
-                dumpThread.OsId = clrThread.OSThreadId;                
+                dumpThread.OsId = clrThread.OSThreadId;
+                dumpThread.StackFrames = clrThread.StackTrace.Select(x => new DumpStackFrame
+                {
+                    DisplayString = x.DisplayString
+                }).Cast<IDumpStackFrame>().ToList();
                 foreach (var clrThreadObject in clrThread.EnumerateStackObjects())
                 {
                     if (dumpRepo.HeapObjects.TryGetValue(clrThreadObject.Object, out IDumpObject dumpObject))
@@ -41,6 +50,11 @@ namespace Triage.Mortician
                 return DumpThreads[osId];
             Log.Debug($"OsId: {osId} was requested, but not found");
             throw new IndexOutOfRangeException($"There is no thread with os id = {osId} registered");
+        }
+
+        public IEnumerable<IDumpThread> Get()
+        {
+            return DumpThreads.Values;
         }
 
         private void PopulateRunawayData(DebuggerProxy debuggerProxy)

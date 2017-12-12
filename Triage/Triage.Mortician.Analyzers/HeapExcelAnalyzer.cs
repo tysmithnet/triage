@@ -29,8 +29,6 @@ namespace Triage.Mortician.Analyzers
         
         public void Contribute(SLDocument sharedDocument)
         {
-            
-
             var stats = new Dictionary<string, StatsLine>();  
 
             foreach (var obj in DumpObjectRepository.Get())

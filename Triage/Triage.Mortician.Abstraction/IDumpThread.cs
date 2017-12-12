@@ -11,5 +11,11 @@ namespace Triage.Mortician.Abstraction
         IReadOnlyCollection<IDumpObject> StackObjects { get; }
         TimeSpan TotalTime { get; }
         TimeSpan UserModeTime { get; }
+        IList<IDumpStackFrame> StackFrames { get; }
+    }
+
+    public interface IDumpStackFrame
+    {
+        string DisplayString { get; }
     }
 }
