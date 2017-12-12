@@ -151,7 +151,7 @@
   <ItemGroup>
     <Compile Include="ExcelAnalyzerHost.cs" />
     <Compile Include="IExcelAnalyzer.cs" />
-    <Compile Include="ThreadBuildUpAnalyzer.cs" />
+    <Compile Include="HeapExcelAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +163,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="template.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

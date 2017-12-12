@@ -10,6 +10,7 @@ namespace Triage.Mortician
         public ulong Address { get; internal set; }
         public string FullTypeName { get; internal set; }
         public ulong Size { get; internal set; }
+        public int Gen { get; internal set; }
 
         internal IList<IDumpObject> ReferencesInternal = new List<IDumpObject>();
         public IReadOnlyCollection<IDumpObject> References { get; internal set; }
@@ -19,11 +20,13 @@ namespace Triage.Mortician
             ReferencesInternal.Add(obj);
         }
 
-        public DumpObject(ulong address, string fullTypeName, ulong size)
+        // todo: constructor args are already unwieldy, refactor to factory
+        public DumpObject(ulong address, string fullTypeName, ulong size, int gen)
         {
             Address = address;
             FullTypeName = fullTypeName;
             Size = size;
+            Gen = gen;
         }                                                                      
     }
 }

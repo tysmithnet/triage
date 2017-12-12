@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -68,12 +69,15 @@ namespace Triage.Mortician.Analyzers
             
             await Task.WhenAll(tasks);
 
-            var doc = new SLDocument();
-            foreach (var analyzer in ExcelAnalyzers.Except(faultedAnalyzers))
+            using (var stream = File.OpenRead("template.xlsx"))
             {
-                analyzer.Contribute(doc);
-            }
-            doc.SaveAs("findme.xls");
+                var doc = new SLDocument(stream);
+                foreach (var analyzer in ExcelAnalyzers.Except(faultedAnalyzers))
+                {
+                    analyzer.Contribute(doc);
+                }
+                doc.SaveAs("findme.xlsx");
+            }    
         }
     }
 }

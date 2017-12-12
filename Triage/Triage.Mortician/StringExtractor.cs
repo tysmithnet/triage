@@ -20,7 +20,7 @@ namespace Triage.Mortician
             var chars = value.ToCharArray()
                 .Take(Convert.ToInt32(ConfigurationManager.AppSettings["string_value_preview_length"])).ToArray();
             var preview = new string(chars);
-            var heapObject = new StringDumpObject(clrObject.Address, "System.String", clrObject.Size, value);
+            var heapObject = new StringDumpObject(clrObject.Address, "System.String", clrObject.Size, value, clrRuntime.Heap.GetGeneration(clrObject.Address));
 
             return heapObject;
         }
