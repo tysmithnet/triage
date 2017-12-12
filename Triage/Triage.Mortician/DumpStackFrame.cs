@@ -3,7 +3,7 @@
 namespace Triage.Mortician
 {
     /// <summary>
-    /// Represents a stack frame extracted from the memory dump
+    ///     Represents a stack frame extracted from the memory dump
     /// </summary>
     /// <seealso cref="Triage.Mortician.Abstraction.IDumpStackFrame" />
     internal class DumpStackFrame : IDumpStackFrame

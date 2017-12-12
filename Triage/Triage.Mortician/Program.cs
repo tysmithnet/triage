@@ -14,12 +14,12 @@ using Triage.Mortician.Abstraction;
 namespace Triage.Mortician
 {
     /// <summary>
-    /// Entry point class
+    ///     Entry point class
     /// </summary>
     internal class Program
     {
         /// <summary>
-        /// Entry point to the application
+        ///     Entry point to the application
         /// </summary>
         /// <param name="args">The arguments.</param>
         private static void Main(string[] args)

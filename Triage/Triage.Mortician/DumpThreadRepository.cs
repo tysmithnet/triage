@@ -10,13 +10,18 @@ using Triage.Mortician.Abstraction;
 namespace Triage.Mortician
 {
     /// <summary>
-    /// Represents a repository that stores threads that were extracted from the memory dump
+    ///     Represents a repository that stores threads that were extracted from the memory dump
     /// </summary>
     /// <seealso cref="Triage.Mortician.Abstraction.IDumpThreadRepository" />
     internal class DumpThreadRepository : IDumpThreadRepository
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DumpThreadRepository"/> class.
+        ///     The log
+        /// </summary>
+        protected ILog Log = LogManager.GetLogger(typeof(DumpThreadRepository));
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DumpThreadRepository" /> class.
         /// </summary>
         /// <param name="rt">The rt.</param>
         /// <param name="debuggerProxy">The debugger proxy.</param>
@@ -45,20 +50,15 @@ namespace Triage.Mortician
         }
 
         /// <summary>
-        /// Gets or sets the dump threads.
+        ///     Gets or sets the dump threads.
         /// </summary>
         /// <value>
-        /// The dump threads.
+        ///     The dump threads.
         /// </value>
         public Dictionary<uint, DumpThread> DumpThreads { get; set; } = new Dictionary<uint, DumpThread>();
 
         /// <summary>
-        /// The log
-        /// </summary>
-        protected ILog Log = LogManager.GetLogger(typeof(DumpThreadRepository));
-
-        /// <summary>
-        /// Gets the thread with the provided id
+        ///     Gets the thread with the provided id
         /// </summary>
         /// <param name="osId">The os identifier.</param>
         /// <returns>Get the thread with the operation system id provided</returns>
@@ -72,7 +72,7 @@ namespace Triage.Mortician
         }
 
         /// <summary>
-        /// Gets all the threads extracted from the memory dump
+        ///     Gets all the threads extracted from the memory dump
         /// </summary>
         /// <returns>All the threads extracted from the memory dump</returns>
         public IEnumerable<IDumpThread> Get()
@@ -81,7 +81,7 @@ namespace Triage.Mortician
         }
 
         /// <summary>
-        /// Populates the runaway data. This is the data on how long threads have been alive
+        ///     Populates the runaway data. This is the data on how long threads have been alive
         /// </summary>
         /// <param name="debuggerProxy">The debugger proxy.</param>
         private void PopulateRunawayData(DebuggerProxy debuggerProxy)

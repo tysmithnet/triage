@@ -10,31 +10,31 @@ using Triage.Mortician.Abstraction;
 namespace Triage.Mortician.Analyzers
 {
     /// <summary>
-    /// Represents an excel analyzer that is capable of producing a report based on the objects in the heap
+    ///     Represents an excel analyzer that is capable of producing a report based on the objects in the heap
     /// </summary>
     /// <seealso cref="Triage.Mortician.Analyzers.IExcelAnalyzer" />
     [Export(typeof(IExcelAnalyzer))]
     public class HeapExcelAnalyzer : IExcelAnalyzer
     {
         /// <summary>
-        /// Gets or sets the log.
+        ///     Gets or sets the log.
         /// </summary>
         /// <value>
-        /// The log.
+        ///     The log.
         /// </value>
         protected ILog Log { get; set; } = LogManager.GetLogger(typeof(HeapExcelAnalyzer));
 
         /// <summary>
-        /// Gets or sets the dump object repository.
+        ///     Gets or sets the dump object repository.
         /// </summary>
         /// <value>
-        /// The dump object repository.
+        ///     The dump object repository.
         /// </value>
         [Import]
         public IDumpObjectRepository DumpObjectRepository { get; set; }
 
         /// <summary>
-        /// Setups the specified cancellation token.
+        ///     Setups the specified cancellation token.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
@@ -44,7 +44,7 @@ namespace Triage.Mortician.Analyzers
         }
 
         /// <summary>
-        /// Contributes the specified shared document.
+        ///     Contributes the specified shared document.
         /// </summary>
         /// <param name="sharedDocument">The shared document.</param>
         public void Contribute(SLDocument sharedDocument)
@@ -107,7 +107,7 @@ namespace Triage.Mortician.Analyzers
         }
 
         /// <summary>
-        /// DTO for the running totals
+        ///     DTO for the running totals
         /// </summary>
         private class StatsLine
         {

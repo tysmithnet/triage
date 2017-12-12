@@ -10,33 +10,33 @@ namespace Triage.Mortician.Analyzers
 {
     /// <inheritdoc />
     /// <summary>
-    /// Represents an object that is capable of reporting on the threads from the memory dump
+    ///     Represents an object that is capable of reporting on the threads from the memory dump
     /// </summary>
     /// <seealso cref="T:Triage.Mortician.Analyzers.IExcelAnalyzer" />
     [Export(typeof(IExcelAnalyzer))]
     public class ThreadExcelAnalyzer : IExcelAnalyzer
     {
         /// <summary>
-        /// The log
+        ///     The log
         /// </summary>
         protected ILog Log = LogManager.GetLogger(typeof(ThreadExcelAnalyzer));
 
         /// <summary>
-        /// Gets or sets the dump thread repository.
+        ///     Gets or sets the dump thread repository.
         /// </summary>
         /// <value>
-        /// The dump thread repository.
+        ///     The dump thread repository.
         /// </value>
         [Import]
         public IDumpThreadRepository DumpThreadRepository { get; set; }
 
         /// <inheritdoc />
         /// <summary>
-        /// Performs any required setup like number crunching etc.
+        ///     Performs any required setup like number crunching etc.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
-        /// A Task, that when complete will signal the setup completion
+        ///     A Task, that when complete will signal the setup completion
         /// </returns>
         public Task Setup(CancellationToken cancellationToken)
         {
@@ -45,7 +45,7 @@ namespace Triage.Mortician.Analyzers
 
         /// <inheritdoc />
         /// <summary>
-        /// Contributes the specified shared document.
+        ///     Contributes the specified shared document.
         /// </summary>
         /// <param name="sharedDocument">The shared document.</param>
         public void Contribute(SLDocument sharedDocument)

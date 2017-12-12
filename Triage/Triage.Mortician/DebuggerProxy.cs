@@ -6,10 +6,9 @@ using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
-
     /// <summary>
-    /// https://github.com/Microsoft/clrmd/issues/79
-    /// Uses the debugger interface to execute arbitrary commands on the target
+    ///     https://github.com/Microsoft/clrmd/issues/79
+    ///     Uses the debugger interface to execute arbitrary commands on the target
     /// </summary>
     /// <seealso cref="Microsoft.Diagnostics.Runtime.Interop.IDebugOutputCallbacks" />
     /// <seealso cref="System.IDisposable" />
@@ -19,11 +18,11 @@ namespace Triage.Mortician
         private readonly StringBuilder _builder = new StringBuilder();
         private readonly IDebugClient _client;
         private readonly IDebugControl _control;
-        private bool _disposed; // To detect redundant calls
         private readonly IDebugOutputCallbacks _old;
+        private bool _disposed; // To detect redundant calls
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DebuggerProxy"/> class.
+        ///     Initializes a new instance of the <see cref="DebuggerProxy" /> class.
         /// </summary>
         /// <param name="client">The debugging client provided by the OS</param>
         public DebuggerProxy(IDebugClient client)
@@ -39,7 +38,7 @@ namespace Triage.Mortician
         }
 
         /// <summary>
-        /// Executes the specified command on the debug client
+        ///     Executes the specified command on the debug client
         /// </summary>
         /// <param name="cmd">The command to run.</param>
         /// <returns>The result of the command</returns>

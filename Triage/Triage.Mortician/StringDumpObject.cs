@@ -2,14 +2,14 @@
 {
     /// <inheritdoc />
     /// <summary>
-    /// Represents a System.String object from the managed heap
+    ///     Represents a System.String object from the managed heap
     /// </summary>
     /// <seealso cref="T:Triage.Mortician.DumpObject" />
     public class StringDumpObject : DumpObject
     {
         /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:Triage.Mortician.StringDumpObject" /> class.
+        ///     Initializes a new instance of the <see cref="T:Triage.Mortician.StringDumpObject" /> class.
         /// </summary>
         /// <param name="address">The address.</param>
         /// <param name="fullTypeName">Full name of the type.</param>
@@ -23,10 +23,10 @@
         }
 
         /// <summary>
-        /// The string value from this heap object
+        ///     The string value from this heap object
         /// </summary>
         /// <value>
-        /// The value.
+        ///     The value.
         /// </value>
         public string Value { get; internal set; }
     }

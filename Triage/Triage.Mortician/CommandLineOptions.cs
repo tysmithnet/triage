@@ -4,12 +4,12 @@ using CommandLine;
 namespace Triage.Mortician
 {
     /// <summary>
-    /// Command line arguments for the process
+    ///     Command line arguments for the process
     /// </summary>
     public class CommandLineOptions
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CommandLineOptions"/> class.
+        ///     Initializes a new instance of the <see cref="CommandLineOptions" /> class.
         /// </summary>
         public CommandLineOptions()
         {

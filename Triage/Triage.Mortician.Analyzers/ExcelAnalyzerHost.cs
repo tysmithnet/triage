@@ -13,33 +13,33 @@ namespace Triage.Mortician.Analyzers
 {
     /// <inheritdoc />
     /// <summary>
-    /// Represents an analyzer that provides an environment for other excel analyzers to work
+    ///     Represents an analyzer that provides an environment for other excel analyzers to work
     /// </summary>
     /// <seealso cref="T:Triage.Mortician.Abstraction.IAnalyzer" />
     [Export(typeof(IAnalyzer))]
     public class ExcelAnalyzerHost : IAnalyzer
     {
         /// <summary>
-        /// The log
+        ///     The log
         /// </summary>
         protected ILog Log = LogManager.GetLogger(typeof(ExcelAnalyzerHost));
 
         /// <summary>
-        /// Gets or sets the excel analyzers.
+        ///     Gets or sets the excel analyzers.
         /// </summary>
         /// <value>
-        /// The excel analyzers.
+        ///     The excel analyzers.
         /// </value>
         [ImportMany]
         public IExcelAnalyzer[] ExcelAnalyzers { get; set; }
 
         /// <inheritdoc />
         /// <summary>
-        /// Performs any necessary setup prior to processing
+        ///     Performs any necessary setup prior to processing
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
-        /// A Task that when complete will signal the completion of the setup procedure
+        ///     A Task that when complete will signal the completion of the setup procedure
         /// </returns>
         public Task Setup(CancellationToken cancellationToken)
         {
@@ -48,11 +48,11 @@ namespace Triage.Mortician.Analyzers
 
         /// <inheritdoc />
         /// <summary>
-        /// Performs the analysis
+        ///     Performs the analysis
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>
-        /// A Task that when complete will signal the completion of the setup procedure
+        ///     A Task that when complete will signal the completion of the setup procedure
         /// </returns>
         public async Task Process(CancellationToken cancellationToken)
         {

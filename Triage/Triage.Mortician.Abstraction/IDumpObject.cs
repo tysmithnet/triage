@@ -3,38 +3,42 @@
 namespace Triage.Mortician.Abstraction
 {
     /// <summary>
-    /// Represents an object that was extracted from the managed heap
+    ///     Represents an object that was extracted from the managed heap
     /// </summary>
     public interface IDumpObject
     {
         /// <summary>
-        /// Gets the address of this object
+        ///     Gets the address of this object
         /// </summary>
         /// <value>
-        /// The address.
+        ///     The address.
         /// </value>
         ulong Address { get; }
+
         /// <summary>
-        /// Gets the full name of the type.
+        ///     Gets the full name of the type.
         /// </summary>
         /// <value>
-        /// The full name of the type.
+        ///     The full name of the type.
         /// </value>
         string FullTypeName { get; }
+
         /// <summary>
-        /// Gets the size.
+        ///     Gets the size.
         /// </summary>
         /// <value>
-        /// The size.
+        ///     The size.
         /// </value>
         ulong Size { get; }
+
         /// <summary>
-        /// Gets the gen.
+        ///     Gets the gen.
         /// </summary>
         /// <value>
-        /// The gen.
+        ///     The gen.
         /// </value>
         int Gen { get; }
+
         IReadOnlyCollection<IDumpObject> References { get; }
     }
 }

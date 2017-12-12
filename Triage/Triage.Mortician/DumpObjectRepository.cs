@@ -8,23 +8,23 @@ using Triage.Mortician.Abstraction;
 namespace Triage.Mortician
 {
     /// <summary>
-    /// Repository for objects that were extracted from the managed heap
+    ///     Repository for objects that were extracted from the managed heap
     /// </summary>
     /// <seealso cref="Triage.Mortician.Abstraction.IDumpObjectRepository" />
     internal class DumpObjectRepository : IDumpObjectRepository
     {
         /// <summary>
-        /// The heap objects
+        ///     The heap objects
         /// </summary>
         protected internal Dictionary<ulong, IDumpObject> HeapObjects = new Dictionary<ulong, IDumpObject>();
 
         /// <summary>
-        /// The log
+        ///     The log
         /// </summary>
         protected internal ILog Log = LogManager.GetLogger(typeof(DumpObjectRepository));
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DumpObjectRepository"/> class.
+        ///     Initializes a new instance of the <see cref="DumpObjectRepository" /> class.
         /// </summary>
         /// <param name="runtime">The runtime.</param>
         /// <param name="heapObjectExtractors">The heap object extractors.</param>
@@ -55,7 +55,7 @@ namespace Triage.Mortician
                     new DumpObject(obj.Address, obj.Type.Name, obj.Size, runtime.Heap.GetGeneration(obj.Address)));
             }
 
-            if(!HeapObjects.Any())
+            if (!HeapObjects.Any())
                 Log.Error("No object data was collected from the heap. Is this a mini dump?");
 
             // loop over the objects again and extract the reference graph
@@ -65,10 +65,11 @@ namespace Triage.Mortician
 
                 foreach (var reference in obj.EnumerateObjectReferences())
                     if (HeapObjects.TryGetValue(reference.Address, out var child))
-                        if(parent is DumpObject parentAsDumpObject)
+                        if (parent is DumpObject parentAsDumpObject)
                             parentAsDumpObject.AddReference(child);
                         else
-                            Log.Error($"Expecting to find a dump object while generating the reference graph but instead found: {parent.GetType().FullName}");
+                            Log.Error(
+                                $"Expecting to find a dump object while generating the reference graph but instead found: {parent.GetType().FullName}");
                     else
                         Log.Warn(
                             $"{parent.Address:x} has a reference to {reference.Address:x}, but it was not found in the heap cache");
@@ -76,7 +77,7 @@ namespace Triage.Mortician
         }
 
         /// <summary>
-        /// Gets the object at the specified address
+        ///     Gets the object at the specified address
         /// </summary>
         /// <param name="address">The address.</param>
         /// <returns>The object at the specified address</returns>
@@ -89,7 +90,7 @@ namespace Triage.Mortician
         }
 
         /// <summary>
-        /// Get all dump objects extracted from the heap
+        ///     Get all dump objects extracted from the heap
         /// </summary>
         /// <returns>All dump objects extracted from the heap</returns>
         public IEnumerable<IDumpObject> Get()

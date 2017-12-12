@@ -1,7 +1,4 @@
-﻿using System;
-using System.ComponentModel.Composition;
-using System.Configuration;
-using System.Linq;
+﻿using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Abstraction;
 
@@ -9,7 +6,7 @@ namespace Triage.Mortician
 {
     /// <inheritdoc />
     /// <summary>
-    /// DumpObjectExtractor capable of parsing System.String objects
+    ///     DumpObjectExtractor capable of parsing System.String objects
     /// </summary>
     /// <seealso cref="T:Triage.Mortician.IDumpObjectExtractor" />
     [Export(typeof(IDumpObjectExtractor))]
@@ -17,12 +14,12 @@ namespace Triage.Mortician
     {
         /// <inheritdoc />
         /// <summary>
-        /// Determines whether this instance can extract from the provided object
+        ///     Determines whether this instance can extract from the provided object
         /// </summary>
         /// <param name="clrObject">The object to try to get values from</param>
         /// <param name="clrRuntime">The clr runtime being used</param>
         /// <returns>
-        ///   <c>true</c> if this instance can extract from the object; otherwise, <c>false</c>.
+        ///     <c>true</c> if this instance can extract from the object; otherwise, <c>false</c>.
         /// </returns>
         public bool CanExtract(ClrObject clrObject, ClrRuntime clrRuntime)
         {
@@ -31,12 +28,12 @@ namespace Triage.Mortician
 
         /// <inheritdoc />
         /// <summary>
-        /// Extracts data from the provided object
+        ///     Extracts data from the provided object
         /// </summary>
         /// <param name="clrObject">The object.</param>
         /// <param name="clrRuntime">The runtime.</param>
         /// <returns>
-        /// Extracted dump object
+        ///     Extracted dump object
         /// </returns>
         public IDumpObject Extract(ClrObject clrObject, ClrRuntime clrRuntime)
         {
