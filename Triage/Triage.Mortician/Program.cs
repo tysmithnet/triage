@@ -52,6 +52,7 @@ namespace Triage.Mortician
                     dumpObjectRepository = new DumpObjectRepository(rt, heapObjectExtractors);
                     log.Trace(
                         $"DumpObjectRepository created in {TimeSpan.FromMilliseconds(stopWatch.ElapsedMilliseconds).ToString()}");
+
                     debuggerProxy = new DebuggerProxy(dt.DebuggerInterface);
                     stopWatch.Restart();
                     dumpThreadRepository = new DumpThreadRepository(rt, debuggerProxy, dumpObjectRepository);

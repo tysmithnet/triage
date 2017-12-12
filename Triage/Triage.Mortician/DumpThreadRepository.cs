@@ -9,10 +9,11 @@ using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Represents a repository that stores threads that were extracted from the memory dump
     /// </summary>
-    /// <seealso cref="Triage.Mortician.Abstraction.IDumpThreadRepository" />
+    /// <seealso cref="T:Triage.Mortician.Abstraction.IDumpThreadRepository" />
     internal class DumpThreadRepository : IDumpThreadRepository
     {
         /// <summary>
