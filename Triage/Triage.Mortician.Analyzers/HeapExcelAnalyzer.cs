@@ -29,9 +29,9 @@ namespace Triage.Mortician.Analyzers
         
         public void Contribute(SLDocument sharedDocument)
         {
-            sharedDocument.SelectWorksheet("Heap Instances");
+            
 
-            var stats = new Dictionary<string, StatsLine>();
+            var stats = new Dictionary<string, StatsLine>();  
 
             foreach (var obj in DumpObjectRepository.Get())
             {
@@ -41,41 +41,61 @@ namespace Triage.Mortician.Analyzers
                 switch (obj.Gen)
                 {
                     case 0:
-                        stats[obj.FullTypeName].Gen0++;
+                        stats[obj.FullTypeName].Gen0Count++;
+                        stats[obj.FullTypeName].Gen0Size += obj.Size;
                         break;
                     case 1:
-                        stats[obj.FullTypeName].Gen1++;
+                        stats[obj.FullTypeName].Gen1Count++;
+                        stats[obj.FullTypeName].Gen1Size += obj.Size;
                         break;
                     case 2:
-                        stats[obj.FullTypeName].Gen2++;
+                        stats[obj.FullTypeName].Gen2Count++;
+                        stats[obj.FullTypeName].Gen2Size += obj.Size;
                         break;
                     case 3:
-                        stats[obj.FullTypeName].Loh++;
+                        stats[obj.FullTypeName].LohCount++;
+                        stats[obj.FullTypeName].LohSize += obj.Size;
                         break;
                     default:
                         Log.Warn($"Found obj with invalid gc gen: {obj.FullTypeName}({obj.Address}) - gen{obj.Gen}");
                         continue;
                 }
             }
-
+            sharedDocument.SelectWorksheet("Object Counts");
             int count = 0;
-            foreach (var statline in stats.OrderByDescending(s => s.Value.Gen0 + s.Value.Gen1 + s.Value.Gen2 + s.Value.Loh))
+            foreach (var statline in stats.OrderByDescending(s => s.Value.Gen0Count + s.Value.Gen1Count + s.Value.Gen2Count + s.Value.LohCount))
             {
                 sharedDocument.SetCellValue(2 + count, 1, statline.Key);
-                sharedDocument.SetCellValue(2 + count, 2, statline.Value.Gen0);
-                sharedDocument.SetCellValue(2 + count, 3, statline.Value.Gen1);
-                sharedDocument.SetCellValue(2 + count, 4, statline.Value.Gen2);
-                sharedDocument.SetCellValue(2 + count, 5, statline.Value.Loh);
+                sharedDocument.SetCellValue(2 + count, 2, statline.Value.Gen0Count);
+                sharedDocument.SetCellValue(2 + count, 3, statline.Value.Gen1Count);
+                sharedDocument.SetCellValue(2 + count, 4, statline.Value.Gen2Count);
+                sharedDocument.SetCellValue(2 + count, 5, statline.Value.LohCount);
                 count++;
-            }            
+            }
+
+            sharedDocument.SelectWorksheet("Object Sizes");
+            count = 0;
+            foreach (var statline in stats.OrderByDescending(s => s.Value.Gen0Size + s.Value.Gen1Size + s.Value.Gen2Size + s.Value.LohSize))
+            {
+                sharedDocument.SetCellValue(2 + count, 1, statline.Key);
+                sharedDocument.SetCellValue(2 + count, 2, statline.Value.Gen0Size);
+                sharedDocument.SetCellValue(2 + count, 3, statline.Value.Gen1Size);
+                sharedDocument.SetCellValue(2 + count, 4, statline.Value.Gen2Size);
+                sharedDocument.SetCellValue(2 + count, 5, statline.Value.LohSize);
+                count++;
+            }
         }
 
         private class StatsLine
         {
-            public long Gen0 { get; set; }
-            public long Gen1 { get; set; }
-            public long Gen2 { get; set; }
-            public long Loh { get; set; }
+            public ulong Gen0Count { get; set; }
+            public ulong Gen0Size { get; set; }
+            public ulong Gen1Count { get; set; }
+            public ulong Gen1Size { get; set; }
+            public ulong Gen2Count { get; set; }
+            public ulong Gen2Size { get; set; }
+            public ulong LohCount { get; set; }
+            public ulong LohSize { get; set; }
         }
     }  
 }
