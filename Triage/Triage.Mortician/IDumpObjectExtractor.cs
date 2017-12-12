@@ -1,6 +1,7 @@
 ﻿using Microsoft.Diagnostics.Runtime;
+using Triage.Mortician.Abstraction;
 
-namespace Triage.Mortician.Abstraction
+namespace Triage.Mortician
 {
     /// <summary>
     ///     Represents an object cabable of extracting data from a ClrObject
@@ -16,8 +17,7 @@ namespace Triage.Mortician.Abstraction
         ///     <c>true</c> if this instance can extract from the object; otherwise, <c>false</c>.
         /// </returns>
         bool CanExtract(ClrObject clrObject, ClrRuntime clrRuntime);
-
-
+                                           
         /// <summary>
         ///     Extracts data from the provided object
         /// </summary>
