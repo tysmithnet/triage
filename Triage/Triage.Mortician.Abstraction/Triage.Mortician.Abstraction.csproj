@@ -42,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IAppDomain.cs" />
-    <Compile Include="IDebuggerProxy.cs" />
     <Compile Include="IDumpObject.cs" />
     <Compile Include="IDumpObjectRepository.cs" />
     <Compile Include="IDumpStackFrame.cs" />

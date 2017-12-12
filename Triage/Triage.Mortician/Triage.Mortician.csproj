@@ -89,6 +89,7 @@
     <Compile Include="Engine.cs" />
     <Compile Include="DumpObject.cs" />
     <Compile Include="DumpObjectRepository.cs" />
+    <Compile Include="IDebuggerProxy.cs" />
     <Compile Include="IDumpObjectExtractor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

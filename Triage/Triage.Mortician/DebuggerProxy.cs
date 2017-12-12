@@ -12,7 +12,7 @@ namespace Triage.Mortician
     /// </summary>
     /// <seealso cref="Microsoft.Diagnostics.Runtime.Interop.IDebugOutputCallbacks" />
     /// <seealso cref="System.IDisposable" />
-    /// <seealso cref="Triage.Mortician.Abstraction.IDebuggerProxy" />
+    /// <seealso cref="IDebuggerProxy" />
     internal class DebuggerProxy : IDebugOutputCallbacks, IDisposable, IDebuggerProxy
     {
         private readonly StringBuilder _builder = new StringBuilder();
