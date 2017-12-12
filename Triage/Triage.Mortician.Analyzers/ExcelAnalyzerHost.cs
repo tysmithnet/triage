@@ -63,34 +63,11 @@ namespace Triage.Mortician.Analyzers
             }
 
             Log.Trace("Engine starting...");
-
-            var faultedAnalyzers = new ConcurrentBag<IExcelAnalyzer>();
+                                                                                                
             var analyzerSetupTasks = new Dictionary<Task, IExcelAnalyzer>();
             foreach (var analyzer in ExcelAnalyzers)
             {
-                var task = Task.Run(() => analyzer.Setup(cancellationToken), cancellationToken)
-                    .ContinueWith(t =>
-                    {
-                        if (t.IsFaulted)
-                        {
-                            faultedAnalyzers.Add(analyzer);
-                            t.Exception?.Handle(exception =>
-                            {
-                                Log.Error(
-                                    $"ExcelAnalyzer {analyzer.GetType().FullName} failed during setup: {exception.GetType().FullName} - {exception.Message}",
-                                    exception);
-                                return true;
-                            });
-                        }
-                        else if (t.IsCanceled)
-                        {
-                            Log.Warn($"ExcelAnalyzer {analyzer.GetType().FullName} was cancelled during setup");
-                        }
-                        else
-                        {
-                            Log.Trace($"ExcelAnalyzer {analyzer.GetType().FullName} was successfully setup");
-                        }
-                    }, cancellationToken);
+                var task = Task.Run(() => analyzer.Setup(cancellationToken), cancellationToken);
                 analyzerSetupTasks.Add(task, analyzer);
             }
             using (var stream = File.OpenRead("template.xlsx"))
@@ -99,13 +76,26 @@ namespace Triage.Mortician.Analyzers
                 while (analyzerSetupTasks.Keys.Any())
                 {
                     var task = await Task.WhenAny(analyzerSetupTasks.Keys);
-                    if (task.IsFaulted || task.IsCanceled)
-                    {
-                        analyzerSetupTasks.Remove(task);
-                        continue;
-                    }
                     var analyzer = analyzerSetupTasks[task];
-                    analyzer.Contribute(doc);
+                    if (task.IsFaulted)
+                    {
+                        task.Exception?.Handle(exception =>
+                        {
+                            Log.Error(
+                                $"ExcelAnalyzer {analyzer.GetType().FullName} failed during setup: {exception.GetType().FullName} - {exception.Message}",
+                                exception);
+                            return true;
+                        });
+                    }
+                    else if (task.IsCanceled)
+                    {
+                        Log.Warn($"ExcelAnalyzer {analyzer.GetType().FullName} was cancelled during setup");
+                    }
+                    else
+                    {
+                        Log.Trace($"ExcelAnalyzer {analyzer.GetType().FullName} was successfully setup, starting contribution..");
+                        analyzer.Contribute(doc);
+                    }                            
                     analyzerSetupTasks.Remove(task);
                 }
                 doc.SaveAs("findme.xlsx");
