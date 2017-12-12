@@ -55,7 +55,7 @@
     <Compile Include="IAnalyzer.cs" />
     <Compile Include="IModule.cs" />
     <Compile Include="ISettingsRepository.cs" />
-    <Compile Include="IType.cs" />
+    <Compile Include="IDumpType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

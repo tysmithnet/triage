@@ -5,6 +5,11 @@
     /// </summary>
     public interface ISettingsRepository
     {
+        /// <summary>
+        ///     Gets the setting associated with the provided key
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
         string Get(string key);
     }
 }

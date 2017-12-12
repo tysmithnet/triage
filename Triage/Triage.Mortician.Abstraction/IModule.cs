@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 
 namespace Triage.Mortician.Abstraction
 {
@@ -47,7 +46,7 @@ namespace Triage.Mortician.Abstraction
         /// <value>
         ///     The application domains in which this module is loaded
         /// </value>
-        ISet<IAppDomain> AppDomains { get; }
+        IEnumerable<IAppDomain> AppDomains { get; }
 
         /// <summary>
         ///     Gets the debugging attributes for this module (optimized, edit and continue, etc)
@@ -66,34 +65,34 @@ namespace Triage.Mortician.Abstraction
         ulong ImageBase { get; }
 
         /// <summary>
-        /// Gets a value indicating whether this instance is backed by a PE file
+        ///     Gets a value indicating whether this instance is backed by a PE file
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this instance is backed by a file; otherwise, <c>false</c>.
+        ///     <c>true</c> if this instance is backed by a file; otherwise, <c>false</c>.
         /// </value>
         bool IsFile { get; }
 
         /// <summary>
-        /// Gets the name for this module
+        ///     Gets the name for this module
         /// </summary>
         /// <value>
-        /// The name.
+        ///     The name.
         /// </value>
         string Name { get; }
 
         /// <summary>
-        /// Gets the size of this module in memory
+        ///     Gets the size of this module in memory
         /// </summary>
         /// <value>
-        /// The size.
+        ///     The size.
         /// </value>
         ulong Size { get; }
 
         /// <summary>
-        /// Gets the PDB file, but can be null
+        ///     Gets the PDB file, but can be null
         /// </summary>
         /// <value>
-        /// The PDB file.
+        ///     The PDB file.
         /// </value>
         string PdbFile { get; }
     }
