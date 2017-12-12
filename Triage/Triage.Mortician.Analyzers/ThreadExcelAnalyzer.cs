@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
@@ -11,19 +8,46 @@ using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician.Analyzers
 {
+    /// <inheritdoc />
+    /// <summary>
+    ///     Represents an object that is capable of reporting on the threads from the memory dump
+    /// </summary>
+    /// <seealso cref="T:Triage.Mortician.Analyzers.IExcelAnalyzer" />
     [Export(typeof(IExcelAnalyzer))]
     public class ThreadExcelAnalyzer : IExcelAnalyzer
     {
+        /// <summary>
+        ///     The log
+        /// </summary>
         protected ILog Log = LogManager.GetLogger(typeof(ThreadExcelAnalyzer));
 
+        /// <summary>
+        ///     Gets or sets the dump thread repository.
+        /// </summary>
+        /// <value>
+        ///     The dump thread repository.
+        /// </value>
         [Import]
         public IDumpThreadRepository DumpThreadRepository { get; set; }
 
+        /// <inheritdoc />
+        /// <summary>
+        ///     Performs any required setup like number crunching etc.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        ///     A Task, that when complete will signal the setup completion
+        /// </returns>
         public Task Setup(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        ///     Contributes the specified shared document.
+        /// </summary>
+        /// <param name="sharedDocument">The shared document.</param>
         public void Contribute(SLDocument sharedDocument)
         {
             sharedDocument.SelectWorksheet("Unique Stacks");
@@ -32,17 +56,17 @@ namespace Triage.Mortician.Analyzers
                 .OrderByDescending(g => g.Count())
                 .ThenByDescending(g => g.Key.Length);
 
-            int curStackRow = 1;
-            int minNumLinesPerStack = 2;
-            int threadsColumn = 12;
+            var curStackRow = 1;
+            var minNumLinesPerStack = 2;
+            var threadsColumn = 12;
             foreach (var group in groups)
             {
-                int max = minNumLinesPerStack;
+                var max = minNumLinesPerStack;
                 sharedDocument.SetCellValue(curStackRow, 1, "Stack:");
                 sharedDocument.SetCellValue(curStackRow, threadsColumn, "Threads:");
 
-                int stackIndex = 0;
-                foreach(var line in group.First().StackFrames.Select(x => x.DisplayString))
+                var stackIndex = 0;
+                foreach (var line in group.First().StackFrames.Select(x => x.DisplayString))
                 {
                     sharedDocument.SetCellValue(curStackRow + 1 + stackIndex, 1, line);
                     stackIndex++;
@@ -51,7 +75,7 @@ namespace Triage.Mortician.Analyzers
                 if (stackIndex - 1 > max)
                     max = stackIndex - 1;
 
-                int threadIndex = 0;
+                var threadIndex = 0;
                 foreach (var thread in group.OrderByDescending(t => t.KernelModeTime + t.UserModeTime))
                 {
                     sharedDocument.SetCellValue(curStackRow + 1 + threadIndex, threadsColumn,
@@ -61,7 +85,7 @@ namespace Triage.Mortician.Analyzers
 
                 if (threadIndex - 1 > max)
                     max = threadIndex - 1;
-                           
+
                 curStackRow += max + 5;
             }
         }

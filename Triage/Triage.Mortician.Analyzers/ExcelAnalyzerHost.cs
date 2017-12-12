@@ -1,31 +1,59 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
-using Triage.Mortician.Abstraction;      
 using SpreadsheetLight;
+using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician.Analyzers
 {
+    /// <inheritdoc />
+    /// <summary>
+    ///     Represents an analyzer that provides an environment for other excel analyzers to work
+    /// </summary>
+    /// <seealso cref="T:Triage.Mortician.Abstraction.IAnalyzer" />
     [Export(typeof(IAnalyzer))]
     public class ExcelAnalyzerHost : IAnalyzer
     {
+        /// <summary>
+        ///     The log
+        /// </summary>
         protected ILog Log = LogManager.GetLogger(typeof(ExcelAnalyzerHost));
 
+        /// <summary>
+        ///     Gets or sets the excel analyzers.
+        /// </summary>
+        /// <value>
+        ///     The excel analyzers.
+        /// </value>
         [ImportMany]
         public IExcelAnalyzer[] ExcelAnalyzers { get; set; }
 
+        /// <inheritdoc />
+        /// <summary>
+        ///     Performs any necessary setup prior to processing
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        ///     A Task that when complete will signal the completion of the setup procedure
+        /// </returns>
         public Task Setup(CancellationToken cancellationToken)
-        {   
+        {
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        ///     Performs the analysis
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        ///     A Task that when complete will signal the completion of the setup procedure
+        /// </returns>
         public async Task Process(CancellationToken cancellationToken)
         {
             if (ExcelAnalyzers == null || ExcelAnalyzers.Length == 0)
@@ -35,8 +63,8 @@ namespace Triage.Mortician.Analyzers
             }
 
             Log.Trace("Engine starting...");
-            
-            var faultedAnalyzers = new ConcurrentBag<IExcelAnalyzer>();   
+
+            var faultedAnalyzers = new ConcurrentBag<IExcelAnalyzer>();
             var analyzerSetupTasks = new Dictionary<Task, IExcelAnalyzer>();
             foreach (var analyzer in ExcelAnalyzers)
             {
@@ -64,7 +92,7 @@ namespace Triage.Mortician.Analyzers
                         }
                     }, cancellationToken);
                 analyzerSetupTasks.Add(task, analyzer);
-            }    
+            }
             using (var stream = File.OpenRead("template.xlsx"))
             {
                 var doc = new SLDocument(stream);
@@ -81,7 +109,7 @@ namespace Triage.Mortician.Analyzers
                     analyzerSetupTasks.Remove(task);
                 }
                 doc.SaveAs("findme.xlsx");
-            }    
+            }
         }
     }
 }

@@ -1,39 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Configuration;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
-using DocumentFormat.OpenXml.Wordprocessing;
 using SpreadsheetLight;
-using SpreadsheetLight.Charts;
 using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician.Analyzers
 {
+    /// <summary>
+    ///     Represents an excel analyzer that is capable of producing a report based on the objects in the heap
+    /// </summary>
+    /// <seealso cref="Triage.Mortician.Analyzers.IExcelAnalyzer" />
     [Export(typeof(IExcelAnalyzer))]
     public class HeapExcelAnalyzer : IExcelAnalyzer
-    {                                 
-        public ILog Log { get; set; } = LogManager.GetLogger(typeof(HeapExcelAnalyzer));
+    {
+        /// <summary>
+        ///     Gets or sets the log.
+        /// </summary>
+        /// <value>
+        ///     The log.
+        /// </value>
+        protected ILog Log { get; set; } = LogManager.GetLogger(typeof(HeapExcelAnalyzer));
 
+        /// <summary>
+        ///     Gets or sets the dump object repository.
+        /// </summary>
+        /// <value>
+        ///     The dump object repository.
+        /// </value>
         [Import]
         public IDumpObjectRepository DumpObjectRepository { get; set; }
-        
+
+        /// <summary>
+        ///     Setups the specified cancellation token.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         public Task Setup(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
-        
+
+        /// <summary>
+        ///     Contributes the specified shared document.
+        /// </summary>
+        /// <param name="sharedDocument">The shared document.</param>
         public void Contribute(SLDocument sharedDocument)
         {
-            var stats = new Dictionary<string, StatsLine>();  
+            var stats = new Dictionary<string, StatsLine>();
 
             foreach (var obj in DumpObjectRepository.Get())
             {
-                if(!stats.ContainsKey(obj.FullTypeName))
+                if (!stats.ContainsKey(obj.FullTypeName))
                     stats.Add(obj.FullTypeName, new StatsLine());
 
                 switch (obj.Gen)
@@ -60,8 +80,9 @@ namespace Triage.Mortician.Analyzers
                 }
             }
             sharedDocument.SelectWorksheet("Object Counts");
-            int count = 0;
-            foreach (var statline in stats.OrderByDescending(s => s.Value.Gen0Count + s.Value.Gen1Count + s.Value.Gen2Count + s.Value.LohCount))
+            var count = 0;
+            foreach (var statline in stats.OrderByDescending(s =>
+                s.Value.Gen0Count + s.Value.Gen1Count + s.Value.Gen2Count + s.Value.LohCount))
             {
                 sharedDocument.SetCellValue(2 + count, 1, statline.Key);
                 sharedDocument.SetCellValue(2 + count, 2, statline.Value.Gen0Count);
@@ -73,7 +94,8 @@ namespace Triage.Mortician.Analyzers
 
             sharedDocument.SelectWorksheet("Object Sizes");
             count = 0;
-            foreach (var statline in stats.OrderByDescending(s => s.Value.Gen0Size + s.Value.Gen1Size + s.Value.Gen2Size + s.Value.LohSize))
+            foreach (var statline in stats.OrderByDescending(s =>
+                s.Value.Gen0Size + s.Value.Gen1Size + s.Value.Gen2Size + s.Value.LohSize))
             {
                 sharedDocument.SetCellValue(2 + count, 1, statline.Key);
                 sharedDocument.SetCellValue(2 + count, 2, statline.Value.Gen0Size);
@@ -84,6 +106,9 @@ namespace Triage.Mortician.Analyzers
             }
         }
 
+        /// <summary>
+        ///     DTO for the running totals
+        /// </summary>
         private class StatsLine
         {
             public ulong Gen0Count { get; set; }
@@ -95,5 +120,5 @@ namespace Triage.Mortician.Analyzers
             public ulong LohCount { get; set; }
             public ulong LohSize { get; set; }
         }
-    }  
+    }
 }

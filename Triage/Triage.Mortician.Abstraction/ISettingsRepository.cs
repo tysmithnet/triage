@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Triage.Mortician.Abstraction
+﻿namespace Triage.Mortician.Abstraction
 {
+    /// <summary>
+    ///     Represents an object that is capable of getting the settings for this process
+    /// </summary>
     public interface ISettingsRepository
     {
         string Get(string key);

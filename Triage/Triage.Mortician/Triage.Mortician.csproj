@@ -83,13 +83,12 @@
   <ItemGroup>
     <Compile Include="CommandLineOptions.cs" />
     <Compile Include="DebuggerProxy.cs" />
+    <Compile Include="DumpStackFrame.cs" />
     <Compile Include="DumpThread.cs" />
     <Compile Include="DumpThreadRepository.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="DumpObject.cs" />
     <Compile Include="DumpObjectRepository.cs" />
-    <Compile Include="IDumpObjectExtractor.cs" />
-    <Compile Include="IObjectInspector.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringExtractor.cs" />
