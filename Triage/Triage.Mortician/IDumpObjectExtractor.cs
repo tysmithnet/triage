@@ -24,6 +24,6 @@ namespace Triage.Mortician
         /// <param name="clrObject">The object.</param>
         /// <param name="clrRuntime">The runtime.</param>
         /// <returns>Extracted dump object</returns>
-        IDumpObject Extract(ClrObject clrObject, ClrRuntime clrRuntime);
+        DumpObject Extract(ClrObject clrObject, ClrRuntime clrRuntime);
     }
 }

@@ -8,6 +8,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon;
+using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Common.Logging;
@@ -106,10 +107,13 @@ namespace Triage.Mortician.Analyzers
                 string fileName = DateTime.Now.ToString("yyyy_MM_dd-hh_mm_ss") + ".xlsx";
                 doc.SaveAs(fileName);
 
-                // todo: do this part in parallel
-                using (var client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1))
-                using(var fs = File.OpenRead(fileName))
-                {          
+                // note: this looks for ~/.aws/credentials for a profile named master
+                // see https://docs.aws.amazon.com/AmazonS3/latest/dev/walkthrough1.html#walkthrough1-add-users
+                // todo: move this out to a decoupled component
+                var creds = new StoredProfileAWSCredentials("default");
+                using (var client = new AmazonS3Client(creds, RegionEndpoint.USEast1))
+                using (var fs = File.OpenRead(fileName))
+                {
                     Console.WriteLine("Uploading an object");
                     PutObjectRequest putRequest1 = new PutObjectRequest
                     {
@@ -119,10 +123,8 @@ namespace Triage.Mortician.Analyzers
                         InputStream = fs
                     };
 
-                    PutObjectResponse putObjectResponse = client.PutObject(putRequest1);
-                    // todo: do something with response
-                }                            
-
+                    //PutObjectResponse putObjectResponse = client.PutObject(request);         
+                }
             }
         }
     }

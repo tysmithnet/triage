@@ -54,5 +54,13 @@ namespace Triage.Mortician.Abstraction
         ///     The references.
         /// </value>
         IEnumerable<IDumpObject> References { get; }
+
+        /// <summary>
+        /// Gets the objects that reference this object
+        /// </summary>
+        /// <value>
+        /// The referencers.
+        /// </value>
+        IEnumerable<IDumpObject> Referencers { get; }
     }
 }

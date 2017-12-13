@@ -67,17 +67,19 @@ namespace Triage.Mortician
         ///     The gc generation for this object
         /// </value>
         public int Gen { get; internal set; }
+                                                                 
+        internal IList<IDumpObject> ReferencersInternal = new List<IDumpObject>();
+        public IEnumerable<IDumpObject> Referencers { get; internal set; }
 
-        IEnumerable<IDumpObject> IDumpObject.References { get; }
 
-
+        /// <inheritdoc />
         /// <summary>
         ///     Gets the references that this object has.
         /// </summary>
         /// <value>
         ///     The references that this object has.
         /// </value>
-        public IReadOnlyCollection<IDumpObject> References { get; internal set; }
+        public IEnumerable<IDumpObject> References { get; internal set; }
 
         /// <summary>
         ///     Adds a reference to the list of objects that this object has
@@ -87,6 +89,12 @@ namespace Triage.Mortician
         {
             if (!ReferencesInternal.Contains(obj))
                 ReferencesInternal.Add(obj);
+        }
+
+        internal void AddReferencer(IDumpObject obj)
+        {
+            if(!ReferencersInternal.Contains(obj))
+                ReferencersInternal.Add(obj);
         }
     }
 }

@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="CommandLineOptions.cs" />
     <Compile Include="DebuggerProxy.cs" />
+    <Compile Include="DefaultObjectExtractor.cs" />
     <Compile Include="DumpStackFrame.cs" />
     <Compile Include="DumpThread.cs" />
     <Compile Include="DumpThreadRepository.cs" />
