@@ -93,5 +93,7 @@ namespace Triage.Mortician
         ///     The index of the thread in the debugger.
         /// </value>
         public uint DebuggerIndex { get; set; }
+
+        IEnumerable<IDumpObject> IDumpThread.StackObjects => throw new NotImplementedException();
     }
 }

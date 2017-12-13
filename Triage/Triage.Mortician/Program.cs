@@ -41,32 +41,16 @@ namespace Triage.Mortician
                 var aggregateCatalog = new AggregateCatalog(AppDomain.CurrentDomain.GetAssemblies()
                     .Where(x => x.FullName.StartsWith("Triage.Mortician")).Select(x => new AssemblyCatalog(x)));
                 var compositionContainer = new CompositionContainer(aggregateCatalog);
-                var heapObjectExtractors = compositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
-                DumpObjectRepository dumpObjectRepository;
-                DebuggerProxy debuggerProxy;
-                DumpThreadRepository dumpThreadRepository;
-                using (var dt = DataTarget.LoadCrashDump(options.DumpFilePath))
-                {
-                    var rt = dt.ClrVersions.Single().CreateRuntime();
-                    var stopWatch = Stopwatch.StartNew();
-                    dumpObjectRepository = new DumpObjectRepository(rt, heapObjectExtractors);
-                    log.Trace(
-                        $"DumpObjectRepository created in {TimeSpan.FromMilliseconds(stopWatch.ElapsedMilliseconds).ToString()}");
-                    debuggerProxy = new DebuggerProxy(dt.DebuggerInterface);
-                    stopWatch.Restart();
-                    dumpThreadRepository = new DumpThreadRepository(rt, debuggerProxy, dumpObjectRepository);
-                    log.Trace(
-                        $"DumpThreadRepository created in {TimeSpan.FromMilliseconds(stopWatch.ElapsedMilliseconds).ToString()}");
-                }
 
-                compositionContainer.ComposeExportedValue<IDumpObjectRepository>(dumpObjectRepository);
-                compositionContainer.ComposeExportedValue<IDebuggerProxy>(debuggerProxy);
-                compositionContainer.ComposeExportedValue<IDumpThreadRepository>(dumpThreadRepository);
+                using (var dataTarget = DataTarget.LoadCrashDump(options.DumpFilePath))
+                {
+                    var repositoryFactory = new RepositoryFactory(compositionContainer, dataTarget);
+                    repositoryFactory.RegisterRepositories();
+                }                                                                                 
 
                 var engine = compositionContainer.GetExportedValue<Engine>();
                 engine.Process(CancellationToken.None).Wait();
-
-
+                                                   
 #if DEBUG
                 Console.WriteLine("Success.. press any key");
                 Console.ReadKey();

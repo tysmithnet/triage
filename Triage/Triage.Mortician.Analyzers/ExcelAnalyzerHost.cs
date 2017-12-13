@@ -1,10 +1,15 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon;
+using Amazon.S3;
+using Amazon.S3.Model;
 using Common.Logging;
 using SpreadsheetLight;
 using Triage.Mortician.Abstraction;
@@ -63,34 +68,11 @@ namespace Triage.Mortician.Analyzers
             }
 
             Log.Trace("Engine starting...");
-
-            var faultedAnalyzers = new ConcurrentBag<IExcelAnalyzer>();
+                                                                                                
             var analyzerSetupTasks = new Dictionary<Task, IExcelAnalyzer>();
             foreach (var analyzer in ExcelAnalyzers)
             {
-                var task = Task.Run(() => analyzer.Setup(cancellationToken), cancellationToken)
-                    .ContinueWith(t =>
-                    {
-                        if (t.IsFaulted)
-                        {
-                            faultedAnalyzers.Add(analyzer);
-                            t.Exception?.Handle(exception =>
-                            {
-                                Log.Error(
-                                    $"ExcelAnalyzer {analyzer.GetType().FullName} failed during setup: {exception.GetType().FullName} - {exception.Message}",
-                                    exception);
-                                return true;
-                            });
-                        }
-                        else if (t.IsCanceled)
-                        {
-                            Log.Warn($"ExcelAnalyzer {analyzer.GetType().FullName} was cancelled during setup");
-                        }
-                        else
-                        {
-                            Log.Trace($"ExcelAnalyzer {analyzer.GetType().FullName} was successfully setup");
-                        }
-                    }, cancellationToken);
+                var task = Task.Run(() => analyzer.Setup(cancellationToken), cancellationToken);
                 analyzerSetupTasks.Add(task, analyzer);
             }
             using (var stream = File.OpenRead("template.xlsx"))
@@ -99,16 +81,48 @@ namespace Triage.Mortician.Analyzers
                 while (analyzerSetupTasks.Keys.Any())
                 {
                     var task = await Task.WhenAny(analyzerSetupTasks.Keys);
-                    if (task.IsFaulted || task.IsCanceled)
-                    {
-                        analyzerSetupTasks.Remove(task);
-                        continue;
-                    }
                     var analyzer = analyzerSetupTasks[task];
-                    analyzer.Contribute(doc);
+                    if (task.IsFaulted)
+                    {
+                        task.Exception?.Handle(exception =>
+                        {
+                            Log.Error(
+                                $"ExcelAnalyzer {analyzer.GetType().FullName} failed during setup: {exception.GetType().FullName} - {exception.Message}",
+                                exception);
+                            return true;
+                        });
+                    }
+                    else if (task.IsCanceled)
+                    {
+                        Log.Warn($"ExcelAnalyzer {analyzer.GetType().FullName} was cancelled during setup");
+                    }
+                    else
+                    {
+                        Log.Trace($"ExcelAnalyzer {analyzer.GetType().FullName} was successfully setup, starting contribution..");
+                        analyzer.Contribute(doc);
+                    }                            
                     analyzerSetupTasks.Remove(task);
                 }
-                doc.SaveAs("findme.xlsx");
+                string fileName = DateTime.Now.ToString("yyyy_MM_dd-hh_mm_ss") + ".xlsx";
+                doc.SaveAs(fileName);
+
+                // todo: do this part in parallel
+                using (var client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1))
+                using(var fs = File.OpenRead(fileName))
+                {          
+                    Console.WriteLine("Uploading an object");
+                    PutObjectRequest putRequest1 = new PutObjectRequest
+                    {
+                        // todo: this sould be a setting
+                        BucketName = "reports.triage",
+                        Key = fileName,
+                        InputStream = fs
+                    };
+
+                    PutObjectResponse putObjectResponse = client.PutObject(putRequest1);
+                    // todo: do something with response
+                }                            
+
             }
         }
     }

@@ -24,6 +24,14 @@ namespace Triage.Mortician.Abstraction
         string FullTypeName { get; }
 
         /// <summary>
+        ///     Gets the type of this object
+        /// </summary>
+        /// <value>
+        ///     The type.
+        /// </value>
+        IDumpType DumpType { get; }
+
+        /// <summary>
         ///     Gets the size.
         /// </summary>
         /// <value>
@@ -39,6 +47,12 @@ namespace Triage.Mortician.Abstraction
         /// </value>
         int Gen { get; }
 
-        IReadOnlyCollection<IDumpObject> References { get; }
+        /// <summary>
+        ///     Gets the objects that this object references
+        /// </summary>
+        /// <value>
+        ///     The references.
+        /// </value>
+        IEnumerable<IDumpObject> References { get; }
     }
 }

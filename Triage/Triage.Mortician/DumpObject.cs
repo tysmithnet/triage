@@ -48,6 +48,8 @@ namespace Triage.Mortician
         /// </value>
         public string FullTypeName { get; internal set; }
 
+        public IDumpType DumpType { get; }
+
         /// <summary>
         ///     Gets the size of this object
         ///     Note that this is the type heap for most types, but will be the size of the array in a byte[] for example
@@ -65,6 +67,8 @@ namespace Triage.Mortician
         ///     The gc generation for this object
         /// </value>
         public int Gen { get; internal set; }
+
+        IEnumerable<IDumpObject> IDumpObject.References { get; }
 
 
         /// <summary>

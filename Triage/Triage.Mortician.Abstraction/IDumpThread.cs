@@ -15,8 +15,7 @@ namespace Triage.Mortician.Abstraction
         ///     The index of the thread in the debugger
         /// </value>
         uint DebuggerIndex { get; }
-
-
+                  
         /// <summary>
         ///     Gets the kernel mode time.
         /// </summary>
@@ -39,7 +38,7 @@ namespace Triage.Mortician.Abstraction
         /// <value>
         ///     The stack objects.
         /// </value>
-        IReadOnlyCollection<IDumpObject> StackObjects { get; }
+        IEnumerable<IDumpObject> StackObjects { get; }
 
         /// <summary>
         ///     Gets the user mode time.
