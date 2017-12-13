@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon;
@@ -102,25 +103,26 @@ namespace Triage.Mortician.Analyzers
                     }                            
                     analyzerSetupTasks.Remove(task);
                 }
-                doc.SaveAs("findme.xlsx");
-#if !DEBUG
+                string fileName = DateTime.Now.ToString("yyyy_MM_dd-hh_mm_ss") + ".xlsx";
+                doc.SaveAs(fileName);
+
                 // todo: do this part in parallel
                 using (var client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1))
-                using(var fs = File.OpenRead("findme.xlsx"))
-                {
-
+                using(var fs = File.OpenRead(fileName))
+                {          
                     Console.WriteLine("Uploading an object");
                     PutObjectRequest putRequest1 = new PutObjectRequest
                     {
                         // todo: this sould be a setting
                         BucketName = "reports.triage",
-                        Key = "this-needs-to-be-a-good-name",
+                        Key = fileName,
                         InputStream = fs
                     };
 
-                    PutObjectResponse response1 = client.PutObject(putRequest1);
+                    PutObjectResponse putObjectResponse = client.PutObject(putRequest1);
+                    // todo: do something with response
                 }                            
-#endif
+
             }
         }
     }
