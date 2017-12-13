@@ -111,7 +111,7 @@ namespace Triage.Mortician.Analyzers
                 using(var fs = File.OpenRead(fileName))
                 {          
                     Console.WriteLine("Uploading an object");
-                    PutObjectRequest putRequest1 = new PutObjectRequest
+                    PutObjectRequest request = new PutObjectRequest
                     {
                         // todo: this sould be a setting
                         BucketName = "reports.triage",
@@ -119,7 +119,7 @@ namespace Triage.Mortician.Analyzers
                         InputStream = fs
                     };
 
-                    PutObjectResponse putObjectResponse = client.PutObject(putRequest1);
+                    //PutObjectResponse putObjectResponse = client.PutObject(request);
                     // todo: do something with response
                 }                            
 
