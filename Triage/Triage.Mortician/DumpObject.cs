@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Triage.Mortician.Abstraction;
 
@@ -14,7 +15,7 @@ namespace Triage.Mortician
         /// <summary>
         ///     The references that this object has
         /// </summary>
-        internal IList<IDumpObject> ReferencesInternal = new List<IDumpObject>();
+        internal ConcurrentDictionary<ulong, DumpObject> ReferencesInternal = new ConcurrentDictionary<ulong, DumpObject>();
 
         // todo: constructor args are already unwieldy, refactor to factory
         /// <summary>
@@ -67,8 +68,9 @@ namespace Triage.Mortician
         ///     The gc generation for this object
         /// </value>
         public int Gen { get; internal set; }
-                                                                 
-        internal IList<IDumpObject> ReferencersInternal = new List<IDumpObject>();
+
+        internal ConcurrentDictionary<ulong, IDumpObject> ReferencersInternal =
+            new ConcurrentDictionary<ulong, IDumpObject>();
         public IEnumerable<IDumpObject> Referencers { get; internal set; }
 
 
@@ -85,16 +87,14 @@ namespace Triage.Mortician
         ///     Adds a reference to the list of objects that this object has
         /// </summary>
         /// <param name="obj">The object to add.</param>
-        internal void AddReference(IDumpObject obj)
+        internal void AddReference(DumpObject obj)
         {
-            if (!ReferencesInternal.Contains(obj))
-                ReferencesInternal.Add(obj);
+            ReferencesInternal.TryAdd(obj.Address, obj);
         }
 
-        internal void AddReferencer(IDumpObject obj)
+        internal void AddReferencer(DumpObject obj)
         {
-            if(!ReferencersInternal.Contains(obj))
-                ReferencersInternal.Add(obj);
+            ReferencersInternal.TryAdd(obj.Address, obj);
         }
     }
 }

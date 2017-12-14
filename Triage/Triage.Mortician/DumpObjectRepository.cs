@@ -66,7 +66,7 @@ namespace Triage.Mortician
                 foreach (var reference in obj.EnumerateObjectReferences())
                     if (HeapObjects.TryGetValue(reference.Address, out var child))
                         if (parent is DumpObject parentAsDumpObject)
-                            parentAsDumpObject.AddReference(child);
+                            parentAsDumpObject.AddReference((DumpObject)child);   // todo: this needs to be reworked, probably consolidate
                         else
                             Log.Error(
                                 $"Expecting to find a dump object while generating the reference graph but instead found: {parent.GetType().FullName}");

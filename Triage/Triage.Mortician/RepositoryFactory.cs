@@ -29,9 +29,20 @@ namespace Triage.Mortician
 
         public void RegisterRepositories()
         {
+            
             var heapObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
 
-            var rt = DataTarget.ClrVersions.Single().CreateRuntime();
+            ClrRuntime rt;
+
+            try
+            {
+                rt = DataTarget.ClrVersions.Single().CreateRuntime();
+            }
+            catch (Exception)
+            {
+                Log.Error($"Unable to create CLRMd runtime");
+                throw;
+            }
 
             if (DataTarget.IsMinidump)
                 Log.Warn("The provided dump is a mini dump and results will not contain any heap information (objects, etc)");
@@ -39,19 +50,25 @@ namespace Triage.Mortician
             if (!rt.Heap.CanWalkHeap)
                 Log.Warn("CLRMd reports that the heap is unwalkable, results might vary");
 
+            /*
+             * IMPORTANT
+             * These are left as thread unsafe collections because they are written to on 1 thread and then
+             * READ ONLY accessed from multiple threads
+             */
             var objectStore = new Dictionary<ulong, DumpObject>();
             var objectHierarchy = new Dictionary<ulong, List<ulong>>();
             var threadStore = new Dictionary<uint, DumpThread>();
             
+            // OBJECTS MUST COME FIRST
             SetupObjects(heapObjectExtractors, rt, objectStore, objectHierarchy);
             SetupThreads(rt, objectStore, threadStore);
-            
         }
 
         private void SetupThreads(ClrRuntime rt, Dictionary<ulong, DumpObject> objectStore, Dictionary<uint, DumpThread> threadStore)
-        {
+        {   
+            Log.Trace("Extracting information about the threads");
             foreach (var thread in rt.Threads)
-            {
+            {   
                 var extracted = new DumpThread
                 {
                     OsId = thread.OSThreadId,
@@ -59,10 +76,14 @@ namespace Triage.Mortician
                     {
                         DisplayString = f.DisplayString
                     }).Cast<IDumpStackFrame>().ToList(),
-                    StackObjectsInternal = thread.EnumerateStackObjects().Select(o => objectStore[o.Address])
+                    StackObjectsInternal = thread.EnumerateStackObjects().Where(o => objectStore.ContainsKey(o.Address)).Select(o => objectStore[o.Address])
                         .Cast<IDumpObject>().ToList()
                 };
-                threadStore.Add(extracted.OsId, extracted);
+
+                if(!threadStore.ContainsKey(extracted.OsId))
+                    threadStore.Add(extracted.OsId, extracted);
+                else
+                    Log.Error($"Extracted a thread but there is already an entry with os id: {extracted.OsId}, you should investigate these manually");
             }
 
             var debuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
@@ -107,8 +128,9 @@ namespace Triage.Mortician
             }
         }
 
-        private static void SetupObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime rt, Dictionary<ulong, DumpObject> objectStore, Dictionary<ulong, List<ulong>> objectHierarchy)
+        private void SetupObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime rt, Dictionary<ulong, DumpObject> objectStore, Dictionary<ulong, List<ulong>> objectHierarchy)
         {
+            Log.Trace("Using registered object extractors to process objects on the heap");
             foreach (var obj in rt.Heap.EnumerateObjects().Where(o => !o.IsNull && !o.Type.IsFree))
             {
                 bool isExtracted = false;
@@ -130,7 +152,8 @@ namespace Triage.Mortician
                 }
             }
 
-            foreach (var relationship in objectHierarchy)
+            Log.Trace("Setting relationship references on the extracted objects");   
+            Parallel.ForEach(objectHierarchy, relationship =>
             {
                 var parent = objectStore[relationship.Key];
 
@@ -140,7 +163,7 @@ namespace Triage.Mortician
                     parent.AddReference(child);
                     child.AddReferencer(parent);
                 }
-            }
+            });
         }
     }
 }
