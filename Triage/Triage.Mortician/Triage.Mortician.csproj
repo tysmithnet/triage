@@ -93,6 +93,7 @@
     <Compile Include="DumpStackFrame.cs" />
     <Compile Include="DumpThread.cs" />
     <Compile Include="DumpThreadRepository.cs" />
+    <Compile Include="DumpType.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="DumpObject.cs" />
     <Compile Include="DumpObjectRepository.cs" />
