@@ -8,12 +8,10 @@ using Microsoft.Diagnostics.Runtime;
 
 namespace Triage.Mortician
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Represents a repository that stores threads that were extracted from the memory dump
     /// </summary>
-    /// <seealso cref="T:Triage.Mortician.Abstraction.IDumpThreadRepository" />
-    public class DumpThreadRepository 
+    public class DumpThreadRepository
     {
         /// <summary>
         ///     The log
@@ -26,17 +24,19 @@ namespace Triage.Mortician
         /// <param name="rt">The rt.</param>
         /// <param name="debuggerProxy">The debugger proxy.</param>
         /// <param name="dumpRepo">The dump repo.</param>
-        public DumpThreadRepository(ClrRuntime rt, IDebuggerProxy debuggerProxy, DumpObjectRepository dumpRepo)
+        internal DumpThreadRepository(ClrRuntime rt, IDebuggerProxy debuggerProxy, DumpObjectRepository dumpRepo)
         {
             var log = LogManager.GetLogger(typeof(DumpThreadRepository));
             foreach (var clrThread in rt.Threads.Where(t => t.IsAlive))
             {
-                var dumpThread = new DumpThread();
-                dumpThread.OsId = clrThread.OSThreadId;
-                dumpThread.StackFrames = clrThread.StackTrace.Select(x => new DumpStackFrame
+                var dumpThread = new DumpThread
                 {
-                    DisplayString = x.DisplayString
-                }).Cast<DumpStackFrame>().ToList();
+                    OsId = clrThread.OSThreadId,
+                    StackFrames = clrThread.StackTrace.Select(x => new DumpStackFrame
+                    {
+                        DisplayString = x.DisplayString
+                    }).ToList()
+                };
                 foreach (var clrThreadObject in clrThread.EnumerateStackObjects())
                     if (dumpRepo.HeapObjects.TryGetValue(clrThreadObject.Object, out var dumpObject))
                         dumpThread.StackObjectsInternal.Add(dumpObject);
@@ -55,7 +55,7 @@ namespace Triage.Mortician
         /// <value>
         ///     The dump threads.
         /// </value>
-        public Dictionary<uint, DumpThread> DumpThreads { get; set; } = new Dictionary<uint, DumpThread>();
+        internal Dictionary<uint, DumpThread> DumpThreads { get; set; } = new Dictionary<uint, DumpThread>();
 
         /// <summary>
         ///     Gets the thread with the provided id

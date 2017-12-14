@@ -1,32 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Triage.Mortician
 {
     public class DumpType
     {
-        public int BaseSize { get; }
-        public DumpType BaseDumpType { get; }
-        public DumpModule Module { get; }
-        public IEnumerable<DumpType> Interfaces { get; }
-        public bool IsAbstract { get; }
-        public bool IsInterface { get; }
-        public bool IsArray { get; }
-        public bool IsEnum { get; }
-        public bool ContainsPointers { get; }
-        public bool IsException { get; }
-        public bool IsFinalizable { get; }
-        public bool IsInternal { get; }
-        public bool IsRuntimeType { get; }
-        public bool IsProtected { get; }
-        public bool IsPrivate { get; }
-        public bool IsPointer { get; }
-        public bool IsSealed { get; }
-        public bool IsPrimitive { get; }
-        public bool IsString { get; }
-        public IEnumerable<DumpObject> Objects { get; }
+        public int BaseSize { get; protected internal set; }
+        public DumpType BaseDumpType { get; protected internal set; }
+        public DumpModule Module { get; protected internal set; }
+        public IEnumerable<DumpType> Interfaces { get; protected internal set; }
+        public bool IsAbstract { get; protected internal set; }
+        public bool IsInterface { get; protected internal set; }
+        public bool IsArray { get; protected internal set; }
+        public bool IsEnum { get; protected internal set; }
+        public bool ContainsPointers { get; protected internal set; }
+        public bool IsException { get; protected internal set; }
+        public bool IsFinalizable { get; protected internal set; }
+        public bool IsInternal { get; protected internal set; }
+        public bool IsRuntimeType { get; protected internal set; }
+        public bool IsProtected { get; protected internal set; }
+        public bool IsPrivate { get; protected internal set; }
+        public bool IsPointer { get; protected internal set; }
+        public bool IsSealed { get; protected internal set; }
+        public bool IsPrimitive { get; protected internal set; }
+        public bool IsString { get; protected internal set; }
+        public IEnumerable<DumpObject> Objects { get; protected internal set; }
     }
 }

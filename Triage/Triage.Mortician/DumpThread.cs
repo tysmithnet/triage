@@ -9,7 +9,7 @@ namespace Triage.Mortician
     ///     Represents a thread that was extracted from the memory dump
     /// </summary>
     /// <seealso cref="IDumpThread" />
-    public class DumpThread 
+    public class DumpThread
     {
         private string _stackTrace;
 
@@ -91,6 +91,6 @@ namespace Triage.Mortician
         /// <value>
         ///     The index of the thread in the debugger.
         /// </value>
-        public uint DebuggerIndex { get; set; }                                                 
+        public uint DebuggerIndex { get; set; }
     }
 }

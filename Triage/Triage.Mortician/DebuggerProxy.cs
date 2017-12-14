@@ -4,15 +4,15 @@ using System.Text;
 using Microsoft.Diagnostics.Runtime.Interop;
 
 namespace Triage.Mortician
-{
+{                        
     /// <summary>
     ///     https://github.com/Microsoft/clrmd/issues/79
     ///     Uses the debugger interface to execute arbitrary commands on the target
     /// </summary>
-    /// <seealso cref="Microsoft.Diagnostics.Runtime.Interop.IDebugOutputCallbacks" />
-    /// <seealso cref="System.IDisposable" />
-    /// <seealso cref="IDebuggerProxy" />
-    internal class DebuggerProxy : IDebugOutputCallbacks, IDisposable, IDebuggerProxy
+    /// <seealso cref="T:Microsoft.Diagnostics.Runtime.Interop.IDebugOutputCallbacks" />
+    /// <seealso cref="T:System.IDisposable" />
+    /// <seealso cref="T:Triage.Mortician.IDebuggerProxy" />
+    public sealed class DebuggerProxy : IDebugOutputCallbacks, IDisposable
     {
         private readonly StringBuilder _builder = new StringBuilder();
         private readonly IDebugClient _client;
@@ -24,7 +24,7 @@ namespace Triage.Mortician
         ///     Initializes a new instance of the <see cref="DebuggerProxy" /> class.
         /// </summary>
         /// <param name="client">The debugging client provided by the OS</param>
-        public DebuggerProxy(IDebugClient client)
+        internal DebuggerProxy(IDebugClient client)
         {
             _client = client;
             _control = (IDebugControl) client;
@@ -74,7 +74,7 @@ namespace Triage.Mortician
 
         #region IDisposable Support
 
-        protected virtual void Dispose(bool disposing)
+        internal void Dispose(bool disposing)
         {
             if (!_disposed)
             {

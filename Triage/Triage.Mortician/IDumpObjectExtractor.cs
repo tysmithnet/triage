@@ -16,7 +16,7 @@ namespace Triage.Mortician
         ///     <c>true</c> if this instance can extract from the object; otherwise, <c>false</c>.
         /// </returns>
         bool CanExtract(ClrObject clrObject, ClrRuntime clrRuntime);
-                                           
+
         /// <summary>
         ///     Extracts data from the provided object
         /// </summary>

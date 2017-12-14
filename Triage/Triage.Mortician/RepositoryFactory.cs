@@ -1,35 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Common.Logging;
 using Microsoft.Diagnostics.Runtime;
-
 
 namespace Triage.Mortician
 {
     internal class RepositoryFactory
     {
         public ILog Log = LogManager.GetLogger(typeof(RepositoryFactory));
-        public CompositionContainer CompositionContainer { get; set; }
-        public DataTarget DataTarget { get; set; }
 
         public RepositoryFactory(CompositionContainer compositionContainer, DataTarget dataTarget)
         {
-            CompositionContainer = compositionContainer ?? throw new ArgumentNullException(nameof(compositionContainer));
+            CompositionContainer =
+                compositionContainer ?? throw new ArgumentNullException(nameof(compositionContainer));
             DataTarget = dataTarget ?? throw new ArgumentNullException(nameof(dataTarget));
         }
 
+        public CompositionContainer CompositionContainer { get; set; }
+        public DataTarget DataTarget { get; set; }
+
         public void RegisterRepositories()
         {
-            
             var heapObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
 
             ClrRuntime rt;
@@ -45,7 +41,8 @@ namespace Triage.Mortician
             }
 
             if (DataTarget.IsMinidump)
-                Log.Warn("The provided dump is a mini dump and results will not contain any heap information (objects, etc)");
+                Log.Warn(
+                    "The provided dump is a mini dump and results will not contain any heap information (objects, etc)");
 
             if (!rt.Heap.CanWalkHeap)
                 Log.Warn("CLRMd reports that the heap is unwalkable, results might vary");
@@ -58,17 +55,18 @@ namespace Triage.Mortician
             var objectStore = new Dictionary<ulong, DumpObject>();
             var objectHierarchy = new Dictionary<ulong, List<ulong>>();
             var threadStore = new Dictionary<uint, DumpThread>();
-            
+
             // OBJECTS MUST COME FIRST
             SetupObjects(heapObjectExtractors, rt, objectStore, objectHierarchy);
             SetupThreads(rt, objectStore, threadStore);
         }
 
-        private void SetupThreads(ClrRuntime rt, Dictionary<ulong, DumpObject> objectStore, Dictionary<uint, DumpThread> threadStore)
-        {   
+        private void SetupThreads(ClrRuntime rt, Dictionary<ulong, DumpObject> objectStore,
+            Dictionary<uint, DumpThread> threadStore)
+        {
             Log.Trace("Extracting information about the threads");
             foreach (var thread in rt.Threads)
-            {   
+            {
                 var extracted = new DumpThread
                 {
                     OsId = thread.OSThreadId,
@@ -76,14 +74,16 @@ namespace Triage.Mortician
                     {
                         DisplayString = f.DisplayString
                     }).ToList(),
-                    StackObjectsInternal = thread.EnumerateStackObjects().Where(o => objectStore.ContainsKey(o.Address)).Select(o => objectStore[o.Address])
+                    StackObjectsInternal = thread.EnumerateStackObjects().Where(o => objectStore.ContainsKey(o.Address))
+                        .Select(o => objectStore[o.Address])
                         .ToList()
                 };
 
-                if(!threadStore.ContainsKey(extracted.OsId))
+                if (!threadStore.ContainsKey(extracted.OsId))
                     threadStore.Add(extracted.OsId, extracted);
                 else
-                    Log.Error($"Extracted a thread but there is already an entry with os id: {extracted.OsId}, you should investigate these manually");
+                    Log.Error(
+                        $"Extracted a thread but there is already an entry with os id: {extracted.OsId}, you should investigate these manually");
             }
 
             var debuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
@@ -128,12 +128,13 @@ namespace Triage.Mortician
             }
         }
 
-        private void SetupObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime rt, Dictionary<ulong, DumpObject> objectStore, Dictionary<ulong, List<ulong>> objectHierarchy)
+        private void SetupObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime rt,
+            Dictionary<ulong, DumpObject> objectStore, Dictionary<ulong, List<ulong>> objectHierarchy)
         {
             Log.Trace("Using registered object extractors to process objects on the heap");
             foreach (var obj in rt.Heap.EnumerateObjects().Where(o => !o.IsNull && !o.Type.IsFree))
             {
-                bool isExtracted = false;
+                var isExtracted = false;
                 foreach (var heapObjectExtractor in heapObjectExtractors)
                 {
                     // todo: logging
@@ -147,12 +148,10 @@ namespace Triage.Mortician
                 if (!isExtracted) continue;
                 objectHierarchy.Add(obj.Address, new List<ulong>());
                 foreach (var objRef in obj.EnumerateObjectReferences())
-                {
                     objectHierarchy[obj.Address].Add(objRef.Address);
-                }
             }
 
-            Log.Trace("Setting relationship references on the extracted objects");   
+            Log.Trace("Setting relationship references on the extracted objects");
             Parallel.ForEach(objectHierarchy, relationship =>
             {
                 var parent = objectStore[relationship.Key];

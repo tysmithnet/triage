@@ -9,7 +9,6 @@ namespace Triage.Mortician
     /// <summary>
     ///     Repository for objects that were extracted from the managed heap
     /// </summary>
-    /// <seealso cref="IDumpObjectRepository" />
     // todo: fix access modifiers
     public class DumpObjectRepository
     {
@@ -28,7 +27,8 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="runtime">The runtime.</param>
         /// <param name="heapObjectExtractors">The heap object extractors.</param>
-        public DumpObjectRepository(ClrRuntime runtime, IReadOnlyCollection<IDumpObjectExtractor> heapObjectExtractors)
+        protected internal DumpObjectRepository(ClrRuntime runtime,
+            IReadOnlyCollection<IDumpObjectExtractor> heapObjectExtractors)
         {
             var heap = runtime.Heap;
 
@@ -66,7 +66,8 @@ namespace Triage.Mortician
                 foreach (var reference in obj.EnumerateObjectReferences())
                     if (HeapObjects.TryGetValue(reference.Address, out var child))
                         if (parent is DumpObject parentAsDumpObject)
-                            parentAsDumpObject.AddReference((DumpObject)child);   // todo: this needs to be reworked, probably consolidate
+                            parentAsDumpObject
+                                .AddReference(child); // todo: this needs to be reworked, probably consolidate
                         else
                             Log.Error(
                                 $"Expecting to find a dump object while generating the reference graph but instead found: {parent.GetType().FullName}");
