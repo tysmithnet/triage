@@ -120,6 +120,7 @@ namespace Triage.Mortician
                     var extracted = heapObjectExtractor.Extract(obj, rt);
                     objectStore.Add(obj.Address, extracted);
                     isExtracted = true;
+                    break;
                 }
                 if (!isExtracted) continue;
                 objectHierarchy.Add(obj.Address, new List<ulong>());
