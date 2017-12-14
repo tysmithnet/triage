@@ -27,7 +27,7 @@ namespace Triage.Mortician.Analyzers
         ///     The dump thread repository.
         /// </value>
         [Import]
-        public IDumpThreadRepository DumpThreadRepository { get; set; }
+        public DumpThreadRepository DumpThreadRepository { get; set; }
 
         /// <inheritdoc />
         /// <summary>

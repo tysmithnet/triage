@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Triage.Mortician
 {
-    public class DumpType : IDumpType
+    public class DumpType
     {
         public int BaseSize { get; }
-        public IDumpType BaseDumpType { get; }
-        public IModule Module { get; }
-        public IEnumerable<IDumpType> Interfaces { get; }
+        public DumpType BaseDumpType { get; }
+        public DumpModule Module { get; }
+        public IEnumerable<DumpType> Interfaces { get; }
         public bool IsAbstract { get; }
         public bool IsInterface { get; }
         public bool IsArray { get; }
@@ -27,6 +27,6 @@ namespace Triage.Mortician
         public bool IsSealed { get; }
         public bool IsPrimitive { get; }
         public bool IsString { get; }
-        public IEnumerable<IDumpObject> Objects { get; }
+        public IEnumerable<DumpObject> Objects { get; }
     }
 }

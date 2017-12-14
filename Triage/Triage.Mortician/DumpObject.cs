@@ -10,7 +10,7 @@ namespace Triage.Mortician
     /// </summary>
     /// <seealso cref="Triage.Mortician.Abstraction.IDumpObject" />
     [DebuggerDisplay("{FullTypeName} : {Size} : {Address}")]
-    public class DumpObject : IDumpObject
+    public class DumpObject
     {
         /// <summary>
         ///     The references that this object has
@@ -49,7 +49,7 @@ namespace Triage.Mortician
         /// </value>
         public string FullTypeName { get; internal set; }
 
-        public IDumpType DumpType { get; }
+        public DumpType DumpType { get; }
 
         /// <summary>
         ///     Gets the size of this object
@@ -69,9 +69,9 @@ namespace Triage.Mortician
         /// </value>
         public int Gen { get; internal set; }
 
-        internal ConcurrentDictionary<ulong, IDumpObject> ReferencersInternal =
-            new ConcurrentDictionary<ulong, IDumpObject>();
-        public IEnumerable<IDumpObject> Referencers { get; internal set; }
+        internal ConcurrentDictionary<ulong, DumpObject> ReferencersInternal =
+            new ConcurrentDictionary<ulong, DumpObject>();
+        public IEnumerable<DumpObject> Referencers { get; internal set; }
 
 
         /// <inheritdoc />
@@ -81,7 +81,7 @@ namespace Triage.Mortician
         /// <value>
         ///     The references that this object has.
         /// </value>
-        public IEnumerable<IDumpObject> References { get; internal set; }
+        public IEnumerable<DumpObject> References { get; internal set; }
 
         /// <summary>
         ///     Adds a reference to the list of objects that this object has

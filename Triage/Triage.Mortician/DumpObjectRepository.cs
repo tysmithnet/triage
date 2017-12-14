@@ -10,12 +10,13 @@ namespace Triage.Mortician
     ///     Repository for objects that were extracted from the managed heap
     /// </summary>
     /// <seealso cref="IDumpObjectRepository" />
-    internal class DumpObjectRepository : IDumpObjectRepository
+    // todo: fix access modifiers
+    public class DumpObjectRepository
     {
         /// <summary>
         ///     The heap objects
         /// </summary>
-        protected internal Dictionary<ulong, IDumpObject> HeapObjects = new Dictionary<ulong, IDumpObject>();
+        protected internal Dictionary<ulong, DumpObject> HeapObjects = new Dictionary<ulong, DumpObject>();
 
         /// <summary>
         ///     The log
@@ -81,7 +82,7 @@ namespace Triage.Mortician
         /// <param name="address">The address.</param>
         /// <returns>The object at the specified address</returns>
         /// <exception cref="IndexOutOfRangeException">The provided address is not a valid object address</exception>
-        public IDumpObject Get(ulong address)
+        public DumpObject Get(ulong address)
         {
             if (HeapObjects.TryGetValue(address, out var obj))
                 return obj;
@@ -92,7 +93,7 @@ namespace Triage.Mortician
         ///     Get all dump objects extracted from the heap
         /// </summary>
         /// <returns>All dump objects extracted from the heap</returns>
-        public IEnumerable<IDumpObject> Get()
+        public IEnumerable<DumpObject> Get()
         {
             return HeapObjects.Values;
         }

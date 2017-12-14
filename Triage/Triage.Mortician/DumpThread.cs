@@ -9,21 +9,21 @@ namespace Triage.Mortician
     ///     Represents a thread that was extracted from the memory dump
     /// </summary>
     /// <seealso cref="IDumpThread" />
-    internal class DumpThread : IDumpThread
+    public class DumpThread 
     {
         private string _stackTrace;
 
         /// <summary>
         ///     The stack objects
         /// </summary>
-        public IList<IDumpObject> StackObjectsInternal = new List<IDumpObject>();
+        public IList<DumpObject> StackObjectsInternal = new List<DumpObject>();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="DumpThread" /> class.
         /// </summary>
         public DumpThread()
         {
-            StackObjects = new ReadOnlyCollection<IDumpObject>(StackObjectsInternal);
+            StackObjects = new ReadOnlyCollection<DumpObject>(StackObjectsInternal);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Triage.Mortician
         /// <value>
         ///     The stack frames.
         /// </value>
-        public IList<IDumpStackFrame> StackFrames { get; set; }
+        public IList<DumpStackFrame> StackFrames { get; set; }
 
         /// <summary>
         ///     Gets or sets the stack objects.
@@ -82,7 +82,7 @@ namespace Triage.Mortician
         /// <value>
         ///     The stack objects.
         /// </value>
-        public IReadOnlyCollection<IDumpObject> StackObjects { get; set; }
+        public IReadOnlyCollection<DumpObject> StackObjects { get; set; }
 
         /// <summary>
         ///     Gets or sets the index of the thread in the debugger. This is a low integer value used by the debugging interface
@@ -91,8 +91,6 @@ namespace Triage.Mortician
         /// <value>
         ///     The index of the thread in the debugger.
         /// </value>
-        public uint DebuggerIndex { get; set; }
-
-        IEnumerable<IDumpObject> IDumpThread.StackObjects => throw new NotImplementedException();
+        public uint DebuggerIndex { get; set; }                                                 
     }
 }

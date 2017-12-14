@@ -90,6 +90,8 @@
     <Compile Include="CommandLineOptions.cs" />
     <Compile Include="DebuggerProxy.cs" />
     <Compile Include="DefaultObjectExtractor.cs" />
+    <Compile Include="DumpAppDomain.cs" />
+    <Compile Include="DumpModule.cs" />
     <Compile Include="DumpStackFrame.cs" />
     <Compile Include="DumpThread.cs" />
     <Compile Include="DumpThreadRepository.cs" />
@@ -98,16 +100,8 @@
     <Compile Include="DumpObject.cs" />
     <Compile Include="DumpObjectRepository.cs" />
     <Compile Include="IAnalyzer.cs" />
-    <Compile Include="IAppDomain.cs" />
     <Compile Include="IDebuggerProxy.cs" />
-    <Compile Include="IDumpObject.cs" />
     <Compile Include="IDumpObjectExtractor.cs" />
-    <Compile Include="IDumpObjectRepository.cs" />
-    <Compile Include="IDumpStackFrame.cs" />
-    <Compile Include="IDumpThread.cs" />
-    <Compile Include="IDumpThreadRepository.cs" />
-    <Compile Include="IDumpType.cs" />
-    <Compile Include="IModule.cs" />
     <Compile Include="ISettingsRepository.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

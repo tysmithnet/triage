@@ -2,9 +2,8 @@
 using Microsoft.Diagnostics.Runtime;
 
 namespace Triage.Mortician
-{
-    [Export(typeof(IDumpObjectExtractor))]
-    public class DefaultObjectExtractor : IDumpObjectExtractor
+{           
+    public class DefaultObjectExtractor
     {
         public bool CanExtract(ClrObject clrObject, ClrRuntime clrRuntime)
         {

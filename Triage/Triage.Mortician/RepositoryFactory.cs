@@ -75,9 +75,9 @@ namespace Triage.Mortician
                     StackFrames = thread.StackTrace.Select(f => new DumpStackFrame
                     {
                         DisplayString = f.DisplayString
-                    }).Cast<IDumpStackFrame>().ToList(),
+                    }).ToList(),
                     StackObjectsInternal = thread.EnumerateStackObjects().Where(o => objectStore.ContainsKey(o.Address)).Select(o => objectStore[o.Address])
-                        .Cast<IDumpObject>().ToList()
+                        .ToList()
                 };
 
                 if(!threadStore.ContainsKey(extracted.OsId))

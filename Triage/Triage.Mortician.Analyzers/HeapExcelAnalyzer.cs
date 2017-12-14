@@ -30,7 +30,7 @@ namespace Triage.Mortician.Analyzers
         ///     The dump object repository.
         /// </value>
         [Import]
-        public IDumpObjectRepository DumpObjectRepository { get; set; }
+        public DumpObjectRepository DumpObjectRepository { get; set; }
 
         /// <summary>
         ///     Setups the specified cancellation token.
