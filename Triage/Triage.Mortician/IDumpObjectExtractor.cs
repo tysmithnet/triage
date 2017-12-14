@@ -1,5 +1,4 @@
 ﻿using Microsoft.Diagnostics.Runtime;
-using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {

@@ -3,8 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
-using SpreadsheetLight;
-using Triage.Mortician.Abstraction;
+using SpreadsheetLight;            
 
 namespace Triage.Mortician.Analyzers
 {

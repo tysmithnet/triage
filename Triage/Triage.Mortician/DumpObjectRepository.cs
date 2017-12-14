@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Common.Logging;
 using Microsoft.Diagnostics.Runtime;
-using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
     /// <summary>
     ///     Repository for objects that were extracted from the managed heap
     /// </summary>
-    /// <seealso cref="Triage.Mortician.Abstraction.IDumpObjectRepository" />
+    /// <seealso cref="IDumpObjectRepository" />
     internal class DumpObjectRepository : IDumpObjectRepository
     {
         /// <summary>

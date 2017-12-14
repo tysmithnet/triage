@@ -12,8 +12,7 @@ using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Common.Logging;
-using SpreadsheetLight;
-using Triage.Mortician.Abstraction;
+using SpreadsheetLight;             
 
 namespace Triage.Mortician.Analyzers
 {

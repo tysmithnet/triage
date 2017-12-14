@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Text;
 using Microsoft.Diagnostics.Runtime.Interop;
-using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {

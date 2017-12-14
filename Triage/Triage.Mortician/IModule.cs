@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Triage.Mortician.Abstraction
+namespace Triage.Mortician
 {
     /// <summary>
     ///     Represents a module loaded into the CLR

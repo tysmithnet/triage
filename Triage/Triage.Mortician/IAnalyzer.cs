@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Triage.Mortician.Abstraction
+namespace Triage.Mortician
 {
     /// <summary>
     ///     Represents an object that is capable of doing some intelligent analysis

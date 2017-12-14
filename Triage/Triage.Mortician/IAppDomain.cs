@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Triage.Mortician.Abstraction
+namespace Triage.Mortician
 {
     /// <summary>
     ///     Represents an AppDomain in the CLR

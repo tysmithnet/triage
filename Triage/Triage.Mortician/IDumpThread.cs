@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Triage.Mortician.Abstraction
+namespace Triage.Mortician
 {
     /// <summary>
     ///     Represents a thread that was in the memory dump

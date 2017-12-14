@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Triage.Mortician.Abstraction
+namespace Triage.Mortician
 {
     /// <summary>
     ///     Represents a managed type that was found in the dump

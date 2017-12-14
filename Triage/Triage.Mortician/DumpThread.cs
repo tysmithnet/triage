@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
     /// <summary>
     ///     Represents a thread that was extracted from the memory dump
     /// </summary>
-    /// <seealso cref="Triage.Mortician.Abstraction.IDumpThread" />
+    /// <seealso cref="IDumpThread" />
     internal class DumpThread : IDumpThread
     {
         private string _stackTrace;

@@ -1,4 +1,4 @@
-﻿namespace Triage.Mortician.Abstraction
+﻿namespace Triage.Mortician
 {
     /// <summary>
     /// Represents a stack frame from a thread in the dump
