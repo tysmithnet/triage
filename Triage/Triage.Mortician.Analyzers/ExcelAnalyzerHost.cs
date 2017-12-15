@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon;
@@ -12,7 +10,7 @@ using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Common.Logging;
-using SpreadsheetLight;             
+using SpreadsheetLight;
 
 namespace Triage.Mortician.Analyzers
 {
@@ -68,7 +66,7 @@ namespace Triage.Mortician.Analyzers
             }
 
             Log.Trace("Engine starting...");
-                                                                                                
+
             var analyzerSetupTasks = new Dictionary<Task, IExcelAnalyzer>();
             foreach (var analyzer in ExcelAnalyzers)
             {
@@ -98,12 +96,13 @@ namespace Triage.Mortician.Analyzers
                     }
                     else
                     {
-                        Log.Trace($"ExcelAnalyzer {analyzer.GetType().FullName} was successfully setup, starting contribution..");
+                        Log.Trace(
+                            $"ExcelAnalyzer {analyzer.GetType().FullName} was successfully setup, starting contribution..");
                         analyzer.Contribute(doc);
-                    }                            
+                    }
                     analyzerSetupTasks.Remove(task);
                 }
-                string fileName = DateTime.Now.ToString("yyyy_MM_dd-hh_mm_ss") + ".xlsx";
+                var fileName = DateTime.Now.ToString("yyyy_MM_dd-hh_mm_ss") + ".xlsx";
                 doc.SaveAs(fileName);
 
                 // note: this looks for ~/.aws/credentials for a profile named master
@@ -114,7 +113,7 @@ namespace Triage.Mortician.Analyzers
                 using (var fs = File.OpenRead(fileName))
                 {
                     Console.WriteLine("Uploading an object");
-                    PutObjectRequest putRequest1 = new PutObjectRequest
+                    var putRequest1 = new PutObjectRequest
                     {
                         // todo: this sould be a setting
                         BucketName = "reports.triage",

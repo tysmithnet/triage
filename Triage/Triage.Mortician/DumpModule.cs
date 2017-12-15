@@ -6,11 +6,12 @@ namespace Triage.Mortician
 {
     public class DumpModule
     {
+        protected internal IList<DumpAppDomain> AppDomainsInternal = new List<DumpAppDomain>();
+        protected internal IList<DumpType> TypesInternal = new List<DumpType>();
         public string AssemblyName { get; protected internal set; }
         public string FileName { get; protected internal set; }
         public ulong AssemblyId { get; protected internal set; }
         public bool IsDynamic { get; protected internal set; }
-        protected internal IList<DumpAppDomain> AppDomainsInternal = new List<DumpAppDomain>();
         public IEnumerable<DumpAppDomain> AppDomains { get; protected internal set; }
         public DebuggableAttribute.DebuggingModes DebuggingMode { get; protected internal set; }
         public ulong? ImageBase { get; protected internal set; }
@@ -18,7 +19,6 @@ namespace Triage.Mortician
         public string Name { get; protected internal set; }
         public ulong Size { get; protected internal set; }
         public string PdbFile { get; protected internal set; }
-        public Guid PdbGuid { get; protected internal set; }            
-        protected internal IList<DumpType> TypesInternal = new List<DumpType>();
+        public Guid PdbGuid { get; protected internal set; }
     }
 }

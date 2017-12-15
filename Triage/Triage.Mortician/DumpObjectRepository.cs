@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Authentication.ExtendedProtection.Configuration;
 using Common.Logging;
-using Microsoft.Diagnostics.Runtime;
 
 namespace Triage.Mortician
 {
@@ -14,18 +11,19 @@ namespace Triage.Mortician
     public class DumpObjectRepository
     {
         /// <summary>
-        ///     The heap objects
-        /// </summary>
-        protected internal Dictionary<ulong, DumpObject> Objects;
-
-        protected internal Dictionary<ulong, DumpObjectRoot> ObjectRoots;
-
-        /// <summary>
         ///     The log
         /// </summary>
         protected internal ILog Log = LogManager.GetLogger(typeof(DumpObjectRepository));
 
-        public DumpObjectRepository(Dictionary<ulong, DumpObject> objects, Dictionary<ulong, DumpObjectRoot> objectRoots)
+        protected internal Dictionary<ulong, DumpObjectRoot> ObjectRoots;
+
+        /// <summary>
+        ///     The heap objects
+        /// </summary>
+        protected internal Dictionary<ulong, DumpObject> Objects;
+
+        public DumpObjectRepository(Dictionary<ulong, DumpObject> objects,
+            Dictionary<ulong, DumpObjectRoot> objectRoots)
         {
             Objects = objects ?? throw new ArgumentNullException(nameof(objects));
             ObjectRoots = objectRoots ?? throw new ArgumentNullException(nameof(objectRoots));

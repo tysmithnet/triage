@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Diagnostics.Runtime.Interop;
 
 namespace Triage.Mortician
-{                        
+{
     /// <summary>
     ///     https://github.com/Microsoft/clrmd/issues/79
     ///     Uses the debugger interface to execute arbitrary commands on the target
@@ -36,6 +36,18 @@ namespace Triage.Mortician
             Debug.Assert(hr == 0);
         }
 
+        int IDebugOutputCallbacks.Output(DEBUG_OUTPUT mask, string text)
+        {
+            // TODO: Check mask and write to appropriate location.
+
+            lock (_builder)
+            {
+                _builder.Append(text);
+            }
+
+            return 0;
+        }
+
         /// <summary>
         ///     Executes the specified command on the debug client
         /// </summary>
@@ -58,18 +70,6 @@ namespace Triage.Mortician
             {
                 return _builder.ToString();
             }
-        }
-
-        int IDebugOutputCallbacks.Output(DEBUG_OUTPUT mask, string text)
-        {
-            // TODO: Check mask and write to appropriate location.
-
-            lock (_builder)
-            {
-                _builder.Append(text);
-            }
-
-            return 0;
         }
 
         #region IDisposable Support

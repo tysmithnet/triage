@@ -6,7 +6,7 @@ namespace Triage.Mortician
 {
     /// <summary>
     ///     Represents a managed object on the managed heap
-    /// </summary>                                                   
+    /// </summary>
     [DebuggerDisplay("{FullTypeName} : {Size} : {Address}")]
     public class DumpObject
     {
@@ -70,7 +70,7 @@ namespace Triage.Mortician
         ///     The size of this object
         /// </value>
         public ulong Size { get; protected internal set; }
-                               
+
         /// <summary>
         ///     Gets the gc generation for this object. 0,1,2,3 where 3 is the large object heap
         /// </summary>

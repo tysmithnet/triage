@@ -1,7 +1,5 @@
 ﻿using System;
-using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -45,11 +43,11 @@ namespace Triage.Mortician
                 {
                     var repositoryFactory = new RepositoryFactory(compositionContainer, dataTarget);
                     repositoryFactory.RegisterRepositories();
-                }                                                                                 
+                }
 
                 var engine = compositionContainer.GetExportedValue<Engine>();
                 engine.Process(CancellationToken.None).Wait();
-                                                   
+
 #if DEBUG
                 Console.WriteLine("Success.. press any key");
                 Console.ReadKey();

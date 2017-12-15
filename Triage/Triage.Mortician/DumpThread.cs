@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Triage.Mortician
@@ -12,7 +11,7 @@ namespace Triage.Mortician
     public class DumpThread
     {
         private string _stackTrace;
-            
+
         /// <summary>
         ///     Gets the stack trace.
         /// </summary>

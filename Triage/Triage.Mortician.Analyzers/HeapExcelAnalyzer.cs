@@ -4,14 +4,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
-using SpreadsheetLight;            
+using SpreadsheetLight;
 
 namespace Triage.Mortician.Analyzers
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Represents an excel analyzer that is capable of producing a report based on the objects in the heap
     /// </summary>
-    /// <seealso cref="Triage.Mortician.Analyzers.IExcelAnalyzer" />
+    /// <seealso cref="T:Triage.Mortician.Analyzers.IExcelAnalyzer" />
     [Export(typeof(IExcelAnalyzer))]
     public class HeapExcelAnalyzer : IExcelAnalyzer
     {
@@ -32,6 +33,7 @@ namespace Triage.Mortician.Analyzers
         [Import]
         public DumpObjectRepository DumpObjectRepository { get; set; }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Setups the specified cancellation token.
         /// </summary>
@@ -42,6 +44,7 @@ namespace Triage.Mortician.Analyzers
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Contributes the specified shared document.
         /// </summary>

@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Common.Logging;
-using Microsoft.Diagnostics.Runtime;
 
 namespace Triage.Mortician
 {
@@ -14,6 +13,14 @@ namespace Triage.Mortician
     public class DumpThreadRepository
     {
         /// <summary>
+        ///     Gets or sets the dump threads.
+        /// </summary>
+        /// <value>
+        ///     The dump threads.
+        /// </value>
+        protected internal Dictionary<uint, DumpThread> DumpThreads;
+
+        /// <summary>
         ///     The log
         /// </summary>
         protected ILog Log = LogManager.GetLogger(typeof(DumpThreadRepository));
@@ -22,14 +29,6 @@ namespace Triage.Mortician
         {
             DumpThreads = dumpThreads ?? throw new ArgumentNullException(nameof(dumpThreads));
         }
-
-        /// <summary>
-        ///     Gets or sets the dump threads.
-        /// </summary>
-        /// <value>
-        ///     The dump threads.
-        /// </value>
-        protected internal Dictionary<uint, DumpThread> DumpThreads;
 
         /// <summary>
         ///     Gets the thread with the provided id
