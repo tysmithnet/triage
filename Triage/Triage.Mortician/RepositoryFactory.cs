@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -22,20 +23,30 @@ namespace Triage.Mortician
         public ILog Log = LogManager.GetLogger(typeof(RepositoryFactory));
 
         /// <summary>
+        /// Gets or sets the location of the dump file
+        /// </summary>
+        /// <value>
+        /// The dump file location.
+        /// </value>
+        public FileInfo DumpFile { get; protected set; }
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="RepositoryFactory" /> class.
         /// </summary>
         /// <param name="compositionContainer">The composition container.</param>
         /// <param name="dataTarget">The data target.</param>
+        /// <param name="dumpFile">Dump file to analzye</param>
         /// <exception cref="ArgumentNullException">
         ///     compositionContainer
         ///     or
         ///     dataTarget
         /// </exception>
-        public RepositoryFactory(CompositionContainer compositionContainer, DataTarget dataTarget)
+        public RepositoryFactory(CompositionContainer compositionContainer, FileInfo dumpFile)
         {
             CompositionContainer =
                 compositionContainer ?? throw new ArgumentNullException(nameof(compositionContainer));
-            DataTarget = dataTarget ?? throw new ArgumentNullException(nameof(dataTarget));
+            DumpFile = dumpFile ?? throw new ArgumentNullException(nameof(dumpFile));
+            DataTarget = DataTarget.LoadCrashDump(dumpFile.FullName);
         }
 
         /// <summary>
@@ -61,12 +72,12 @@ namespace Triage.Mortician
         {
             var heapObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
 
-            ClrRuntime rt;
+            ClrRuntime runtime;
 
             try
             {
                 Log.Trace($"Attempting to create the CLRMd runtime");
-                rt = DataTarget.ClrVersions.Single().CreateRuntime();
+                runtime = DataTarget.ClrVersions.Single().CreateRuntime();
             }
             catch (Exception)
             {
@@ -78,8 +89,10 @@ namespace Triage.Mortician
                 Log.Warn(
                     "The provided dump is a mini dump and results will not contain any heap information (objects, etc)");
 
-            if (!rt.Heap.CanWalkHeap)
+            if (!runtime.Heap.CanWalkHeap)
                 Log.Warn("CLRMd reports that the heap is unwalkable, results might vary");
+
+            var dumpInformationRepository = new DumpInformationRepository(DataTarget, runtime, DumpFile);
 
             /*
              * IMPORTANT
@@ -94,13 +107,13 @@ namespace Triage.Mortician
             var typeStore =
                 new Dictionary<DumpTypeKey, DumpType>(); // same type can be loaded into multiple app domains (think IIS)
             var objectRootsStore = new Dictionary<ulong, DumpObjectRoot>();
-            SetupModulesAndTypes(rt, appDomainStore, typeStore, moduleStore);
-            SetupObjects(heapObjectExtractors, rt, objectStore, objectHierarchy, typeStore, appDomainStore,
+            SetupModulesAndTypes(runtime, appDomainStore, typeStore, moduleStore);
+            SetupObjects(heapObjectExtractors, runtime, objectStore, objectHierarchy, typeStore, appDomainStore,
                 objectRootsStore);
             EstablishObjectRelationships(objectHierarchy, objectStore);
             objectHierarchy = null;
             GC.Collect();
-            SetupThreads(rt, threadStore, objectRootsStore);
+            SetupThreads(runtime, threadStore, objectRootsStore);
 
             var dumpRepo = new DumpObjectRepository(objectStore, objectRootsStore);
             var threadRepo = new DumpThreadRepository(threadStore);
@@ -108,6 +121,7 @@ namespace Triage.Mortician
             var moduleRepo = new DumpModuleRepository(moduleStore);
             var typeRepo = new DumpTypeRepository(typeStore);
 
+            CompositionContainer.ComposeExportedValue(dumpInformationRepository);
             CompositionContainer.ComposeExportedValue(dumpRepo);
             CompositionContainer.ComposeExportedValue(threadRepo);
             CompositionContainer.ComposeExportedValue(appDomainRepo);
