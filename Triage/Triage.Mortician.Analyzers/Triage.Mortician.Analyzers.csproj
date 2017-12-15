@@ -158,14 +158,10 @@
     <Compile Include="ExcelAnalyzerHost.cs" />
     <Compile Include="IExcelAnalyzer.cs" />
     <Compile Include="HeapExcelAnalyzer.cs" />
+    <Compile Include="IExcelPostProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="S3UploaderPostProcessor.cs" />
     <Compile Include="ThreadExcelAnalyzer.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Triage.Mortician.Abstraction\Triage.Mortician.Abstraction.csproj">
-      <Project>{606CCB85-E47A-4B2C-B0A0-D36E95BCB32F}</Project>
-      <Name>Triage.Mortician.Abstraction</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -180,6 +176,12 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\AWSSDK.S3.3.3.16\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Triage.Mortician\Triage.Mortician.csproj">
+      <Project>{8aa350bc-cf5f-4302-92ab-1997357049ba}</Project>
+      <Name>Triage.Mortician</Name>
+    </ProjectReference>
   </ItemGroup>
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(BinFiles)" DestinationFolder="..\Triage.Mortician\bin\Debug" SkipUnchangedFiles="true" />

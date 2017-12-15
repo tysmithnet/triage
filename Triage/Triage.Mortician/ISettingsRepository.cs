@@ -1,4 +1,4 @@
-﻿namespace Triage.Mortician.Abstraction
+﻿namespace Triage.Mortician
 {
     /// <summary>
     ///     Represents an object that is capable of getting the settings for this process

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
-using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {

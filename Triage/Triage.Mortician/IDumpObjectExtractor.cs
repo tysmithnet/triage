@@ -1,5 +1,4 @@
 ﻿using Microsoft.Diagnostics.Runtime;
-using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
@@ -17,13 +16,13 @@ namespace Triage.Mortician
         ///     <c>true</c> if this instance can extract from the object; otherwise, <c>false</c>.
         /// </returns>
         bool CanExtract(ClrObject clrObject, ClrRuntime clrRuntime);
-                                           
+
         /// <summary>
         ///     Extracts data from the provided object
         /// </summary>
         /// <param name="clrObject">The object.</param>
         /// <param name="clrRuntime">The runtime.</param>
         /// <returns>Extracted dump object</returns>
-        IDumpObject Extract(ClrObject clrObject, ClrRuntime clrRuntime);
+        DumpObject Extract(ClrObject clrObject, ClrRuntime clrRuntime);
     }
 }

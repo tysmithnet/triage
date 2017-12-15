@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
 using SpreadsheetLight;
-using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician.Analyzers
 {
@@ -28,7 +27,7 @@ namespace Triage.Mortician.Analyzers
         ///     The dump thread repository.
         /// </value>
         [Import]
-        public IDumpThreadRepository DumpThreadRepository { get; set; }
+        public DumpThreadRepository DumpThreadRepository { get; set; }
 
         /// <inheritdoc />
         /// <summary>
@@ -49,7 +48,7 @@ namespace Triage.Mortician.Analyzers
         /// </summary>
         /// <param name="sharedDocument">The shared document.</param>
         public void Contribute(SLDocument sharedDocument)
-        {
+        {                                               
             sharedDocument.SelectWorksheet("Unique Stacks");
             var groups = DumpThreadRepository.Get()
                 .GroupBy(t => string.Join("\n", t.StackFrames.Select(s => s.DisplayString)))

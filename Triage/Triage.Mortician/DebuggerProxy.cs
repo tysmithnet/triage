@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Text;
 using Microsoft.Diagnostics.Runtime.Interop;
-using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
@@ -10,10 +9,10 @@ namespace Triage.Mortician
     ///     https://github.com/Microsoft/clrmd/issues/79
     ///     Uses the debugger interface to execute arbitrary commands on the target
     /// </summary>
-    /// <seealso cref="Microsoft.Diagnostics.Runtime.Interop.IDebugOutputCallbacks" />
-    /// <seealso cref="System.IDisposable" />
-    /// <seealso cref="IDebuggerProxy" />
-    internal class DebuggerProxy : IDebugOutputCallbacks, IDisposable, IDebuggerProxy
+    /// <seealso cref="T:Microsoft.Diagnostics.Runtime.Interop.IDebugOutputCallbacks" />
+    /// <seealso cref="T:System.IDisposable" />
+    /// <seealso cref="T:Triage.Mortician.IDebuggerProxy" />
+    public sealed class DebuggerProxy : IDebugOutputCallbacks, IDisposable
     {
         private readonly StringBuilder _builder = new StringBuilder();
         private readonly IDebugClient _client;
@@ -25,7 +24,7 @@ namespace Triage.Mortician
         ///     Initializes a new instance of the <see cref="DebuggerProxy" /> class.
         /// </summary>
         /// <param name="client">The debugging client provided by the OS</param>
-        public DebuggerProxy(IDebugClient client)
+        internal DebuggerProxy(IDebugClient client)
         {
             _client = client;
             _control = (IDebugControl) client;
@@ -35,6 +34,18 @@ namespace Triage.Mortician
 
             hr = client.SetOutputCallbacks(this);
             Debug.Assert(hr == 0);
+        }
+
+        int IDebugOutputCallbacks.Output(DEBUG_OUTPUT mask, string text)
+        {
+            // TODO: Check mask and write to appropriate location.
+
+            lock (_builder)
+            {
+                _builder.Append(text);
+            }
+
+            return 0;
         }
 
         /// <summary>
@@ -61,21 +72,9 @@ namespace Triage.Mortician
             }
         }
 
-        int IDebugOutputCallbacks.Output(DEBUG_OUTPUT mask, string text)
-        {
-            // TODO: Check mask and write to appropriate location.
-
-            lock (_builder)
-            {
-                _builder.Append(text);
-            }
-
-            return 0;
-        }
-
         #region IDisposable Support
 
-        protected virtual void Dispose(bool disposing)
+        internal void Dispose(bool disposing)
         {
             if (!_disposed)
             {
