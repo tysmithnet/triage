@@ -136,22 +136,33 @@ namespace Triage.Mortician
             Dictionary<DumpTypeKey, DumpType> typeStore,
             Dictionary<ulong, DumpModule> moduleStore)
         {
-            Log.Trace("Extracting Module, AppDomain, and Type information");
+            Log.Trace("Extracting Module, AppDomain, and Type information");             
+            var baseClassMapping = new Dictionary<DumpTypeKey, DumpTypeKey>();
             foreach (var clrModule in rt.Modules)
             {
                 var dumpModule = new DumpModule
                 {
                     Name = clrModule.Name,
-                    ImageBase = clrModule.ImageBase == 0 ? null : (ulong?) clrModule.ImageBase
+                    ImageBase = clrModule.ImageBase == 0 ? null : (ulong?) clrModule.ImageBase,
+                    AssemblyId = clrModule.AssemblyId,
+                    AssemblyName = clrModule.AssemblyName,
+                    DebuggingMode = clrModule.DebuggingMode,
+                    FileName = clrModule.FileName,
+                    IsDynamic = clrModule.IsDynamic
                 };
 
                 foreach (var clrAppDomain in clrModule.AppDomains)
                 {
                     if (!appDomainStore.ContainsKey(clrAppDomain.Address))
                     {
-                        var newDumpAppDomain = new DumpAppDomain();
-                        newDumpAppDomain.Address = clrAppDomain.Address;
-                        newDumpAppDomain.Name = clrAppDomain.Name;
+                        var newDumpAppDomain = new DumpAppDomain
+                        {
+                            Address = clrAppDomain.Address,
+                            Name = clrAppDomain.Name,
+                            ApplicationBase = clrAppDomain.ApplicationBase,
+                            ConfigFile = clrAppDomain.ConfigurationFile
+                        };
+
                         appDomainStore.Add(newDumpAppDomain.Address, newDumpAppDomain);
                     }
                     var dumpAppDomain = appDomainStore[clrAppDomain.Address];
@@ -161,12 +172,32 @@ namespace Triage.Mortician
 
                 foreach (var clrType in clrModule.EnumerateTypes())
                 {
-                    if (typeStore.ContainsKey(new DumpTypeKey(clrType.MethodTable, clrType.Name))) continue;
+                    var key = new DumpTypeKey(clrType.MethodTable, clrType.Name);
+                    if (typeStore.ContainsKey(key)) continue;
+                    baseClassMapping.Add(key, new DumpTypeKey(clrType.MethodTable, clrType.Name));
+                    
                     var newDumpType = new DumpType
                     {
+                        DumpTypeKey = key,
                         MethodTable = clrType.MethodTable,
                         Name = clrType.Name,
-                        Module = dumpModule
+                        Module = dumpModule,
+                        BaseSize = clrType.BaseSize,
+                        IsInternal = clrType.IsInternal,
+                        IsString = clrType.IsString,      
+                        IsInterface = clrType.IsInterface,
+                        ContainsPointers = clrType.ContainsPointers,
+                        IsAbstract = clrType.IsAbstract,
+                        IsArray = clrType.IsArray,
+                        IsEnum = clrType.IsEnum,
+                        IsException = clrType.IsException,
+                        IsFinalizable = clrType.IsFinalizable,
+                        IsPointer = clrType.IsPointer,
+                        IsPrimitive = clrType.IsPrimitive,
+                        IsPrivate = clrType.IsPrivate,
+                        IsProtected = clrType.IsProtected,
+                        IsRuntimeType = clrType.IsRuntimeType,
+                        IsSealed = clrType.IsSealed,
                     };
                     dumpModule.TypesInternal.Add(newDumpType);
                     typeStore.Add(new DumpTypeKey(clrType.MethodTable, clrType.Name), newDumpType);
@@ -174,6 +205,10 @@ namespace Triage.Mortician
 
                 moduleStore.Add(dumpModule.ImageBase.Value,
                     dumpModule); // todo: possible null, should use image base + name
+            }
+            foreach (var pair in baseClassMapping)
+            {
+                typeStore[pair.Key].BaseDumpType = typeStore[pair.Value];
             }
         }
 

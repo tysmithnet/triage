@@ -6,11 +6,7 @@ namespace Triage.Mortician
     ///     An object that represents a type that was extracted from the memory dump
     /// </summary>
     public class DumpType
-    {
-        // todo: not complete
-        protected internal IList<DumpType> InterfacesInternal = new List<DumpType>()
-            ; // todo: should this be concurrent?
-
+    {   
         /// <summary>
         ///     The objects of this type
         /// </summary>
@@ -39,14 +35,6 @@ namespace Triage.Mortician
         ///     The module.
         /// </value>
         public DumpModule Module { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets the interfaces this type implements
-        /// </summary>
-        /// <value>
-        ///     The interfaces.
-        /// </value>
-        public IEnumerable<DumpType> Interfaces { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is abstract.
@@ -191,5 +179,13 @@ namespace Triage.Mortician
         ///     The method table.
         /// </value>
         public ulong MethodTable { get; protected internal set; }
+
+        /// <summary>
+        /// Gets or sets the key to uniquely identify this type
+        /// </summary>
+        /// <value>
+        /// The dump type key.
+        /// </value>
+        public DumpTypeKey DumpTypeKey { get; set; }
     }
 }
