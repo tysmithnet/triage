@@ -15,6 +15,9 @@ namespace Triage.Mortician
         /// </summary>
         protected internal ILog Log = LogManager.GetLogger(typeof(DumpObjectRepository));
 
+        /// <summary>
+        ///     The object roots that keep objects on the heap alive
+        /// </summary>
         protected internal Dictionary<ulong, DumpObjectRoot> ObjectRoots;
 
         /// <summary>

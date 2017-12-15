@@ -79,6 +79,12 @@ namespace Triage.Mortician
         /// </value>
         public int Gen { get; protected internal set; }
 
+        /// <summary>
+        ///     Gets the objects that reference this object
+        /// </summary>
+        /// <value>
+        ///     The referencers.
+        /// </value>
         public IEnumerable<DumpObject> Referencers => ReferencersInternal.Values;
 
         /// <summary>

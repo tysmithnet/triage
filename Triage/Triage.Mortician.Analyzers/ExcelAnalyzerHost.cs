@@ -32,6 +32,12 @@ namespace Triage.Mortician.Analyzers
         [ImportMany]
         public IExcelAnalyzer[] ExcelAnalyzers { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the excel post processors.
+        /// </summary>
+        /// <value>
+        ///     The excel post processors.
+        /// </value>
         [ImportMany]
         public IExcelPostProcessor[] ExcelPostProcessors { get; set; }
 
@@ -64,8 +70,7 @@ namespace Triage.Mortician.Analyzers
                 return;
             }
 
-            Log.Trace("Engine starting...");
-
+            Log.Trace("Engine starting");
             var analyzerSetupTasks = new Dictionary<Task, IExcelAnalyzer>();
             foreach (var analyzer in ExcelAnalyzers)
             {
@@ -105,21 +110,22 @@ namespace Triage.Mortician.Analyzers
                 try
                 {
                     doc.SaveAs(fileName);
+                    Log.Trace($"Successfully saved report: {fileName}");
                 }
                 catch (Exception e)
                 {
                     Log.Error($"Unable to save excel report: {e.GetType().FullName} - {e.Message}", e);
                     throw;
                 }
-                                     
+
                 if (ExcelPostProcessors == null || ExcelPostProcessors.Length == 0)
                 {
                     Log.Warn($"There were no Excel Post Processors registered");
                     return;
                 }
 
+                Log.Trace("Starting excel post processing");
                 foreach (var postProcessor in ExcelPostProcessors)
-                {
                     try
                     {
                         var fileInfo = Path.GetFullPath(fileName);
@@ -129,7 +135,6 @@ namespace Triage.Mortician.Analyzers
                     {
                         Log.Error($"Excel Post Processor failed: {postProcessor.GetType().FullName} - {e.Message}", e);
                     }
-                }
             }
         }
     }

@@ -11,10 +11,26 @@ using Microsoft.Diagnostics.Runtime;
 
 namespace Triage.Mortician
 {
+    /// <summary>
+    ///     Factory responsible for populating the repositories and registering them with the container
+    /// </summary>
     internal class RepositoryFactory
     {
+        /// <summary>
+        ///     The log
+        /// </summary>
         public ILog Log = LogManager.GetLogger(typeof(RepositoryFactory));
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="RepositoryFactory" /> class.
+        /// </summary>
+        /// <param name="compositionContainer">The composition container.</param>
+        /// <param name="dataTarget">The data target.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     compositionContainer
+        ///     or
+        ///     dataTarget
+        /// </exception>
         public RepositoryFactory(CompositionContainer compositionContainer, DataTarget dataTarget)
         {
             CompositionContainer =
@@ -22,9 +38,25 @@ namespace Triage.Mortician
             DataTarget = dataTarget ?? throw new ArgumentNullException(nameof(dataTarget));
         }
 
+        /// <summary>
+        ///     Gets or sets the composition container.
+        /// </summary>
+        /// <value>
+        ///     The composition container.
+        /// </value>
         public CompositionContainer CompositionContainer { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the data target.
+        /// </summary>
+        /// <value>
+        ///     The data target.
+        /// </value>
         public DataTarget DataTarget { get; set; }
 
+        /// <summary>
+        ///     Registers the repositories.
+        /// </summary>
         public void RegisterRepositories()
         {
             var heapObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
@@ -33,6 +65,7 @@ namespace Triage.Mortician
 
             try
             {
+                Log.Trace($"Attempting to create the CLRMd runtime");
                 rt = DataTarget.ClrVersions.Single().CreateRuntime();
             }
             catch (Exception)
@@ -138,7 +171,7 @@ namespace Triage.Mortician
                     dumpModule.TypesInternal.Add(newDumpType);
                     typeStore.Add(new DumpTypeKey(clrType.MethodTable, clrType.Name), newDumpType);
                 }
-                
+
                 moduleStore.Add(dumpModule.ImageBase.Value,
                     dumpModule); // todo: possible null, should use image base + name
             }
@@ -237,12 +270,10 @@ namespace Triage.Mortician
                 var isExtracted = false;
                 foreach (var heapObjectExtractor in heapObjectExtractors)
                 {
-                    // todo: logging
                     if (!heapObjectExtractor.CanExtract(clrObject, rt))
                         continue;
                     var extracted = heapObjectExtractor.Extract(clrObject, rt);
                     var dumpType = typeStore[new DumpTypeKey(clrObject.Type.MethodTable, clrObject.Type.Name)];
-                    // setting object/type mapping
                     extracted.DumpType = dumpType;
                     dumpType.ObjectsInternal.Add(extracted.Address, extracted);
                     objectStore.Add(clrObject.Address, extracted);
@@ -260,6 +291,7 @@ namespace Triage.Mortician
                     objectHierarchy[clrObject.Address].Add(clrObjectRef.Address);
             }
 
+            Log.Trace("Extracting object roots from all threads");
             foreach (var clrRoot in rt.Threads.SelectMany(t => t.EnumerateStackObjects()))
             {
                 var dumpRootObject = new DumpObjectRoot
