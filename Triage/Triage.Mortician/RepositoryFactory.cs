@@ -136,7 +136,7 @@ namespace Triage.Mortician
             Dictionary<DumpTypeKey, DumpType> typeStore,
             Dictionary<ulong, DumpModule> moduleStore)
         {
-            Log.Trace("Extracting Module, AppDomain, and Type information");             
+            Log.Trace("Extracting Module, AppDomain, and Type information");
             var baseClassMapping = new Dictionary<DumpTypeKey, DumpTypeKey>();
             foreach (var clrModule in rt.Modules)
             {
@@ -175,7 +175,7 @@ namespace Triage.Mortician
                     var key = new DumpTypeKey(clrType.MethodTable, clrType.Name);
                     if (typeStore.ContainsKey(key)) continue;
                     baseClassMapping.Add(key, new DumpTypeKey(clrType.MethodTable, clrType.Name));
-                    
+
                     var newDumpType = new DumpType
                     {
                         DumpTypeKey = key,
@@ -184,7 +184,7 @@ namespace Triage.Mortician
                         Module = dumpModule,
                         BaseSize = clrType.BaseSize,
                         IsInternal = clrType.IsInternal,
-                        IsString = clrType.IsString,      
+                        IsString = clrType.IsString,
                         IsInterface = clrType.IsInterface,
                         ContainsPointers = clrType.ContainsPointers,
                         IsAbstract = clrType.IsAbstract,
@@ -197,7 +197,7 @@ namespace Triage.Mortician
                         IsPrivate = clrType.IsPrivate,
                         IsProtected = clrType.IsProtected,
                         IsRuntimeType = clrType.IsRuntimeType,
-                        IsSealed = clrType.IsSealed,
+                        IsSealed = clrType.IsSealed
                     };
                     dumpModule.TypesInternal.Add(newDumpType);
                     typeStore.Add(new DumpTypeKey(clrType.MethodTable, clrType.Name), newDumpType);
@@ -207,9 +207,7 @@ namespace Triage.Mortician
                     dumpModule); // todo: possible null, should use image base + name
             }
             foreach (var pair in baseClassMapping)
-            {
                 typeStore[pair.Key].BaseDumpType = typeStore[pair.Value];
-            }
         }
 
         private void SetupThreads(ClrRuntime rt,
@@ -227,13 +225,12 @@ namespace Triage.Mortician
                         InstructionPointer = f.InstructionPointer,
                         ModuleName = f.ModuleName,
                         StackPointer = f.StackPointer,
-                        DisplayString = f.DisplayString
+                        DisplayString =
+                            f.ToString() // todo: I've seen where this throws a null reference exception - look out
                     }).ToList()
                 };
                 foreach (var extractedStackFrame in dumpThread.StackFrames)
-                {
                     extractedStackFrame.Thread = dumpThread;
-                }
 
                 dumpThread.ObjectRoots = thread.EnumerateStackObjects()
                     .Where(o =>

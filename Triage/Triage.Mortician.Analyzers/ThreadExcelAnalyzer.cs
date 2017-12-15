@@ -48,7 +48,29 @@ namespace Triage.Mortician.Analyzers
         /// </summary>
         /// <param name="sharedDocument">The shared document.</param>
         public void Contribute(SLDocument sharedDocument)
-        {                                               
+        {
+            PopulateUniqueStacks(sharedDocument);
+            PopulateStackFrames(sharedDocument);
+        }
+
+        private void PopulateStackFrames(SLDocument sharedDocument)
+        {
+            sharedDocument.SelectWorksheet("Stack Frames");
+            var groups = DumpThreadRepository.Get().SelectMany(t => t.StackFrames).GroupBy(f => f.DisplayString)
+                .OrderByDescending(g => g.Count());
+
+            int row = 2;
+            foreach (var group in groups)
+            {
+                sharedDocument.SetCellValue(row, 1, group.Key);
+                sharedDocument.SetCellValue(row, 2, group.First().ModuleName);
+                sharedDocument.SetCellValue(row, 3, group.Count());
+                row++;
+            }
+        }
+
+        private void PopulateUniqueStacks(SLDocument sharedDocument)
+        {
             sharedDocument.SelectWorksheet("Unique Stacks");
             var groups = DumpThreadRepository.Get()
                 .GroupBy(t => string.Join("\n", t.StackFrames.Select(s => s.DisplayString)))
@@ -75,7 +97,7 @@ namespace Triage.Mortician.Analyzers
                     max = stackIndex - 1;
 
                 var threadIndex = 0;
-                foreach (var thread in group.OrderByDescending(t => t.KernelModeTime + t.UserModeTime))
+                foreach (var thread in @group.OrderByDescending(t => t.KernelModeTime + t.UserModeTime))
                 {
                     sharedDocument.SetCellValue(curStackRow + 1 + threadIndex, threadsColumn,
                         $"{thread.DebuggerIndex}:{thread.OsId:x}");
