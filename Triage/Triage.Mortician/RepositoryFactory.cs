@@ -218,16 +218,24 @@ namespace Triage.Mortician
             Log.Trace("Extracting information about the threads");
             foreach (var thread in rt.Threads)
             {
-                var extracted = new DumpThread
+                var dumpThread = new DumpThread
                 {
                     OsId = thread.OSThreadId,
                     StackFrames = thread.StackTrace.Select(f => new DumpStackFrame
                     {
+                        IsManaged = f.Kind == ClrStackFrameType.ManagedMethod,
+                        InstructionPointer = f.InstructionPointer,
+                        ModuleName = f.ModuleName,
+                        StackPointer = f.StackPointer,
                         DisplayString = f.DisplayString
                     }).ToList()
                 };
+                foreach (var extractedStackFrame in dumpThread.StackFrames)
+                {
+                    extractedStackFrame.Thread = dumpThread;
+                }
 
-                extracted.ObjectRoots = thread.EnumerateStackObjects()
+                dumpThread.ObjectRoots = thread.EnumerateStackObjects()
                     .Where(o =>
                     {
                         if (objectRootsStore.ContainsKey(o.Address))
@@ -238,16 +246,16 @@ namespace Triage.Mortician
                     }).Select(o =>
                     {
                         var root = objectRootsStore[o.Address];
-                        root.Thread = extracted;
+                        root.Thread = dumpThread;
 
                         return root;
                     }).ToList();
 
-                if (!threadStore.ContainsKey(extracted.OsId))
-                    threadStore.Add(extracted.OsId, extracted);
+                if (!threadStore.ContainsKey(dumpThread.OsId))
+                    threadStore.Add(dumpThread.OsId, dumpThread);
                 else
                     Log.Error(
-                        $"Extracted a thread but there is already an entry with os id: {extracted.OsId}, you should investigate these manually");
+                        $"Extracted a thread but there is already an entry with os id: {dumpThread.OsId}, you should investigate these manually");
             }
 
             var debuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);

@@ -76,6 +76,6 @@ namespace Triage.Mortician
         /// <value>
         ///     The object roots.
         /// </value>
-        public IList<DumpObjectRoot> ObjectRoots { get; set; }
+        public IList<DumpObjectRoot> ObjectRoots { get; set; }    
     }
 }
