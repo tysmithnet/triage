@@ -2,31 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
     /// <summary>
     ///     Represents a thread that was extracted from the memory dump
     /// </summary>
-    /// <seealso cref="Triage.Mortician.Abstraction.IDumpThread" />
-    internal class DumpThread : IDumpThread
+    /// <seealso cref="IDumpThread" />
+    public class DumpThread
     {
         private string _stackTrace;
-
-        /// <summary>
-        ///     The stack objects
-        /// </summary>
-        public IList<IDumpObject> StackObjectsInternal = new List<IDumpObject>();
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="DumpThread" /> class.
-        /// </summary>
-        public DumpThread()
-        {
-            StackObjects = new ReadOnlyCollection<IDumpObject>(StackObjectsInternal);
-        }
-
+            
         /// <summary>
         ///     Gets the stack trace.
         /// </summary>
@@ -75,15 +61,7 @@ namespace Triage.Mortician
         /// <value>
         ///     The stack frames.
         /// </value>
-        public IList<IDumpStackFrame> StackFrames { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the stack objects.
-        /// </summary>
-        /// <value>
-        ///     The stack objects.
-        /// </value>
-        public IReadOnlyCollection<IDumpObject> StackObjects { get; set; }
+        public IList<DumpStackFrame> StackFrames { get; set; }
 
         /// <summary>
         ///     Gets or sets the index of the thread in the debugger. This is a low integer value used by the debugging interface
@@ -94,6 +72,6 @@ namespace Triage.Mortician
         /// </value>
         public uint DebuggerIndex { get; set; }
 
-        IEnumerable<IDumpObject> IDumpThread.StackObjects => throw new NotImplementedException();
+        public IList<DumpObjectRoot> ObjectRoots { get; set; }
     }
 }

@@ -1,20 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
-using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
     /// <summary>
     ///     Represents a managed object on the managed heap
-    /// </summary>
-    /// <seealso cref="Triage.Mortician.Abstraction.IDumpObject" />
+    /// </summary>                                                   
     [DebuggerDisplay("{FullTypeName} : {Size} : {Address}")]
-    public class DumpObject : IDumpObject
+    public class DumpObject
     {
+        /// <summary>
+        ///     The objects that reference this object
+        /// </summary>
+        protected internal ConcurrentDictionary<ulong, DumpObject> ReferencersInternal =
+            new ConcurrentDictionary<ulong, DumpObject>();
+
         /// <summary>
         ///     The references that this object has
         /// </summary>
-        internal IList<IDumpObject> ReferencesInternal = new List<IDumpObject>();
+        protected internal ConcurrentDictionary<ulong, DumpObject> ReferencesInternal =
+            new ConcurrentDictionary<ulong, DumpObject>();
 
         // todo: constructor args are already unwieldy, refactor to factory
         /// <summary>
@@ -38,7 +44,7 @@ namespace Triage.Mortician
         /// <value>
         ///     The address of this object
         /// </value>
-        public ulong Address { get; internal set; }
+        public ulong Address { get; protected internal set; }
 
         /// <summary>
         ///     Gets the full name of the type of this object.
@@ -46,9 +52,15 @@ namespace Triage.Mortician
         /// <value>
         ///     The full name of the type of this object.
         /// </value>
-        public string FullTypeName { get; internal set; }
+        public string FullTypeName { get; protected internal set; }
 
-        public IDumpType DumpType { get; }
+        /// <summary>
+        ///     Gets or sets the type of the object
+        /// </summary>
+        /// <value>
+        ///     The type of the dump.
+        /// </value>
+        public DumpType DumpType { get; protected internal set; }
 
         /// <summary>
         ///     Gets the size of this object
@@ -57,19 +69,17 @@ namespace Triage.Mortician
         /// <value>
         ///     The size of this object
         /// </value>
-        public ulong Size { get; internal set; }
-
-
+        public ulong Size { get; protected internal set; }
+                               
         /// <summary>
         ///     Gets the gc generation for this object. 0,1,2,3 where 3 is the large object heap
         /// </summary>
         /// <value>
         ///     The gc generation for this object
         /// </value>
-        public int Gen { get; internal set; }
+        public int Gen { get; protected internal set; }
 
-        IEnumerable<IDumpObject> IDumpObject.References { get; }
-
+        public IEnumerable<DumpObject> Referencers => ReferencersInternal.Values;
 
         /// <summary>
         ///     Gets the references that this object has.
@@ -77,16 +87,24 @@ namespace Triage.Mortician
         /// <value>
         ///     The references that this object has.
         /// </value>
-        public IReadOnlyCollection<IDumpObject> References { get; internal set; }
+        public IEnumerable<DumpObject> References => ReferencesInternal.Values;
 
         /// <summary>
         ///     Adds a reference to the list of objects that this object has
         /// </summary>
         /// <param name="obj">The object to add.</param>
-        internal void AddReference(IDumpObject obj)
+        protected internal void AddReference(DumpObject obj)
         {
-            if (!ReferencesInternal.Contains(obj))
-                ReferencesInternal.Add(obj);
+            ReferencesInternal.TryAdd(obj.Address, obj);
+        }
+
+        /// <summary>
+        ///     Adds the referencer.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        protected internal void AddReferencer(DumpObject obj)
+        {
+            ReferencersInternal.TryAdd(obj.Address, obj);
         }
     }
 }

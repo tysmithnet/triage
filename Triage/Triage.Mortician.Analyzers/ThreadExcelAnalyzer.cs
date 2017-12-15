@@ -3,8 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
-using SpreadsheetLight;
-using Triage.Mortician.Abstraction;
+using SpreadsheetLight;            
 
 namespace Triage.Mortician.Analyzers
 {
@@ -28,7 +27,7 @@ namespace Triage.Mortician.Analyzers
         ///     The dump thread repository.
         /// </value>
         [Import]
-        public IDumpThreadRepository DumpThreadRepository { get; set; }
+        public DumpThreadRepository DumpThreadRepository { get; set; }
 
         /// <inheritdoc />
         /// <summary>

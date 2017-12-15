@@ -4,8 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
-using SpreadsheetLight;
-using Triage.Mortician.Abstraction;
+using SpreadsheetLight;            
 
 namespace Triage.Mortician.Analyzers
 {
@@ -31,7 +30,7 @@ namespace Triage.Mortician.Analyzers
         ///     The dump object repository.
         /// </value>
         [Import]
-        public IDumpObjectRepository DumpObjectRepository { get; set; }
+        public DumpObjectRepository DumpObjectRepository { get; set; }
 
         /// <summary>
         ///     Setups the specified cancellation token.

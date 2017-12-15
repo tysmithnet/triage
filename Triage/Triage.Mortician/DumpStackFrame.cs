@@ -1,12 +1,10 @@
-﻿using Triage.Mortician.Abstraction;
-
-namespace Triage.Mortician
+﻿namespace Triage.Mortician
 {
     /// <summary>
     ///     Represents a stack frame extracted from the memory dump
     /// </summary>
-    /// <seealso cref="Triage.Mortician.Abstraction.IDumpStackFrame" />
-    internal class DumpStackFrame : IDumpStackFrame
+    /// <seealso cref="IDumpStackFrame" />
+    public class DumpStackFrame
     {
         public string DisplayString { get; set; }
     }

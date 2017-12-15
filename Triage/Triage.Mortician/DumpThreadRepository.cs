@@ -5,49 +5,22 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Common.Logging;
 using Microsoft.Diagnostics.Runtime;
-using Triage.Mortician.Abstraction;
 
 namespace Triage.Mortician
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Represents a repository that stores threads that were extracted from the memory dump
     /// </summary>
-    /// <seealso cref="T:Triage.Mortician.Abstraction.IDumpThreadRepository" />
-    internal class DumpThreadRepository : IDumpThreadRepository
+    public class DumpThreadRepository
     {
         /// <summary>
         ///     The log
         /// </summary>
         protected ILog Log = LogManager.GetLogger(typeof(DumpThreadRepository));
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="DumpThreadRepository" /> class.
-        /// </summary>
-        /// <param name="rt">The rt.</param>
-        /// <param name="debuggerProxy">The debugger proxy.</param>
-        /// <param name="dumpRepo">The dump repo.</param>
-        public DumpThreadRepository(ClrRuntime rt, DebuggerProxy debuggerProxy, DumpObjectRepository dumpRepo)
+        public DumpThreadRepository(Dictionary<uint, DumpThread> dumpThreads)
         {
-            var log = LogManager.GetLogger(typeof(DumpThreadRepository));
-            foreach (var clrThread in rt.Threads.Where(t => t.IsAlive))
-            {
-                var dumpThread = new DumpThread();
-                dumpThread.OsId = clrThread.OSThreadId;
-                dumpThread.StackFrames = clrThread.StackTrace.Select(x => new DumpStackFrame
-                {
-                    DisplayString = x.DisplayString
-                }).Cast<IDumpStackFrame>().ToList();
-                foreach (var clrThreadObject in clrThread.EnumerateStackObjects())
-                    if (dumpRepo.HeapObjects.TryGetValue(clrThreadObject.Object, out var dumpObject))
-                        dumpThread.StackObjectsInternal.Add(dumpObject);
-                    else
-                        log.Trace(
-                            $"Thread: {clrThread.OSThreadId} has a reference to {clrThreadObject.Object} but it was not in the heap repository");
-
-                DumpThreads.Add(dumpThread.OsId, dumpThread);
-            }
-            PopulateRunawayData(debuggerProxy);
+            DumpThreads = dumpThreads ?? throw new ArgumentNullException(nameof(dumpThreads));
         }
 
         /// <summary>
@@ -56,7 +29,7 @@ namespace Triage.Mortician
         /// <value>
         ///     The dump threads.
         /// </value>
-        public Dictionary<uint, DumpThread> DumpThreads { get; set; } = new Dictionary<uint, DumpThread>();
+        protected internal Dictionary<uint, DumpThread> DumpThreads;
 
         /// <summary>
         ///     Gets the thread with the provided id
@@ -64,7 +37,7 @@ namespace Triage.Mortician
         /// <param name="osId">The os identifier.</param>
         /// <returns>Get the thread with the operation system id provided</returns>
         /// <exception cref="IndexOutOfRangeException">If the there isn't a thread registered with the specified id</exception>
-        public IDumpThread Get(uint osId)
+        public DumpThread Get(uint osId)
         {
             if (DumpThreads.ContainsKey(osId))
                 return DumpThreads[osId];
@@ -76,7 +49,7 @@ namespace Triage.Mortician
         ///     Gets all the threads extracted from the memory dump
         /// </summary>
         /// <returns>All the threads extracted from the memory dump</returns>
-        public IEnumerable<IDumpThread> Get()
+        public IEnumerable<DumpThread> Get()
         {
             return DumpThreads.Values;
         }
@@ -85,7 +58,7 @@ namespace Triage.Mortician
         ///     Populates the runaway data. This is the data on how long threads have been alive
         /// </summary>
         /// <param name="debuggerProxy">The debugger proxy.</param>
-        private void PopulateRunawayData(DebuggerProxy debuggerProxy)
+        private void PopulateRunawayData(IDebuggerProxy debuggerProxy)
         {
             var runawayData = debuggerProxy.Execute("!runaway");
             Log.Debug($"Calling !runaway returned: {runawayData}");
