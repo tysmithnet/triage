@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.Core.3.3.21.1\lib\net45\AWSSDK.Core.dll</HintPath>
+    </Reference>
     <Reference Include="CommandLine, Version=2.0.275.0, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
       <HintPath>..\packages\CommandLineParser.2.1.1-beta\lib\net45\CommandLine.dll</HintPath>
     </Reference>
@@ -92,6 +95,7 @@
     <Compile Include="DefaultObjectExtractor.cs" />
     <Compile Include="DumpAppDomain.cs" />
     <Compile Include="DumpModule.cs" />
+    <Compile Include="DumpObjectRoot.cs" />
     <Compile Include="DumpStackFrame.cs" />
     <Compile Include="DumpThread.cs" />
     <Compile Include="DumpThreadRepository.cs" />

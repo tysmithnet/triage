@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Globalization;
 using System.Linq;
@@ -55,18 +56,88 @@ namespace Triage.Mortician
             var objectStore = new Dictionary<ulong, DumpObject>();
             var objectHierarchy = new Dictionary<ulong, List<ulong>>();
             var threadStore = new Dictionary<uint, DumpThread>();
+            var appDomainStore = new Dictionary<ulong, DumpAppDomain>();
+            var moduleStore = new Dictionary<ulong, DumpModule>();     
+            var typeStore = new Dictionary<(ulong, string), DumpType>(); // same type can be loaded into multiple app domains (think IIS)
+            var objectRootsStore = new Dictionary<ulong, DumpObjectRoot>();                                                                     
+            SetupModulesAndTypes(rt, appDomainStore, typeStore, moduleStore);
+            SetupObjects(heapObjectExtractors, rt, objectStore, objectHierarchy, typeStore, appDomainStore, objectRootsStore);
+            EstablishObjectRelationships(objectHierarchy, objectStore);
+            objectHierarchy = null;
+            GC.Collect();
+            SetupThreads(rt, objectStore, threadStore, objectRootsStore); 
+                                                                              
+            var dumpRepo = new DumpObjectRepository(objectStore, objectRootsStore);
+            var threadRepo = new DumpThreadRepository(threadStore);
+            var appDomainRepo = new DumpAppDomainRepository(appDomainStore);
+            var moduleRepo = new DumpModuleRepository(moduleStore);
 
-            // OBJECTS MUST COME FIRST
-            SetupObjects(heapObjectExtractors, rt, objectStore, objectHierarchy);
-            SetupThreads(rt, objectStore, threadStore);
+            CompositionContainer.ComposeExportedValue(dumpRepo);
+            CompositionContainer.ComposeExportedValue(threadRepo);
+            CompositionContainer.ComposeExportedValue(appDomainRepo);
+            CompositionContainer.ComposeExportedValue(moduleRepo);
         }
 
-        private void SetupThreads(ClrRuntime rt, Dictionary<ulong, DumpObject> objectStore,
-            Dictionary<uint, DumpThread> threadStore)
+        private void EstablishObjectRelationships(Dictionary<ulong, List<ulong>> objectHierarchy, Dictionary<ulong, DumpObject> objectStore)
+        {
+            Log.Trace("Setting relationship references on the extracted objects");
+            Parallel.ForEach(objectHierarchy, relationship =>
+            {          
+                var parent = objectStore[relationship.Key];
+
+                foreach (var childAddress in relationship.Value)
+                {
+                    var child = objectStore[childAddress];
+                    parent.AddReference(child);
+                    child.AddReferencer(parent);
+                }
+            });
+        }
+
+        private void SetupModulesAndTypes(ClrRuntime rt, Dictionary<ulong, DumpAppDomain> appDomainStore, Dictionary<(ulong, string), DumpType> typeStore,
+            Dictionary<ulong, DumpModule> moduleStore)
+        {
+            Log.Trace("Extracting Module, AppDomain, and Type information");                        
+            foreach (var clrModule in rt.Modules)
+            {
+                var dumpModule = new DumpModule();
+                dumpModule.Name = clrModule.Name;
+                dumpModule.ImageBase = clrModule.ImageBase == 0 ? null : (ulong?)clrModule.ImageBase;
+                
+                foreach (var clrAppDomain in clrModule.AppDomains)
+                {
+                    if (!appDomainStore.ContainsKey(clrAppDomain.Address))
+                    {
+                        var newDumpAppDomain = new DumpAppDomain();
+                        newDumpAppDomain.Address = clrAppDomain.Address;
+                        newDumpAppDomain.Name = clrAppDomain.Name;
+                        appDomainStore.Add(newDumpAppDomain.Address, newDumpAppDomain);
+                    }
+                    var dumpAppDomain = appDomainStore[clrAppDomain.Address];
+                    dumpModule.AppDomainsInternal.Add(appDomainStore[clrAppDomain.Address]);
+                    dumpAppDomain.LoadedModulesInternal.Add(dumpModule);
+                }
+
+                foreach (var clrType in clrModule.EnumerateTypes())
+                {
+                    if (typeStore.ContainsKey((clrType.MethodTable, clrType.Name))) continue;
+                    var newDumpType = new DumpType();
+                    newDumpType.MethodTable = clrType.MethodTable;
+                    newDumpType.Name = clrType.Name;
+                    newDumpType.Module = dumpModule; 
+                    dumpModule.TypesInternal.Add(newDumpType);
+                    typeStore.Add((clrType.MethodTable, clrType.Name), newDumpType);
+                }
+                
+                moduleStore.Add(dumpModule.ImageBase.Value, dumpModule);   // todo: possible null, should use image base + name
+            }
+        }
+
+        private void SetupThreads(ClrRuntime rt, Dictionary<ulong, DumpObject> objectStore, Dictionary<uint, DumpThread> threadStore, Dictionary<ulong, DumpObjectRoot> objectRootsStore)
         {
             Log.Trace("Extracting information about the threads");
             foreach (var thread in rt.Threads)
-            {
+            {          
                 var extracted = new DumpThread
                 {
                     OsId = thread.OSThreadId,
@@ -74,10 +145,23 @@ namespace Triage.Mortician
                     {
                         DisplayString = f.DisplayString
                     }).ToList(),
-                    StackObjectsInternal = thread.EnumerateStackObjects().Where(o => objectStore.ContainsKey(o.Address))
-                        .Select(o => objectStore[o.Address])
-                        .ToList()
-                };
+                };                                                                                                                   
+
+                extracted.ObjectRoots = thread.EnumerateStackObjects()
+                    .Where(o =>
+                    {
+                        if (objectRootsStore.ContainsKey(o.Address))
+                            return true;
+                        Log.Warn(
+                            $"Thread {thread.OSThreadId} claims to have an object root at {o.Address} but there is no corresponding object at {o.Object}");
+                        return false;
+                    }).Select(o =>
+                    {
+                        var root = objectRootsStore[o.Address];
+                        root.Thread = extracted;
+
+                        return root;
+                    }).ToList();
 
                 if (!threadStore.ContainsKey(extracted.OsId))
                     threadStore.Add(extracted.OsId, extracted);
@@ -128,41 +212,88 @@ namespace Triage.Mortician
             }
         }
 
-        private void SetupObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime rt,
-            Dictionary<ulong, DumpObject> objectStore, Dictionary<ulong, List<ulong>> objectHierarchy)
+        private void SetupObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime rt, Dictionary<ulong, DumpObject> objectStore, Dictionary<ulong, List<ulong>> objectHierarchy, Dictionary<(ulong, string), DumpType> typeStore, Dictionary<ulong, DumpAppDomain> appDomainStore, Dictionary<ulong, DumpObjectRoot> objectRootStore)
         {
             Log.Trace("Using registered object extractors to process objects on the heap");
-            foreach (var obj in rt.Heap.EnumerateObjects().Where(o => !o.IsNull && !o.Type.IsFree))
+            var defaultExtractor = new DefaultObjectExtractor();
+            foreach (var clrObject in rt.Heap.EnumerateObjects()
+                .Where(o => !o.IsNull && !o.Type.IsFree))
             {
                 var isExtracted = false;
                 foreach (var heapObjectExtractor in heapObjectExtractors)
                 {
                     // todo: logging
-                    if (!heapObjectExtractor.CanExtract(obj, rt))
+                    if (!heapObjectExtractor.CanExtract(clrObject, rt))
                         continue;
-                    var extracted = heapObjectExtractor.Extract(obj, rt);
-                    objectStore.Add(obj.Address, extracted);
+                    var extracted = heapObjectExtractor.Extract(clrObject, rt);
+                    var dumpType = typeStore[(clrObject.Type.MethodTable, clrObject.Type.Name)];
+                    // setting object/type mapping
+                    extracted.DumpType = dumpType;
+                    dumpType.ObjectsInternal.Add(extracted.Address, extracted);
+                    objectStore.Add(clrObject.Address, extracted);
                     isExtracted = true;
                     break;
                 }
-                if (!isExtracted) continue;
-                objectHierarchy.Add(obj.Address, new List<ulong>());
-                foreach (var objRef in obj.EnumerateObjectReferences())
-                    objectHierarchy[obj.Address].Add(objRef.Address);
-            }
-
-            Log.Trace("Setting relationship references on the extracted objects");
-            Parallel.ForEach(objectHierarchy, relationship =>
-            {
-                var parent = objectStore[relationship.Key];
-
-                foreach (var childAddress in relationship.Value)
+                if (!isExtracted)
                 {
-                    var child = objectStore[childAddress];
-                    parent.AddReference(child);
-                    child.AddReferencer(parent);
+                    var newDumpObject = defaultExtractor.Extract(clrObject, rt);
+                    objectStore.Add(newDumpObject.Address, newDumpObject);
                 }
-            });
+                objectHierarchy.Add(clrObject.Address, new List<ulong>());
+                
+                foreach (var clrObjectRef in clrObject.EnumerateObjectReferences())
+                    objectHierarchy[clrObject.Address].Add(clrObjectRef.Address);
+            }
+                                         
+            foreach (var clrRoot in rt.Threads.SelectMany(t => t.EnumerateStackObjects()))
+            {
+                var dumpRootObject = new DumpObjectRoot
+                {
+                    Address = clrRoot.Address,
+                    Name = clrRoot.Name,
+                    IsAsyncIoPinning = clrRoot.Kind == GCRootKind.AsyncPinning,
+                    IsFinalizerQueue = clrRoot.Kind == GCRootKind.Finalizer,
+                    IsInteriorPointer = clrRoot.IsInterior,
+                    IsLocalVar = clrRoot.Kind == GCRootKind.LocalVar,
+                    IsPossibleFalsePositive = clrRoot.IsPossibleFalsePositive,
+                    IsPinned = clrRoot.IsPinned,
+                    IsStaticVariable = clrRoot.Kind == GCRootKind.StaticVar,
+                    IsStrongHandle = clrRoot.Kind == GCRootKind.Strong,
+                    IsThreadStaticVariable = clrRoot.Kind == GCRootKind.ThreadStaticVar,
+                    IsStrongPinningHandle = clrRoot.Kind == GCRootKind.Pinning,
+                    IsWeakHandle = clrRoot.Kind == GCRootKind.Weak
+                };
+                var appDomainAddress = clrRoot.AppDomain?.Address;
+                if (appDomainAddress.HasValue && appDomainStore.ContainsKey(appDomainAddress.Value))
+                    dumpRootObject.AppDomain = appDomainStore[appDomainAddress.Value];
+
+                if (objectStore.ContainsKey(clrRoot.Object))
+                {
+                    dumpRootObject.RootedObject = objectStore[clrRoot.Object];
+                }                                                             
+
+                objectRootStore.Add(dumpRootObject.Address, dumpRootObject);
+            }
+        }
+    }
+
+    public class DumpModuleRepository
+    {
+        protected internal Dictionary<ulong, DumpModule> DumpModules;
+
+        protected internal DumpModuleRepository(Dictionary<ulong, DumpModule> dumpModules)
+        {
+            DumpModules = dumpModules ?? throw new ArgumentNullException(nameof(dumpModules));
+        }
+    }
+
+    public class DumpAppDomainRepository
+    {
+        protected internal Dictionary<ulong, DumpAppDomain> AppDomains;
+
+        protected internal DumpAppDomainRepository(Dictionary<ulong, DumpAppDomain> appDomainStore)
+        {
+            AppDomains = appDomainStore ?? throw new ArgumentNullException(nameof(appDomainStore));
         }
     }
 }

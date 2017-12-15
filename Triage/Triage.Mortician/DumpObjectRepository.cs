@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Authentication.ExtendedProtection.Configuration;
 using Common.Logging;
 using Microsoft.Diagnostics.Runtime;
 
@@ -15,66 +16,19 @@ namespace Triage.Mortician
         /// <summary>
         ///     The heap objects
         /// </summary>
-        protected internal Dictionary<ulong, DumpObject> HeapObjects = new Dictionary<ulong, DumpObject>();
+        protected internal Dictionary<ulong, DumpObject> Objects;
+
+        protected internal Dictionary<ulong, DumpObjectRoot> ObjectRoots;
 
         /// <summary>
         ///     The log
         /// </summary>
         protected internal ILog Log = LogManager.GetLogger(typeof(DumpObjectRepository));
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="DumpObjectRepository" /> class.
-        /// </summary>
-        /// <param name="runtime">The runtime.</param>
-        /// <param name="heapObjectExtractors">The heap object extractors.</param>
-        protected internal DumpObjectRepository(ClrRuntime runtime,
-            IReadOnlyCollection<IDumpObjectExtractor> heapObjectExtractors)
+        public DumpObjectRepository(Dictionary<ulong, DumpObject> objects, Dictionary<ulong, DumpObjectRoot> objectRoots)
         {
-            var heap = runtime.Heap;
-
-            if (!heap.CanWalkHeap)
-                Log.Debug("Heap is not walkable - unexpected results might arise");
-
-            // loop over each object in the heap and try to extract value from it
-            foreach (var obj in heap.EnumerateObjects().Where(x => !x.Type.IsFree && !x.IsNull))
-            {
-                foreach (var extractor in heapObjectExtractors)
-                {
-                    if (!extractor.CanExtract(obj, runtime)) continue;
-                    try
-                    {
-                        HeapObjects.Add(obj.Address, extractor.Extract(obj, runtime));
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e);
-                    }
-                }
-                if (HeapObjects.ContainsKey(obj.Address)) continue;
-                HeapObjects.Add(obj.Address,
-                    new DumpObject(obj.Address, obj.Type.Name, obj.Size, runtime.Heap.GetGeneration(obj.Address)));
-            }
-
-            if (!HeapObjects.Any())
-                Log.Error("No object data was collected from the heap. Is this a mini dump?");
-
-            // loop over the objects again and extract the reference graph
-            foreach (var obj in heap.EnumerateObjects().Where(x => !x.Type.IsFree && !x.IsNull))
-            {
-                var parent = HeapObjects[obj.Address];
-
-                foreach (var reference in obj.EnumerateObjectReferences())
-                    if (HeapObjects.TryGetValue(reference.Address, out var child))
-                        if (parent is DumpObject parentAsDumpObject)
-                            parentAsDumpObject
-                                .AddReference(child); // todo: this needs to be reworked, probably consolidate
-                        else
-                            Log.Error(
-                                $"Expecting to find a dump object while generating the reference graph but instead found: {parent.GetType().FullName}");
-                    else
-                        Log.Warn(
-                            $"{parent.Address:x} has a reference to {reference.Address:x}, but it was not found in the heap cache");
-            }
+            Objects = objects ?? throw new ArgumentNullException(nameof(objects));
+            ObjectRoots = objectRoots ?? throw new ArgumentNullException(nameof(objectRoots));
         }
 
         /// <summary>
@@ -85,7 +39,7 @@ namespace Triage.Mortician
         /// <exception cref="IndexOutOfRangeException">The provided address is not a valid object address</exception>
         public DumpObject Get(ulong address)
         {
-            if (HeapObjects.TryGetValue(address, out var obj))
+            if (Objects.TryGetValue(address, out var obj))
                 return obj;
             throw new IndexOutOfRangeException($"There is no object matching address: {address:x}");
         }
@@ -96,7 +50,7 @@ namespace Triage.Mortician
         /// <returns>All dump objects extracted from the heap</returns>
         public IEnumerable<DumpObject> Get()
         {
-            return HeapObjects.Values;
+            return Objects.Values;
         }
     }
 }

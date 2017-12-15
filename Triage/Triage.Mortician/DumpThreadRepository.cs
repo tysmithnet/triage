@@ -18,35 +18,9 @@ namespace Triage.Mortician
         /// </summary>
         protected ILog Log = LogManager.GetLogger(typeof(DumpThreadRepository));
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="DumpThreadRepository" /> class.
-        /// </summary>
-        /// <param name="rt">The rt.</param>
-        /// <param name="debuggerProxy">The debugger proxy.</param>
-        /// <param name="dumpRepo">The dump repo.</param>
-        internal DumpThreadRepository(ClrRuntime rt, IDebuggerProxy debuggerProxy, DumpObjectRepository dumpRepo)
+        public DumpThreadRepository(Dictionary<uint, DumpThread> dumpThreads)
         {
-            var log = LogManager.GetLogger(typeof(DumpThreadRepository));
-            foreach (var clrThread in rt.Threads.Where(t => t.IsAlive))
-            {
-                var dumpThread = new DumpThread
-                {
-                    OsId = clrThread.OSThreadId,
-                    StackFrames = clrThread.StackTrace.Select(x => new DumpStackFrame
-                    {
-                        DisplayString = x.DisplayString
-                    }).ToList()
-                };
-                foreach (var clrThreadObject in clrThread.EnumerateStackObjects())
-                    if (dumpRepo.HeapObjects.TryGetValue(clrThreadObject.Object, out var dumpObject))
-                        dumpThread.StackObjectsInternal.Add(dumpObject);
-                    else
-                        log.Trace(
-                            $"Thread: {clrThread.OSThreadId} has a reference to {clrThreadObject.Object} but it was not in the heap repository");
-
-                DumpThreads.Add(dumpThread.OsId, dumpThread);
-            }
-            PopulateRunawayData(debuggerProxy);
+            DumpThreads = dumpThreads ?? throw new ArgumentNullException(nameof(dumpThreads));
         }
 
         /// <summary>
@@ -55,7 +29,7 @@ namespace Triage.Mortician
         /// <value>
         ///     The dump threads.
         /// </value>
-        internal Dictionary<uint, DumpThread> DumpThreads { get; set; } = new Dictionary<uint, DumpThread>();
+        protected internal Dictionary<uint, DumpThread> DumpThreads;
 
         /// <summary>
         ///     Gets the thread with the provided id
