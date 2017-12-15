@@ -158,7 +158,9 @@
     <Compile Include="ExcelAnalyzerHost.cs" />
     <Compile Include="IExcelAnalyzer.cs" />
     <Compile Include="HeapExcelAnalyzer.cs" />
+    <Compile Include="IExcelPostProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="S3UploaderPostProcessor.cs" />
     <Compile Include="ThreadExcelAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>

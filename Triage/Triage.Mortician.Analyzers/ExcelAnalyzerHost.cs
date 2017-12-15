@@ -5,10 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon;
-using Amazon.Runtime;
-using Amazon.S3;
-using Amazon.S3.Model;
 using Common.Logging;
 using SpreadsheetLight;
 
@@ -35,6 +31,9 @@ namespace Triage.Mortician.Analyzers
         /// </value>
         [ImportMany]
         public IExcelAnalyzer[] ExcelAnalyzers { get; set; }
+
+        [ImportMany]
+        public IExcelPostProcessor[] ExcelPostProcessors { get; set; }
 
         /// <inheritdoc />
         /// <summary>
@@ -103,25 +102,33 @@ namespace Triage.Mortician.Analyzers
                     analyzerSetupTasks.Remove(task);
                 }
                 var fileName = DateTime.Now.ToString("yyyy_MM_dd-hh_mm_ss") + ".xlsx";
-                doc.SaveAs(fileName);
-
-                // note: this looks for ~/.aws/credentials for a profile named master
-                // see https://docs.aws.amazon.com/AmazonS3/latest/dev/walkthrough1.html#walkthrough1-add-users
-                // todo: move this out to a decoupled component
-                var creds = new StoredProfileAWSCredentials("default");
-                using (var client = new AmazonS3Client(creds, RegionEndpoint.USEast1))
-                using (var fs = File.OpenRead(fileName))
+                try
                 {
-                    Console.WriteLine("Uploading an object");
-                    var putRequest1 = new PutObjectRequest
-                    {
-                        // todo: this sould be a setting
-                        BucketName = "reports.triage",
-                        Key = fileName,
-                        InputStream = fs
-                    };
+                    doc.SaveAs(fileName);
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Unable to save excel report: {e.GetType().FullName} - {e.Message}", e);
+                    throw;
+                }
+                                     
+                if (ExcelPostProcessors == null || ExcelPostProcessors.Length == 0)
+                {
+                    Log.Warn($"There were no Excel Post Processors registered");
+                    return;
+                }
 
-                    //PutObjectResponse putObjectResponse = client.PutObject(request);         
+                foreach (var postProcessor in ExcelPostProcessors)
+                {
+                    try
+                    {
+                        var fileInfo = Path.GetFullPath(fileName);
+                        postProcessor.PostProcess(new FileInfo(fileInfo));
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($"Excel Post Processor failed: {postProcessor.GetType().FullName} - {e.Message}", e);
+                    }
                 }
             }
         }
