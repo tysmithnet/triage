@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
-using SpreadsheetLight;            
+using SpreadsheetLight;
 
 namespace Triage.Mortician.Analyzers
 {
@@ -48,7 +48,7 @@ namespace Triage.Mortician.Analyzers
         /// </summary>
         /// <param name="sharedDocument">The shared document.</param>
         public void Contribute(SLDocument sharedDocument)
-        {
+        {                                               
             sharedDocument.SelectWorksheet("Unique Stacks");
             var groups = DumpThreadRepository.Get()
                 .GroupBy(t => string.Join("\n", t.StackFrames.Select(s => s.DisplayString)))

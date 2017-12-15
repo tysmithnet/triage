@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Triage.Mortician
@@ -8,11 +7,10 @@ namespace Triage.Mortician
     /// <summary>
     ///     Represents a thread that was extracted from the memory dump
     /// </summary>
-    /// <seealso cref="IDumpThread" />
     public class DumpThread
     {
         private string _stackTrace;
-            
+
         /// <summary>
         ///     Gets the stack trace.
         /// </summary>
@@ -72,6 +70,12 @@ namespace Triage.Mortician
         /// </value>
         public uint DebuggerIndex { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the object roots associated with this thread
+        /// </summary>
+        /// <value>
+        ///     The object roots.
+        /// </value>
         public IList<DumpObjectRoot> ObjectRoots { get; set; }
     }
 }

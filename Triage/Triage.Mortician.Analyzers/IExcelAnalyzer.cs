@@ -15,8 +15,7 @@ namespace Triage.Mortician.Analyzers
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A Task, that when complete will signal the setup completion</returns>
         Task Setup(CancellationToken cancellationToken);
-
-
+                         
         /// <summary>
         ///     Contributes the specified shared document.
         /// </summary>

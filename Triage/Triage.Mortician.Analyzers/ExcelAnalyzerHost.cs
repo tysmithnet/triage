@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon;
-using Amazon.Runtime;
-using Amazon.S3;
-using Amazon.S3.Model;
 using Common.Logging;
-using SpreadsheetLight;             
+using SpreadsheetLight;
 
 namespace Triage.Mortician.Analyzers
 {
@@ -37,6 +31,15 @@ namespace Triage.Mortician.Analyzers
         /// </value>
         [ImportMany]
         public IExcelAnalyzer[] ExcelAnalyzers { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the excel post processors.
+        /// </summary>
+        /// <value>
+        ///     The excel post processors.
+        /// </value>
+        [ImportMany]
+        public IExcelPostProcessor[] ExcelPostProcessors { get; set; }
 
         /// <inheritdoc />
         /// <summary>
@@ -67,8 +70,7 @@ namespace Triage.Mortician.Analyzers
                 return;
             }
 
-            Log.Trace("Engine starting...");
-                                                                                                
+            Log.Trace("Engine starting");
             var analyzerSetupTasks = new Dictionary<Task, IExcelAnalyzer>();
             foreach (var analyzer in ExcelAnalyzers)
             {
@@ -98,32 +100,41 @@ namespace Triage.Mortician.Analyzers
                     }
                     else
                     {
-                        Log.Trace($"ExcelAnalyzer {analyzer.GetType().FullName} was successfully setup, starting contribution..");
+                        Log.Trace(
+                            $"ExcelAnalyzer {analyzer.GetType().FullName} was successfully setup, starting contribution..");
                         analyzer.Contribute(doc);
-                    }                            
+                    }
                     analyzerSetupTasks.Remove(task);
                 }
-                string fileName = DateTime.Now.ToString("yyyy_MM_dd-hh_mm_ss") + ".xlsx";
-                doc.SaveAs(fileName);
-
-                // note: this looks for ~/.aws/credentials for a profile named master
-                // see https://docs.aws.amazon.com/AmazonS3/latest/dev/walkthrough1.html#walkthrough1-add-users
-                // todo: move this out to a decoupled component
-                var creds = new StoredProfileAWSCredentials("default");
-                using (var client = new AmazonS3Client(creds, RegionEndpoint.USEast1))
-                using (var fs = File.OpenRead(fileName))
+                var fileName = DateTime.Now.ToString("yyyy_MM_dd-hh_mm_ss") + ".xlsx";
+                try
                 {
-                    Console.WriteLine("Uploading an object");
-                    PutObjectRequest putRequest1 = new PutObjectRequest
-                    {
-                        // todo: this sould be a setting
-                        BucketName = "reports.triage",
-                        Key = fileName,
-                        InputStream = fs
-                    };
-
-                    //PutObjectResponse putObjectResponse = client.PutObject(request);         
+                    doc.SaveAs(fileName);
+                    Log.Trace($"Successfully saved report: {fileName}");
                 }
+                catch (Exception e)
+                {
+                    Log.Error($"Unable to save excel report: {e.GetType().FullName} - {e.Message}", e);
+                    throw;
+                }
+
+                if (ExcelPostProcessors == null || ExcelPostProcessors.Length == 0)
+                {
+                    Log.Warn($"There were no Excel Post Processors registered");
+                    return;
+                }
+
+                Log.Trace("Starting excel post processing");
+                foreach (var postProcessor in ExcelPostProcessors)
+                    try
+                    {
+                        var fileInfo = Path.GetFullPath(fileName);
+                        postProcessor.PostProcess(new FileInfo(fileInfo));
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($"Excel Post Processor failed: {postProcessor.GetType().FullName} - {e.Message}", e);
+                    }
             }
         }
     }

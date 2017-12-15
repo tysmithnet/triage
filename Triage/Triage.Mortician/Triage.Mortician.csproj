@@ -94,12 +94,16 @@
     <Compile Include="DebuggerProxy.cs" />
     <Compile Include="DefaultObjectExtractor.cs" />
     <Compile Include="DumpAppDomain.cs" />
+    <Compile Include="DumpAppDomainRepository.cs" />
     <Compile Include="DumpModule.cs" />
+    <Compile Include="DumpModuleRepository.cs" />
     <Compile Include="DumpObjectRoot.cs" />
     <Compile Include="DumpStackFrame.cs" />
     <Compile Include="DumpThread.cs" />
     <Compile Include="DumpThreadRepository.cs" />
     <Compile Include="DumpType.cs" />
+    <Compile Include="DumpTypeKey.cs" />
+    <Compile Include="DumpTypeRepository.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="DumpObject.cs" />
     <Compile Include="DumpObjectRepository.cs" />
