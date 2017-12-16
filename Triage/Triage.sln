@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician.Analyzers"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician", "Triage.Mortician\Triage.Mortician.csproj", "{8AA350BC-CF5F-4302-92AB-1997357049BA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Triage.TestApplications", "Triage.TestApplications", "{2D8CD7F7-734E-4ECE-8DC0-62B6AA25B790}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.TestApplications.ThreadBuildup", "Triage.TestApplications.ThreadBuildup\Triage.TestApplications.ThreadBuildup.csproj", "{23A13166-8E66-4E5F-945F-3AF48B69B1AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +25,16 @@ Global
 		{8AA350BC-CF5F-4302-92AB-1997357049BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AA350BC-CF5F-4302-92AB-1997357049BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AA350BC-CF5F-4302-92AB-1997357049BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23A13166-8E66-4E5F-945F-3AF48B69B1AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23A13166-8E66-4E5F-945F-3AF48B69B1AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23A13166-8E66-4E5F-945F-3AF48B69B1AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23A13166-8E66-4E5F-945F-3AF48B69B1AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{23A13166-8E66-4E5F-945F-3AF48B69B1AC} = {2D8CD7F7-734E-4ECE-8DC0-62B6AA25B790}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {37E57426-47B9-4C9C-838E-5764B743DB5F}
