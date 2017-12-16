@@ -5,6 +5,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Common.Logging;
@@ -70,6 +71,7 @@ namespace Triage.Mortician
         /// </summary>
         public void RegisterRepositories()
         {
+            // todo: check symbols
             var heapObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
 
             ClrRuntime runtime;
@@ -233,7 +235,7 @@ namespace Triage.Mortician
                 var dumpThread = new DumpThread
                 {
                     OsId = thread.OSThreadId,
-                    StackFrames = thread.StackTrace.Select(f => new DumpStackFrame
+                    ManagedStackFrames = thread.StackTrace.Select(f => new DumpStackFrame
                     {
                         IsManaged = f.Kind == ClrStackFrameType.ManagedMethod,
                         InstructionPointer = f.InstructionPointer,
@@ -243,7 +245,7 @@ namespace Triage.Mortician
                             f.ToString() // todo: I've seen where this throws a null reference exception - look out
                     }).ToList()
                 };
-                foreach (var extractedStackFrame in dumpThread.StackFrames)
+                foreach (var extractedStackFrame in dumpThread.ManagedStackFrames)
                     extractedStackFrame.Thread = dumpThread;
 
                 dumpThread.ObjectRoots = thread.EnumerateStackObjects()
@@ -268,11 +270,17 @@ namespace Triage.Mortician
                     Log.Error(
                         $"Extracted a thread but there is already an entry with os id: {dumpThread.OsId}, you should investigate these manually");
             }
-
+                                                                                
             var debuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
-            var runawayData = debuggerProxy.Execute("!runaway");
-            Log.Debug($"Calling !runaway returned: {runawayData}");
+            Log.Trace("Loading debugger extensions");
+            debuggerProxy.Execute(".load sosex");
+            debuggerProxy.Execute(".load mex");
+            debuggerProxy.Execute(".load netext");
+            var res = debuggerProxy.Execute("!mu"); // forces sosex to load the appropriate SOS.dll
+            
 
+            Log.Trace("Calling !runaway");
+            var runawayData = debuggerProxy.Execute("!runaway");      
             var isUserMode = false;
             var isKernelMode = false;
             foreach (var line in runawayData.Split('\n'))
@@ -299,8 +307,8 @@ namespace Triage.Mortician
                 var dumpThread = threadStore.Values.SingleOrDefault(x => x.OsId == id);
                 if (dumpThread == null)
                 {
-                    Log.Debug($"Found thread {id} in runaway data but not in thread repo");
-                    continue;
+                    dumpThread = new DumpThread {OsId = id};
+                    threadStore.Add(dumpThread.OsId, dumpThread); 
                 }
                 dumpThread.DebuggerIndex = index;
 
@@ -309,6 +317,30 @@ namespace Triage.Mortician
                 else if (isKernelMode)
                     dumpThread.KernelModeTime = timeSpan;
             }
+
+            // todo: save !runaway, !eestack to disk and zip up and send to s3
+            Log.Trace("Calling !EEStack");
+            var eestackCommandResult = debuggerProxy.Execute("!eestack");
+            var eeStacks = Regex.Split(eestackCommandResult, "---------------------------------------------").Select(threadInfo => threadInfo.Trim()).Skip(1).ToArray();
+            foreach (var eeStack in eeStacks)
+            {
+                var lines = eeStack.Split('\n');
+                var header = lines.Take(3).ToArray();
+                var stackFrames = lines.Skip(3).Select(x => x.Substring("0000000000000000 0000000000000000 ".Length));
+
+                var threadIndex = Convert.ToUInt32(Regex.Match(header[0], @"Thread\s+(?<index>\d+)").Groups["index"].Value);
+                var currentFrame = header[1].Substring("Current frame: ".Length);
+
+                var existingThread = threadStore.Values.FirstOrDefault(t => t.DebuggerIndex == threadIndex);
+                if (existingThread == null)
+                {
+                    Log.Error($"Found thread in !eestack that wasn't in !runaway: {threadIndex}, consider investigating the dump manually");
+                    continue;
+                }
+                    
+                existingThread.CurrentFrame = currentFrame;
+                existingThread.EEStackFrames = stackFrames.ToList();
+            }                                                       
         }
 
         private void SetupObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime rt,

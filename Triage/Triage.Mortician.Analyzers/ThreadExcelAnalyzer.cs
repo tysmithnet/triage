@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
+using DocumentFormat.OpenXml.ExtendedProperties;
 using SpreadsheetLight;
 
 namespace Triage.Mortician.Analyzers
@@ -50,21 +51,20 @@ namespace Triage.Mortician.Analyzers
         public void Contribute(SLDocument sharedDocument)
         {
             PopulateUniqueStacks(sharedDocument);
-            PopulateStackFrames(sharedDocument);
+            PopulateManagedStackFrames(sharedDocument);
         }
 
-        private void PopulateStackFrames(SLDocument sharedDocument)
+        private void PopulateManagedStackFrames(SLDocument sharedDocument)
         {
             sharedDocument.SelectWorksheet("Stack Frames");
-            var groups = DumpThreadRepository.Get().SelectMany(t => t.StackFrames).GroupBy(f => f.DisplayString)
-                .OrderByDescending(g => g.Count());
-
             int row = 2;
-            foreach (var group in groups)
+            foreach (var grouping in DumpThreadRepository.Get().Where(t => t.ManagedStackFrames != null)
+                .SelectMany(t => t.ManagedStackFrames)
+                .GroupBy(f => f.DisplayString))
             {
-                sharedDocument.SetCellValue(row, 1, group.Key);
-                sharedDocument.SetCellValue(row, 2, group.First().ModuleName);
-                sharedDocument.SetCellValue(row, 3, group.Count());
+                sharedDocument.SetCellValue(row, 1, grouping.Key);
+                sharedDocument.SetCellValue(row, 2, grouping.First().ModuleName);
+                sharedDocument.SetCellValue(row, 3, grouping.Count());
                 row++;
             }
         }
@@ -73,7 +73,8 @@ namespace Triage.Mortician.Analyzers
         {
             sharedDocument.SelectWorksheet("Unique Stacks");
             var groups = DumpThreadRepository.Get()
-                .GroupBy(t => string.Join("\n", t.StackFrames.Select(s => s.DisplayString)))
+                .GroupBy(t => string.Join("\n", t.EEStackFrames))
+                .Where(g => !string.IsNullOrWhiteSpace(g.Key))
                 .OrderByDescending(g => g.Count())
                 .ThenByDescending(g => g.Key.Length);
 
@@ -87,7 +88,7 @@ namespace Triage.Mortician.Analyzers
                 sharedDocument.SetCellValue(curStackRow, threadsColumn, "Threads:");
 
                 var stackIndex = 0;
-                foreach (var line in group.First().StackFrames.Select(x => x.DisplayString))
+                foreach (var line in group.First().EEStackFrames)
                 {
                     sharedDocument.SetCellValue(curStackRow + 1 + stackIndex, 1, line);
                     stackIndex++;

@@ -10,6 +10,7 @@ namespace Triage.Mortician
     public class DumpThread
     {
         private string _stackTrace;
+        public IList<string> EEStackFrames { get; set; } = new List<string>();
 
         /// <summary>
         ///     Gets the stack trace.
@@ -18,7 +19,7 @@ namespace Triage.Mortician
         ///     The stack trace.
         /// </value>
         public string StackTrace =>
-            _stackTrace ?? (_stackTrace = string.Join("\n", StackFrames.Select(s => s.DisplayString)));
+            _stackTrace ?? (_stackTrace = string.Join("\n", ManagedStackFrames.Select(s => s.DisplayString)));
 
         /// <summary>
         ///     Gets or sets the total time.
@@ -59,7 +60,7 @@ namespace Triage.Mortician
         /// <value>
         ///     The stack frames.
         /// </value>
-        public IList<DumpStackFrame> StackFrames { get; set; }
+        public IList<DumpStackFrame> ManagedStackFrames { get; set; }
 
         /// <summary>
         ///     Gets or sets the index of the thread in the debugger. This is a low integer value used by the debugging interface
@@ -76,6 +77,8 @@ namespace Triage.Mortician
         /// <value>
         ///     The object roots.
         /// </value>
-        public IList<DumpObjectRoot> ObjectRoots { get; set; }    
+        public IList<DumpObjectRoot> ObjectRoots { get; set; }
+
+        public string CurrentFrame { get; set; }
     }
 }
