@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Composition;
+using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 
 namespace Triage.Mortician
@@ -37,7 +38,8 @@ namespace Triage.Mortician
         public DumpObject Extract(ClrObject clrObject, ClrRuntime clrRuntime)
         {
             var value = (string) clrObject.Type.GetValue(clrObject.Address);
-            var heapObject = new StringDumpObject(clrObject.Address, "System.String", clrObject.Size, value,
+            var preview = new string(value.Take(100).ToArray());
+            var heapObject = new StringDumpObject(clrObject.Address, "System.String", clrObject.Size, preview,
                 clrRuntime.Heap.GetGeneration(clrObject.Address));
 
             return heapObject;
