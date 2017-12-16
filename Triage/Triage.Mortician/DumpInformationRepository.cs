@@ -14,6 +14,7 @@ namespace Triage.Mortician
         
         protected internal DumpInformationRepository(DataTarget dataTarget, ClrRuntime runtime, FileInfo dumpFile)
         {
+            StartTimeUtc = DateTime.UtcNow;
             IsMiniDump = dataTarget?.IsMinidump ?? throw new ArgumentNullException(nameof(dataTarget));
             ProcessModulesInternal = dataTarget?.EnumerateModules().ToList();
             SymbolCachce = dataTarget.SymbolLocator.SymbolCache;
@@ -28,13 +29,24 @@ namespace Triage.Mortician
             MaxNumberFreeIoCompletionPorts = runtime.ThreadPool.MaxFreeCompletionPorts;
             MaxAllowableThreads = runtime.ThreadPool.MaxThreads;
             MinNumberIoCompletionPorts = runtime.ThreadPool.MinCompletionPorts;
-            NumberRunningThreads = runtime.ThreadPool.RunningThreads;
+            NumRunningThreads = runtime.ThreadPool.RunningThreads;
             TotalThreads = runtime.ThreadPool.TotalThreads;
+            TotalHeapSize = runtime.Heap.TotalHeapSize;
+            MinThreads = runtime.ThreadPool.MinThreads;
+            MaxThreads = runtime.ThreadPool.MaxThreads;
         }
+
+        public int MinThreads { get; set; }
+
+        public int MaxThreads { get; set; }
+
+        public DateTime StartTimeUtc { get; set; }
+
+        public ulong TotalHeapSize { get; set; }
 
         public int TotalThreads { get; set; }
 
-        public int NumberRunningThreads { get; set; }
+        public int NumRunningThreads { get; set; }
 
         public int MinNumberIoCompletionPorts { get; set; }
 

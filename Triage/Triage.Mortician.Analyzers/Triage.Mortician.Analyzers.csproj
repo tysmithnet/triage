@@ -161,6 +161,7 @@
     <Compile Include="IExcelPostProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="S3UploaderPostProcessor.cs" />
+    <Compile Include="SummaryExcelAnalyzer.cs" />
     <Compile Include="ThreadExcelAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>
