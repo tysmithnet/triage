@@ -46,8 +46,15 @@ namespace Triage.Mortician
         /// </summary>
         /// <returns>All the threads extracted from the memory dump</returns>
         public IEnumerable<DumpThread> Get()
-        {
+        {   
             return DumpThreads.Values;
         }
+    }
+
+    internal class EEStackResult
+    {
+        public int DebuggerIndex { get; set; }
+        public string CurrentFrame { get; set; }
+        public IList<string> StackFrames { get; set; } = new List<string>();
     }
 }

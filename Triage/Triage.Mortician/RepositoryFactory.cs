@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Common.Logging;
@@ -22,20 +24,30 @@ namespace Triage.Mortician
         public ILog Log = LogManager.GetLogger(typeof(RepositoryFactory));
 
         /// <summary>
+        /// Gets or sets the location of the dump file
+        /// </summary>
+        /// <value>
+        /// The dump file location.
+        /// </value>
+        public FileInfo DumpFile { get; protected set; }
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="RepositoryFactory" /> class.
         /// </summary>
         /// <param name="compositionContainer">The composition container.</param>
         /// <param name="dataTarget">The data target.</param>
+        /// <param name="dumpFile">Dump file to analzye</param>
         /// <exception cref="ArgumentNullException">
         ///     compositionContainer
         ///     or
         ///     dataTarget
         /// </exception>
-        public RepositoryFactory(CompositionContainer compositionContainer, DataTarget dataTarget)
+        public RepositoryFactory(CompositionContainer compositionContainer, FileInfo dumpFile)
         {
             CompositionContainer =
                 compositionContainer ?? throw new ArgumentNullException(nameof(compositionContainer));
-            DataTarget = dataTarget ?? throw new ArgumentNullException(nameof(dataTarget));
+            DumpFile = dumpFile ?? throw new ArgumentNullException(nameof(dumpFile));
+            DataTarget = DataTarget.LoadCrashDump(dumpFile.FullName);
         }
 
         /// <summary>
@@ -59,14 +71,15 @@ namespace Triage.Mortician
         /// </summary>
         public void RegisterRepositories()
         {
+            // todo: check symbols
             var heapObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
 
-            ClrRuntime rt;
+            ClrRuntime runtime;
 
             try
             {
                 Log.Trace($"Attempting to create the CLRMd runtime");
-                rt = DataTarget.ClrVersions.Single().CreateRuntime();
+                runtime = DataTarget.ClrVersions.Single().CreateRuntime();
             }
             catch (Exception)
             {
@@ -78,8 +91,10 @@ namespace Triage.Mortician
                 Log.Warn(
                     "The provided dump is a mini dump and results will not contain any heap information (objects, etc)");
 
-            if (!rt.Heap.CanWalkHeap)
+            if (!runtime.Heap.CanWalkHeap)
                 Log.Warn("CLRMd reports that the heap is unwalkable, results might vary");
+
+            var dumpInformationRepository = new DumpInformationRepository(DataTarget, runtime, DumpFile);
 
             /*
              * IMPORTANT
@@ -94,13 +109,13 @@ namespace Triage.Mortician
             var typeStore =
                 new Dictionary<DumpTypeKey, DumpType>(); // same type can be loaded into multiple app domains (think IIS)
             var objectRootsStore = new Dictionary<ulong, DumpObjectRoot>();
-            SetupModulesAndTypes(rt, appDomainStore, typeStore, moduleStore);
-            SetupObjects(heapObjectExtractors, rt, objectStore, objectHierarchy, typeStore, appDomainStore,
+            SetupModulesAndTypes(runtime, appDomainStore, typeStore, moduleStore);
+            SetupObjects(heapObjectExtractors, runtime, objectStore, objectHierarchy, typeStore, appDomainStore,
                 objectRootsStore);
             EstablishObjectRelationships(objectHierarchy, objectStore);
             objectHierarchy = null;
             GC.Collect();
-            SetupThreads(rt, threadStore, objectRootsStore);
+            SetupThreads(runtime, threadStore, objectRootsStore);
 
             var dumpRepo = new DumpObjectRepository(objectStore, objectRootsStore);
             var threadRepo = new DumpThreadRepository(threadStore);
@@ -108,6 +123,7 @@ namespace Triage.Mortician
             var moduleRepo = new DumpModuleRepository(moduleStore);
             var typeRepo = new DumpTypeRepository(typeStore);
 
+            CompositionContainer.ComposeExportedValue(dumpInformationRepository);
             CompositionContainer.ComposeExportedValue(dumpRepo);
             CompositionContainer.ComposeExportedValue(threadRepo);
             CompositionContainer.ComposeExportedValue(appDomainRepo);
@@ -136,7 +152,7 @@ namespace Triage.Mortician
             Dictionary<DumpTypeKey, DumpType> typeStore,
             Dictionary<ulong, DumpModule> moduleStore)
         {
-            Log.Trace("Extracting Module, AppDomain, and Type information");             
+            Log.Trace("Extracting Module, AppDomain, and Type information");
             var baseClassMapping = new Dictionary<DumpTypeKey, DumpTypeKey>();
             foreach (var clrModule in rt.Modules)
             {
@@ -175,7 +191,7 @@ namespace Triage.Mortician
                     var key = new DumpTypeKey(clrType.MethodTable, clrType.Name);
                     if (typeStore.ContainsKey(key)) continue;
                     baseClassMapping.Add(key, new DumpTypeKey(clrType.MethodTable, clrType.Name));
-                    
+
                     var newDumpType = new DumpType
                     {
                         DumpTypeKey = key,
@@ -184,7 +200,7 @@ namespace Triage.Mortician
                         Module = dumpModule,
                         BaseSize = clrType.BaseSize,
                         IsInternal = clrType.IsInternal,
-                        IsString = clrType.IsString,      
+                        IsString = clrType.IsString,
                         IsInterface = clrType.IsInterface,
                         ContainsPointers = clrType.ContainsPointers,
                         IsAbstract = clrType.IsAbstract,
@@ -197,7 +213,7 @@ namespace Triage.Mortician
                         IsPrivate = clrType.IsPrivate,
                         IsProtected = clrType.IsProtected,
                         IsRuntimeType = clrType.IsRuntimeType,
-                        IsSealed = clrType.IsSealed,
+                        IsSealed = clrType.IsSealed
                     };
                     dumpModule.TypesInternal.Add(newDumpType);
                     typeStore.Add(new DumpTypeKey(clrType.MethodTable, clrType.Name), newDumpType);
@@ -207,9 +223,7 @@ namespace Triage.Mortician
                     dumpModule); // todo: possible null, should use image base + name
             }
             foreach (var pair in baseClassMapping)
-            {
                 typeStore[pair.Key].BaseDumpType = typeStore[pair.Value];
-            }
         }
 
         private void SetupThreads(ClrRuntime rt,
@@ -218,16 +232,23 @@ namespace Triage.Mortician
             Log.Trace("Extracting information about the threads");
             foreach (var thread in rt.Threads)
             {
-                var extracted = new DumpThread
+                var dumpThread = new DumpThread
                 {
                     OsId = thread.OSThreadId,
-                    StackFrames = thread.StackTrace.Select(f => new DumpStackFrame
+                    ManagedStackFrames = thread.StackTrace.Select(f => new DumpStackFrame
                     {
-                        DisplayString = f.DisplayString
+                        IsManaged = f.Kind == ClrStackFrameType.ManagedMethod,
+                        InstructionPointer = f.InstructionPointer,
+                        ModuleName = f.ModuleName,
+                        StackPointer = f.StackPointer,
+                        DisplayString =
+                            f.ToString() // todo: I've seen where this throws a null reference exception - look out
                     }).ToList()
                 };
+                foreach (var extractedStackFrame in dumpThread.ManagedStackFrames)
+                    extractedStackFrame.Thread = dumpThread;
 
-                extracted.ObjectRoots = thread.EnumerateStackObjects()
+                dumpThread.ObjectRoots = thread.EnumerateStackObjects()
                     .Where(o =>
                     {
                         if (objectRootsStore.ContainsKey(o.Address))
@@ -238,22 +259,28 @@ namespace Triage.Mortician
                     }).Select(o =>
                     {
                         var root = objectRootsStore[o.Address];
-                        root.Thread = extracted;
+                        root.Thread = dumpThread;
 
                         return root;
                     }).ToList();
 
-                if (!threadStore.ContainsKey(extracted.OsId))
-                    threadStore.Add(extracted.OsId, extracted);
+                if (!threadStore.ContainsKey(dumpThread.OsId))
+                    threadStore.Add(dumpThread.OsId, dumpThread);
                 else
                     Log.Error(
-                        $"Extracted a thread but there is already an entry with os id: {extracted.OsId}, you should investigate these manually");
+                        $"Extracted a thread but there is already an entry with os id: {dumpThread.OsId}, you should investigate these manually");
             }
-
+                                                                                
             var debuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
-            var runawayData = debuggerProxy.Execute("!runaway");
-            Log.Debug($"Calling !runaway returned: {runawayData}");
+            Log.Trace("Loading debugger extensions");
+            debuggerProxy.Execute(".load sosex");
+            debuggerProxy.Execute(".load mex");
+            debuggerProxy.Execute(".load netext");
+            var res = debuggerProxy.Execute("!mu"); // forces sosex to load the appropriate SOS.dll
+            
 
+            Log.Trace("Calling !runaway");
+            var runawayData = debuggerProxy.Execute("!runaway");      
             var isUserMode = false;
             var isKernelMode = false;
             foreach (var line in runawayData.Split('\n'))
@@ -280,8 +307,8 @@ namespace Triage.Mortician
                 var dumpThread = threadStore.Values.SingleOrDefault(x => x.OsId == id);
                 if (dumpThread == null)
                 {
-                    Log.Debug($"Found thread {id} in runaway data but not in thread repo");
-                    continue;
+                    dumpThread = new DumpThread {OsId = id};
+                    threadStore.Add(dumpThread.OsId, dumpThread); 
                 }
                 dumpThread.DebuggerIndex = index;
 
@@ -290,6 +317,30 @@ namespace Triage.Mortician
                 else if (isKernelMode)
                     dumpThread.KernelModeTime = timeSpan;
             }
+
+            // todo: save !runaway, !eestack to disk and zip up and send to s3
+            Log.Trace("Calling !EEStack");
+            var eestackCommandResult = debuggerProxy.Execute("!eestack");
+            var eeStacks = Regex.Split(eestackCommandResult, "---------------------------------------------").Select(threadInfo => threadInfo.Trim()).Skip(1).ToArray();
+            foreach (var eeStack in eeStacks)
+            {
+                var lines = eeStack.Split('\n');
+                var header = lines.Take(3).ToArray();
+                var stackFrames = lines.Skip(3).Select(x => x.Substring("0000000000000000 0000000000000000 ".Length));
+
+                var threadIndex = Convert.ToUInt32(Regex.Match(header[0], @"Thread\s+(?<index>\d+)").Groups["index"].Value);
+                var currentFrame = header[1].Substring("Current frame: ".Length);
+
+                var existingThread = threadStore.Values.FirstOrDefault(t => t.DebuggerIndex == threadIndex);
+                if (existingThread == null)
+                {
+                    Log.Error($"Found thread in !eestack that wasn't in !runaway: {threadIndex}, consider investigating the dump manually");
+                    continue;
+                }
+                    
+                existingThread.CurrentFrame = currentFrame;
+                existingThread.EEStackFrames = stackFrames.ToList();
+            }                                                       
         }
 
         private void SetupObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime rt,

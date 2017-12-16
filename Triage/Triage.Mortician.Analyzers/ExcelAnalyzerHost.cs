@@ -109,6 +109,7 @@ namespace Triage.Mortician.Analyzers
                 var fileName = DateTime.Now.ToString("yyyy_MM_dd-hh_mm_ss") + ".xlsx";
                 try
                 {
+                    doc.SelectWorksheet("Summary");
                     doc.SaveAs(fileName);
                     Log.Trace($"Successfully saved report: {fileName}");
                 }

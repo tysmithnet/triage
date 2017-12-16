@@ -29,6 +29,7 @@ namespace Triage.Mortician.Analyzers
                     InputStream = fs
                 };
 
+                // todo: make a service
                 //PutObjectResponse putObjectResponse = client.PutObject(putReportRequest);         
             }
         }

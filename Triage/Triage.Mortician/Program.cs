@@ -38,12 +38,9 @@ namespace Triage.Mortician
                 var aggregateCatalog = new AggregateCatalog(AppDomain.CurrentDomain.GetAssemblies()
                     .Where(x => x.FullName.StartsWith("Triage.Mortician")).Select(x => new AssemblyCatalog(x)));
                 var compositionContainer = new CompositionContainer(aggregateCatalog);
-
-                using (var dataTarget = DataTarget.LoadCrashDump(options.DumpFilePath))
-                {
-                    var repositoryFactory = new RepositoryFactory(compositionContainer, dataTarget);
-                    repositoryFactory.RegisterRepositories();
-                }
+                
+                var repositoryFactory = new RepositoryFactory(compositionContainer, new FileInfo(options.DumpFilePath));
+                repositoryFactory.RegisterRepositories();   
 
                 var engine = compositionContainer.GetExportedValue<Engine>();
                 engine.Process(CancellationToken.None).Wait();
