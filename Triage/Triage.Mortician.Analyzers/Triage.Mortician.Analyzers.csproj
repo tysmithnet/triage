@@ -226,7 +226,4 @@
       <Name>Triage.Mortician</Name>
     </ProjectReference>
   </ItemGroup>
-  <!--<Target Name="AfterBuild">
-    <Copy SourceFiles="@(BinFiles)" DestinationFolder="..\Triage.Mortician\bin\$(Configuration)" SkipUnchangedFiles="true" />
-  </Target>-->
 </Project>
