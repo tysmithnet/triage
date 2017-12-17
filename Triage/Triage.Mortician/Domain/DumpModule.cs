@@ -100,7 +100,6 @@ namespace Triage.Mortician.Domain
         /// </value>
         public ulong Size { get; protected internal set; }
 
-
         /// <summary>
         ///     Gets or sets the PDB file location if available, null otherwise
         /// </summary>

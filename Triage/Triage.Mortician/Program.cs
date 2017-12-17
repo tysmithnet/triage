@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using CommandLine;
 using Common.Logging;
-using Microsoft.Diagnostics.Runtime;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace Triage.Mortician
 {
@@ -26,7 +22,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="args">The arguments.</param>
         private static void Main(string[] args)
-        {                                  
+        {
             Log.Trace("Hello world");
 
             Parser.Default.ParseArguments<DefaultOptions, ConfigOptions>(args).MapResult(
@@ -41,12 +37,11 @@ namespace Triage.Mortician
         }
 
         private static int ConfigExecution(ConfigOptions opts)
-        {   
+        {
             if (opts.ShouldDisplay)
-            {
                 try
                 {
-                    string configText = File.ReadAllText("mortician.config.json");
+                    var configText = File.ReadAllText("mortician.config.json");
                     Console.WriteLine(configText);
                     return 0;
                 }
@@ -55,8 +50,7 @@ namespace Triage.Mortician
                     Log.Fatal($"Could not read the configuration file: {e}");
                     throw;
                 }
-            }
-            
+
             var settings = Settings.GetSettings();
             var pairs = opts.Keys.Zip(opts.Values, (s, s1) => (s, s1))
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
@@ -67,7 +61,7 @@ namespace Triage.Mortician
                 .OrderBy(kvp => kvp.Key)
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
             Settings.SaveSettings(settings);
-                                    
+
             return 0;
         }
 
@@ -90,7 +84,7 @@ namespace Triage.Mortician
 
             var engine = compositionContainer.GetExportedValue<Engine>();
             engine.Process(CancellationToken.None).Wait();
-                        
+
             return 0;
         }
     }

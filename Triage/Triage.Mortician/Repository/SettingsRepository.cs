@@ -13,6 +13,12 @@ namespace Triage.Mortician.Repository
             SettingsInternal = settings ?? throw new ArgumentNullException(nameof(settings));
         }
 
+        /// <summary>
+        ///     Gets or sets the internal settings
+        /// </summary>
+        /// <value>
+        ///     The settings internal.
+        /// </value>
         protected internal Dictionary<string, string> SettingsInternal { get; set; }
 
         /// <summary>

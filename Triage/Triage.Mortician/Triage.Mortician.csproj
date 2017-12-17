@@ -91,6 +91,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigOptions.cs" />
     <Compile Include="DefaultOptions.cs" />
     <Compile Include="Domain\DebuggerProxy.cs" />
     <Compile Include="Domain\DefaultObjectExtractor.cs" />

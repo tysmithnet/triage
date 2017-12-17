@@ -79,6 +79,12 @@ namespace Triage.Mortician.Domain
         /// </value>
         public IList<DumpObjectRoot> ObjectRoots { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the current frame of the thread
+        /// </summary>
+        /// <value>
+        ///     The current frame.
+        /// </value>
         public string CurrentFrame { get; set; }
     }
 }

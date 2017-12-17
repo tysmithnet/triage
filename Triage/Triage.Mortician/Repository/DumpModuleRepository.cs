@@ -15,6 +15,11 @@ namespace Triage.Mortician.Repository
         /// </summary>
         protected internal Dictionary<(ulong, string), DumpModule> DumpModules;
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DumpModuleRepository" /> class.
+        /// </summary>
+        /// <param name="dumpModules">The dump modules.</param>
+        /// <exception cref="ArgumentNullException">dumpModules</exception>
         protected internal DumpModuleRepository(Dictionary<(ulong, string), DumpModule> dumpModules)
         {
             DumpModules = dumpModules ?? throw new ArgumentNullException(nameof(dumpModules));
