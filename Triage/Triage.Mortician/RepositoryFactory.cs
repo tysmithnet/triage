@@ -35,7 +35,6 @@ namespace Triage.Mortician
         ///     Initializes a new instance of the <see cref="RepositoryFactory" /> class.
         /// </summary>
         /// <param name="compositionContainer">The composition container.</param>
-        /// <param name="dataTarget">The data target.</param>
         /// <param name="dumpFile">Dump file to analzye</param>
         /// <exception cref="ArgumentNullException">
         ///     compositionContainer
@@ -105,7 +104,8 @@ namespace Triage.Mortician
             var objectHierarchy = new Dictionary<ulong, List<ulong>>();
             var threadStore = new Dictionary<uint, DumpThread>();
             var appDomainStore = new Dictionary<ulong, DumpAppDomain>();
-            var moduleStore = new Dictionary<ulong, DumpModule>();
+            var moduleStore = new Dictionary<(ulong, string), DumpModule>();
+            //var dynamicModuleStore = new Dictionary<ulong>();
             var typeStore =
                 new Dictionary<DumpTypeKey, DumpType>(); // same type can be loaded into multiple app domains (think IIS)
             var objectRootsStore = new Dictionary<ulong, DumpObjectRoot>();
@@ -120,6 +120,7 @@ namespace Triage.Mortician
             var dumpRepo = new DumpObjectRepository(objectStore, objectRootsStore);
             var threadRepo = new DumpThreadRepository(threadStore);
             var appDomainRepo = new DumpAppDomainRepository(appDomainStore);
+            
             var moduleRepo = new DumpModuleRepository(moduleStore);
             var typeRepo = new DumpTypeRepository(typeStore);
 
@@ -137,10 +138,20 @@ namespace Triage.Mortician
             Log.Trace("Setting relationship references on the extracted objects");
             Parallel.ForEach(objectHierarchy, relationship =>
             {
+                if (!objectStore.ContainsKey(relationship.Key))
+                {
+                    Log.Error($"Object relationship says that there is a parent-child relationship between {relationship.Key} and {relationship.Value}, but cannot find the parent");
+                    return;
+                }
                 var parent = objectStore[relationship.Key];
 
                 foreach (var childAddress in relationship.Value)
                 {
+                    if (!objectStore.ContainsKey(childAddress))
+                    {
+                        Log.Error($"Object relationship says that there is a parent-child relationship between {relationship.Key} and {childAddress}, but cannot find the child");
+                        return;
+                    }
                     var child = objectStore[childAddress];
                     parent.AddReference(child);
                     child.AddReferencer(parent);
@@ -150,12 +161,12 @@ namespace Triage.Mortician
 
         private void SetupModulesAndTypes(ClrRuntime rt, Dictionary<ulong, DumpAppDomain> appDomainStore,
             Dictionary<DumpTypeKey, DumpType> typeStore,
-            Dictionary<ulong, DumpModule> moduleStore)
+            Dictionary<(ulong, string), DumpModule> moduleStore)
         {
             Log.Trace("Extracting Module, AppDomain, and Type information");
             var baseClassMapping = new Dictionary<DumpTypeKey, DumpTypeKey>();
             foreach (var clrModule in rt.Modules)
-            {
+            {   
                 var dumpModule = new DumpModule
                 {
                     Name = clrModule.Name,
@@ -219,8 +230,8 @@ namespace Triage.Mortician
                     typeStore.Add(new DumpTypeKey(clrType.MethodTable, clrType.Name), newDumpType);
                 }
 
-                moduleStore.Add(dumpModule.ImageBase.Value,
-                    dumpModule); // todo: possible null, should use image base + name
+                moduleStore.Add((dumpModule.AssemblyId, dumpModule.Name),
+                    dumpModule);
             }
             foreach (var pair in baseClassMapping)
                 typeStore[pair.Key].BaseDumpType = typeStore[pair.Value];
@@ -372,8 +383,8 @@ namespace Triage.Mortician
                     objectStore.Add(newDumpObject.Address, newDumpObject);
                 }
                 objectHierarchy.Add(clrObject.Address, new List<ulong>());
-
-                foreach (var clrObjectRef in clrObject.EnumerateObjectReferences())
+                 
+                foreach (var clrObjectRef in clrObject.EnumerateObjectReferences(carefully: true))
                     objectHierarchy[clrObject.Address].Add(clrObjectRef.Address);
             }
 
