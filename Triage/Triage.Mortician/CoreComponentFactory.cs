@@ -17,15 +17,15 @@ namespace Triage.Mortician
     /// <summary>
     ///     Factory responsible for populating the repositories and registering them with the container
     /// </summary>
-    internal class RepositoryFactory
+    internal class CoreComponentFactory
     {
         /// <summary>
         ///     The log
         /// </summary>
-        public ILog Log = LogManager.GetLogger(typeof(RepositoryFactory));
+        public ILog Log = LogManager.GetLogger(typeof(CoreComponentFactory));
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="RepositoryFactory" /> class.
+        ///     Initializes a new instance of the <see cref="CoreComponentFactory" /> class.
         /// </summary>
         /// <param name="compositionContainer">The composition container.</param>
         /// <param name="dumpFile">Dump file to analzye</param>
@@ -34,7 +34,7 @@ namespace Triage.Mortician
         ///     or
         ///     dataTarget
         /// </exception>
-        public RepositoryFactory(CompositionContainer compositionContainer, FileInfo dumpFile)
+        public CoreComponentFactory(CompositionContainer compositionContainer, FileInfo dumpFile)
         {
             CompositionContainer =
                 compositionContainer ?? throw new ArgumentNullException(nameof(compositionContainer));
@@ -69,6 +69,7 @@ namespace Triage.Mortician
         /// <summary>
         ///     Registers the repositories.
         /// </summary>
+        // todo: this is too big
         public void RegisterRepositories()
         {
             // todo: check symbols
@@ -96,6 +97,7 @@ namespace Triage.Mortician
 
             var dumpInformationRepository = new DumpInformationRepository(DataTarget, runtime, DumpFile);
             var settingsRepository = new SettingsRepository(Settings.GetSettings());
+            var eventHub = new EventHub();
             /*
              * IMPORTANT
              * These are left as thread unsafe collections because they are written to on 1 thread and then
@@ -125,6 +127,7 @@ namespace Triage.Mortician
             var moduleRepo = new DumpModuleRepository(moduleStore);
             var typeRepo = new DumpTypeRepository(typeStore);
 
+            CompositionContainer.ComposeExportedValue(eventHub);
             CompositionContainer.ComposeExportedValue(dumpInformationRepository);
             CompositionContainer.ComposeExportedValue(settingsRepository);
             CompositionContainer.ComposeExportedValue(dumpRepo);
@@ -292,8 +295,7 @@ namespace Triage.Mortician
             debuggerProxy.Execute(".load mex");
             debuggerProxy.Execute(".load netext");
             var res = debuggerProxy.Execute("!mu"); // forces sosex to load the appropriate SOS.dll
-
-
+            
             Log.Trace("Calling !runaway");
             var runawayData = debuggerProxy.Execute("!runaway");
             var isUserMode = false;

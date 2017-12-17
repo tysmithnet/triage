@@ -102,7 +102,7 @@ namespace Triage.Mortician
                 .Where(x => x.FullName.StartsWith("Triage.Mortician")).Select(x => new AssemblyCatalog(x)));
             var compositionContainer = new CompositionContainer(aggregateCatalog);
 
-            var repositoryFactory = new RepositoryFactory(compositionContainer, new FileInfo(options.DumpFile));
+            var repositoryFactory = new CoreComponentFactory(compositionContainer, new FileInfo(options.DumpFile));
             repositoryFactory.RegisterRepositories();
 
             var engine = compositionContainer.GetExportedValue<Engine>();
