@@ -94,7 +94,7 @@ namespace Triage.Mortician
                 Log.Warn("CLRMd reports that the heap is unwalkable, results might vary");
 
             var dumpInformationRepository = new DumpInformationRepository(DataTarget, runtime, DumpFile);
-
+            var settingsRepository = new SettingsRepository(Settings.GetSettings());
             /*
              * IMPORTANT
              * These are left as thread unsafe collections because they are written to on 1 thread and then
@@ -125,6 +125,7 @@ namespace Triage.Mortician
             var typeRepo = new DumpTypeRepository(typeStore);
 
             CompositionContainer.ComposeExportedValue(dumpInformationRepository);
+            CompositionContainer.ComposeExportedValue(settingsRepository);
             CompositionContainer.ComposeExportedValue(dumpRepo);
             CompositionContainer.ComposeExportedValue(threadRepo);
             CompositionContainer.ComposeExportedValue(appDomainRepo);
