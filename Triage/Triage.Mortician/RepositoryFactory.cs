@@ -138,10 +138,20 @@ namespace Triage.Mortician
             Log.Trace("Setting relationship references on the extracted objects");
             Parallel.ForEach(objectHierarchy, relationship =>
             {
+                if (!objectStore.ContainsKey(relationship.Key))
+                {
+                    Log.Error($"Object relationship says that there is a parent-child relationship between {relationship.Key} and {relationship.Value}, but cannot find the parent");
+                    return;
+                }
                 var parent = objectStore[relationship.Key];
 
                 foreach (var childAddress in relationship.Value)
                 {
+                    if (!objectStore.ContainsKey(childAddress))
+                    {
+                        Log.Error($"Object relationship says that there is a parent-child relationship between {relationship.Key} and {childAddress}, but cannot find the child");
+                        return;
+                    }
                     var child = objectStore[childAddress];
                     parent.AddReference(child);
                     child.AddReferencer(parent);
@@ -373,8 +383,8 @@ namespace Triage.Mortician
                     objectStore.Add(newDumpObject.Address, newDumpObject);
                 }
                 objectHierarchy.Add(clrObject.Address, new List<ulong>());
-
-                foreach (var clrObjectRef in clrObject.EnumerateObjectReferences())
+                 
+                foreach (var clrObjectRef in clrObject.EnumerateObjectReferences(carefully: true))
                     objectHierarchy[clrObject.Address].Add(clrObjectRef.Address);
             }
 
