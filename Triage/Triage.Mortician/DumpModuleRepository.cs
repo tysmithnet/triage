@@ -8,9 +8,13 @@ namespace Triage.Mortician
     /// </summary>
     public class DumpModuleRepository
     {
-        protected internal Dictionary<ulong, DumpModule> DumpModules;
+        /// <summary>
+        /// The extracted modules found in the memory dump
+        /// Note that a module is identified by the tuble (assemblyId, moduleName)
+        /// </summary>
+        protected internal Dictionary<(ulong, string), DumpModule> DumpModules;
 
-        protected internal DumpModuleRepository(Dictionary<ulong, DumpModule> dumpModules)
+        protected internal DumpModuleRepository(Dictionary<(ulong, string), DumpModule> dumpModules)
         {
             DumpModules = dumpModules ?? throw new ArgumentNullException(nameof(dumpModules));
         }
