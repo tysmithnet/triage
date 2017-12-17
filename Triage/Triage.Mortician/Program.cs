@@ -90,8 +90,7 @@ namespace Triage.Mortician
 
             var engine = compositionContainer.GetExportedValue<Engine>();
             engine.Process(CancellationToken.None).Wait();
-
-
+                        
             return 0;
         }
     }

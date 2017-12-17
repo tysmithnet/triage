@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Common.Logging;
 using Newtonsoft.Json;
 
@@ -19,7 +16,8 @@ namespace Triage.Mortician
 
             try
             {
-                string configText = File.ReadAllText("mortician.config.json");  // todo: abstract so we can have multiple configs
+                var configText =
+                    File.ReadAllText("mortician.config.json"); // todo: abstract so we can have multiple configs
                 settings = JsonConvert.DeserializeObject<Dictionary<string, string>>(configText);
             }
             catch (Exception e) when (e is IOException || e is JsonException)
@@ -33,9 +31,9 @@ namespace Triage.Mortician
 
         public static void SaveSettings(Dictionary<string, string> existingSettings)
         {
-            var serializer = new JsonSerializer { Formatting = Formatting.Indented };
+            var serializer = new JsonSerializer {Formatting = Formatting.Indented};
             using (var tw = new StringWriter())
-            {                                                                      
+            {
                 serializer.Serialize(tw, existingSettings);
                 File.WriteAllText("mortician.config.json", tw.ToString());
             }

@@ -11,7 +11,7 @@ namespace Triage.Mortician
     public class DumpInformationRepository
     {
         protected internal List<ModuleInfo> ProcessModulesInternal;
-        
+
         protected internal DumpInformationRepository(DataTarget dataTarget, ClrRuntime runtime, FileInfo dumpFile)
         {
             StartTimeUtc = DateTime.UtcNow;

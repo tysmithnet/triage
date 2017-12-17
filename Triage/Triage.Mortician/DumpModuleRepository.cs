@@ -9,8 +9,8 @@ namespace Triage.Mortician
     public class DumpModuleRepository
     {
         /// <summary>
-        /// The extracted modules found in the memory dump
-        /// Note that a module is identified by the tuble (assemblyId, moduleName)
+        ///     The extracted modules found in the memory dump
+        ///     Note that a module is identified by the tuble (assemblyId, moduleName)
         /// </summary>
         protected internal Dictionary<(ulong, string), DumpModule> DumpModules;
 

@@ -5,7 +5,6 @@ using System.ComponentModel.Composition.Hosting;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Common.Logging;
@@ -24,14 +23,6 @@ namespace Triage.Mortician
         public ILog Log = LogManager.GetLogger(typeof(RepositoryFactory));
 
         /// <summary>
-        /// Gets or sets the location of the dump file
-        /// </summary>
-        /// <value>
-        /// The dump file location.
-        /// </value>
-        public FileInfo DumpFile { get; protected set; }
-
-        /// <summary>
         ///     Initializes a new instance of the <see cref="RepositoryFactory" /> class.
         /// </summary>
         /// <param name="compositionContainer">The composition container.</param>
@@ -48,6 +39,14 @@ namespace Triage.Mortician
             DumpFile = dumpFile ?? throw new ArgumentNullException(nameof(dumpFile));
             DataTarget = DataTarget.LoadCrashDump(dumpFile.FullName);
         }
+
+        /// <summary>
+        ///     Gets or sets the location of the dump file
+        /// </summary>
+        /// <value>
+        ///     The dump file location.
+        /// </value>
+        public FileInfo DumpFile { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the composition container.
@@ -120,7 +119,7 @@ namespace Triage.Mortician
             var dumpRepo = new DumpObjectRepository(objectStore, objectRootsStore);
             var threadRepo = new DumpThreadRepository(threadStore);
             var appDomainRepo = new DumpAppDomainRepository(appDomainStore);
-            
+
             var moduleRepo = new DumpModuleRepository(moduleStore);
             var typeRepo = new DumpTypeRepository(typeStore);
 
@@ -141,7 +140,8 @@ namespace Triage.Mortician
             {
                 if (!objectStore.ContainsKey(relationship.Key))
                 {
-                    Log.Error($"Object relationship says that there is a parent-child relationship between {relationship.Key} and {relationship.Value}, but cannot find the parent");
+                    Log.Error(
+                        $"Object relationship says that there is a parent-child relationship between {relationship.Key} and {relationship.Value}, but cannot find the parent");
                     return;
                 }
                 var parent = objectStore[relationship.Key];
@@ -150,7 +150,8 @@ namespace Triage.Mortician
                 {
                     if (!objectStore.ContainsKey(childAddress))
                     {
-                        Log.Error($"Object relationship says that there is a parent-child relationship between {relationship.Key} and {childAddress}, but cannot find the child");
+                        Log.Error(
+                            $"Object relationship says that there is a parent-child relationship between {relationship.Key} and {childAddress}, but cannot find the child");
                         return;
                     }
                     var child = objectStore[childAddress];
@@ -167,7 +168,7 @@ namespace Triage.Mortician
             Log.Trace("Extracting Module, AppDomain, and Type information");
             var baseClassMapping = new Dictionary<DumpTypeKey, DumpTypeKey>();
             foreach (var clrModule in rt.Modules)
-            {   
+            {
                 var dumpModule = new DumpModule
                 {
                     Name = clrModule.Name,
@@ -282,17 +283,17 @@ namespace Triage.Mortician
                     Log.Error(
                         $"Extracted a thread but there is already an entry with os id: {dumpThread.OsId}, you should investigate these manually");
             }
-                                                                                
+
             var debuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
             Log.Trace("Loading debugger extensions");
             debuggerProxy.Execute(".load sosex");
             debuggerProxy.Execute(".load mex");
             debuggerProxy.Execute(".load netext");
             var res = debuggerProxy.Execute("!mu"); // forces sosex to load the appropriate SOS.dll
-            
+
 
             Log.Trace("Calling !runaway");
-            var runawayData = debuggerProxy.Execute("!runaway");      
+            var runawayData = debuggerProxy.Execute("!runaway");
             var isUserMode = false;
             var isKernelMode = false;
             foreach (var line in runawayData.Split('\n'))
@@ -320,7 +321,7 @@ namespace Triage.Mortician
                 if (dumpThread == null)
                 {
                     dumpThread = new DumpThread {OsId = id};
-                    threadStore.Add(dumpThread.OsId, dumpThread); 
+                    threadStore.Add(dumpThread.OsId, dumpThread);
                 }
                 dumpThread.DebuggerIndex = index;
 
@@ -333,26 +334,29 @@ namespace Triage.Mortician
             // todo: save !runaway, !eestack to disk and zip up and send to s3
             Log.Trace("Calling !EEStack");
             var eestackCommandResult = debuggerProxy.Execute("!eestack");
-            var eeStacks = Regex.Split(eestackCommandResult, "---------------------------------------------").Select(threadInfo => threadInfo.Trim()).Skip(1).ToArray();
+            var eeStacks = Regex.Split(eestackCommandResult, "---------------------------------------------")
+                .Select(threadInfo => threadInfo.Trim()).Skip(1).ToArray();
             foreach (var eeStack in eeStacks)
             {
                 var lines = eeStack.Split('\n');
                 var header = lines.Take(3).ToArray();
                 var stackFrames = lines.Skip(3).Select(x => x.Substring("0000000000000000 0000000000000000 ".Length));
 
-                var threadIndex = Convert.ToUInt32(Regex.Match(header[0], @"Thread\s+(?<index>\d+)").Groups["index"].Value);
+                var threadIndex =
+                    Convert.ToUInt32(Regex.Match(header[0], @"Thread\s+(?<index>\d+)").Groups["index"].Value);
                 var currentFrame = header[1].Substring("Current frame: ".Length);
 
                 var existingThread = threadStore.Values.FirstOrDefault(t => t.DebuggerIndex == threadIndex);
                 if (existingThread == null)
                 {
-                    Log.Error($"Found thread in !eestack that wasn't in !runaway: {threadIndex}, consider investigating the dump manually");
+                    Log.Error(
+                        $"Found thread in !eestack that wasn't in !runaway: {threadIndex}, consider investigating the dump manually");
                     continue;
                 }
-                    
+
                 existingThread.CurrentFrame = currentFrame;
                 existingThread.EEStackFrames = stackFrames.ToList();
-            }                                                       
+            }
         }
 
         private void SetupObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime rt,
@@ -384,8 +388,8 @@ namespace Triage.Mortician
                     objectStore.Add(newDumpObject.Address, newDumpObject);
                 }
                 objectHierarchy.Add(clrObject.Address, new List<ulong>());
-                 
-                foreach (var clrObjectRef in clrObject.EnumerateObjectReferences(carefully: true))
+
+                foreach (var clrObjectRef in clrObject.EnumerateObjectReferences(true))
                     objectHierarchy[clrObject.Address].Add(clrObjectRef.Address);
             }
 

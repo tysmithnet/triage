@@ -46,7 +46,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <returns>All the threads extracted from the memory dump</returns>
         public IEnumerable<DumpThread> Get()
-        {   
+        {
             return DumpThreads.Values;
         }
     }

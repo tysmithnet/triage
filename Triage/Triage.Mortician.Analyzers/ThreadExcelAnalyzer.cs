@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
-using DocumentFormat.OpenXml.ExtendedProperties;
 using SpreadsheetLight;
 
 namespace Triage.Mortician.Analyzers
@@ -57,7 +56,7 @@ namespace Triage.Mortician.Analyzers
         private void PopulateManagedStackFrames(SLDocument sharedDocument)
         {
             sharedDocument.SelectWorksheet("Stack Frames");
-            int row = 2;
+            var row = 2;
             foreach (var grouping in DumpThreadRepository.Get().Where(t => t.ManagedStackFrames != null)
                 .SelectMany(t => t.ManagedStackFrames)
                 .GroupBy(f => f.DisplayString))
@@ -99,7 +98,7 @@ namespace Triage.Mortician.Analyzers
                     max = stackIndex - 1;
 
                 var threadIndex = 0;
-                foreach (var thread in @group.OrderByDescending(t => t.KernelModeTime + t.UserModeTime))
+                foreach (var thread in group.OrderByDescending(t => t.KernelModeTime + t.UserModeTime))
                 {
                     sharedDocument.SetCellValue(curStackRow + 1 + threadIndex, threadsColumn,
                         $"{thread.DebuggerIndex}:{thread.OsId:x}");

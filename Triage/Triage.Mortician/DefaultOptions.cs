@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using CommandLine;
 
 namespace Triage.Mortician
-{                 
+{
     [Verb("run", HelpText = "Run mortician on the provided dump file")]
     public class DefaultOptions
     {
