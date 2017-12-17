@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Domain
 {
     /// <summary>
     ///     Represents an AppDomain that was found in the memory dump

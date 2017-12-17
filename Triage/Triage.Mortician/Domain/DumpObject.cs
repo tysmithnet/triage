@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Domain
 {
     /// <summary>
     ///     Represents a managed object on the managed heap

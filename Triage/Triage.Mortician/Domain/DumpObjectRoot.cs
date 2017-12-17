@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Domain
 {
     /// <summary>
     ///     An object that represents a GC root discovered in the memory dump

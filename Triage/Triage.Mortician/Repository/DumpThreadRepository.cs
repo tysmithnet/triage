@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common.Logging;
+using Triage.Mortician.Domain;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Repository
 {
     /// <summary>
     ///     Represents a repository that stores threads that were extracted from the memory dump

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Diagnostics.Runtime;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Domain
 {
     /// <summary>
     ///     Default object extractor

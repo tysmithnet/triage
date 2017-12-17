@@ -1,4 +1,4 @@
-﻿namespace Triage.Mortician
+﻿namespace Triage.Mortician.Domain
 {
     /// <summary>
     ///     Type used to represent a unique type extracted from the memory dump

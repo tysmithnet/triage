@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Domain
 {
     /// <summary>
     ///     An object that represents a type that was extracted from the memory dump

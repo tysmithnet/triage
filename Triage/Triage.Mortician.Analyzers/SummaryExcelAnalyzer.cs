@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using SpreadsheetLight;
+using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.Analyzers
 {

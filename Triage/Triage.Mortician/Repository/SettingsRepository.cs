@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Repository
 {
     /// <summary>
     ///     Represents an object that is capable of getting the settings for this process

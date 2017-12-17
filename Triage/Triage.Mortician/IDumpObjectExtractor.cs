@@ -1,4 +1,5 @@
 ﻿using Microsoft.Diagnostics.Runtime;
+using Triage.Mortician.Domain;
 
 namespace Triage.Mortician
 {

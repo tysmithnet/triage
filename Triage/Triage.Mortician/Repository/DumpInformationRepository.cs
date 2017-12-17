@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Repository
 {
     [Export]
     public class DumpInformationRepository

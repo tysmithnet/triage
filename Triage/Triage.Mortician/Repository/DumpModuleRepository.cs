@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Triage.Mortician.Domain;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Repository
 {
     /// <summary>
     ///     An object capable of managing all the discovered modules in the memory dump

@@ -9,6 +9,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Common.Logging;
 using Microsoft.Diagnostics.Runtime;
+using Triage.Mortician.Domain;
+using Triage.Mortician.Repository;
 
 namespace Triage.Mortician
 {
