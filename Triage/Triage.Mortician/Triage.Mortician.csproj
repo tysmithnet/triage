@@ -49,6 +49,9 @@
     <Reference Include="Common.Logging.NLog444, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.NLog444.3.4.1\lib\net40\Common.Logging.NLog444.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1-beta1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.4.4\lib\net45\NLog.dll</HintPath>
     </Reference>
@@ -88,7 +91,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandLineOptions.cs" />
+    <Compile Include="DefaultOptions.cs" />
     <Compile Include="DebuggerProxy.cs" />
     <Compile Include="DefaultObjectExtractor.cs" />
     <Compile Include="DumpAppDomain.cs" />
@@ -108,7 +111,8 @@
     <Compile Include="IAnalyzer.cs" />
     <Compile Include="IDebuggerProxy.cs" />
     <Compile Include="IDumpObjectExtractor.cs" />
-    <Compile Include="ISettingsRepository.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="SettingsRepository.cs" />
     <Compile Include="DumpInformationRepository.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
