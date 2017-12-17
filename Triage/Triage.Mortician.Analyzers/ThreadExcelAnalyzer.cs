@@ -73,7 +73,8 @@ namespace Triage.Mortician.Analyzers
         {
             sharedDocument.SelectWorksheet("Unique Stacks");
             var groups = DumpThreadRepository.Get()
-                .GroupBy(t => string.Join("\n", t.EEStackFrames))
+                .Where(t => t.ManagedStackFrames != null)
+                .GroupBy(t => string.Join("\n", t.ManagedStackFrames.Select(f => f.DisplayString)))
                 .Where(g => !string.IsNullOrWhiteSpace(g.Key))
                 .OrderByDescending(g => g.Count())
                 .ThenByDescending(g => g.Key.Length);
@@ -88,7 +89,7 @@ namespace Triage.Mortician.Analyzers
                 sharedDocument.SetCellValue(curStackRow, threadsColumn, "Threads:");
 
                 var stackIndex = 0;
-                foreach (var line in group.First().EEStackFrames)
+                foreach (var line in group.First().ManagedStackFrames.Select(f => f.DisplayString))
                 {
                     sharedDocument.SetCellValue(curStackRow + 1 + stackIndex, 1, line);
                     stackIndex++;
