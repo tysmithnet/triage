@@ -173,51 +173,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\AWSSDK.Core.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\AWSSDK.Core.pdb" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\AWSSDK.Core.xml" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\CommandLine.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\CommandLine.xml" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\Common.Logging.Core.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\Common.Logging.Core.pdb" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\Common.Logging.Core.xml" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\Common.Logging.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\Common.Logging.NLog444.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\Common.Logging.NLog444.pdb" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\Common.Logging.NLog444.xml" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\Common.Logging.pdb" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\Common.Logging.xml" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\dbgeng.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\dbghelp.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\ext.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\exts.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\mex.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\Microsoft.Diagnostics.Runtime.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\Microsoft.Diagnostics.Runtime.pdb" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\Microsoft.Diagnostics.Runtime.xml" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\NetExt.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\NLog.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\NLog.xml" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\psscor4.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\sosex.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\srcsrv.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\SymbolCheck.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\symsrv.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\System.Console.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\System.IO.Compression.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\System.IO.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\System.Linq.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\System.Linq.Expressions.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\System.Reflection.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\System.Reflection.TypeExtensions.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\System.Runtime.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\System.Runtime.Extensions.dll" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\Triage.Mortician.exe" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\Triage.Mortician.exe.config" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\Triage.Mortician.pdb" />
-    <BinFiles Include="C:\projects\triage\Triage\Triage.Mortician\bin\Debug\\uext.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <Analyzer Include="..\packages\AWSSDK.S3.3.3.16\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
   </ItemGroup>
   <ItemGroup>
