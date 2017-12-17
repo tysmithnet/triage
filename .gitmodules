@@ -1,3 +1,0 @@
-[submodule "Triage/clrmd"]
-	path = Triage/clrmd
-	url = https://github.com/Microsoft/clrmd.git
