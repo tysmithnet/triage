@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Domain
 {
     /// <summary>
     ///     Represents a thread that was extracted from the memory dump
@@ -79,6 +79,12 @@ namespace Triage.Mortician
         /// </value>
         public IList<DumpObjectRoot> ObjectRoots { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the current frame of the thread
+        /// </summary>
+        /// <value>
+        ///     The current frame.
+        /// </value>
         public string CurrentFrame { get; set; }
     }
 }

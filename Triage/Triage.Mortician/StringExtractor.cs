@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
+using Triage.Mortician.Domain;
 
 namespace Triage.Mortician
 {

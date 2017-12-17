@@ -1,4 +1,6 @@
-﻿namespace Triage.Mortician
+﻿using Triage.Mortician.Domain;
+
+namespace Triage.Mortician
 {
     /// <inheritdoc />
     /// <summary>

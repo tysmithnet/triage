@@ -91,29 +91,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigOptions.cs" />
     <Compile Include="DefaultOptions.cs" />
-    <Compile Include="DebuggerProxy.cs" />
-    <Compile Include="DefaultObjectExtractor.cs" />
-    <Compile Include="DumpAppDomain.cs" />
-    <Compile Include="DumpAppDomainRepository.cs" />
-    <Compile Include="DumpModule.cs" />
-    <Compile Include="DumpModuleRepository.cs" />
-    <Compile Include="DumpObjectRoot.cs" />
-    <Compile Include="DumpStackFrame.cs" />
-    <Compile Include="DumpThread.cs" />
-    <Compile Include="DumpThreadRepository.cs" />
-    <Compile Include="DumpType.cs" />
-    <Compile Include="DumpTypeKey.cs" />
-    <Compile Include="DumpTypeRepository.cs" />
+    <Compile Include="Domain\DebuggerProxy.cs" />
+    <Compile Include="Domain\DefaultObjectExtractor.cs" />
+    <Compile Include="Domain\DumpAppDomain.cs" />
+    <Compile Include="Repository\DumpAppDomainRepository.cs" />
+    <Compile Include="Domain\DumpModule.cs" />
+    <Compile Include="Repository\DumpModuleRepository.cs" />
+    <Compile Include="Domain\DumpObjectRoot.cs" />
+    <Compile Include="Domain\DumpStackFrame.cs" />
+    <Compile Include="Domain\DumpThread.cs" />
+    <Compile Include="Repository\DumpThreadRepository.cs" />
+    <Compile Include="Domain\DumpType.cs" />
+    <Compile Include="Domain\DumpTypeKey.cs" />
+    <Compile Include="Repository\DumpTypeRepository.cs" />
     <Compile Include="Engine.cs" />
-    <Compile Include="DumpObject.cs" />
-    <Compile Include="DumpObjectRepository.cs" />
+    <Compile Include="Domain\DumpObject.cs" />
+    <Compile Include="Repository\DumpObjectRepository.cs" />
     <Compile Include="IAnalyzer.cs" />
-    <Compile Include="IDebuggerProxy.cs" />
     <Compile Include="IDumpObjectExtractor.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="SettingsRepository.cs" />
-    <Compile Include="DumpInformationRepository.cs" />
+    <Compile Include="Repository\SettingsRepository.cs" />
+    <Compile Include="Repository\DumpInformationRepository.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryFactory.cs" />
@@ -172,5 +172,6 @@
       <Name>Microsoft.Diagnostics.Runtime</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

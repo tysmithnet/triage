@@ -1,4 +1,4 @@
-﻿namespace Triage.Mortician
+﻿namespace Triage.Mortician.Domain
 {
     /// <summary>
     ///     Represents a stack frame extracted from the memory dump

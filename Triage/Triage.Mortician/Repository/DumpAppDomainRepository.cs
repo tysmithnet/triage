@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Triage.Mortician.Domain;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Repository
 {
     /// <summary>
     ///     An object capable of managing the discovered app domains from the memory dump

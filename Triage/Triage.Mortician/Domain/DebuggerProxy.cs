@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Text;
 using Microsoft.Diagnostics.Runtime.Interop;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Domain
 {
     /// <summary>
     ///     https://github.com/Microsoft/clrmd/issues/79

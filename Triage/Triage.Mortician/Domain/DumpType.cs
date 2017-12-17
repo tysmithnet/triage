@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Domain
 {
     /// <summary>
     ///     An object that represents a type that was extracted from the memory dump
     /// </summary>
     public class DumpType
-    {   
+    {
         /// <summary>
         ///     The objects of this type
         /// </summary>
@@ -181,10 +181,10 @@ namespace Triage.Mortician
         public ulong MethodTable { get; protected internal set; }
 
         /// <summary>
-        /// Gets or sets the key to uniquely identify this type
+        ///     Gets or sets the key to uniquely identify this type
         /// </summary>
         /// <value>
-        /// The dump type key.
+        ///     The dump type key.
         /// </value>
         public DumpTypeKey DumpTypeKey { get; set; }
 
