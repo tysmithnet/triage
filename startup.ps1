@@ -20,7 +20,7 @@ $bucketname = "artifacts.triage";
 Import-Module AWSPowershell
 cd C:\users\Administrator\Documents
 WriteLog("Cloning triage")
-git clone --recursive -j8 https://github.com/tysmithnet/triage.git triage 2>&1 | out-null # hack because git clone reports success to stderror
+git clone -b feature/end_to_end --recursive -j8 https://github.com/tysmithnet/triage.git triage 2>&1 | out-null # hack because git clone reports success to stderror
 cd triage\Triage
 WriteLog("Running nuget restore")
 nuget restore
