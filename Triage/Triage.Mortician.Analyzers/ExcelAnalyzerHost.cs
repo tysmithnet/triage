@@ -41,6 +41,15 @@ namespace Triage.Mortician.Analyzers
         [ImportMany]
         public IExcelPostProcessor[] ExcelPostProcessors { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the event hub.
+        /// </summary>
+        /// <value>
+        ///     The event hub.
+        /// </value>
+        [Import]
+        public EventHub EventHub { get; set; }
+
         /// <inheritdoc />
         /// <summary>
         ///     Performs any necessary setup prior to processing
@@ -62,6 +71,7 @@ namespace Triage.Mortician.Analyzers
         /// <returns>
         ///     A Task that when complete will signal the completion of the setup procedure
         /// </returns>
+        // todo: breakup method
         public async Task Process(CancellationToken cancellationToken)
         {
             if (ExcelAnalyzers == null || ExcelAnalyzers.Length == 0)
@@ -122,20 +132,27 @@ namespace Triage.Mortician.Analyzers
                 if (ExcelPostProcessors == null || ExcelPostProcessors.Length == 0)
                 {
                     Log.Warn($"There were no Excel Post Processors registered");
-                    return;
+                }
+                else
+                {
+                    Log.Trace("Starting excel post processing");
+                    foreach (var postProcessor in ExcelPostProcessors)
+                        try
+                        {
+                            var fileInfo = Path.GetFullPath(fileName);
+                            postProcessor.PostProcess(new FileInfo(fileInfo));
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error($"Excel Post Processor failed: {postProcessor.GetType().FullName} - {e.Message}",
+                                e);
+                        }
                 }
 
-                Log.Trace("Starting excel post processing");
-                foreach (var postProcessor in ExcelPostProcessors)
-                    try
-                    {
-                        var fileInfo = Path.GetFullPath(fileName);
-                        postProcessor.PostProcess(new FileInfo(fileInfo));
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error($"Excel Post Processor failed: {postProcessor.GetType().FullName} - {e.Message}", e);
-                    }
+                EventHub.Broadcast(new ExcelReportComplete
+                {
+                    ReportFile = fileName
+                });
             }
         }
     }

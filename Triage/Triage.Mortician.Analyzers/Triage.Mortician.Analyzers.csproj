@@ -110,6 +110,15 @@
     <Reference Include="System.Numerics.Vectors, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Numerics.Vectors.4.3.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
+    <Reference Include="System.Reactive, Version=4.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.4.0.0-preview00001\lib\net46\System.Reactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Core, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Core.4.0.0-preview00001\lib\net46\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Linq.4.0.0-preview00001\lib\net46\System.Reactive.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System.Reflection, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Reflection.4.3.0\lib\net462\System.Reflection.dll</HintPath>
     </Reference>
@@ -156,13 +165,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExcelAnalyzerHost.cs" />
+    <Compile Include="ExcelReportComplete.cs" />
     <Compile Include="IExcelAnalyzer.cs" />
     <Compile Include="HeapExcelAnalyzer.cs" />
     <Compile Include="IExcelPostProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="S3UploaderPostProcessor.cs" />
+    <Compile Include="S3UploaderAnalysisObserver.cs" />
+    <Compile Include="StackFrameBreakdownMessage.cs" />
+    <Compile Include="StackFrameRollupRecord.cs" />
     <Compile Include="SummaryExcelAnalyzer.cs" />
+    <Compile Include="ThreadAnalyzer.cs" />
     <Compile Include="ThreadExcelAnalyzer.cs" />
+    <Compile Include="UniqueStackFrameRollupRecord.cs" />
+    <Compile Include="UniqueStacksMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

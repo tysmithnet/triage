@@ -6,10 +6,17 @@ using Newtonsoft.Json;
 
 namespace Triage.Mortician
 {
+    /// <summary>
+    ///     Class capable of performing settings file specific tasks
+    /// </summary>
     internal static class Settings
     {
         public static ILog Log { get; set; } = LogManager.GetLogger(typeof(Settings));
 
+        /// <summary>
+        ///     Gets the settings.
+        /// </summary>
+        /// <returns></returns>
         public static Dictionary<string, string> GetSettings()
         {
             Dictionary<string, string> settings;
@@ -29,6 +36,10 @@ namespace Triage.Mortician
             return settings;
         }
 
+        /// <summary>
+        ///     Saves the settings.
+        /// </summary>
+        /// <param name="existingSettings">The existing settings.</param>
         public static void SaveSettings(Dictionary<string, string> existingSettings)
         {
             var serializer = new JsonSerializer {Formatting = Formatting.Indented};
