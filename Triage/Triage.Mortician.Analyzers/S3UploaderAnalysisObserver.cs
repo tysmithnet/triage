@@ -60,7 +60,7 @@ namespace Triage.Mortician.Analyzers
         /// <returns>A task that when complete will signal the completion of this work</returns>
         public Task Process(CancellationToken cancellationToken)
         {
-            return EventHub.Get<ExcelReportComplete>().ForEachAsync(message =>
+            return EventHub.Get<ExcelReportComplete>().ForEachAsync(async message =>
             {
                 // note: this looks for ~/.aws/credentials for a profile named default
                 // see https://docs.aws.amazon.com/AmazonS3/latest/dev/walkthrough1.html#walkthrough1-add-users
@@ -73,7 +73,7 @@ namespace Triage.Mortician.Analyzers
                     var putReportRequest = new PutObjectRequest
                     {
                         // todo: this sould be a setting
-                        BucketName = "reports.triage",
+                        BucketName = SettingsRepository.Get("bucket-id"),
                         Key = message.ReportFile,
                         InputStream = fs
                     };
@@ -84,7 +84,7 @@ namespace Triage.Mortician.Analyzers
                     if (shouldUpload)
                     {
                         Log.Info("Attempting to upload report to S3");
-                        PutObjectResponse putObjectResponse = client.PutObject(putReportRequest);
+                        PutObjectResponse putObjectResponse = await client.PutObjectAsync(putReportRequest, cancellationToken);
                         if(putObjectResponse.HttpStatusCode == HttpStatusCode.OK)
                             Log.Trace($"Upload of {message.ReportFile} was successful");
                         else
