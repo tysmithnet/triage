@@ -21,6 +21,8 @@ namespace Triage.Mortician.Analyzers
     [Export(typeof(IAnalysisObserver))]
     internal sealed class S3UploaderAnalysisObserver : IAnalysisObserver
     {
+        private const string UploadExcelToS3 = "upload-excel-to-s3";
+        private const string ExcelBucketId = "excel-bucket-id";
         public ILog Log = LogManager.GetLogger(typeof(S3UploaderAnalysisObserver));
 
         /// <summary>
@@ -62,6 +64,13 @@ namespace Triage.Mortician.Analyzers
         {
             return EventHub.Get<ExcelReportComplete>().ForEachAsync(async message =>
             {
+                var shouldUpload = SettingsRepository.GetBool(UploadExcelToS3, fallbackToDefault:true);
+                if (!shouldUpload)
+                {
+                    Log.Trace($"Skipping upload excel report to s3. Is the setting {UploadExcelToS3} set to true?");
+                    return;
+                }
+                               
                 // note: this looks for ~/.aws/credentials for a profile named default
                 // see https://docs.aws.amazon.com/AmazonS3/latest/dev/walkthrough1.html#walkthrough1-add-users
                 // todo: move this out to a decoupled component
@@ -73,24 +82,20 @@ namespace Triage.Mortician.Analyzers
                     var putReportRequest = new PutObjectRequest
                     {
                         // todo: this sould be a setting
-                        BucketName = SettingsRepository.Get("excel-bucket-id"),
+                        BucketName = SettingsRepository.Get(ExcelBucketId),
                         Key = message.ReportFile,
                         InputStream = fs
                     };
 
                     // todo: make a service
+                    Log.Info("Attempting to upload report to S3");
+                    var putObjectResponse = await client.PutObjectAsync(putReportRequest, cancellationToken);
+
+                    if (putObjectResponse.HttpStatusCode == HttpStatusCode.OK)
+                        Log.Trace($"Upload of {message.ReportFile} was successful");
+                    else
+                        Log.Error($"Unable to upload {message.ReportFile} to S3");
                     
-                    var shouldUpload = SettingsRepository.GetBool("upload-excel-to-s3", true);
-                    if (shouldUpload)
-                    {
-                        Log.Info("Attempting to upload report to S3");
-                        PutObjectResponse putObjectResponse = await client.PutObjectAsync(putReportRequest, cancellationToken);
-                        if(putObjectResponse.HttpStatusCode == HttpStatusCode.OK)
-                            Log.Trace($"Upload of {message.ReportFile} was successful");
-                        else
-                            Log.Error($"Unable to upload {message.ReportFile} to S3");
-                    }
-                        
                 }
             }, cancellationToken);
         }
