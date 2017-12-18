@@ -41,6 +41,12 @@ namespace Triage.Mortician.Analyzers
         [ImportMany]
         public IExcelPostProcessor[] ExcelPostProcessors { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the event hub.
+        /// </summary>
+        /// <value>
+        ///     The event hub.
+        /// </value>
         [Import]
         public EventHub EventHub { get; set; }
 
@@ -126,7 +132,6 @@ namespace Triage.Mortician.Analyzers
                 if (ExcelPostProcessors == null || ExcelPostProcessors.Length == 0)
                 {
                     Log.Warn($"There were no Excel Post Processors registered");
-
                 }
                 else
                 {
@@ -139,9 +144,10 @@ namespace Triage.Mortician.Analyzers
                         }
                         catch (Exception e)
                         {
-                            Log.Error($"Excel Post Processor failed: {postProcessor.GetType().FullName} - {e.Message}", e);
+                            Log.Error($"Excel Post Processor failed: {postProcessor.GetType().FullName} - {e.Message}",
+                                e);
                         }
-                }        
+                }
 
                 EventHub.Broadcast(new ExcelReportComplete
                 {

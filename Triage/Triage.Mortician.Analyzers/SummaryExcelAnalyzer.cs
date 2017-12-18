@@ -7,17 +7,41 @@ using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.Analyzers
 {
+    /// <inheritdoc />
+    /// <summary>
+    ///     An excel analyzer that will write the summary of the excel report
+    /// </summary>
+    /// <seealso cref="T:Triage.Mortician.Analyzers.IExcelAnalyzer" />
     [Export(typeof(IExcelAnalyzer))]
     public class SummaryExcelAnalyzer : IExcelAnalyzer
     {
+        /// <summary>
+        ///     Gets or sets the dump information repository.
+        /// </summary>
+        /// <value>
+        ///     The dump information repository.
+        /// </value>
         [Import]
         public DumpInformationRepository DumpInformationRepository { get; set; }
 
+        /// <inheritdoc />
+        /// <summary>
+        ///     Performs any required setup like number crunching etc.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        ///     A Task, that when complete will signal the setup completion
+        /// </returns>
         public Task Setup(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        ///     Contributes the specified shared document.
+        /// </summary>
+        /// <param name="sharedDocument">The shared document.</param>
         public void Contribute(SLDocument sharedDocument)
         {
             sharedDocument.SelectWorksheet("SummaryData");

@@ -29,21 +29,32 @@ namespace Triage.Mortician
         [ImportMany]
         public IAnalyzer[] Analyzers { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the analysis observers.
+        /// </summary>
+        /// <value>
+        ///     The analysis observers.
+        /// </value>
         [ImportMany]
         public IAnalysisObserver[] AnalysisObservers { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the event hub.
+        /// </summary>
+        /// <value>
+        ///     The event hub.
+        /// </value>
         [Import]
         public EventHub EventHub { get; set; }
 
         /// <summary>
         ///     Processes the analyzers
         /// </summary>
-        /// <param name="externalCancellationToken">The cancellation token.</param>
         /// <returns>A Task representing the completion of all the analyzers</returns>
         public async Task Process()
         {
             var internalCts = new CancellationTokenSource();
-            var internalToken = internalCts.Token;     
+            var internalToken = internalCts.Token;
             var analysisCts = new CancellationTokenSource();
             var analysisToken = analysisCts.Token;
             if (Analyzers == null || Analyzers.Length == 0)

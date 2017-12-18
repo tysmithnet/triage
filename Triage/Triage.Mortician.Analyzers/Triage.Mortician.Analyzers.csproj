@@ -165,6 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExcelAnalyzerHost.cs" />
+    <Compile Include="ExcelReportComplete.cs" />
     <Compile Include="IExcelAnalyzer.cs" />
     <Compile Include="HeapExcelAnalyzer.cs" />
     <Compile Include="IExcelPostProcessor.cs" />

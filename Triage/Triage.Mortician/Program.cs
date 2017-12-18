@@ -4,7 +4,6 @@ using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using CommandLine;
 using Common.Logging;
 
@@ -37,10 +36,10 @@ namespace Triage.Mortician
         }
 
         /// <summary>
-        /// Executes the configuration module
+        ///     Executes the configuration module
         /// </summary>
         /// <param name="configOptions">The the configuration command line options</param>
-        /// <returns></returns>
+        /// <returns>Program status code</returns>
         private static int ConfigExecution(ConfigOptions configOptions)
         {
             if (configOptions.ShouldList)
@@ -52,7 +51,8 @@ namespace Triage.Mortician
                 }
                 catch (IOException e)
                 {
-                    Console.WriteLine("Could not load mortician.config.json, use config -k \"some key\" -v \"some value\"");
+                    Console.WriteLine(
+                        "Could not load mortician.config.json, use config -k \"some key\" -v \"some value\"");
                     return 1;
                 }
 
@@ -61,10 +61,8 @@ namespace Triage.Mortician
             if (configOptions.KeysToDelete != null && configOptions.KeysToDelete.Any())
             {
                 foreach (var key in configOptions.KeysToDelete)
-                {
                     if (settings.ContainsKey(key))
                         settings.Remove(key);
-                }
                 Settings.SaveSettings(settings);
                 return 0;
             }
@@ -84,10 +82,10 @@ namespace Triage.Mortician
         }
 
         /// <summary>
-        /// Perform the default execution
+        ///     Perform the default execution
         /// </summary>
         /// <param name="options">The options.</param>
-        /// <returns></returns>
+        /// <returns>Program status code</returns>
         private static int DefaultExecution(DefaultOptions options)
         {
             var executionLocation = Assembly.GetEntryAssembly().Location;
