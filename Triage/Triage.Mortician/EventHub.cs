@@ -24,5 +24,10 @@ namespace Triage.Mortician
         {
             return Subject.OfType<TMessage>();
         }
+
+        internal void Shutdown()
+        {
+            Subject.OnCompleted();
+        }
     }
 }

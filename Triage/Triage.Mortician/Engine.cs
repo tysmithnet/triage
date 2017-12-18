@@ -32,38 +32,47 @@ namespace Triage.Mortician
         [ImportMany]
         public IAnalysisObserver[] AnalysisObservers { get; set; }
 
+        [Import]
+        public EventHub EventHub { get; set; }
+
         /// <summary>
         ///     Processes the analyzers
         /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="externalCancellationToken">The cancellation token.</param>
         /// <returns>A Task representing the completion of all the analyzers</returns>
-        public async Task Process(CancellationToken cancellationToken)
+        public async Task Process()
         {
+            var internalCts = new CancellationTokenSource();
+            var internalToken = internalCts.Token;     
+            var analysisCts = new CancellationTokenSource();
+            var analysisToken = analysisCts.Token;
             if (Analyzers == null || Analyzers.Length == 0)
             {
                 Log.Fatal("No analyzers were found!");
                 return;
             }
 
-            CancellationTokenSource cts = new CancellationTokenSource();
             Log.Trace("Engine starting...");
-            var analyzerTasks = StartAnalyzers(cancellationToken);
-            var analysisObserverTasks = StartAnalysisObservers(cts.Token);
+            var analysisObserverTasks = StartAnalysisObservers(analysisToken);
+            var analyzerTasks = StartAnalyzers(internalToken);
+
+            // analyzer tasks handle the exceptions internally
             await Task.WhenAll(analyzerTasks);
-            cts.Cancel();
+            EventHub.Shutdown();
             try
             {
                 await Task.WhenAll(analysisObserverTasks);
             }
             catch (TaskCanceledException)
             {
-                Log.Trace("Successfully shut down analysis observers");
-            }                                  
+                // we are expecting this
+            }
+            Log.Trace("Execution complete");
         }
 
-        private IEnumerable<Task> StartAnalysisObservers(CancellationToken cancellationToken)
+        private Task StartAnalysisObservers(CancellationToken cancellationToken)
         {
-            return AnalysisObservers.Select(analysisObserver => Task.Run(async () =>
+            var tasks = AnalysisObservers.Select(analysisObserver => Task.Run(async () =>
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var isSetup = false;
@@ -90,10 +99,11 @@ namespace Triage.Mortician
                 catch (Exception e)
                 {
                     Log.Error(
-                        $"AnalysisrObserver Process Exception: {analysisObserver.GetType().FullName} threw {e.GetType().FullName} - {e.Message}",
+                        $"AnalysisObserver Process Exception: {analysisObserver.GetType().FullName} threw {e.GetType().FullName} - {e.Message}",
                         e);
                 }
             }, cancellationToken));
+            return Task.WhenAll(tasks);
         }
 
         private IEnumerable<Task> StartAnalyzers(CancellationToken cancellationToken)

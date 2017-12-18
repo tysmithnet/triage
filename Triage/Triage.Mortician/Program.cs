@@ -106,7 +106,7 @@ namespace Triage.Mortician
             repositoryFactory.RegisterRepositories();
 
             var engine = compositionContainer.GetExportedValue<Engine>();
-            engine.Process(CancellationToken.None).Wait();
+            engine.Process().Wait();
 
             return 0;
         }

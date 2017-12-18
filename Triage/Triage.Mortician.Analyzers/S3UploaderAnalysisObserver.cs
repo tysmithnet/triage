@@ -53,7 +53,7 @@ namespace Triage.Mortician.Analyzers
                     Log.Info("Attempting to upload report to S3");
                     //PutObjectResponse putObjectResponse = client.PutObject(putReportRequest);         
                 }
-            }, cancellationToken);
+            });
         }
     }
 
