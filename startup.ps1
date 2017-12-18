@@ -15,20 +15,23 @@ catch
 }
 # todo: need to check for errors
 WriteLog("Beginning startup script")
-$key = "HelloWorld.exe_170805_215723.dmp"
-$bucketname = "artifacts.triage";
+$key = "somememory.dmp"
+$dumpbucket = "dump.bucket"
+$reportbucket = "report.bucket"
+$branch = 'feature/some_branch'
+$debugRelease = 'Release'
 Import-Module AWSPowershell
 cd C:\users\Administrator\Documents
 WriteLog("Cloning triage")
-git clone -b feature/end_to_end --recursive -j8 https://github.com/tysmithnet/triage.git triage 2>&1 | out-null # hack because git clone reports success to stderror
+git clone -b $branch --recursive https://github.com/tysmithnet/triage.git triage 2>&1 | out-null # hack because git clone reports success to stderror
 cd triage\Triage
 WriteLog("Running nuget restore")
 nuget restore
 WriteLog("Building solution")
-devenv /build Debug Triage.sln
-cd .\Triage.Mortician\bin\Debug
+devenv /build $debugRelease Triage.sln
+cd ".\Triage.Mortician\bin\$debugRelease"
 WriteLog("Getting dump from S3 bucket")
-Read-S3Object -BucketName $bucketname -Key $key -File C:\Temp\$key
+Read-S3Object -BucketName $dumpbucket -Key $key -File C:\Temp\$key
 WriteLog("Running mortician on dump")
 ./Triage.Mortician.exe config `
 	-k `
@@ -36,6 +39,6 @@ WriteLog("Running mortician on dump")
 		"excel-bucket-id" `
 	-v `
 		"true" `
-		"reports.triage"
+		"$reportbucket"
 
 ./Triage.Mortician.exe run -d "C:\Temp\$key"
