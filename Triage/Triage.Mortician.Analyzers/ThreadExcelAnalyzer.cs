@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
@@ -7,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
 using SpreadsheetLight;
-using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.Analyzers
 {
@@ -27,7 +25,20 @@ namespace Triage.Mortician.Analyzers
         [Import]
         public EventHub EventHub { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the stack frame breakdown message.
+        /// </summary>
+        /// <value>
+        ///     The stack frame breakdown message.
+        /// </value>
         protected internal StackFrameBreakdownMessage StackFrameBreakdownMessage { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the unique stacks message.
+        /// </summary>
+        /// <value>
+        ///     The unique stacks message.
+        /// </value>
         protected internal UniqueStacksMessage UniqueStacksMessage { get; set; }
 
         /// <inheritdoc />
@@ -56,17 +67,21 @@ namespace Triage.Mortician.Analyzers
         /// <param name="sharedDocument">The shared document.</param>
         public void Contribute(SLDocument sharedDocument)
         {
-            if(UniqueStacksMessage != null)
+            if (UniqueStacksMessage != null)
                 PopulateUniqueStacks(sharedDocument);
             else
                 Log.Trace("No unique stack message received");
 
-            if(StackFrameBreakdownMessage != null)
+            if (StackFrameBreakdownMessage != null)
                 PopulateManagedStackFrames(sharedDocument);
             else
                 Log.Trace("No stack frame breakdown message received");
         }
 
+        /// <summary>
+        ///     Populates the managed stack frames.
+        /// </summary>
+        /// <param name="sharedDocument">The shared document.</param>
         private void PopulateManagedStackFrames(SLDocument sharedDocument)
         {
             sharedDocument.SelectWorksheet("Stack Frames");
@@ -80,6 +95,10 @@ namespace Triage.Mortician.Analyzers
             }
         }
 
+        /// <summary>
+        ///     Populates the unique stacks.
+        /// </summary>
+        /// <param name="sharedDocument">The shared document.</param>
         private void PopulateUniqueStacks(SLDocument sharedDocument)
         {
             sharedDocument.SelectWorksheet("Unique Stacks");
@@ -105,7 +124,8 @@ namespace Triage.Mortician.Analyzers
                     max = stackIndex - 1;
 
                 var threadIndex = 0;
-                foreach (var thread in frameRollupRecord.Threads.OrderByDescending(t => t.KernelModeTime + t.UserModeTime))
+                foreach (var thread in frameRollupRecord.Threads.OrderByDescending(t =>
+                    t.KernelModeTime + t.UserModeTime))
                 {
                     sharedDocument.SetCellValue(curStackRow + 1 + threadIndex, threadsColumn,
                         $"{thread.DebuggerIndex}:{thread.OsId:x} ({thread.KernelModeTime + thread.UserModeTime})");
