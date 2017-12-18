@@ -73,7 +73,7 @@ namespace Triage.Mortician.Analyzers
                     var putReportRequest = new PutObjectRequest
                     {
                         // todo: this sould be a setting
-                        BucketName = SettingsRepository.Get("bucket-id"),
+                        BucketName = SettingsRepository.Get("excel-bucket-id"),
                         Key = message.ReportFile,
                         InputStream = fs
                     };
