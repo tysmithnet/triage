@@ -1,3 +1,7 @@
+# Sample start up script
+# Ultimately, you need to configure the application and then run it on a dump file
+# how you do that is up to you.
+
 $n = 1
 function WriteLog([string]$message)
 {
@@ -41,6 +45,13 @@ nuget restore
 
 WriteLog("Building solution")
 devenv /build $debugRelease Triage.sln
+
+if(-not (test-path .\Triage.Mortician\bin\$debugRelease))
+{
+	WriteLog("Build failed. Exiting.")
+	exit
+}
+
 cd ".\Triage.Mortician\bin\$debugRelease"
 
 WriteLog("Configuring mortician")
@@ -56,8 +67,13 @@ WriteLog("Configuring mortician")
 		"$awsAccessKeyId"`
 		"$awsSecretKey"
 
-WriteLog("Downloading file")
+WriteLog("Downloading memory dump")
 Read-S3Object -BucketName $dumpbucket -Key $key -File C:\Temp\$key
+if(-not (Test-Path c:\temp\$key))
+{
+	WriteLog("Memory dump could not be downloaded. Exiting.")
+	exit
+}
 
 WriteLog("Running mortician on dump")
 ./Triage.Mortician.exe run -d "C:\Temp\$key"
