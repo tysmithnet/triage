@@ -39,7 +39,16 @@ namespace Triage.Mortician
             CompositionContainer =
                 compositionContainer ?? throw new ArgumentNullException(nameof(compositionContainer));
             DumpFile = dumpFile ?? throw new ArgumentNullException(nameof(dumpFile));
-            DataTarget = DataTarget.LoadCrashDump(dumpFile.FullName);
+            try
+            {
+                DataTarget = DataTarget.LoadCrashDump(dumpFile.FullName);
+            }
+            catch (Exception e)
+            {
+                // todo: should check this ahead of time
+                Log.Fatal($"Unable to open crash dump: {e.Message}, Does the dump file exist and do you have the x64 folder of the Windows Debugging Kit in your path?");
+            }
+            
         }
 
         /// <summary>
