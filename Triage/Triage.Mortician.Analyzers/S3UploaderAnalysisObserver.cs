@@ -63,7 +63,7 @@ namespace Triage.Mortician.Analyzers
         /// <returns>A task that when complete will signal the completion of this work</returns>
         public Task Process(CancellationToken cancellationToken)
         {
-            return EventHub.Get<ExcelReportComplete>().ForEachAsync(async message =>
+            return EventHub.Get<ExcelReportComplete>().ForEachAsync(message =>
             {
                 var shouldUpload = SettingsRepository.GetBool(UploadExcelToS3, true);
                 if (!shouldUpload)
@@ -103,7 +103,7 @@ namespace Triage.Mortician.Analyzers
                     Log.Info("Attempting to upload report to S3");
                     try
                     {
-                        var putObjectResponse = await client.PutObjectAsync(putReportRequest);
+                        var putObjectResponse = client.PutObject(putReportRequest);
                         if (putObjectResponse.HttpStatusCode == HttpStatusCode.OK)
                             Log.Trace($"Upload of {message.ReportFile} was successful");
                         else
