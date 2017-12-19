@@ -50,3 +50,4 @@ WriteLog("Configuring mortician")
 
 WriteLog("Running mortician on dump")
 ./Triage.Mortician.exe run --s3-bucket $dumpbucket --s3-key $key
+WriteLog("Complete")

@@ -75,7 +75,16 @@ namespace Triage.Mortician.Analyzers
                 // note: this looks for ~/.aws/credentials for a profile named default
                 // see https://docs.aws.amazon.com/AmazonS3/latest/dev/walkthrough1.html#walkthrough1-add-users
                 // todo: move this out to a decoupled component
-                var creds = new StoredProfileAWSCredentials("default");
+                StoredProfileAWSCredentials creds;
+                try
+                {
+                    creds = new StoredProfileAWSCredentials("default");
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Unable to create credentials for S3 client");
+                    return;
+                }         
 
                 using (var client = new AmazonS3Client(creds, RegionEndpoint.USEast1))
                 using (var fs = File.OpenRead(message.ReportFile))
