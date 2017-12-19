@@ -96,7 +96,17 @@ namespace Triage.Mortician
                 var creds = new StoredProfileAWSCredentials("default");
                 using (var client = new AmazonS3Client(creds, RegionEndpoint.USEast1))
                 {
-                    var response = client.GetObject(options.S3DumpFileBucket, options.S3DumpFileKey);
+                    GetObjectResponse response;
+                    try
+                    {
+                         response = client.GetObject(options.S3DumpFileBucket, options.S3DumpFileKey);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Fatal($"Unable to get file from bucket: {e.Message}. Exiting");
+                        return -1;
+                    }
+                    
                     if (response.HttpStatusCode == HttpStatusCode.OK)
                     {
                         try
