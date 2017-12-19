@@ -90,56 +90,6 @@ namespace Triage.Mortician
         /// <returns>Program status code</returns>
         private static int DefaultExecution(DefaultOptions options)
         {
-            if (options.DumpFile == null && options.S3DumpFileBucket != null && options.S3DumpFileKey != null)
-            {
-                Log.Trace("Attempting to download dump from s3");
-                StoredProfileAWSCredentials creds;
-                try
-                {
-                     creds = new StoredProfileAWSCredentials("default");
-                }
-                catch (Exception e)
-                {
-                    Log.Fatal($"Error trying to AWS credentials. Do you have a credentials file in ~/.aws/ ?: {e.Message}");
-                    return -1;
-                }
-                
-                using (var client = new AmazonS3Client(creds, RegionEndpoint.USEast1))
-                {
-                    GetObjectResponse response;
-                    try
-                    {
-                         response = client.GetObject(options.S3DumpFileBucket, options.S3DumpFileKey);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Fatal($"Unable to get file from bucket: {e.Message}. Exiting");
-                        return -1;
-                    }
-                    
-                    if (response.HttpStatusCode == HttpStatusCode.OK)
-                    {
-                        try
-                        {
-                            Log.Trace("Response came back OK, will save to disk");
-                            string fileName = $"{DateTime.UtcNow:yyyy_MM_dd_mm_HH_ss}.dmp";
-                            response.WriteResponseStreamToFile(fileName);
-
-                            options.DumpFile = fileName;
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Fatal($"Unable to write dump file to disk: {e}", e);
-                            return -1;
-                        }      
-                    }
-                    else
-                    {
-                        Log.Fatal($"Could not retrieve dump file from S3");
-                        return -1;
-                    }
-                }
-            }
             var executionLocation = Assembly.GetEntryAssembly().Location;
             var morticianAssemblyFiles =
                 Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation), "Triage.Mortician.*.dll");

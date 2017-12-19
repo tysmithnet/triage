@@ -9,12 +9,6 @@ namespace Triage.Mortician
     public class DefaultOptions
     {
         [Option('d', "dumpfile", HelpText = "The dump file to operate on", SetName = "LocalFile")]
-        public string DumpFile { get; set; }
-
-        [Option("s3-bucket", HelpText = "Bucket where the dump file is located", SetName = "S3")]
-        public string S3DumpFileBucket { get; set; }
-
-        [Option("s3-key", HelpText = "Bucket where the dump file is located", SetName = "S3")]
-        public string S3DumpFileKey { get; set; }
+        public string DumpFile { get; set; }    
     }
 }

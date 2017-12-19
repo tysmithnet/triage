@@ -20,6 +20,10 @@ $dumpbucket = "DUMP_BUCKET"
 $reportbucket = "REPORT_BUCKET"
 $branch = 'GIT_BRANCH'
 $debugRelease = 'DEBUG_RELEASE'
+$awsAccessKeyId = 'AWS_ACCESS_KEY_ID'
+$awsSecretKey = 'AWS_SECRET_KEY'
+
+Set-AWSCredential -AccessKey $awsAccessKeyId -SecretKey $awsSecretKey
 
 cd C:\users\Administrator\Documents
 WriteLog("Cloning triage")
@@ -44,10 +48,17 @@ WriteLog("Configuring mortician")
 	-k `
 		"upload-excel-to-s3" `
 		"excel-bucket-id" `
+		"aws-access-key-id"`
+		"aws-secret-key"`
 	-v `
 		"true" `
-		"$reportbucket"
+		"$reportbucket"`
+		"$awsAccessKeyId"`
+		"$awsSecretKey"
+
+WriteLog("Downloading file")
+Read-S3Object -BucketName $dumpbucket -Key $key -File C:\Temp\$key
 
 WriteLog("Running mortician on dump")
-./Triage.Mortician.exe run --s3-bucket $dumpbucket --s3-key $key
+./Triage.Mortician.exe run -d "C:\Temp\$key"
 WriteLog("Complete")

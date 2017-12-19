@@ -75,10 +75,12 @@ namespace Triage.Mortician.Analyzers
                 // note: this looks for ~/.aws/credentials for a profile named default
                 // see https://docs.aws.amazon.com/AmazonS3/latest/dev/walkthrough1.html#walkthrough1-add-users
                 // todo: move this out to a decoupled component
-                StoredProfileAWSCredentials creds;
+                BasicAWSCredentials creds;
                 try
                 {
-                    creds = new StoredProfileAWSCredentials("default");
+                    string accessKey = SettingsRepository.Get("aws-access-key-id");
+                    string secretKey = SettingsRepository.Get("aws-secret-key");
+                    creds = new BasicAWSCredentials(accessKey, secretKey);
                 }
                 catch (Exception e)
                 {
