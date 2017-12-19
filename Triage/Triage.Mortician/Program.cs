@@ -93,9 +93,10 @@ namespace Triage.Mortician
             if (options.DumpFile == null && options.S3DumpFileBucket != null && options.S3DumpFileKey != null)
             {
                 Log.Trace("Attempting to download dump from s3");
+                StoredProfileAWSCredentials creds;
                 try
                 {
-                    var creds = new StoredProfileAWSCredentials("default");
+                     creds = new StoredProfileAWSCredentials("default");
                 }
                 catch (Exception e)
                 {
