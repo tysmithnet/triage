@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.Composition;
+﻿using System;
+using System.ComponentModel.Composition;
 using System.IO;
+using System.Net;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +22,8 @@ namespace Triage.Mortician.Analyzers
     [Export(typeof(IAnalysisObserver))]
     internal sealed class S3UploaderAnalysisObserver : IAnalysisObserver
     {
+        private const string UploadExcelToS3 = "upload-excel-to-s3";
+        private const string ExcelBucketId = "excel-bucket-id";
         public ILog Log = LogManager.GetLogger(typeof(S3UploaderAnalysisObserver));
 
         /// <summary>
@@ -59,27 +63,56 @@ namespace Triage.Mortician.Analyzers
         /// <returns>A task that when complete will signal the completion of this work</returns>
         public Task Process(CancellationToken cancellationToken)
         {
-            return EventHub.Get<ExcelReportComplete>().ForEachAsync(reportFile =>
+            return EventHub.Get<ExcelReportComplete>().ForEachAsync(message =>
             {
+                var shouldUpload = SettingsRepository.GetBool(UploadExcelToS3, fallbackToDefault: true);
+                if (!shouldUpload)
+                {
+                    Log.Trace($"Skipping upload excel report to s3. Is the setting {UploadExcelToS3} set to true?");
+                    return;
+                }
+
                 // note: this looks for ~/.aws/credentials for a profile named default
                 // see https://docs.aws.amazon.com/AmazonS3/latest/dev/walkthrough1.html#walkthrough1-add-users
                 // todo: move this out to a decoupled component
-                var creds = new StoredProfileAWSCredentials("default");
+                BasicAWSCredentials creds;
+                try
+                {
+                    string accessKey = SettingsRepository.Get("aws-access-key-id");
+                    string secretKey = SettingsRepository.Get("aws-secret-key");
+                    creds = new BasicAWSCredentials(accessKey, secretKey);
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Unable to create credentials for S3 client: {e.Message}");
+                    return;
+                }         
 
                 using (var client = new AmazonS3Client(creds, RegionEndpoint.USEast1))
-                using (var fs = File.OpenRead(reportFile.ReportFile))
+                using (var fs = File.OpenRead(message.ReportFile))
                 {
                     var putReportRequest = new PutObjectRequest
                     {
                         // todo: this sould be a setting
-                        BucketName = "reports.triage",
-                        Key = reportFile.ReportFile,
+                        BucketName = SettingsRepository.Get(ExcelBucketId),
+                        Key = message.ReportFile,
                         InputStream = fs
                     };
 
                     // todo: make a service
                     Log.Info("Attempting to upload report to S3");
-                    //PutObjectResponse putObjectResponse = client.PutObject(putReportRequest);         
+                    try
+                    {
+                        var putObjectResponse = client.PutObject(putReportRequest);
+                        if (putObjectResponse.HttpStatusCode == HttpStatusCode.OK)
+                            Log.Trace($"Upload of {message.ReportFile} was successful");
+                        else
+                            throw new ApplicationException("Unknown error");
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($"Unable to upload {message.ReportFile} to S3: {e.Message}", e);
+                    }
                 }
             }, cancellationToken);
         }

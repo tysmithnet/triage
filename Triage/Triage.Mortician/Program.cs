@@ -3,7 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
+using System.Threading.Tasks;
+using Amazon;
+using Amazon.Runtime;
+using Amazon.S3;
+using Amazon.S3.Model;
 using CommandLine;
 using Common.Logging;
 
@@ -28,11 +34,7 @@ namespace Triage.Mortician
                 (DefaultOptions opts) => DefaultExecution(opts),
                 (ConfigOptions opts) => ConfigExecution(opts),
                 errs => -1
-            );
-#if DEBUG
-            Console.WriteLine("Success.. press any key");
-            Console.ReadKey();
-#endif
+            );     
         }
 
         /// <summary>

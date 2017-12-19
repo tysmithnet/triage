@@ -35,5 +35,24 @@ namespace Triage.Mortician.Repository
                 return value;
             throw new ArgumentOutOfRangeException($"Could not find setting {key}");
         }
+
+        public bool GetBool(string key, bool fallbackToDefault = false)
+        {
+            string s = Get(key);
+            if (fallbackToDefault)
+            {              
+                try
+                {
+                    return Convert.ToBoolean(s);
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+                return Convert.ToBoolean(s);
+
+        }
     }
 }
