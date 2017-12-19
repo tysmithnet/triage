@@ -93,7 +93,16 @@ namespace Triage.Mortician
             if (options.DumpFile == null && options.S3DumpFileBucket != null && options.S3DumpFileKey != null)
             {
                 Log.Trace("Attempting to download dump from s3");
-                var creds = new StoredProfileAWSCredentials("default");
+                try
+                {
+                    var creds = new StoredProfileAWSCredentials("default");
+                }
+                catch (Exception e)
+                {
+                    Log.Fatal($"Error trying to AWS credentials. Do you have a credentials file in ~/.aws/ ?");
+                    return -1;
+                }
+                
                 using (var client = new AmazonS3Client(creds, RegionEndpoint.USEast1))
                 {
                     GetObjectResponse response;
