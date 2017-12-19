@@ -65,7 +65,7 @@ namespace Triage.Mortician.Analyzers
         {
             return EventHub.Get<ExcelReportComplete>().ForEachAsync(message =>
             {
-                var shouldUpload = SettingsRepository.GetBool(UploadExcelToS3, fallbackToDefault: true);
+                var shouldUpload = SettingsRepository.GetBool(UploadExcelToS3, true);
                 if (!shouldUpload)
                 {
                     Log.Trace($"Skipping upload excel report to s3. Is the setting {UploadExcelToS3} set to true?");
@@ -78,15 +78,15 @@ namespace Triage.Mortician.Analyzers
                 BasicAWSCredentials creds;
                 try
                 {
-                    string accessKey = SettingsRepository.Get("aws-access-key-id");
-                    string secretKey = SettingsRepository.Get("aws-secret-key");
+                    var accessKey = SettingsRepository.Get("aws-access-key-id");
+                    var secretKey = SettingsRepository.Get("aws-secret-key");
                     creds = new BasicAWSCredentials(accessKey, secretKey);
                 }
                 catch (Exception e)
                 {
                     Log.Error($"Unable to create credentials for S3 client: {e.Message}");
                     return;
-                }         
+                }
 
                 using (var client = new AmazonS3Client(creds, RegionEndpoint.USEast1))
                 using (var fs = File.OpenRead(message.ReportFile))

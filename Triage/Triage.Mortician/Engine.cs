@@ -27,7 +27,7 @@ namespace Triage.Mortician
         ///     The analyzers.
         /// </value>
         [ImportMany]
-        protected internal  IAnalyzer[] Analyzers { get; set; }
+        protected internal IAnalyzer[] Analyzers { get; set; }
 
         /// <summary>
         ///     Gets or sets the analysis observers.

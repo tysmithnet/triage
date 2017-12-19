@@ -38,9 +38,8 @@ namespace Triage.Mortician.Repository
 
         public bool GetBool(string key, bool fallbackToDefault = false)
         {
-            string s = Get(key);
+            var s = Get(key);
             if (fallbackToDefault)
-            {              
                 try
                 {
                     return Convert.ToBoolean(s);
@@ -49,10 +48,7 @@ namespace Triage.Mortician.Repository
                 {
                     return false;
                 }
-            }
-            else
-                return Convert.ToBoolean(s);
-
+            return Convert.ToBoolean(s);
         }
     }
 }

@@ -4,7 +4,7 @@ using CommandLine;
 namespace Triage.Mortician
 {
     /// <summary>
-    /// The command line options for configuring mortician
+    ///     The command line options for configuring mortician
     /// </summary>
     [Verb("config", HelpText = "Configure mortician")]
     public class ConfigOptions
