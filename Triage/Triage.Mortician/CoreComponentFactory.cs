@@ -46,9 +46,9 @@ namespace Triage.Mortician
             catch (Exception e)
             {
                 // todo: should check this ahead of time
-                Log.Fatal($"Unable to open crash dump: {e.Message}, Does the dump file exist and do you have the x64 folder of the Windows Debugging Kit in your path?");
+                Log.Fatal(
+                    $"Unable to open crash dump: {e.Message}, Does the dump file exist and do you have the x64 folder of the Windows Debugging Kit in your path?");
             }
-            
         }
 
         /// <summary>
@@ -304,7 +304,7 @@ namespace Triage.Mortician
             debuggerProxy.Execute(".load mex");
             debuggerProxy.Execute(".load netext");
             var res = debuggerProxy.Execute("!mu"); // forces sosex to load the appropriate SOS.dll
-            
+
             Log.Trace("Calling !runaway");
             var runawayData = debuggerProxy.Execute("!runaway");
             var isUserMode = false;

@@ -14,7 +14,7 @@ namespace Triage.Mortician.Analyzers
         /// <value>
         ///     The stack trace.
         /// </value>
-        public string StackTrace { get; set; }
+        public string StackTrace { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the threads.
@@ -22,6 +22,6 @@ namespace Triage.Mortician.Analyzers
         /// <value>
         ///     The threads.
         /// </value>
-        public IReadOnlyList<DumpThread> Threads { get; set; }
+        public IReadOnlyList<DumpThread> Threads { get; protected internal set; }
     }
 }

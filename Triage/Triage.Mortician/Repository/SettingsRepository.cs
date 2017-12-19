@@ -8,6 +8,11 @@ namespace Triage.Mortician.Repository
     /// </summary>
     public class SettingsRepository
     {
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="SettingsRepository" /> class.
+        /// </summary>
+        /// <param name="settings">The settings.</param>
+        /// <exception cref="ArgumentNullException">settings</exception>
         protected internal SettingsRepository(Dictionary<string, string> settings)
         {
             SettingsInternal = settings ?? throw new ArgumentNullException(nameof(settings));
@@ -36,23 +41,24 @@ namespace Triage.Mortician.Repository
             throw new ArgumentOutOfRangeException($"Could not find setting {key}");
         }
 
+        /// <summary>
+        ///     Gets the boolean value associated with the provided key
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="fallbackToDefault">if set to <c>true</c> use default(T).</param>
+        /// <returns></returns>
         public bool GetBool(string key, bool fallbackToDefault = false)
         {
-            string s = Get(key);
-            if (fallbackToDefault)
-            {              
-                try
-                {
-                    return Convert.ToBoolean(s);
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-            }
-            else
+            var s = Get(key);
+            if (!fallbackToDefault) return Convert.ToBoolean(s);
+            try
+            {
                 return Convert.ToBoolean(s);
-
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

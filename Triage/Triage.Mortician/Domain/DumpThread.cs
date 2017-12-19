@@ -9,8 +9,18 @@ namespace Triage.Mortician.Domain
     /// </summary>
     public class DumpThread
     {
+        /// <summary>
+        ///     Backing field for the lazy loaded stack trace
+        /// </summary>
         private string _stackTrace;
-        public IList<string> EEStackFrames { get; set; } = new List<string>();
+
+        /// <summary>
+        ///     Gets or sets the stack frames according to !eestack
+        /// </summary>
+        /// <value>
+        ///     The ee stack frames.
+        /// </value>
+        public IList<string> EEStackFrames { get; protected internal set; } = new List<string>();
 
         /// <summary>
         ///     Gets the stack trace.
@@ -27,7 +37,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     The total time.
         /// </value>
-        public TimeSpan TotalTime { get; set; }
+        public TimeSpan TotalTime { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the thread os id
@@ -35,7 +45,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     The os id
         /// </value>
-        public uint OsId { get; set; }
+        public uint OsId { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the kernel mode time.
@@ -43,7 +53,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     The kernel mode time.
         /// </value>
-        public TimeSpan KernelModeTime { get; set; }
+        public TimeSpan KernelModeTime { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the user mode time.
@@ -51,7 +61,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     The user mode time.
         /// </value>
-        public TimeSpan UserModeTime { get; set; }
+        public TimeSpan UserModeTime { get; protected internal set; }
 
         // todo: don't expose writable collection
         /// <summary>
@@ -60,7 +70,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     The stack frames.
         /// </value>
-        public IList<DumpStackFrame> ManagedStackFrames { get; set; }
+        public IList<DumpStackFrame> ManagedStackFrames { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the index of the thread in the debugger. This is a low integer value used by the debugging interface
@@ -69,7 +79,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     The index of the thread in the debugger.
         /// </value>
-        public uint DebuggerIndex { get; set; }
+        public uint DebuggerIndex { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the object roots associated with this thread
@@ -77,7 +87,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     The object roots.
         /// </value>
-        public IList<DumpObjectRoot> ObjectRoots { get; set; }
+        public IList<DumpObjectRoot> ObjectRoots { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the current frame of the thread
@@ -85,6 +95,6 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     The current frame.
         /// </value>
-        public string CurrentFrame { get; set; }
+        public string CurrentFrame { get; protected internal set; }
     }
 }

@@ -22,7 +22,7 @@ namespace Triage.Mortician.Analyzers
         ///     The dump information repository.
         /// </value>
         [Import]
-        public DumpInformationRepository DumpInformationRepository { get; set; }
+        protected internal DumpInformationRepository DumpInformationRepository { get; set; }
 
         /// <inheritdoc />
         /// <summary>

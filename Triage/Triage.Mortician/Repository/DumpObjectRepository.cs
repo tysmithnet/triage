@@ -8,7 +8,6 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     Repository for objects that were extracted from the managed heap
     /// </summary>
-    // todo: fix access modifiers
     public class DumpObjectRepository
     {
         /// <summary>

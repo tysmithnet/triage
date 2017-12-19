@@ -14,7 +14,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     The address.
         /// </value>
-        public ulong Address { get; set; }
+        public ulong Address { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the name of this object root
@@ -22,7 +22,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     The name.
         /// </value>
-        public string Name { get; set; }
+        public string Name { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this object root points not to the
@@ -31,7 +31,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     <c>true</c> if this instance is interior pointer; otherwise, <c>false</c>.
         /// </value>
-        public bool IsInteriorPointer { get; set; }
+        public bool IsInteriorPointer { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether the object being kept in memory is
@@ -40,7 +40,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     <c>true</c> if this instance is pinned; otherwise, <c>false</c>.
         /// </value>
-        public bool IsPinned { get; set; }
+        public bool IsPinned { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is possible false positive.
@@ -50,7 +50,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     <c>true</c> if this instance is possible false positive; otherwise, <c>false</c>.
         /// </value>
-        public bool IsPossibleFalsePositive { get; set; }
+        public bool IsPossibleFalsePositive { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this object root is a static variable
@@ -58,7 +58,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     <c>true</c> if this instance is static variable; otherwise, <c>false</c>.
         /// </value>
-        public bool IsStaticVariable { get; set; }
+        public bool IsStaticVariable { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this object root is a thread static variable
@@ -66,7 +66,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     <c>true</c> if this instance is thread static variable; otherwise, <c>false</c>.
         /// </value>
-        public bool IsThreadStaticVariable { get; set; }
+        public bool IsThreadStaticVariable { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this object root is a local variable in a method
@@ -75,7 +75,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     <c>true</c> if this instance is local variable; otherwise, <c>false</c>.
         /// </value>
-        public bool IsLocalVar { get; set; }
+        public bool IsLocalVar { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this gc root is a strong reference
@@ -84,7 +84,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     <c>true</c> if this instance is strong handle; otherwise, <c>false</c>.
         /// </value>
-        public bool IsStrongHandle { get; set; }
+        public bool IsStrongHandle { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this gc root is a weak reference
@@ -93,7 +93,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     <c>true</c> if this instance is weak handle; otherwise, <c>false</c>.
         /// </value>
-        public bool IsWeakHandle { get; set; }
+        public bool IsWeakHandle { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this object root is strong pinning handle.
@@ -101,7 +101,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     <c>true</c> if this instance is strong pinning handle; otherwise, <c>false</c>.
         /// </value>
-        public bool IsStrongPinningHandle { get; set; }
+        public bool IsStrongPinningHandle { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this object root is the finalizer queue
@@ -110,7 +110,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     <c>true</c> if this instance is finalizer queue; otherwise, <c>false</c>.
         /// </value>
-        public bool IsFinalizerQueue { get; set; }
+        public bool IsFinalizerQueue { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this object root is pointing to an area of memory
@@ -119,7 +119,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     <c>true</c> if this instance is asynchronous io pinning; otherwise, <c>false</c>.
         /// </value>
-        public bool IsAsyncIoPinning { get; set; }
+        public bool IsAsyncIoPinning { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the managed to which this root points if possible, null otherwise
@@ -127,7 +127,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     The rooted object.
         /// </value>
-        public DumpObject RootedObject { get; set; }
+        public DumpObject RootedObject { get; protected internal set; }
 
         /// <summary>
         ///     Gets the stack frame that is keeping where this root can be found
@@ -145,7 +145,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     The thread.
         /// </value>
-        public DumpThread Thread { get; set; }
+        public DumpThread Thread { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the app domain where this root exists if it is associated with an app domain, null otherwise
@@ -153,6 +153,6 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     The application domain.
         /// </value>
-        public DumpAppDomain AppDomain { get; set; }
+        public DumpAppDomain AppDomain { get; protected internal set; }
     }
 }

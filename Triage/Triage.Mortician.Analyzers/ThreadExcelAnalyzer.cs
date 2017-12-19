@@ -23,7 +23,7 @@ namespace Triage.Mortician.Analyzers
         protected ILog Log = LogManager.GetLogger(typeof(ThreadExcelAnalyzer));
 
         [Import]
-        public EventHub EventHub { get; set; }
+        protected internal EventHub EventHub { get; set; }
 
         /// <summary>
         ///     Gets or sets the stack frame breakdown message.

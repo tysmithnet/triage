@@ -33,7 +33,7 @@ namespace Triage.Mortician.Analyzers
         ///     The event hub.
         /// </value>
         [Import]
-        public EventHub EventHub { get; set; }
+        internal EventHub EventHub { get; set; }
 
         /// <summary>
         ///     Gets or sets the settings repository.
@@ -42,7 +42,7 @@ namespace Triage.Mortician.Analyzers
         ///     The settings repository.
         /// </value>
         [Import]
-        public SettingsRepository SettingsRepository { get; set; }
+        internal SettingsRepository SettingsRepository { get; set; }
 
         /// <inheritdoc />
         /// <summary>
@@ -63,9 +63,9 @@ namespace Triage.Mortician.Analyzers
         /// <returns>A task that when complete will signal the completion of this work</returns>
         public Task Process(CancellationToken cancellationToken)
         {
-            return EventHub.Get<ExcelReportComplete>().ForEachAsync(message =>
+            return EventHub.Get<ExcelReportComplete>().ForEachAsync(async message =>
             {
-                var shouldUpload = SettingsRepository.GetBool(UploadExcelToS3, fallbackToDefault: true);
+                var shouldUpload = SettingsRepository.GetBool(UploadExcelToS3, true);
                 if (!shouldUpload)
                 {
                     Log.Trace($"Skipping upload excel report to s3. Is the setting {UploadExcelToS3} set to true?");
@@ -78,15 +78,15 @@ namespace Triage.Mortician.Analyzers
                 BasicAWSCredentials creds;
                 try
                 {
-                    string accessKey = SettingsRepository.Get("aws-access-key-id");
-                    string secretKey = SettingsRepository.Get("aws-secret-key");
+                    var accessKey = SettingsRepository.Get("aws-access-key-id");
+                    var secretKey = SettingsRepository.Get("aws-secret-key");
                     creds = new BasicAWSCredentials(accessKey, secretKey);
                 }
                 catch (Exception e)
                 {
                     Log.Error($"Unable to create credentials for S3 client: {e.Message}");
                     return;
-                }         
+                }
 
                 using (var client = new AmazonS3Client(creds, RegionEndpoint.USEast1))
                 using (var fs = File.OpenRead(message.ReportFile))
@@ -103,7 +103,7 @@ namespace Triage.Mortician.Analyzers
                     Log.Info("Attempting to upload report to S3");
                     try
                     {
-                        var putObjectResponse = client.PutObject(putReportRequest);
+                        var putObjectResponse = await client.PutObjectAsync(putReportRequest);
                         if (putObjectResponse.HttpStatusCode == HttpStatusCode.OK)
                             Log.Trace($"Upload of {message.ReportFile} was successful");
                         else

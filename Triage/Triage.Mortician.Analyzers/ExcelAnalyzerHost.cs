@@ -30,7 +30,7 @@ namespace Triage.Mortician.Analyzers
         ///     The excel analyzers.
         /// </value>
         [ImportMany]
-        public IExcelAnalyzer[] ExcelAnalyzers { get; set; }
+        protected internal IExcelAnalyzer[] ExcelAnalyzers { get; set; }
 
         /// <summary>
         ///     Gets or sets the excel post processors.
@@ -39,7 +39,7 @@ namespace Triage.Mortician.Analyzers
         ///     The excel post processors.
         /// </value>
         [ImportMany]
-        public IExcelPostProcessor[] ExcelPostProcessors { get; set; }
+        protected internal IExcelPostProcessor[] ExcelPostProcessors { get; set; }
 
         /// <summary>
         ///     Gets or sets the event hub.
@@ -48,7 +48,7 @@ namespace Triage.Mortician.Analyzers
         ///     The event hub.
         /// </value>
         [Import]
-        public EventHub EventHub { get; set; }
+        protected internal EventHub EventHub { get; set; }
 
         /// <inheritdoc />
         /// <summary>

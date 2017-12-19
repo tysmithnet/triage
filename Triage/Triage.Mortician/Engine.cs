@@ -27,7 +27,7 @@ namespace Triage.Mortician
         ///     The analyzers.
         /// </value>
         [ImportMany]
-        public IAnalyzer[] Analyzers { get; set; }
+        protected internal IAnalyzer[] Analyzers { get; set; }
 
         /// <summary>
         ///     Gets or sets the analysis observers.
@@ -36,7 +36,7 @@ namespace Triage.Mortician
         ///     The analysis observers.
         /// </value>
         [ImportMany]
-        public IAnalysisObserver[] AnalysisObservers { get; set; }
+        protected internal IAnalysisObserver[] AnalysisObservers { get; set; }
 
         /// <summary>
         ///     Gets or sets the event hub.
@@ -45,7 +45,7 @@ namespace Triage.Mortician
         ///     The event hub.
         /// </value>
         [Import]
-        public EventHub EventHub { get; set; }
+        protected internal EventHub EventHub { get; set; }
 
         /// <summary>
         ///     Processes the analyzers

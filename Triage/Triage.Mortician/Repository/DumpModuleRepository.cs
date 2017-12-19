@@ -24,5 +24,25 @@ namespace Triage.Mortician.Repository
         {
             DumpModules = dumpModules ?? throw new ArgumentNullException(nameof(dumpModules));
         }
+
+        /// <summary>
+        ///     Gets the specified assembly identifier.
+        /// </summary>
+        /// <param name="assemblyId">The assembly identifier.</param>
+        /// <param name="moduleName">Name of the module.</param>
+        /// <returns></returns>
+        public DumpModule Get(ulong assemblyId, string moduleName)
+        {
+            return DumpModules[(assemblyId, moduleName)];
+        }
+
+        /// <summary>
+        ///     Gets this instance.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<DumpModule> Get()
+        {
+            return DumpModules.Values;
+        }
     }
 }
