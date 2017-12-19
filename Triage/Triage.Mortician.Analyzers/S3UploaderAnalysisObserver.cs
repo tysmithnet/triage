@@ -82,7 +82,7 @@ namespace Triage.Mortician.Analyzers
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Unable to create credentials for S3 client");
+                    Log.Error($"Unable to create credentials for S3 client: {e.Message}");
                     return;
                 }         
 

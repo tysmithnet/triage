@@ -100,7 +100,7 @@ namespace Triage.Mortician
                 }
                 catch (Exception e)
                 {
-                    Log.Fatal($"Error trying to AWS credentials. Do you have a credentials file in ~/.aws/ ?");
+                    Log.Fatal($"Error trying to AWS credentials. Do you have a credentials file in ~/.aws/ ?: {e.Message}");
                     return -1;
                 }
                 
