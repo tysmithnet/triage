@@ -15,6 +15,6 @@ namespace Triage.Mortician.Analyzers
         /// <value>
         ///     The unique stack frame rollup records.
         /// </value>
-        public IReadOnlyList<UniqueStackFrameRollupRecord> UniqueStackFrameRollupRecords { get; set; }
+        public IReadOnlyList<UniqueStackFrameRollupRecord> UniqueStackFrameRollupRecords { get; protected internal set; }
     }
 }
