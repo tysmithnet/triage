@@ -21,8 +21,13 @@ namespace Triage.Mortician.Repository
         /// <summary>
         ///     The log
         /// </summary>
-        protected ILog Log = LogManager.GetLogger(typeof(DumpThreadRepository));
+        protected internal ILog Log = LogManager.GetLogger(typeof(DumpThreadRepository));
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DumpThreadRepository" /> class.
+        /// </summary>
+        /// <param name="dumpThreads">The dump threads.</param>
+        /// <exception cref="ArgumentNullException">dumpThreads</exception>
         protected internal DumpThreadRepository(Dictionary<uint, DumpThread> dumpThreads)
         {
             DumpThreads = dumpThreads ?? throw new ArgumentNullException(nameof(dumpThreads));

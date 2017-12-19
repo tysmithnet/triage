@@ -11,7 +11,7 @@
         /// <value>
         ///     The display string.
         /// </value>
-        public string DisplayString { get; set; }
+        public string DisplayString { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this stack frame is a managed frame
@@ -19,7 +19,7 @@
         /// <value>
         ///     <c>true</c> if this instance is managed; otherwise, <c>false</c>.
         /// </value>
-        public bool IsManaged { get; set; }
+        public bool IsManaged { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the instruction pointer for this frame
@@ -27,7 +27,7 @@
         /// <value>
         ///     The instruction pointer.
         /// </value>
-        public ulong InstructionPointer { get; set; }
+        public ulong InstructionPointer { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the name of the module that contains the code for this frame (can be null)
@@ -35,7 +35,7 @@
         /// <value>
         ///     The name of the module.
         /// </value>
-        public string ModuleName { get; set; }
+        public string ModuleName { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the stack pointer for this frame
@@ -43,7 +43,7 @@
         /// <value>
         ///     The stack pointer.
         /// </value>
-        public ulong StackPointer { get; set; }
+        public ulong StackPointer { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the thread for this frame
@@ -51,6 +51,6 @@
         /// <value>
         ///     The thread.
         /// </value>
-        public DumpThread Thread { get; set; }
+        public DumpThread Thread { get; protected internal set; }
     }
 }

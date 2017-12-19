@@ -186,7 +186,7 @@ namespace Triage.Mortician.Domain
         /// <value>
         ///     The dump type key.
         /// </value>
-        public DumpTypeKey DumpTypeKey { get; set; }
+        public DumpTypeKey DumpTypeKey { get; protected internal set; }
 
         // todo: add methods
     }

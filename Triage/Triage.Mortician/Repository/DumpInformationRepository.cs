@@ -44,7 +44,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The minimum threads.
         /// </value>
-        public int MinThreads { get; set; }
+        public int MinThreads { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the maximum number of threads the CLR can have
@@ -52,7 +52,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The maximum threads.
         /// </value>
-        public int MaxThreads { get; set; }
+        public int MaxThreads { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the start time UTC.
@@ -60,7 +60,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The start time UTC.
         /// </value>
-        public DateTime StartTimeUtc { get; set; }
+        public DateTime StartTimeUtc { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the total size of the heap.
@@ -68,7 +68,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The total size of the heap.
         /// </value>
-        public ulong TotalHeapSize { get; set; }
+        public ulong TotalHeapSize { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the total threads.
@@ -76,7 +76,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The total threads.
         /// </value>
-        public int TotalThreads { get; set; }
+        public int TotalThreads { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the number running threads.
@@ -84,7 +84,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The number running threads.
         /// </value>
-        public int NumRunningThreads { get; set; }
+        public int NumRunningThreads { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the minimum number io completion ports.
@@ -92,7 +92,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The minimum number io completion ports.
         /// </value>
-        public int MinNumberIoCompletionPorts { get; set; }
+        public int MinNumberIoCompletionPorts { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the maximum number free io completion ports.
@@ -100,7 +100,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The maximum number free io completion ports.
         /// </value>
-        public int MaxNumberFreeIoCompletionPorts { get; set; }
+        public int MaxNumberFreeIoCompletionPorts { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the maximum number io completion ports.
@@ -108,7 +108,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The maximum number io completion ports.
         /// </value>
-        public int MaxNumberIoCompletionPorts { get; set; }
+        public int MaxNumberIoCompletionPorts { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the number idle threads.
@@ -116,7 +116,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The number idle threads.
         /// </value>
-        public int NumberIdleThreads { get; set; }
+        public int NumberIdleThreads { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the number free io completion ports.
@@ -124,7 +124,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The number free io completion ports.
         /// </value>
-        public int NumberFreeIoCompletionPorts { get; set; }
+        public int NumberFreeIoCompletionPorts { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the cpu utilization.
@@ -132,7 +132,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The cpu utilization.
         /// </value>
-        public int CpuUtilization { get; set; }
+        public int CpuUtilization { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is server gc.
@@ -140,7 +140,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     <c>true</c> if this instance is server gc; otherwise, <c>false</c>.
         /// </value>
-        public bool IsServerGc { get; set; }
+        public bool IsServerGc { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the heap count.
@@ -148,7 +148,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The heap count.
         /// </value>
-        public int HeapCount { get; set; }
+        public int HeapCount { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the dump file.
@@ -156,7 +156,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The dump file.
         /// </value>
-        public FileInfo DumpFile { get; set; }
+        public FileInfo DumpFile { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the symbol path.
@@ -164,7 +164,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The symbol path.
         /// </value>
-        public string SymbolPath { get; set; }
+        public string SymbolPath { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the symbol cachce.
@@ -172,7 +172,7 @@ namespace Triage.Mortician.Repository
         /// <value>
         ///     The symbol cachce.
         /// </value>
-        public string SymbolCache { get; set; }
+        public string SymbolCache { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is mini dump.
