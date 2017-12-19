@@ -3,7 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
+using System.Threading.Tasks;
+using Amazon;
+using Amazon.Runtime;
+using Amazon.S3;
+using Amazon.S3.Model;
 using CommandLine;
 using Common.Logging;
 
@@ -84,6 +90,34 @@ namespace Triage.Mortician
         /// <returns>Program status code</returns>
         private static int DefaultExecution(DefaultOptions options)
         {
+            if (options.DumpFile == null && options.S3DumpFileBucket != null && options.S3DumpFileKey != null)
+            {
+                Log.Trace("Attempting to download dump from s3");
+                var creds = new StoredProfileAWSCredentials("default");
+                using (var client = new AmazonS3Client(creds, RegionEndpoint.USEast1))
+                {
+                    var response = client.GetObject(options.S3DumpFileBucket, options.S3DumpFileKey);
+                    if (response.HttpStatusCode == HttpStatusCode.OK)
+                    {
+                        try
+                        {
+                            Log.Trace("Response came back OK, will save to disk");
+                            string fileName = $"{DateTime.UtcNow:yyyy_MM_dd_mm_HH_ss}.dmp";
+                            response.WriteResponseStreamToFile(fileName);
+
+                            options.DumpFile = fileName;
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Fatal($"Unable to write dump file to disk: {e}", e);
+                        }      
+                    }
+                    else
+                    {
+                        Log.Fatal($"Could not retrieve dump file from S3");
+                    }
+                }
+            }
             var executionLocation = Assembly.GetEntryAssembly().Location;
             var morticianAssemblyFiles =
                 Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation), "Triage.Mortician.*.dll");
