@@ -33,7 +33,7 @@ namespace Triage.Mortician.Analyzers
         ///     The event hub.
         /// </value>
         [Import]
-        public EventHub EventHub { get; set; }
+        protected internal EventHub EventHub { get; set; }
 
         /// <summary>
         ///     Gets or sets the dump thread repository.
@@ -42,7 +42,7 @@ namespace Triage.Mortician.Analyzers
         ///     The dump thread repository.
         /// </value>
         [Import]
-        public DumpThreadRepository DumpThreadRepository { get; set; }
+        protected internal DumpThreadRepository DumpThreadRepository { get; set; }
 
         /// <inheritdoc />
         /// <summary>

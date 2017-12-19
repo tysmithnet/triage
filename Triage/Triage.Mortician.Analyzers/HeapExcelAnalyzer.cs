@@ -32,7 +32,7 @@ namespace Triage.Mortician.Analyzers
         ///     The dump object repository.
         /// </value>
         [Import]
-        public DumpObjectRepository DumpObjectRepository { get; set; }
+        protected internal DumpObjectRepository DumpObjectRepository { get; set; }
 
         /// <inheritdoc />
         /// <summary>
