@@ -28,11 +28,7 @@ namespace Triage.Mortician
                 (DefaultOptions opts) => DefaultExecution(opts),
                 (ConfigOptions opts) => ConfigExecution(opts),
                 errs => -1
-            );
-#if DEBUG
-            Console.WriteLine("Success.. press any key");
-            Console.ReadKey();
-#endif
+            );     
         }
 
         /// <summary>
