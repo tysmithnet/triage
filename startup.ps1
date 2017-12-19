@@ -15,15 +15,20 @@ catch
 }
 # todo: need to check for errors
 WriteLog("Beginning startup script")
-$key = "somememory.dmp"
-$dumpbucket = "dump.bucket"
-$reportbucket = "report.bucket"
-$branch = 'feature/some_branch'
-$debugRelease = 'Release'
+$key = "MEMORY_DUMP"
+$dumpbucket = "DUMP_BUCKET"
+$reportbucket = "REPORT_BUCKET"
+$branch = 'GIT_BRANCH'
+$debugRelease = 'DEBUG_RELEASE'
 Import-Module AWSPowershell
 cd C:\users\Administrator\Documents
 WriteLog("Cloning triage")
 git clone -b $branch --recursive https://github.com/tysmithnet/triage.git triage 2>&1 | out-null # hack because git clone reports success to stderror
+
+if(-not (Test-Path C:\Temp\$key))
+{
+	WriteLog("Failed to clone git project")
+}
 cd triage\Triage
 WriteLog("Running nuget restore")
 nuget restore
@@ -32,7 +37,33 @@ devenv /build $debugRelease Triage.sln
 cd ".\Triage.Mortician\bin\$debugRelease"
 WriteLog("Getting dump from S3 bucket")
 Read-S3Object -BucketName $dumpbucket -Key $key -File C:\Temp\$key
-WriteLog("Running mortician on dump")
+
+if(-not (Test-Path C:\Temp\$key))
+{
+	WriteLog("Failed to get memory dump.. retrying")
+	for($i = 1; $i -le 5; $i++)
+	{
+		WriteLog("Retry Attempt $n")
+		Read-S3Object -BucketName $dumpbucket -Key $key -File C:\Temp\$key
+		if(-not (Test-Path C:\Temp\$key))
+		{
+			Start-Sleep -Seconds $i
+			continue
+		}
+		else
+		{
+			break
+		}
+	}
+
+	if(-not (Test-Path C:\Temp\$key))
+	{
+		WriteLog("Could not download file dumpfile from s3 bucket. Exiting.")
+		exit
+	}
+}
+
+WriteLog("Configuring mortician")
 ./Triage.Mortician.exe config `
 	-k `
 		"upload-excel-to-s3" `
@@ -41,4 +72,5 @@ WriteLog("Running mortician on dump")
 		"true" `
 		"$reportbucket"
 
+WriteLog("Running mortician on dump")
 ./Triage.Mortician.exe run -d "C:\Temp\$key"
