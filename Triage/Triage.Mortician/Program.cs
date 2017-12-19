@@ -120,11 +120,13 @@ namespace Triage.Mortician
                         catch (Exception e)
                         {
                             Log.Fatal($"Unable to write dump file to disk: {e}", e);
+                            return -1;
                         }      
                     }
                     else
                     {
                         Log.Fatal($"Could not retrieve dump file from S3");
+                        return -1;
                     }
                 }
             }
