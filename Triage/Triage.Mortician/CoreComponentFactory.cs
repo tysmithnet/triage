@@ -253,6 +253,12 @@ namespace Triage.Mortician
                 typeStore[pair.Key].BaseDumpType = typeStore[pair.Value];
         }
 
+        /// <summary>
+        ///     Setups the threads.
+        /// </summary>
+        /// <param name="rt">The rt.</param>
+        /// <param name="threadStore">The thread store.</param>
+        /// <param name="objectRootsStore">The object roots store.</param>
         private void SetupThreads(ClrRuntime rt,
             Dictionary<uint, DumpThread> threadStore, Dictionary<ulong, DumpObjectRoot> objectRootsStore)
         {
@@ -299,7 +305,7 @@ namespace Triage.Mortician
                     Log.Error(
                         $"Extracted a thread but there is already an entry with os id: {dumpThread.OsId}, you should investigate these manually");
             }
-                                    
+
             var debuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
             Log.Trace("Loading debugger extensions");
             debuggerProxy.Execute(".load sosex");
@@ -424,8 +430,7 @@ namespace Triage.Mortician
                     IsStrongHandle = clrRoot.Kind == GCRootKind.Strong,
                     IsThreadStaticVariable = clrRoot.Kind == GCRootKind.ThreadStaticVar,
                     IsStrongPinningHandle = clrRoot.Kind == GCRootKind.Pinning,
-                    IsWeakHandle = clrRoot.Kind == GCRootKind.Weak,
-                    
+                    IsWeakHandle = clrRoot.Kind == GCRootKind.Weak
                 };
                 var appDomainAddress = clrRoot.AppDomain?.Address;
                 if (appDomainAddress.HasValue && appDomainStore.ContainsKey(appDomainAddress.Value))
