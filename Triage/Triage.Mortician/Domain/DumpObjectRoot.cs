@@ -136,8 +136,7 @@ namespace Triage.Mortician.Domain
         ///     The stack frame.
         /// </value>
         /// <exception cref="NotImplementedException">You still need to implement stack frame in object root</exception>
-        public DumpStackFrame StackFrame =>
-            throw new NotImplementedException("You still need to implement stack frame in object root");
+        public DumpStackFrame StackFrame { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the thread that this object root belongs to if possible, null otherwise
