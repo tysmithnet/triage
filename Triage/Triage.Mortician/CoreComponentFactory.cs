@@ -287,7 +287,9 @@ namespace Triage.Mortician
                     {
                         var root = objectRootsStore[o.Address];
                         root.Thread = dumpThread;
-
+                        root.StackFrame =
+                            dumpThread.ManagedStackFrames.FirstOrDefault(f =>
+                                f.StackPointer == o.StackFrame.StackPointer);
                         return root;
                     }).ToList();
 
@@ -297,14 +299,13 @@ namespace Triage.Mortician
                     Log.Error(
                         $"Extracted a thread but there is already an entry with os id: {dumpThread.OsId}, you should investigate these manually");
             }
-
+                                    
             var debuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
             Log.Trace("Loading debugger extensions");
             debuggerProxy.Execute(".load sosex");
             debuggerProxy.Execute(".load mex");
             debuggerProxy.Execute(".load netext");
             var res = debuggerProxy.Execute("!mu"); // forces sosex to load the appropriate SOS.dll
-
             Log.Trace("Calling !runaway");
             var runawayData = debuggerProxy.Execute("!runaway");
             var isUserMode = false;
@@ -423,7 +424,8 @@ namespace Triage.Mortician
                     IsStrongHandle = clrRoot.Kind == GCRootKind.Strong,
                     IsThreadStaticVariable = clrRoot.Kind == GCRootKind.ThreadStaticVar,
                     IsStrongPinningHandle = clrRoot.Kind == GCRootKind.Pinning,
-                    IsWeakHandle = clrRoot.Kind == GCRootKind.Weak
+                    IsWeakHandle = clrRoot.Kind == GCRootKind.Weak,
+                    
                 };
                 var appDomainAddress = clrRoot.AppDomain?.Address;
                 if (appDomainAddress.HasValue && appDomainStore.ContainsKey(appDomainAddress.Value))
