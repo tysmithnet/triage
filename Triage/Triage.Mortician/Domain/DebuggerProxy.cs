@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
+using Common.Logging;
 using Microsoft.Diagnostics.Runtime.Interop;
 
 namespace Triage.Mortician.Domain
@@ -14,6 +16,8 @@ namespace Triage.Mortician.Domain
     /// <seealso cref="T:Triage.Mortician.IDebuggerProxy" />
     public sealed class DebuggerProxy : IDebugOutputCallbacks, IDisposable
     {
+        private ILog Log = LogManager.GetLogger(typeof(DebuggerProxy));
+
         private readonly StringBuilder _builder = new StringBuilder();
         private readonly IDebugClient _client;
         private readonly IDebugControl _control;
@@ -25,7 +29,7 @@ namespace Triage.Mortician.Domain
         /// </summary>
         /// <param name="client">The debugging client provided by the OS</param>
         internal DebuggerProxy(IDebugClient client)
-        {
+        {   
             _client = client;
             _control = (IDebugControl) client;
 

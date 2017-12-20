@@ -298,13 +298,13 @@ namespace Triage.Mortician
                         $"Extracted a thread but there is already an entry with os id: {dumpThread.OsId}, you should investigate these manually");
             }
 
+
             var debuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
             Log.Trace("Loading debugger extensions");
             debuggerProxy.Execute(".load sosex");
             debuggerProxy.Execute(".load mex");
             debuggerProxy.Execute(".load netext");
             var res = debuggerProxy.Execute("!mu"); // forces sosex to load the appropriate SOS.dll
-
             Log.Trace("Calling !runaway");
             var runawayData = debuggerProxy.Execute("!runaway");
             var isUserMode = false;
