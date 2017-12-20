@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
@@ -20,14 +22,24 @@ namespace Triage.Mortician.Analyzers
         /// </summary>
         protected ILog Log = LogManager.GetLogger(typeof(ThreadExcelAnalyzer));
 
+        [Import]
+        protected internal EventHub EventHub { get; set; }
+
         /// <summary>
-        ///     Gets or sets the dump thread repository.
+        ///     Gets or sets the stack frame breakdown message.
         /// </summary>
         /// <value>
-        ///     The dump thread repository.
+        ///     The stack frame breakdown message.
         /// </value>
-        [Import]
-        public DumpThreadRepository DumpThreadRepository { get; set; }
+        protected internal StackFrameBreakdownMessage StackFrameBreakdownMessage { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the unique stacks message.
+        /// </summary>
+        /// <value>
+        ///     The unique stacks message.
+        /// </value>
+        protected internal UniqueStacksMessage UniqueStacksMessage { get; set; }
 
         /// <inheritdoc />
         /// <summary>
@@ -37,9 +49,15 @@ namespace Triage.Mortician.Analyzers
         /// <returns>
         ///     A Task, that when complete will signal the setup completion
         /// </returns>
-        public Task Setup(CancellationToken cancellationToken)
+        public async Task Setup(CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            var stackFrameBreakdownTask = EventHub.Get<StackFrameBreakdownMessage>()
+                .FirstOrDefaultAsync().ToTask(cancellationToken);
+            var uniqueStackTask = EventHub.Get<UniqueStacksMessage>().FirstOrDefaultAsync().ToTask(cancellationToken);
+            await Task.WhenAll(stackFrameBreakdownTask, uniqueStackTask);
+
+            StackFrameBreakdownMessage = stackFrameBreakdownTask.Result;
+            UniqueStacksMessage = uniqueStackTask.Result;
         }
 
         /// <inheritdoc />
@@ -48,24 +66,55 @@ namespace Triage.Mortician.Analyzers
         /// </summary>
         /// <param name="sharedDocument">The shared document.</param>
         public void Contribute(SLDocument sharedDocument)
-        {                                               
+        {
+            if (UniqueStacksMessage != null)
+                PopulateUniqueStacks(sharedDocument);
+            else
+                Log.Trace("No unique stack message received");
+
+            if (StackFrameBreakdownMessage != null)
+                PopulateManagedStackFrames(sharedDocument);
+            else
+                Log.Trace("No stack frame breakdown message received");
+        }
+
+        /// <summary>
+        ///     Populates the managed stack frames.
+        /// </summary>
+        /// <param name="sharedDocument">The shared document.</param>
+        private void PopulateManagedStackFrames(SLDocument sharedDocument)
+        {
+            sharedDocument.SelectWorksheet("Stack Frames");
+            var row = 2;
+            foreach (var record in StackFrameBreakdownMessage.Records)
+            {
+                sharedDocument.SetCellValue(row, 1, record.DisplayString);
+                sharedDocument.SetCellValue(row, 2, record.ModuleName);
+                sharedDocument.SetCellValue(row, 3, record.Count);
+                row++;
+            }
+        }
+
+        /// <summary>
+        ///     Populates the unique stacks.
+        /// </summary>
+        /// <param name="sharedDocument">The shared document.</param>
+        private void PopulateUniqueStacks(SLDocument sharedDocument)
+        {
             sharedDocument.SelectWorksheet("Unique Stacks");
-            var groups = DumpThreadRepository.Get()
-                .GroupBy(t => string.Join("\n", t.StackFrames.Select(s => s.DisplayString)))
-                .OrderByDescending(g => g.Count())
-                .ThenByDescending(g => g.Key.Length);
+            var frameRollupRecords = UniqueStacksMessage.UniqueStackFrameRollupRecords;
 
             var curStackRow = 1;
             var minNumLinesPerStack = 2;
             var threadsColumn = 12;
-            foreach (var group in groups)
+            foreach (var frameRollupRecord in frameRollupRecords)
             {
                 var max = minNumLinesPerStack;
                 sharedDocument.SetCellValue(curStackRow, 1, "Stack:");
                 sharedDocument.SetCellValue(curStackRow, threadsColumn, "Threads:");
 
                 var stackIndex = 0;
-                foreach (var line in group.First().StackFrames.Select(x => x.DisplayString))
+                foreach (var line in frameRollupRecord.Threads.First().ManagedStackFrames.Select(f => f.DisplayString))
                 {
                     sharedDocument.SetCellValue(curStackRow + 1 + stackIndex, 1, line);
                     stackIndex++;
@@ -75,10 +124,11 @@ namespace Triage.Mortician.Analyzers
                     max = stackIndex - 1;
 
                 var threadIndex = 0;
-                foreach (var thread in group.OrderByDescending(t => t.KernelModeTime + t.UserModeTime))
+                foreach (var thread in frameRollupRecord.Threads.OrderByDescending(t =>
+                    t.KernelModeTime + t.UserModeTime))
                 {
                     sharedDocument.SetCellValue(curStackRow + 1 + threadIndex, threadsColumn,
-                        $"{thread.DebuggerIndex}:{thread.OsId:x}");
+                        $"{thread.DebuggerIndex}:{thread.OsId:x} ({thread.KernelModeTime + thread.UserModeTime})");
                     threadIndex++;
                 }
 

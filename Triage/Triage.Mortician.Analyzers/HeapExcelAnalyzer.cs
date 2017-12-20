@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
 using SpreadsheetLight;
+using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.Analyzers
 {
@@ -31,7 +32,7 @@ namespace Triage.Mortician.Analyzers
         ///     The dump object repository.
         /// </value>
         [Import]
-        public DumpObjectRepository DumpObjectRepository { get; set; }
+        protected internal DumpObjectRepository DumpObjectRepository { get; set; }
 
         /// <inheritdoc />
         /// <summary>

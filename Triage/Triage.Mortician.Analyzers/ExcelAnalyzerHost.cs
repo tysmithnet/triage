@@ -30,7 +30,7 @@ namespace Triage.Mortician.Analyzers
         ///     The excel analyzers.
         /// </value>
         [ImportMany]
-        public IExcelAnalyzer[] ExcelAnalyzers { get; set; }
+        protected internal IExcelAnalyzer[] ExcelAnalyzers { get; set; }
 
         /// <summary>
         ///     Gets or sets the excel post processors.
@@ -39,7 +39,16 @@ namespace Triage.Mortician.Analyzers
         ///     The excel post processors.
         /// </value>
         [ImportMany]
-        public IExcelPostProcessor[] ExcelPostProcessors { get; set; }
+        protected internal IExcelPostProcessor[] ExcelPostProcessors { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the event hub.
+        /// </summary>
+        /// <value>
+        ///     The event hub.
+        /// </value>
+        [Import]
+        protected internal EventHub EventHub { get; set; }
 
         /// <inheritdoc />
         /// <summary>
@@ -62,6 +71,7 @@ namespace Triage.Mortician.Analyzers
         /// <returns>
         ///     A Task that when complete will signal the completion of the setup procedure
         /// </returns>
+        // todo: breakup method
         public async Task Process(CancellationToken cancellationToken)
         {
             if (ExcelAnalyzers == null || ExcelAnalyzers.Length == 0)
@@ -109,6 +119,7 @@ namespace Triage.Mortician.Analyzers
                 var fileName = DateTime.Now.ToString("yyyy_MM_dd-hh_mm_ss") + ".xlsx";
                 try
                 {
+                    doc.SelectWorksheet("Summary");
                     doc.SaveAs(fileName);
                     Log.Trace($"Successfully saved report: {fileName}");
                 }
@@ -121,20 +132,27 @@ namespace Triage.Mortician.Analyzers
                 if (ExcelPostProcessors == null || ExcelPostProcessors.Length == 0)
                 {
                     Log.Warn($"There were no Excel Post Processors registered");
-                    return;
+                }
+                else
+                {
+                    Log.Trace("Starting excel post processing");
+                    foreach (var postProcessor in ExcelPostProcessors)
+                        try
+                        {
+                            var fileInfo = Path.GetFullPath(fileName);
+                            postProcessor.PostProcess(new FileInfo(fileInfo));
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error($"Excel Post Processor failed: {postProcessor.GetType().FullName} - {e.Message}",
+                                e);
+                        }
                 }
 
-                Log.Trace("Starting excel post processing");
-                foreach (var postProcessor in ExcelPostProcessors)
-                    try
-                    {
-                        var fileInfo = Path.GetFullPath(fileName);
-                        postProcessor.PostProcess(new FileInfo(fileInfo));
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error($"Excel Post Processor failed: {postProcessor.GetType().FullName} - {e.Message}", e);
-                    }
+                EventHub.Broadcast(new ExcelReportComplete
+                {
+                    ReportFile = fileName
+                });
             }
         }
     }
