@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Triage.Mortician.Analyzers
+namespace Triage.Mortician.ExcelAnalyzer
 {
     /// <summary>
     ///     Represents an object that can do post processing on

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Common.Logging;
 using SpreadsheetLight;
 
-namespace Triage.Mortician.Analyzers
+namespace Triage.Mortician.ExcelAnalyzer
 {
     /// <inheritdoc />
     /// <summary>

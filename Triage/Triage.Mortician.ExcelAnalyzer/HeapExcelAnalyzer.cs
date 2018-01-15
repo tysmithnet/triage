@@ -7,13 +7,13 @@ using Common.Logging;
 using SpreadsheetLight;
 using Triage.Mortician.Repository;
 
-namespace Triage.Mortician.Analyzers
+namespace Triage.Mortician.ExcelAnalyzer
 {
     /// <inheritdoc />
     /// <summary>
     ///     Represents an excel analyzer that is capable of producing a report based on the objects in the heap
     /// </summary>
-    /// <seealso cref="T:Triage.Mortician.Analyzers.IExcelAnalyzer" />
+    /// <seealso cref="T:Triage.Mortician.ExcelAnalyzer.IExcelAnalyzer" />
     [Export(typeof(IExcelAnalyzer))]
     public class HeapExcelAnalyzer : IExcelAnalyzer
     {

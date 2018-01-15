@@ -6,8 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
 using SpreadsheetLight;
+using Triage.Mortician.Analyzers;
 
-namespace Triage.Mortician.Analyzers
+namespace Triage.Mortician.ExcelAnalyzer
 {
     /// <inheritdoc />
     /// <summary>

@@ -12,7 +12,7 @@ using Amazon.S3.Model;
 using Common.Logging;
 using Triage.Mortician.Repository;
 
-namespace Triage.Mortician.Analyzers
+namespace Triage.Mortician.ExcelAnalyzer
 {
     /// <inheritdoc />
     /// <summary>
