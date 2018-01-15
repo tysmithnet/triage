@@ -289,7 +289,7 @@ namespace Triage.Mortician
                         root.Thread = dumpThread;
                         root.StackFrame =
                             dumpThread.ManagedStackFrames.FirstOrDefault(f =>
-                                f.StackPointer == o.StackFrame.StackPointer);
+                                f.StackPointer == o?.StackFrame?.StackPointer);
                         return root;
                     }).ToList();
 

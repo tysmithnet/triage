@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using SpreadsheetLight;
 using Triage.Mortician.Repository;
 
-namespace Triage.Mortician.Analyzers
+namespace Triage.Mortician.ExcelAnalyzer
 {
     /// <inheritdoc />
     /// <summary>
     ///     An excel analyzer that will write the summary of the excel report
     /// </summary>
-    /// <seealso cref="T:Triage.Mortician.Analyzers.IExcelAnalyzer" />
+    /// <seealso cref="T:Triage.Mortician.ExcelAnalyzer.IExcelAnalyzer" />
     [Export(typeof(IExcelAnalyzer))]
     public class SummaryExcelAnalyzer : IExcelAnalyzer
     {

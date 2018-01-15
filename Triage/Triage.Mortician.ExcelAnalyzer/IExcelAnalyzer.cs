@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using SpreadsheetLight;
 
-namespace Triage.Mortician.Analyzers
+namespace Triage.Mortician.ExcelAnalyzer
 {
     /// <summary>
     ///     Represents an object that is cabable of making an excel report
