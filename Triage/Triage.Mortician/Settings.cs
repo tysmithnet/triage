@@ -11,29 +11,32 @@ namespace Triage.Mortician
     /// </summary>
     internal static class Settings
     {
+        internal static SettingsInternal SettingsInstance;
+
+        static Settings()
+        {
+            try
+            {
+                var configText =
+                    File.ReadAllText("mortician.config.json"); // todo: abstract so we can have multiple configs
+                SettingsInstance = JsonConvert.DeserializeObject<SettingsInternal>(configText);
+            }
+            catch (Exception e) when (e is IOException || e is JsonException)
+            {
+                Log.Warn($"Did not find valid config file: {e.Message}");
+                SettingsInstance = new SettingsInternal();
+            }
+        }
+
         public static ILog Log { get; set; } = LogManager.GetLogger(typeof(Settings));
 
         /// <summary>
         ///     Gets the settings.
         /// </summary>
         /// <returns></returns>
-        public static Dictionary<string, string> GetSettings()
+        internal static Dictionary<string, string> GetSettings()
         {
-            Dictionary<string, string> settings;
-
-            try
-            {
-                var configText =
-                    File.ReadAllText("mortician.config.json"); // todo: abstract so we can have multiple configs
-                settings = JsonConvert.DeserializeObject<Dictionary<string, string>>(configText);
-            }
-            catch (Exception e) when (e is IOException || e is JsonException)
-            {
-                Log.Warn($"Did not find valid config file: {e.Message}");
-                settings = new Dictionary<string, string>();
-            }
-
-            return settings;
+            return SettingsInstance.GeneralSettings;
         }
 
         /// <summary>
@@ -48,6 +51,18 @@ namespace Triage.Mortician
                 serializer.Serialize(tw, existingSettings);
                 File.WriteAllText("mortician.config.json", tw.ToString());
             }
+        }
+
+        internal class SettingsInternal
+        {
+            [JsonProperty("general_settings")]
+            public Dictionary<string, string> GeneralSettings { get; set; } = new Dictionary<string, string>();
+
+            [JsonProperty("blacklisted_assemblies")]
+            public string[] BlacklistedAssemblies { get; set; } = new string[0];
+
+            [JsonProperty("blacklisted_types")]
+            public string[] BlacklistedTypes { get; set; } = new string[0];
         }
     }
 }

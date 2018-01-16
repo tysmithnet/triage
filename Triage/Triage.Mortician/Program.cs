@@ -15,6 +15,9 @@ namespace Triage.Mortician
     /// </summary>
     internal class Program
     {
+        /// <summary>
+        ///     The log
+        /// </summary>
         internal static ILog Log = LogManager.GetLogger(typeof(Program));
 
         /// <summary>
@@ -105,18 +108,33 @@ namespace Triage.Mortician
         /// <returns>Program status code</returns>
         private static int DefaultExecution(DefaultOptions options)
         {
+            var blacklistedAssemblies = Settings.SettingsInstance.BlacklistedAssemblies;
+            var blacklistedTypes = Settings.SettingsInstance.BlacklistedTypes;
             var executionLocation = Assembly.GetEntryAssembly().Location;
             var morticianAssemblyFiles =
-                Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation), "Triage.Mortician.*.dll");
+                Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation), "Triage.Mortician.*.dll"); // todo: not ideal to require assembly name
             var toLoad =
-                morticianAssemblyFiles.Except(AppDomain.CurrentDomain.GetAssemblies().Select(x => x.Location));
+                morticianAssemblyFiles.Except(AppDomain.CurrentDomain.GetAssemblies().Select(x => x.Location))
+                    .Select(x => new FileInfo(x)).Where(x => !blacklistedAssemblies.Contains(x.Name));
+
+            var aggregateCatalog = new AggregateCatalog();
             foreach (var assembly in toLoad)
-                Assembly.LoadFile(assembly);
-
-            var aggregateCatalog = new AggregateCatalog(AppDomain.CurrentDomain.GetAssemblies()
-                .Where(x => x.FullName.StartsWith("Triage.Mortician")).Select(x => new AssemblyCatalog(x)));
+                try
+                {
+                    var addedAssembly = Assembly.LoadFile(assembly.FullName);
+                    var definedTypes = addedAssembly.DefinedTypes;
+                    var filteredTypes = definedTypes.Where(t =>
+                        !blacklistedTypes.Select(x => x.ToLower()).Contains(t?.FullName?.ToLower()));
+                    var typeCatalog = new TypeCatalog(filteredTypes);
+                    aggregateCatalog.Catalogs.Add(typeCatalog);
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Unable to load {assembly.FullName}, it will not be available because {e.Message}");
+                }
+            aggregateCatalog.Catalogs.Add(new AssemblyCatalog(Assembly.GetExecutingAssembly()));
             var compositionContainer = new CompositionContainer(aggregateCatalog);
-
+            // todo: allow for export/import manipulation
             var repositoryFactory = new CoreComponentFactory(compositionContainer, new FileInfo(options.DumpFile));
             repositoryFactory.RegisterRepositories();
 
