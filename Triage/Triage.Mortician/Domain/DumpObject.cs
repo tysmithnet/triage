@@ -112,5 +112,15 @@ namespace Triage.Mortician.Domain
         {
             ReferencersInternal.TryAdd(obj.Address, obj);
         }
+
+        /// <summary>
+        ///     Get a short description of the object.
+        /// </summary>
+        /// <remarks>The return value is intended to be shown on a single line</remarks>
+        /// <returns>A short description of this object</returns>
+        protected virtual string ToShortDescription()
+        {
+            return $"{FullTypeName} : {Size} : {Address:x8} ({Address})";
+        }
     }
 }
