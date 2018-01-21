@@ -1,30 +1,44 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Triage.Mortician.WebUiAnalyzer
 {
+    /// <summary>
+    ///     Class WebUiAnalyzer.
+    /// </summary>
+    /// <seealso cref="Triage.Mortician.IAnalyzer" />
     [Export(typeof(IAnalyzer))]
     public class WebUiAnalyzer : IAnalyzer
     {
+        /// <summary>
+        ///     Gets or sets the host.
+        /// </summary>
+        /// <value>The host.</value>
         private IWebHost Host { get; set; }
+
+        /// <summary>
+        ///     Gets the log.
+        /// </summary>
+        /// <value>The log.</value>
         private ILog Log { get; } = LogManager.GetLogger<WebUiAnalyzer>();
 
+        /// <summary>
+        ///     Performs any necessary setup prior to processing
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A Task that when complete will signal the completion of the setup procedure</returns>
         public Task Setup(CancellationToken cancellationToken)
         {
             try
             {
                 Host = new WebHostBuilder()
+                    .UseKestrel()
+                    .UseContentRoot(Directory.GetCurrentDirectory())
                     .UseStartup<Startup>()
                     .Build();
             }
@@ -36,6 +50,11 @@ namespace Triage.Mortician.WebUiAnalyzer
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        ///     Performs the analysis
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A Task that when complete will signal the completion of the setup procedure</returns>
         public async Task Process(CancellationToken cancellationToken)
         {
             try
@@ -47,60 +66,6 @@ namespace Triage.Mortician.WebUiAnalyzer
                 Log.Error($"Error running web server: {e.Message}");
                 throw;
             }
-        }
-    }
-
-    [Route("api/[controller]")]
-    public class ValuesController : Controller
-    {
-        // GET api/values
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new[] {"value1", "value2"};
-        }
-    }
-
-    public class Startup
-    {
-        public Startup(IHostingEnvironment env)
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
-        }
-
-        private IHostingEnvironment CurrentEnvironment { get; set; }
-        private IConfigurationRoot Configuration { get; }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddMvc().AddRazorOptions(options =>
-            {
-                var previous = options.CompilationCallback;
-                options.CompilationCallback = context =>
-                {
-                    previous?.Invoke(context);
-                    var refs = AppDomain.CurrentDomain.GetAssemblies()
-                        .Where(x => !x.IsDynamic)
-                        .Select(x => MetadataReference.CreateFromFile(x.Location))
-                        .ToList();
-                    context.Compilation = context.Compilation.AddReferences(refs);
-                };
-            });
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseStaticFiles();
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    "default",
-                    "{controller=Home}/{action=Index}/{id?}");
-            });
         }
     }
 }

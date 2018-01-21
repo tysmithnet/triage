@@ -414,6 +414,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Startup.cs" />
+    <Compile Include="ValuesController.cs" />
     <Compile Include="WebUiAnalyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -439,16 +441,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets'))" />
   </Target>
-  <ItemGroup>
-    <None Condition="'$(Platform)' == 'x64'" Include="..\packages\Libuv.1.10.0\runtimes\win-x64\native\libuv.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>False</Visible>
-      <Link>libuv.dll</Link>
-    </None>
-    <None Condition="'$(Platform)' == 'x86'" Include="..\packages\Libuv.1.10.0\runtimes\win-x64\native\libuv.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>False</Visible>
-      <Link>libuv.dll</Link>
-    </None>
-  </ItemGroup>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="..\packages\Libuv.1.10.0\runtimes\win-x64\native\libuv.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+  </Target>
 </Project>
