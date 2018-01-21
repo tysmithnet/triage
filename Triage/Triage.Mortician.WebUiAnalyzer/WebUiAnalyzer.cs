@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
 using Microsoft.AspNetCore.Hosting;
+using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.WebUiAnalyzer
 {
@@ -15,6 +16,27 @@ namespace Triage.Mortician.WebUiAnalyzer
     [Export(typeof(IAnalyzer))]
     public class WebUiAnalyzer : IAnalyzer
     {
+        [Import]
+        internal DumpInformationRepository DumpInformationRepository { get; set; }
+
+        [Import]
+        internal DumpObjectRepository DumpObjectRepository { get; set; }
+
+        [Import]
+        internal DumpAppDomainRepository DumpAppDomainRepository { get; set; }
+
+        [Import]
+        internal DumpModuleRepository DumpModuleRepository { get; set; }
+
+        [Import]
+        internal DumpThreadRepository DumpThreadRepository { get; set; }
+
+        [Import]
+        internal DumpTypeRepository DumpTypeRepository { get; set; }
+
+        [Import]
+        internal EventHub EventHub { get; set; }
+
         /// <summary>
         ///     Gets or sets the host.
         /// </summary>
@@ -27,6 +49,7 @@ namespace Triage.Mortician.WebUiAnalyzer
         /// <value>The log.</value>
         private ILog Log { get; } = LogManager.GetLogger<WebUiAnalyzer>();
 
+        /// <inheritdoc />
         /// <summary>
         ///     Performs any necessary setup prior to processing
         /// </summary>
@@ -36,11 +59,18 @@ namespace Triage.Mortician.WebUiAnalyzer
         {
             try
             {
+                BaseController.EventHub = EventHub;
+                BaseController.DumpAppDomainRepository = DumpAppDomainRepository;
+                BaseController.DumpInformationRepository = DumpInformationRepository;
+                BaseController.DumpModuleRepository = DumpModuleRepository;
+                BaseController.DumpObjectRepository = DumpObjectRepository;
+                BaseController.DumpThreadRepository = DumpThreadRepository;
+                BaseController.DumpTypeRepository = DumpTypeRepository;
                 Host = new WebHostBuilder()
                     .UseKestrel()
                     .UseContentRoot(Directory.GetCurrentDirectory())
                     .UseStartup<Startup>()
-                    .Build();
+                    .Build();                                          
             }
             catch (Exception e)
             {
