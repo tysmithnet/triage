@@ -24,11 +24,7 @@ export class App extends React.Component<App.Props, App.State> {
   render() {
     const { todos, actions, children } = this.props;
     return (
-      <div className={style.normal}>
-        <Header addTodo={actions.addTodo} />
-        <MainSection todos={todos} actions={actions} />
-        {children}
-      </div>
+      <h1>hello</h1>
     );
   }
 }
