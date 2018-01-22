@@ -1,0 +1,19 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "description": "ReactJs application for Triage.Mortician.WebUiAnalyzer",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tysmithnet/triage.git"
+  },
+  "author": "@tysmithnet",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tysmithnet/triage/issues"
+  },
+  "homepage": "https://github.com/tysmithnet/triage#readme"
+}
