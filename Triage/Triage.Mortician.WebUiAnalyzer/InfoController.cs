@@ -10,6 +10,14 @@ namespace Triage.Mortician.WebUiAnalyzer
     [Route("api/[controller]")]
     public class InfoController : BaseController
     {
-        
+        [HttpGet]
+        public object Get()
+        {
+            return new
+            {
+                StartTime = DumpInformationRepository.StartTimeUtc,
+                Cpu = DumpInformationRepository.CpuUtilization
+            };
+        }
     }
 }
