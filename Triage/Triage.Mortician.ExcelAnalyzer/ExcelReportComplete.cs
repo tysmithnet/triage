@@ -12,12 +12,14 @@
 // <summary></summary>
 // ***********************************************************************
 
+using Triage.Mortician.Core;
+
 namespace Triage.Mortician.ExcelAnalyzer
 {
     /// <summary>
     ///     A message that indicates that an excel report has been saved to disk
     /// </summary>
-    /// <seealso cref="Triage.Mortician.Message" />
+    /// <seealso cref="Message" />
     /// <inheritdoc />
     /// <seealso cref="T:Triage.Mortician.Message" />
     public class ExcelReportComplete : Message

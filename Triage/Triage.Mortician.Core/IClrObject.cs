@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Microsoft.Diagnostics.Runtime
+namespace Triage.Mortician.Core
 {
     public interface IClrObject
     {
@@ -67,13 +67,13 @@ namespace Microsoft.Diagnostics.Runtime
         /// </summary>
         /// <param name="fieldName">The name of the field to retrieve.</param>
         /// <returns>A ClrObject of the given field.</returns>
-        ClrObject GetObjectField(string fieldName);
+        IClrObject GetObjectField(string fieldName);
 
         /// <summary>
         /// </summary>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        ClrValueClass GetValueClassField(string fieldName);
+        IClrValueClass GetValueClassField(string fieldName);
 
         /// <summary>
         /// Gets the value of a primitive field.  This will throw an InvalidCastException if the type parameter
@@ -102,7 +102,7 @@ namespace Microsoft.Diagnostics.Runtime
         /// </summary>
         /// <param name="other">The <see cref="ClrObject"/> to compare to this instance.</param>
         /// <returns><c>true</c> if the <see cref="ClrObject.Address"/> of the parameter is same as <see cref="ClrObject.Address"/> in this instance; <c>false</c> otherwise.</returns>
-        bool Equals(ClrObject other);
+        bool Equals(IClrObject other);
 
         /// <summary>
         /// Determines whether this instance and a specified object, which must also be a <see cref="ClrObject"/>, have the same value.

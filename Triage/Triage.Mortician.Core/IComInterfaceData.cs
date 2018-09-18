@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Diagnostics.Runtime
+﻿namespace Triage.Mortician.Core
 {
     public interface IComInterfaceData
     {

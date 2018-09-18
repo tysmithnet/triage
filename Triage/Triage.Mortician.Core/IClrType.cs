@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Diagnostics.Runtime
+namespace Triage.Mortician.Core
 {
     public interface IClrType
     {

@@ -1,6 +1,7 @@
 ﻿using System.Reactive.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Triage.Mortician.Core;
 using Xunit;
 
 namespace Triage.Mortician.Test
