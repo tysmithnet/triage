@@ -1,5 +1,21 @@
-﻿namespace Triage.Mortician.Core.ClrMdAbstractions
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.Core
+// Author           : @tysmithnet
+// Created          : 09-18-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="VersionInfo.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+namespace Triage.Mortician.Core.ClrMdAbstractions
 {
+    /// <summary>
+    /// Struct VersionInfo
+    /// </summary>
     public struct VersionInfo
     {
         /// <summary>
@@ -22,6 +38,13 @@
         /// </summary>
         public int Patch;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VersionInfo"/> struct.
+        /// </summary>
+        /// <param name="major">The major.</param>
+        /// <param name="minor">The minor.</param>
+        /// <param name="revision">The revision.</param>
+        /// <param name="patch">The patch.</param>
         internal VersionInfo(int major, int minor, int revision, int patch)
         {
             Major = major;

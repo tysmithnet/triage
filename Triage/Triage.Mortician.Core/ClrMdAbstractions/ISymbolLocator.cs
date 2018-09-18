@@ -1,25 +1,44 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.Core
+// Author           : @tysmithnet
+// Created          : 09-18-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="ISymbolLocator.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+using System;
 using System.Threading.Tasks;
 
 namespace Triage.Mortician.Core.ClrMdAbstractions
 {
+    /// <summary>
+    /// Interface ISymbolLocator
+    /// </summary>
     public interface ISymbolLocator
     {
         /// <summary>
         /// The timeout (in milliseconds) used when contacting each individual server.  This is not a total timeout for the entire
         /// symbol server operation.
         /// </summary>
+        /// <value>The timeout.</value>
         int Timeout { get; set; }
 
         /// <summary>
         /// Gets or sets the local symbol file cache.  This is the location that
         /// all symbol files are downloaded to on your computer.
         /// </summary>
+        /// <value>The symbol cache.</value>
         string SymbolCache { get; set; }
 
         /// <summary>
         /// Gets or sets the SymbolPath this object uses to attempt to find PDBs and binaries.
         /// </summary>
+        /// <value>The symbol path.</value>
         string SymbolPath { get; set; }
 
         /// <summary>

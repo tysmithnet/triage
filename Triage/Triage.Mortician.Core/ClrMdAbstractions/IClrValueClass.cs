@@ -1,20 +1,39 @@
-﻿namespace Triage.Mortician.Core.ClrMdAbstractions
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.Core
+// Author           : @tysmithnet
+// Created          : 09-18-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="IClrValueClass.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+namespace Triage.Mortician.Core.ClrMdAbstractions
 {
+    /// <summary>
+    /// Interface IClrValueClass
+    /// </summary>
     public interface IClrValueClass
     {
         /// <summary>
         /// The address of the object.
         /// </summary>
+        /// <value>The address.</value>
         ulong Address { get; }
 
         /// <summary>
         /// The address of the object in Hex format.
         /// </summary>
+        /// <value>The hexadecimal address.</value>
         string HexAddress { get; }
 
         /// <summary>
         /// The type of the object.
         /// </summary>
+        /// <value>The type.</value>
         IClrType Type { get; }
 
         /// <summary>
@@ -35,9 +54,10 @@
         T GetField<T>(string fieldName) where T : struct;
 
         /// <summary>
+        /// Gets the value class field.
         /// </summary>
-        /// <param name="fieldName"></param>
-        /// <returns></returns>
+        /// <param name="fieldName">Name of the field.</param>
+        /// <returns>IClrValueClass.</returns>
         IClrValueClass GetValueClassField(string fieldName);
 
         /// <summary>

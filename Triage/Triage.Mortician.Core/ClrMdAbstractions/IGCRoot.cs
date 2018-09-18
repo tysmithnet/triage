@@ -1,8 +1,24 @@
-﻿using System.Collections.Generic;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.Core
+// Author           : @tysmithnet
+// Created          : 09-18-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="IGCRoot.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Triage.Mortician.Core.ClrMdAbstractions
 {
+    /// <summary>
+    /// Interface IGcRoot
+    /// </summary>
     public interface IGcRoot
     {
         /// <summary>
@@ -16,6 +32,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         /// <summary>
         /// Returns the heap that's associated with this GCRoot instance.
         /// </summary>
+        /// <value>The heap.</value>
         IClrHeap Heap { get; }
 
         /// <summary>
@@ -24,16 +41,19 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         /// and if the entire heap was cached.  Note that ClrMD and underlying APIs do NOT support multithreading, so this
         /// is only used when we can ensure all relevant data is local memory and we do not need to touch the debuggee.
         /// </summary>
+        /// <value><c>true</c> if [allow parallel search]; otherwise, <c>false</c>.</value>
         bool AllowParallelSearch { get; set; }
 
         /// <summary>
         /// The maximum number of tasks allowed to run in parallel, if GCRoot does a parallel search.
         /// </summary>
+        /// <value>The maximum tasks allowed.</value>
         int MaximumTasksAllowed { get; set; }
 
         /// <summary>
         /// Returns true if all relevant heap and root data is locally cached in this process for fast GCRoot processing.
         /// </summary>
+        /// <value><c>true</c> if this instance is fully cached; otherwise, <c>false</c>.</value>
         bool IsFullyCached { get; }
 
         /// <summary>
@@ -75,7 +95,6 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         /// <summary>
         /// Builds a cache of the GC heap and roots.  This will consume a LOT of memory, so when calling it you must wrap this in
         /// a try/catch for OutOfMemoryException.
-        /// 
         /// Note that this function allows you to choose whether we have exact thread callstacks or not.  Exact thread callstacks
         /// will essentially force ClrMD to walk the stack as a real GC would, but this can take 10s of minutes when the thread count gets
         /// into the 1000s.

@@ -1,49 +1,73 @@
-﻿namespace Triage.Mortician.Core.ClrMdAbstractions
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.Core
+// Author           : @tysmithnet
+// Created          : 09-18-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="IClrInfo.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+namespace Triage.Mortician.Core.ClrMdAbstractions
 {
+    /// <summary>
+    /// Interface IClrInfo
+    /// </summary>
     public interface IClrInfo
     {
         /// <summary>
         /// The version number of this runtime.
         /// </summary>
+        /// <value>The version.</value>
         VersionInfo Version { get; }
 
         /// <summary>
         /// The type of CLR this module represents.
         /// </summary>
+        /// <value>The flavor.</value>
         ClrFlavor Flavor { get; }
 
         /// <summary>
         /// Returns module information about the Dac needed create a ClrRuntime instance for this runtime.
         /// </summary>
+        /// <value>The dac information.</value>
         IDacInfo DacInfo { get; }
 
         /// <summary>
         /// Returns module information about the ClrInstance.
         /// </summary>
+        /// <value>The module information.</value>
         IModuleInfo ModuleInfo { get; }
 
         /// <summary>
         /// Returns the location of the local dac on your machine which matches this version of Clr, or null
         /// if one could not be found.
         /// </summary>
+        /// <value>The local matching dac.</value>
         string LocalMatchingDac { get; }
 
         /// <summary>
         /// Creates a runtime from the given Dac file on disk.
         /// </summary>
+        /// <returns>IClrRuntime.</returns>
         IClrRuntime CreateRuntime();
 
         /// <summary>
         /// Creates a runtime from a given IXClrDataProcess interface.  Used for debugger plugins.
         /// </summary>
+        /// <param name="clrDataProcess">The color data process.</param>
+        /// <returns>IClrRuntime.</returns>
         IClrRuntime CreateRuntime(object clrDataProcess);
 
         /// <summary>
         /// Creates a runtime from the given Dac file on disk.
         /// </summary>
         /// <param name="dacFilename">A full path to the matching mscordacwks for this process.</param>
-        /// <param name="ignoreMismatch">Whether or not to ignore mismatches between </param>
-        /// <returns></returns>
+        /// <param name="ignoreMismatch">Whether or not to ignore mismatches between</param>
+        /// <returns>IClrRuntime.</returns>
         IClrRuntime CreateRuntime(string dacFilename, bool ignoreMismatch = false);
 
         /// <summary>

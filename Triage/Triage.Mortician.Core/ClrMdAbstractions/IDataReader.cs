@@ -1,4 +1,17 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.Core
+// Author           : @tysmithnet
+// Created          : 09-18-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="IDataReader.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+using System;
 using System.Collections.Generic;
 
 namespace Triage.Mortician.Core.ClrMdAbstractions
@@ -66,7 +79,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         /// <summary>
         /// Returns true if the data target is a minidump (or otherwise may not contain full heap data).
         /// </summary>
-        /// <returns>True if the data target is a minidump (or otherwise may not contain full heap data).</returns>
+        /// <value><c>true</c> if this instance is minidump; otherwise, <c>false</c>.</value>
         bool IsMinidump { get; }
 
         /// <summary>
@@ -97,6 +110,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         /// <param name="contextFlags">The requested context flags, or 0 for default flags.</param>
         /// <param name="contextSize">The size (in bytes) of the context parameter.</param>
         /// <param name="context">A pointer to the buffer to write to.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         bool GetThreadContext(uint threadID, uint contextFlags, uint contextSize, IntPtr context);
 
         /// <summary>
@@ -106,11 +120,13 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         /// <param name="contextFlags">The requested context flags, or 0 for default flags.</param>
         /// <param name="contextSize">The size (in bytes) of the context parameter.</param>
         /// <param name="context">A pointer to the buffer to write to.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         bool GetThreadContext(uint threadID, uint contextFlags, uint contextSize, byte[] context);
 
         /// <summary>
         /// Read a pointer out of the target process.
         /// </summary>
+        /// <param name="addr">The addr.</param>
         /// <returns>The pointer at the give address, or 0 if that pointer doesn't exist in
         /// the data target.</returns>
         ulong ReadPointerUnsafe(ulong addr);
@@ -118,6 +134,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         /// <summary>
         /// Read an int out of the target process.
         /// </summary>
+        /// <param name="addr">The addr.</param>
         /// <returns>The int at the give address, or 0 if that pointer doesn't exist in
         /// the data target.</returns>
         uint ReadDwordUnsafe(ulong addr);

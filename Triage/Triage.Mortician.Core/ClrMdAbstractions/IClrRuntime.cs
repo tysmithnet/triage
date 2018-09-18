@@ -1,86 +1,117 @@
-﻿using System.Collections.Generic;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.Core
+// Author           : @tysmithnet
+// Created          : 09-18-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="IClrRuntime.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+using System.Collections.Generic;
 
 namespace Triage.Mortician.Core.ClrMdAbstractions
 {
+    /// <summary>
+    /// Interface IClrRuntime
+    /// </summary>
     public interface IClrRuntime
     {
         /// <summary>
         /// In .NET native crash dumps, we have a list of serialized exceptions objects. This property expose them as ClrException objects.
         /// </summary>
+        /// <returns>IEnumerable&lt;IClrException&gt;.</returns>
         IEnumerable<IClrException> EnumerateSerializedExceptions();
 
         /// <summary>
         /// The ClrInfo of the current runtime.
         /// </summary>
+        /// <value>The color information.</value>
         IClrInfo ClrInfo { get; }
 
         /// <summary>
         /// Returns the DataTarget associated with this runtime.
         /// </summary>
+        /// <value>The data target.</value>
         IDataTarget DataTarget { get; }
 
         /// <summary>
         /// Whether or not the process is running in server GC mode or not.
         /// </summary>
+        /// <value><c>true</c> if [server gc]; otherwise, <c>false</c>.</value>
         bool ServerGC { get; }
 
         /// <summary>
         /// The number of logical GC heaps in the process.  This is always 1 for a workstation
         /// GC, and usually it's the number of logical processors in a server GC application.
         /// </summary>
+        /// <value>The heap count.</value>
         int HeapCount { get; }
 
         /// <summary>
         /// Returns the pointer size of the target process.
         /// </summary>
+        /// <value>The size of the pointer.</value>
         int PointerSize { get; }
 
         /// <summary>
         /// Enumerates the list of appdomains in the process.  Note the System appdomain and Shared
         /// AppDomain are omitted.
         /// </summary>
+        /// <value>The application domains.</value>
         IList<IClrAppDomain> AppDomains { get; }
 
         /// <summary>
         /// Give access to the System AppDomain
         /// </summary>
+        /// <value>The system domain.</value>
         IClrAppDomain SystemDomain { get; }
 
         /// <summary>
         /// Give access to the Shared AppDomain
         /// </summary>
+        /// <value>The shared domain.</value>
         IClrAppDomain SharedDomain { get; }
 
         /// <summary>
         /// Enumerates all managed threads in the process.  Only threads which have previously run managed
         /// code will be enumerated.
         /// </summary>
+        /// <value>The threads.</value>
         IList<IClrThread> Threads { get; }
 
         /// <summary>
         /// Gets the GC heap of the process.
         /// </summary>
+        /// <value>The heap.</value>
         IClrHeap Heap { get; }
 
         /// <summary>
         /// Returns data on the CLR thread pool for this runtime.
         /// </summary>
+        /// <value>The thread pool.</value>
         IClrThreadPool ThreadPool { get; }
 
         /// <summary>
         /// A list of all modules loaded into the process.
         /// </summary>
+        /// <value>The modules.</value>
         IList<IClrModule> Modules { get; }
 
         /// <summary>
-        /// Enumerates the OS thread ID of GC threads in the runtime.  
+        /// Enumerates the OS thread ID of GC threads in the runtime.
         /// </summary>
+        /// <returns>IEnumerable&lt;System.Int32&gt;.</returns>
         IEnumerable<int> EnumerateGCThreads();
 
         /// <summary>
         /// Enumerates all objects currently on the finalizer queue.  (Not finalizable objects, but objects
         /// which have been collected and will be imminently finalized.)
         /// </summary>
+        /// <returns>IEnumerable&lt;System.UInt64&gt;.</returns>
         IEnumerable<ulong> EnumerateFinalizerQueueObjectAddresses();
 
         /// <summary>
@@ -128,11 +159,13 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         /// <summary>
         /// Gets the GC heap of the process.
         /// </summary>
+        /// <returns>IClrHeap.</returns>
         IClrHeap GetHeap();
 
         /// <summary>
         /// Returns data on the CLR thread pool for this runtime.
         /// </summary>
+        /// <returns>IClrThreadPool.</returns>
         IClrThreadPool GetThreadPool();
 
         /// <summary>
@@ -147,6 +180,8 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         /// Attempts to get a ClrMethod for the given instruction pointer.  This will return NULL if the
         /// given instruction pointer is not within any managed method.
         /// </summary>
+        /// <param name="ip">The ip.</param>
+        /// <returns>IClrMethod.</returns>
         IClrMethod GetMethodByAddress(ulong ip);
 
         /// <summary>
