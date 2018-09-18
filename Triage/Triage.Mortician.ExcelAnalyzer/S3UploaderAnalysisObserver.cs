@@ -19,8 +19,8 @@ namespace Triage.Mortician.ExcelAnalyzer
     ///     An object capable of responding to relevant report events by uploading them to S3
     /// </summary>
     /// <seealso cref="T:Triage.Mortician.IAnalysisObserver" />
-    [Export(typeof(IAnalysisObserver))]
-    internal sealed class S3UploaderAnalysisObserver : IAnalysisObserver
+    [Export(typeof(IAnalyzer))]
+    internal sealed class S3UploaderAnalysisObserver : IAnalyzer
     {
         private const string UploadExcelToS3 = "upload-excel-to-s3";
         private const string ExcelBucketId = "excel-bucket-id";

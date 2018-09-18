@@ -107,7 +107,6 @@
     <Compile Include="Domain\DefaultObjectExtractor.cs" />
     <Compile Include="Domain\DumpAppDomain.cs" />
     <Compile Include="EventHub.cs" />
-    <Compile Include="IAnalysisObserver.cs" />
     <Compile Include="IAnalyzerTaskFactory.cs" />
     <Compile Include="IEngine.cs" />
     <Compile Include="IEventHub.cs" />
