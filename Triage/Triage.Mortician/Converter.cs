@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Diagnostics.Runtime.Utilities;
@@ -25,7 +23,8 @@ namespace Triage.Mortician
                 case ClrMd.Architecture.X86:
                     return Architecture.X86;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(architecture), architecture, "The Architecture contract does not match CLRMd.");
+                    throw new ArgumentOutOfRangeException(nameof(architecture), architecture,
+                        "The Architecture contract does not match CLRMd.");
             }
         }
 
@@ -54,7 +53,8 @@ namespace Triage.Mortician
                 case ClrMd.BlockingReason.WriterAcquired:
                     return BlockingReason.WriterAcquired;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(blockingReason), blockingReason, "The BlockingReason contract does not match CLRMd.");
+                    throw new ArgumentOutOfRangeException(nameof(blockingReason), blockingReason,
+                        "The BlockingReason contract does not match CLRMd.");
             }
         }
 
@@ -271,7 +271,7 @@ namespace Triage.Mortician
 
         public static GcRootProgressEvent Convert(ClrMd.GCRootProgressEvent rootProgressEvent)
         {
-            return (source, current, total) => rootProgressEvent(source, current, total);
+            return (source, current, total) => rootProgressEvent((source as GcRootAdapter)?._root, current, total);
         }
 
         public static IGcRoot Convert(ClrMd.GCRoot gcRoot)
@@ -329,17 +329,15 @@ namespace Triage.Mortician
         }
     }
 
-    
-
     internal class ClrExceptionAdapter : IClrException
     {
-        private ClrMd.ClrException _exception;
-
         /// <inheritdoc />
         public ClrExceptionAdapter(ClrMd.ClrException exception)
         {
             _exception = exception ?? throw new ArgumentNullException(nameof(exception));
         }
+
+        internal ClrMd.ClrException _exception;
 
         /// <inheritdoc />
         public ulong Address { get; }
@@ -362,13 +360,13 @@ namespace Triage.Mortician
 
     internal class SymbolResolverAdapter : ISymbolResolver
     {
-        private ClrMd.ISymbolResolver _resolver;
-
         /// <inheritdoc />
         public SymbolResolverAdapter(ClrMd.ISymbolResolver resolver)
         {
             _resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
         }
+
+        internal ClrMd.ISymbolResolver _resolver;
 
         /// <inheritdoc />
         public string GetSymbolNameByRVA(uint rva)
@@ -379,13 +377,13 @@ namespace Triage.Mortician
 
     internal class SymbolProviderAdapter : ISymbolProvider
     {
-        private ClrMd.ISymbolProvider _provider;
-
         /// <inheritdoc />
         public SymbolProviderAdapter(ClrMd.ISymbolProvider provider)
         {
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
+
+        internal ClrMd.ISymbolProvider _provider;
 
         /// <inheritdoc />
         public ISymbolResolver GetSymbolResolver(string pdbName, Guid guid, int age)
@@ -396,13 +394,13 @@ namespace Triage.Mortician
 
     internal class SymbolLocatorAdapter : ISymbolLocator
     {
-        private ClrMd.Utilities.SymbolLocator _locator;
-
         /// <inheritdoc />
         public SymbolLocatorAdapter(SymbolLocator locator)
         {
             _locator = locator ?? throw new ArgumentNullException(nameof(locator));
         }
+
+        internal SymbolLocator _locator;
 
         /// <inheritdoc />
         public string FindBinary(string fileName, uint buildTimeStamp, uint imageSize, bool checkProperties = true)
@@ -429,13 +427,15 @@ namespace Triage.Mortician
         }
 
         /// <inheritdoc />
-        public Task<string> FindBinaryAsync(string fileName, uint buildTimeStamp, uint imageSize, bool checkProperties = true)
+        public Task<string> FindBinaryAsync(string fileName, uint buildTimeStamp, uint imageSize,
+            bool checkProperties = true)
         {
             throw new NotImplementedException();
         }
 
         /// <inheritdoc />
-        public Task<string> FindBinaryAsync(string fileName, int buildTimeStamp, int imageSize, bool checkProperties = true)
+        public Task<string> FindBinaryAsync(string fileName, int buildTimeStamp, int imageSize,
+            bool checkProperties = true)
         {
             throw new NotImplementedException();
         }
@@ -500,13 +500,13 @@ namespace Triage.Mortician
 
     internal class RootPathAdapter : IRootPath
     {
-        private ClrMd.RootPath _rootPath;
-
         /// <inheritdoc />
         public RootPathAdapter(ClrMd.RootPath rootPath)
         {
             _rootPath = rootPath;
         }
+
+        internal ClrMd.RootPath _rootPath;
 
         /// <inheritdoc />
         public IClrObject[] Path { get; set; }
@@ -517,13 +517,13 @@ namespace Triage.Mortician
 
     internal class RcwDataAdapter : IRcwData
     {
-        private ClrMd.RcwData _rcwData;
-
         /// <inheritdoc />
         public RcwDataAdapter(ClrMd.RcwData rcwData)
         {
             _rcwData = rcwData ?? throw new ArgumentNullException(nameof(rcwData));
         }
+
+        internal ClrMd.RcwData _rcwData;
 
         /// <inheritdoc />
         public uint CreatorThread { get; }
@@ -552,13 +552,13 @@ namespace Triage.Mortician
 
     internal class PeFileAdapter : IPeFile
     {
-        private ClrMd.Utilities.PEFile _peFile;
-
         /// <inheritdoc />
         public PeFileAdapter(PEFile peFile)
         {
             _peFile = peFile ?? throw new ArgumentNullException(nameof(peFile));
         }
+
+        internal PEFile _peFile;
 
         /// <inheritdoc />
         public void Dispose()
@@ -593,13 +593,13 @@ namespace Triage.Mortician
 
     internal class PdbInfoAdapter : IPdbInfo
     {
-        private ClrMd.PdbInfo _pdbInfo;
-
         /// <inheritdoc />
         public PdbInfoAdapter(ClrMd.PdbInfo pdbInfo)
         {
             _pdbInfo = pdbInfo ?? throw new ArgumentNullException(nameof(pdbInfo));
         }
+
+        internal ClrMd.PdbInfo _pdbInfo;
 
         /// <inheritdoc />
         public string FileName { get; set; }
@@ -613,13 +613,13 @@ namespace Triage.Mortician
 
     internal class ObjectSetAdapter : IObjectSet
     {
-        private ClrMd.ObjectSet _objectSet;
-
         /// <inheritdoc />
         public ObjectSetAdapter(ClrMd.ObjectSet objectSet)
         {
             _objectSet = objectSet ?? throw new ArgumentNullException(nameof(objectSet));
         }
+
+        internal ClrMd.ObjectSet _objectSet;
 
         /// <inheritdoc />
         public bool Add(ulong obj)
@@ -651,13 +651,13 @@ namespace Triage.Mortician
 
     internal class NativeWorkItemAdapter : INativeWorkItem
     {
-        private ClrMd.NativeWorkItem _nativeWorkItem;
-
         /// <inheritdoc />
         public NativeWorkItemAdapter(ClrMd.NativeWorkItem nativeWorkItem)
         {
             _nativeWorkItem = nativeWorkItem ?? throw new ArgumentNullException(nameof(nativeWorkItem));
         }
+
+        internal ClrMd.NativeWorkItem _nativeWorkItem;
 
         /// <inheritdoc />
         public ulong Callback { get; }
@@ -671,13 +671,13 @@ namespace Triage.Mortician
 
     internal class ModuleInfoAdapter : IModuleInfo
     {
-        private ClrMd.ModuleInfo _moduleInfo;
-
         /// <inheritdoc />
         public ModuleInfoAdapter(ClrMd.ModuleInfo moduleInfo)
         {
             _moduleInfo = moduleInfo ?? throw new ArgumentNullException(nameof(moduleInfo));
         }
+
+        internal ClrMd.ModuleInfo _moduleInfo;
 
         /// <inheritdoc />
         public IPeFile GetPEFile()
@@ -712,13 +712,13 @@ namespace Triage.Mortician
 
     internal class ManagedWorkItemAdapter : IManagedWorkItem
     {
-        private ClrMd.ManagedWorkItem _workItem;
-
         /// <inheritdoc />
         public ManagedWorkItemAdapter(ClrMd.ManagedWorkItem workItem)
         {
             _workItem = workItem ?? throw new ArgumentNullException(nameof(workItem));
         }
+
+        internal ClrMd.ManagedWorkItem _workItem;
 
         /// <inheritdoc />
         public ulong Object { get; }
@@ -729,13 +729,13 @@ namespace Triage.Mortician
 
     internal class IlInfoAdapter : IILInfo
     {
-        private ClrMd.ILInfo _info;
-
         /// <inheritdoc />
         public IlInfoAdapter(ClrMd.ILInfo info)
         {
             _info = info ?? throw new ArgumentNullException(nameof(info));
         }
+
+        internal ClrMd.ILInfo _info;
 
         /// <inheritdoc />
         public ulong Address { get; }
@@ -755,13 +755,13 @@ namespace Triage.Mortician
 
     internal class HotColdRegionsAdapter : IHotColdRegions
     {
-        private ClrMd.HotColdRegions _hotColdRegions;
-
         /// <inheritdoc />
         public HotColdRegionsAdapter(ClrMd.HotColdRegions hotColdRegions)
         {
             _hotColdRegions = hotColdRegions ?? throw new ArgumentNullException(nameof(hotColdRegions));
         }
+
+        internal ClrMd.HotColdRegions _hotColdRegions;
 
         /// <inheritdoc />
         public uint ColdSize { get; }
@@ -778,13 +778,13 @@ namespace Triage.Mortician
 
     internal class FileVersionInfoAdapter : IFileVersionInfo
     {
-        private FileVersionInfo _fileVersionInfo;
-
         /// <inheritdoc />
         public FileVersionInfoAdapter(FileVersionInfo fileVersionInfo)
         {
             _fileVersionInfo = fileVersionInfo ?? throw new ArgumentNullException(nameof(fileVersionInfo));
         }
+
+        private FileVersionInfo _fileVersionInfo;
 
         /// <inheritdoc />
         public string Comments { get; }
@@ -795,13 +795,13 @@ namespace Triage.Mortician
 
     internal class DataTargetAdapter : IDataTarget
     {
-        private ClrMd.DataTarget _dataTarget;
-
         /// <inheritdoc />
         public DataTargetAdapter(ClrMd.DataTarget dataTarget)
         {
             _dataTarget = dataTarget ?? throw new ArgumentNullException(nameof(dataTarget));
         }
+
+        internal ClrMd.DataTarget _dataTarget;
 
         /// <inheritdoc />
         public void Dispose()
@@ -845,13 +845,13 @@ namespace Triage.Mortician
 
     internal class DataReaderAdapter : IDataReader
     {
-        private ClrMd.IDataReader _dataReader;
-
         /// <inheritdoc />
         public DataReaderAdapter(ClrMd.IDataReader dataReader)
         {
             _dataReader = dataReader ?? throw new ArgumentNullException(nameof(dataReader));
         }
+
+        internal ClrMd.IDataReader _dataReader;
 
         /// <inheritdoc />
         public void Close()
@@ -949,13 +949,13 @@ namespace Triage.Mortician
 
     internal class DacInfoAdapter : IDacInfo
     {
-        private ClrMd.DacInfo _dacInfo;
-
         /// <inheritdoc />
         public DacInfoAdapter(ClrMd.DacInfo dacInfo)
         {
             _dacInfo = dacInfo ?? throw new ArgumentNullException(nameof(dacInfo));
         }
+
+        internal ClrMd.DacInfo _dacInfo;
 
         /// <inheritdoc />
         public string FileName { get; set; }
@@ -990,13 +990,13 @@ namespace Triage.Mortician
 
     internal class ComInterfaceData : IComInterfaceData
     {
-        private ClrMd.ComInterfaceData _comInterfaceData;
-
         /// <inheritdoc />
         public ComInterfaceData(ClrMd.ComInterfaceData comInterfaceData)
         {
             _comInterfaceData = comInterfaceData ?? throw new ArgumentNullException(nameof(comInterfaceData));
         }
+
+        internal ClrMd.ComInterfaceData _comInterfaceData;
 
         /// <inheritdoc />
         public ulong InterfacePointer { get; }
@@ -1007,13 +1007,13 @@ namespace Triage.Mortician
 
     internal class ClrValueClassAdapter : IClrValueClass
     {
-        private ClrMd.ClrValueClass _valueClass;
-
         /// <inheritdoc />
         public ClrValueClassAdapter(ClrMd.ClrValueClass valueClass)
         {
             _valueClass = valueClass;
         }
+
+        internal ClrMd.ClrValueClass _valueClass;
 
         /// <inheritdoc />
         public T GetField<T>(string fieldName) where T : struct
@@ -1051,13 +1051,13 @@ namespace Triage.Mortician
 
     internal class ClrTypeAdapter : IClrType
     {
-        private ClrMd.ClrThread _clrThread;
-
         /// <inheritdoc />
         public ClrTypeAdapter(ClrMd.ClrThread clrThread)
         {
             _clrThread = clrThread ?? throw new ArgumentNullException(nameof(clrThread));
         }
+
+        internal ClrMd.ClrThread _clrThread;
 
         /// <inheritdoc />
         public IEnumerable<ulong> EnumerateMethodTables()
@@ -1138,7 +1138,8 @@ namespace Triage.Mortician
         }
 
         /// <inheritdoc />
-        public bool GetFieldForOffset(int fieldOffset, bool inner, out IClrInstanceField childField, out int childFieldOffset)
+        public bool GetFieldForOffset(int fieldOffset, bool inner, out IClrInstanceField childField,
+            out int childFieldOffset)
         {
             throw new NotImplementedException();
         }
@@ -1311,13 +1312,13 @@ namespace Triage.Mortician
 
     internal class ClrThreadStaticFieldAdapter : IClrThreadStaticField
     {
-        private ClrMd.ClrThreadStaticField _threadStaticField;
-
         /// <inheritdoc />
         public ClrThreadStaticFieldAdapter(ClrMd.ClrThreadStaticField threadStaticField)
         {
             _threadStaticField = threadStaticField ?? throw new ArgumentNullException(nameof(threadStaticField));
         }
+
+        internal ClrMd.ClrThreadStaticField _threadStaticField;
 
         /// <inheritdoc />
         public ulong GetAddress(IClrAppDomain appDomain, IClrThread thread)
@@ -1382,13 +1383,13 @@ namespace Triage.Mortician
 
     internal class ClrThreadPoolAdapter : IClrThreadPool
     {
-        private ClrMd.ClrThreadPool _threadPool;
-
         /// <inheritdoc />
         public ClrThreadPoolAdapter(ClrMd.ClrThreadPool threadPool)
         {
             _threadPool = threadPool ?? throw new ArgumentNullException(nameof(threadPool));
         }
+
+        internal ClrMd.ClrThreadPool _threadPool;
 
         /// <inheritdoc />
         public IEnumerable<IManagedWorkItem> EnumerateManagedWorkItems()
@@ -1435,13 +1436,13 @@ namespace Triage.Mortician
 
     internal class ClrThreadAdapter : IClrThread
     {
-        private ClrMd.ClrThread _thread;
-
         /// <inheritdoc />
         public ClrThreadAdapter(ClrMd.ClrThread thread)
         {
             _thread = thread ?? throw new ArgumentNullException(nameof(thread));
         }
+
+        internal ClrMd.ClrThread _thread;
 
         /// <inheritdoc />
         public IEnumerable<IClrRoot> EnumerateStackObjects()
@@ -1566,13 +1567,13 @@ namespace Triage.Mortician
 
     internal class ClrStaticFieldAdapter : IClrStaticField
     {
-        private ClrMd.ClrStaticField _staticField;
-
         /// <inheritdoc />
         public ClrStaticFieldAdapter(ClrMd.ClrStaticField staticField)
         {
             _staticField = staticField ?? throw new ArgumentNullException(nameof(staticField));
         }
+
+        internal ClrMd.ClrStaticField _staticField;
 
         /// <inheritdoc />
         public ulong GetAddress(IClrAppDomain appDomain)
@@ -1652,13 +1653,13 @@ namespace Triage.Mortician
 
     internal class ClrStackFrame : IClrStackFrame
     {
-        private ClrMd.ClrStackFrame _stackFrame;
-
         /// <inheritdoc />
         public ClrStackFrame(ClrMd.ClrStackFrame stackFrame)
         {
             _stackFrame = stackFrame ?? throw new ArgumentNullException(nameof(stackFrame));
         }
+
+        internal ClrMd.ClrStackFrame _stackFrame;
 
         /// <inheritdoc />
         public string DisplayString { get; }
@@ -1684,13 +1685,13 @@ namespace Triage.Mortician
 
     internal class ClrSegmentAdapter : IClrSegment
     {
-        private ClrMd.ClrSegment _segment;
-
         /// <inheritdoc />
         public ClrSegmentAdapter(ClrMd.ClrSegment segment)
         {
             _segment = segment ?? throw new ArgumentNullException(nameof(segment));
         }
+
+        internal ClrMd.ClrSegment _segment;
 
         /// <inheritdoc />
         public IEnumerable<ulong> EnumerateObjectAddresses()
@@ -1773,13 +1774,13 @@ namespace Triage.Mortician
 
     internal class ClrRuntimeAdapter : IClrRuntime
     {
-        private ClrMd.ClrRuntime _runtime;
-
         /// <inheritdoc />
         public ClrRuntimeAdapter(ClrMd.ClrRuntime runtime)
         {
             _runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
         }
+
+        internal ClrMd.ClrRuntime _runtime;
 
         /// <inheritdoc />
         public IEnumerable<ulong> EnumerateFinalizerQueueObjectAddresses()
@@ -1898,13 +1899,13 @@ namespace Triage.Mortician
 
     internal class ClrRootAdapter : IClrRoot
     {
-        private ClrMd.ClrRoot _root;
-
         /// <inheritdoc />
         public ClrRootAdapter(ClrMd.ClrRoot root)
         {
             _root = root ?? throw new ArgumentNullException(nameof(root));
         }
+
+        internal ClrMd.ClrRoot _root;
 
         /// <inheritdoc />
         public ulong Address { get; }
@@ -1942,13 +1943,13 @@ namespace Triage.Mortician
 
     internal class ClrObjectAdapter : IClrObject
     {
-        private ClrMd.ClrObject _object;
-
         /// <inheritdoc />
         public ClrObjectAdapter(ClrMd.ClrObject o)
         {
             _object = o;
         }
+
+        internal ClrMd.ClrObject _object;
 
         /// <inheritdoc />
         public IEnumerable<IClrObject> EnumerateObjectReferences(bool carefully = false)
@@ -2016,17 +2017,16 @@ namespace Triage.Mortician
 
     internal class GcRootAdapter : IGcRoot
     {
-        private ClrMd.GCRoot _root;
-
         /// <inheritdoc />
         public GcRootAdapter(ClrMd.GCRoot root)
         {
             _root = root ?? throw new ArgumentNullException(nameof(root));
-            
         }
 
         /// <inheritdoc />
         public event GcRootProgressEvent ProgressUpdate;
+
+        internal ClrMd.GCRoot _root;
 
         /// <inheritdoc />
         public void BuildCache(CancellationToken cancelToken)
@@ -2041,7 +2041,8 @@ namespace Triage.Mortician
         }
 
         /// <inheritdoc />
-        public IEnumerable<LinkedList<IClrObject>> EnumerateAllPaths(ulong source, ulong target, bool unique, CancellationToken cancelToken)
+        public IEnumerable<LinkedList<IClrObject>> EnumerateAllPaths(ulong source, ulong target, bool unique,
+            CancellationToken cancelToken)
         {
             throw new NotImplementedException();
         }
