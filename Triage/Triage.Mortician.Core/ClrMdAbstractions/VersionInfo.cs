@@ -11,35 +11,36 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 namespace Triage.Mortician.Core.ClrMdAbstractions
 {
     /// <summary>
-    /// Struct VersionInfo
+    ///     Struct VersionInfo
     /// </summary>
     public struct VersionInfo
     {
         /// <summary>
-        /// In a version 'A.B.C.D', this field represents 'A'.
+        ///     In a version 'A.B.C.D', this field represents 'A'.
         /// </summary>
         public int Major;
 
         /// <summary>
-        /// In a version 'A.B.C.D', this field represents 'B'.
+        ///     In a version 'A.B.C.D', this field represents 'B'.
         /// </summary>
         public int Minor;
 
         /// <summary>
-        /// In a version 'A.B.C.D', this field represents 'C'.
+        ///     In a version 'A.B.C.D', this field represents 'C'.
         /// </summary>
         public int Revision;
 
         /// <summary>
-        /// In a version 'A.B.C.D', this field represents 'D'.
+        ///     In a version 'A.B.C.D', this field represents 'D'.
         /// </summary>
         public int Patch;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VersionInfo"/> struct.
+        ///     Initializes a new instance of the <see cref="VersionInfo" /> struct.
         /// </summary>
         /// <param name="major">The major.</param>
         /// <param name="minor">The minor.</param>
@@ -54,7 +55,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         }
 
         /// <summary>
-        /// To string.
+        ///     To string.
         /// </summary>
         /// <returns>The A.B.C.D version prepended with 'v'.</returns>
         public override string ToString()

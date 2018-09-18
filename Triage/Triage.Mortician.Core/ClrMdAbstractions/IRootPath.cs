@@ -11,23 +11,24 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 namespace Triage.Mortician.Core.ClrMdAbstractions
 {
     /// <summary>
-    /// Interface IRootPath
+    ///     Interface IRootPath
     /// </summary>
     public interface IRootPath
     {
         /// <summary>
-        /// The location that roots the object.
-        /// </summary>
-        /// <value>The root.</value>
-        IClrRoot Root { get; set; }
-
-        /// <summary>
-        /// The path from Root to a given target object.
+        ///     The path from Root to a given target object.
         /// </summary>
         /// <value>The path.</value>
         IClrObject[] Path { get; set; }
+
+        /// <summary>
+        ///     The location that roots the object.
+        /// </summary>
+        /// <value>The root.</value>
+        IClrRoot Root { get; set; }
     }
 }

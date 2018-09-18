@@ -11,10 +11,11 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 namespace Triage.Mortician.Core.ClrMdAbstractions
 {
     /// <summary>
-    /// A delegate for reporting GCRoot progress.
+    ///     A delegate for reporting GCRoot progress.
     /// </summary>
     /// <param name="source">The GCRoot sending the event.</param>
     /// <param name="current">The total number of objects processed.</param>

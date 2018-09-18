@@ -11,43 +11,44 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 using System.Collections.Generic;
 
 namespace Triage.Mortician.Core.ClrMdAbstractions
 {
     /// <summary>
-    /// Interface ICcwData
+    ///     Interface ICcwData
     /// </summary>
     public interface ICcwData
     {
         /// <summary>
-        /// Returns the pointer to the IUnknown representing this CCW.
-        /// </summary>
-        /// <value>The i unknown.</value>
-        ulong IUnknown { get; }
-
-        /// <summary>
-        /// Returns the pointer to the managed object representing this CCW.
-        /// </summary>
-        /// <value>The object.</value>
-        ulong Object { get; }
-
-        /// <summary>
-        /// Returns the CLR handle associated with this CCW.
+        ///     Returns the CLR handle associated with this CCW.
         /// </summary>
         /// <value>The handle.</value>
         ulong Handle { get; }
 
         /// <summary>
-        /// Returns the refcount of this CCW.
-        /// </summary>
-        /// <value>The reference count.</value>
-        int RefCount { get; }
-
-        /// <summary>
-        /// Returns the interfaces that this CCW implements.
+        ///     Returns the interfaces that this CCW implements.
         /// </summary>
         /// <value>The interfaces.</value>
         IList<IComInterfaceData> Interfaces { get; }
+
+        /// <summary>
+        ///     Returns the pointer to the IUnknown representing this CCW.
+        /// </summary>
+        /// <value>The i unknown.</value>
+        ulong IUnknown { get; }
+
+        /// <summary>
+        ///     Returns the pointer to the managed object representing this CCW.
+        /// </summary>
+        /// <value>The object.</value>
+        ulong Object { get; }
+
+        /// <summary>
+        ///     Returns the refcount of this CCW.
+        /// </summary>
+        /// <value>The reference count.</value>
+        int RefCount { get; }
     }
 }

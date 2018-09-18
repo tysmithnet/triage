@@ -11,21 +11,22 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 namespace Triage.Mortician.Core.ClrMdAbstractions
 {
     /// <summary>
-    /// Interface IManagedWorkItem
+    ///     Interface IManagedWorkItem
     /// </summary>
     public interface IManagedWorkItem
     {
         /// <summary>
-        /// The object address of this entry.
+        ///     The object address of this entry.
         /// </summary>
         /// <value>The object.</value>
         ulong Object { get; }
 
         /// <summary>
-        /// The type of Object.
+        ///     The type of Object.
         /// </summary>
         /// <value>The type.</value>
         IClrType Type { get; }

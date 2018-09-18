@@ -11,23 +11,24 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 namespace Triage.Mortician.Core.ClrMdAbstractions
 {
     /// <summary>
-    /// Interface IFileVersionInfo
+    ///     Interface IFileVersionInfo
     /// </summary>
     public interface IFileVersionInfo
     {
         /// <summary>
-        /// The verison string
-        /// </summary>
-        /// <value>The file version.</value>
-        string FileVersion { get; }
-
-        /// <summary>
-        /// Comments to supplement the file version
+        ///     Comments to supplement the file version
         /// </summary>
         /// <value>The comments.</value>
         string Comments { get; }
+
+        /// <summary>
+        ///     The verison string
+        /// </summary>
+        /// <value>The file version.</value>
+        string FileVersion { get; }
     }
 }

@@ -11,50 +11,51 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 using System;
 
 namespace Triage.Mortician.Core.ClrMdAbstractions
 {
     /// <summary>
-    /// Interface IPdbInfo
+    ///     Interface IPdbInfo
     /// </summary>
     public interface IPdbInfo
     {
         /// <summary>
-        /// The Guid of the PDB.
-        /// </summary>
-        /// <value>The unique identifier.</value>
-        Guid Guid { get; set; }
-
-        /// <summary>
-        /// The pdb revision.
-        /// </summary>
-        /// <value>The revision.</value>
-        int Revision { get; set; }
-
-        /// <summary>
-        /// The filename of the pdb.
-        /// </summary>
-        /// <value>The name of the file.</value>
-        string FileName { get; set; }
-
-        /// <summary>
-        /// GetHashCode implementation.
-        /// </summary>
-        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-        int GetHashCode();
-
-        /// <summary>
-        /// Override for Equals.  Returns true if the guid, age, and filenames equal.  Note that this compares only the
+        ///     Override for Equals.  Returns true if the guid, age, and filenames equal.  Note that this compares only the
         /// </summary>
         /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
         /// <returns>True if the objects match, false otherwise.</returns>
         bool Equals(object obj);
 
         /// <summary>
-        /// To string implementation.
+        ///     GetHashCode implementation.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        int GetHashCode();
+
+        /// <summary>
+        ///     To string implementation.
         /// </summary>
         /// <returns>Printing friendly version.</returns>
         string ToString();
+
+        /// <summary>
+        ///     The filename of the pdb.
+        /// </summary>
+        /// <value>The name of the file.</value>
+        string FileName { get; set; }
+
+        /// <summary>
+        ///     The Guid of the PDB.
+        /// </summary>
+        /// <value>The unique identifier.</value>
+        Guid Guid { get; set; }
+
+        /// <summary>
+        ///     The pdb revision.
+        /// </summary>
+        /// <value>The revision.</value>
+        int Revision { get; set; }
     }
 }

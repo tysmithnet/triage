@@ -11,41 +11,42 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 namespace Triage.Mortician.Core.ClrMdAbstractions
 {
     /// <summary>
-    /// Interface IILInfo
+    ///     Interface IILInfo
     /// </summary>
     public interface IILInfo
     {
         /// <summary>
-        /// The address in memory of where the IL for a particular method is located.
+        ///     The address in memory of where the IL for a particular method is located.
         /// </summary>
         /// <value>The address.</value>
         ulong Address { get; }
 
         /// <summary>
-        /// The length (in bytes) of the IL method body.
-        /// </summary>
-        /// <value>The length.</value>
-        int Length { get; }
-
-        /// <summary>
-        /// The maximum IL stack size in this method.
-        /// </summary>
-        /// <value>The maximum stack.</value>
-        int MaxStack { get; }
-
-        /// <summary>
-        /// The flags associated with the IL code.
+        ///     The flags associated with the IL code.
         /// </summary>
         /// <value>The flags.</value>
         uint Flags { get; }
 
         /// <summary>
-        /// The local variable signature token for this IL method.
+        ///     The length (in bytes) of the IL method body.
+        /// </summary>
+        /// <value>The length.</value>
+        int Length { get; }
+
+        /// <summary>
+        ///     The local variable signature token for this IL method.
         /// </summary>
         /// <value>The local variable signature token.</value>
         uint LocalVarSignatureToken { get; }
+
+        /// <summary>
+        ///     The maximum IL stack size in this method.
+        /// </summary>
+        /// <value>The maximum stack.</value>
+        int MaxStack { get; }
     }
 }

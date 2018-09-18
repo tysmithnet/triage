@@ -11,59 +11,36 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 namespace Triage.Mortician.Core.ClrMdAbstractions
 {
     /// <summary>
-    /// Interface IClrInfo
+    ///     Interface IClrInfo
     /// </summary>
     public interface IClrInfo
     {
         /// <summary>
-        /// The version number of this runtime.
+        ///     IComparable.  Sorts the object by version.
         /// </summary>
-        /// <value>The version.</value>
-        VersionInfo Version { get; }
+        /// <param name="obj">The object to compare to.</param>
+        /// <returns>-1 if less, 0 if equal, 1 if greater.</returns>
+        int CompareTo(object obj);
 
         /// <summary>
-        /// The type of CLR this module represents.
-        /// </summary>
-        /// <value>The flavor.</value>
-        ClrFlavor Flavor { get; }
-
-        /// <summary>
-        /// Returns module information about the Dac needed create a ClrRuntime instance for this runtime.
-        /// </summary>
-        /// <value>The dac information.</value>
-        IDacInfo DacInfo { get; }
-
-        /// <summary>
-        /// Returns module information about the ClrInstance.
-        /// </summary>
-        /// <value>The module information.</value>
-        IModuleInfo ModuleInfo { get; }
-
-        /// <summary>
-        /// Returns the location of the local dac on your machine which matches this version of Clr, or null
-        /// if one could not be found.
-        /// </summary>
-        /// <value>The local matching dac.</value>
-        string LocalMatchingDac { get; }
-
-        /// <summary>
-        /// Creates a runtime from the given Dac file on disk.
+        ///     Creates a runtime from the given Dac file on disk.
         /// </summary>
         /// <returns>IClrRuntime.</returns>
         IClrRuntime CreateRuntime();
 
         /// <summary>
-        /// Creates a runtime from a given IXClrDataProcess interface.  Used for debugger plugins.
+        ///     Creates a runtime from a given IXClrDataProcess interface.  Used for debugger plugins.
         /// </summary>
         /// <param name="clrDataProcess">The color data process.</param>
         /// <returns>IClrRuntime.</returns>
         IClrRuntime CreateRuntime(object clrDataProcess);
 
         /// <summary>
-        /// Creates a runtime from the given Dac file on disk.
+        ///     Creates a runtime from the given Dac file on disk.
         /// </summary>
         /// <param name="dacFilename">A full path to the matching mscordacwks for this process.</param>
         /// <param name="ignoreMismatch">Whether or not to ignore mismatches between</param>
@@ -71,16 +48,40 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         IClrRuntime CreateRuntime(string dacFilename, bool ignoreMismatch = false);
 
         /// <summary>
-        /// To string.
+        ///     To string.
         /// </summary>
         /// <returns>A version string for this Clr runtime.</returns>
         string ToString();
 
         /// <summary>
-        /// IComparable.  Sorts the object by version.
+        ///     Returns module information about the Dac needed create a ClrRuntime instance for this runtime.
         /// </summary>
-        /// <param name="obj">The object to compare to.</param>
-        /// <returns>-1 if less, 0 if equal, 1 if greater.</returns>
-        int CompareTo(object obj);
+        /// <value>The dac information.</value>
+        IDacInfo DacInfo { get; }
+
+        /// <summary>
+        ///     The type of CLR this module represents.
+        /// </summary>
+        /// <value>The flavor.</value>
+        ClrFlavor Flavor { get; }
+
+        /// <summary>
+        ///     Returns the location of the local dac on your machine which matches this version of Clr, or null
+        ///     if one could not be found.
+        /// </summary>
+        /// <value>The local matching dac.</value>
+        string LocalMatchingDac { get; }
+
+        /// <summary>
+        ///     Returns module information about the ClrInstance.
+        /// </summary>
+        /// <value>The module information.</value>
+        IModuleInfo ModuleInfo { get; }
+
+        /// <summary>
+        ///     The version number of this runtime.
+        /// </summary>
+        /// <value>The version.</value>
+        VersionInfo Version { get; }
     }
 }

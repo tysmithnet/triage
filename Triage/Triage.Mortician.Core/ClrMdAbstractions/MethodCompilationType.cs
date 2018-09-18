@@ -11,25 +11,26 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 namespace Triage.Mortician.Core.ClrMdAbstractions
 {
     /// <summary>
-    /// Enum MethodCompilationType
+    ///     Enum MethodCompilationType
     /// </summary>
     public enum MethodCompilationType
     {
         /// <summary>
-        /// Method is not yet JITed and no NGEN image exists.
+        ///     Method is not yet JITed and no NGEN image exists.
         /// </summary>
         None,
 
         /// <summary>
-        /// Method was JITed.
+        ///     Method was JITed.
         /// </summary>
         Jit,
 
         /// <summary>
-        /// Method was NGEN'ed (pre-JITed).
+        ///     Method was NGEN'ed (pre-JITed).
         /// </summary>
         Ngen
     }

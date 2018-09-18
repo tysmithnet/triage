@@ -11,23 +11,24 @@
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
+
 namespace Triage.Mortician.Core.ClrMdAbstractions
 {
     /// <summary>
-    /// Interface IComInterfaceData
+    ///     Interface IComInterfaceData
     /// </summary>
     public interface IComInterfaceData
     {
         /// <summary>
-        /// The CLR type this represents.
-        /// </summary>
-        /// <value>The type.</value>
-        IClrType Type { get; }
-
-        /// <summary>
-        /// The interface pointer of Type.
+        ///     The interface pointer of Type.
         /// </summary>
         /// <value>The interface pointer.</value>
         ulong InterfacePointer { get; }
+
+        /// <summary>
+        ///     The CLR type this represents.
+        /// </summary>
+        /// <value>The type.</value>
+        IClrType Type { get; }
     }
 }
