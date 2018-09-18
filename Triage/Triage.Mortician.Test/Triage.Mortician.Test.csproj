@@ -79,6 +79,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Builders\AnalyzerBuilder.cs" />
+    <Compile Include="Engine_Should.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sanity_Should.cs" />
   </ItemGroup>
@@ -88,6 +90,12 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\xunit.analyzers.0.10.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Triage.Mortician\Triage.Mortician.csproj">
+      <Project>{8AA350BC-CF5F-4302-92AB-1997357049BA}</Project>
+      <Name>Triage.Mortician</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
