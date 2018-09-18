@@ -8,7 +8,7 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     Repository for objects that were extracted from the managed heap
     /// </summary>
-    public class DumpObjectRepository
+    public class DumpObjectRepository : IDumpObjectRepository
     {
         /// <summary>
         ///     The log

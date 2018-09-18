@@ -7,7 +7,7 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     An object capable of managing the discovered app domains from the memory dump
     /// </summary>
-    public class DumpAppDomainRepository
+    public class DumpAppDomainRepository : IDumpAppDomainRepository
     {
         /// <summary>
         ///     The application domains index by their address

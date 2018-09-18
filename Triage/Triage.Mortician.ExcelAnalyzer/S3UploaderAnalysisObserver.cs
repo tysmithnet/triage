@@ -42,7 +42,7 @@ namespace Triage.Mortician.ExcelAnalyzer
         ///     The settings repository.
         /// </value>
         [Import]
-        internal SettingsRepository SettingsRepository { get; set; }
+        internal ISettingsRepository SettingsRepository { get; set; }
 
         /// <inheritdoc />
         /// <summary>
