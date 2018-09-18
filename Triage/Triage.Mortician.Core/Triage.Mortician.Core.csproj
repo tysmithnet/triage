@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Architecture.cs" />
+    <Compile Include="ClrElementType.cs" />
     <Compile Include="DumpAppDomain.cs" />
     <Compile Include="DumpModule.cs" />
     <Compile Include="DumpObject.cs" />
@@ -52,6 +54,21 @@
     <Compile Include="IAnalysisObserver.cs" />
     <Compile Include="IAnalyzer.cs" />
     <Compile Include="IAnalyzerTaskFactory.cs" />
+    <Compile Include="ICcwData.cs" />
+    <Compile Include="IClrAppDomain.cs" />
+    <Compile Include="IClrException.cs" />
+    <Compile Include="IClrField.cs" />
+    <Compile Include="IClrHeap.cs" />
+    <Compile Include="IClrInstanceField.cs" />
+    <Compile Include="IClrInterface.cs" />
+    <Compile Include="IClrMethod.cs" />
+    <Compile Include="IClrModule.cs" />
+    <Compile Include="IClrObject.cs" />
+    <Compile Include="IClrRuntime.cs" />
+    <Compile Include="IClrStackFrame.cs" />
+    <Compile Include="IClrType.cs" />
+    <Compile Include="IClrValueClass.cs" />
+    <Compile Include="IComInterfaceData.cs" />
     <Compile Include="IDumpAppDomainRepository.cs" />
     <Compile Include="IDumpInformationRepository.cs" />
     <Compile Include="IDumpModuleRepository.cs" />
@@ -61,6 +78,13 @@
     <Compile Include="IDumpTypeRepository.cs" />
     <Compile Include="IEngine.cs" />
     <Compile Include="IEventHub.cs" />
+    <Compile Include="IGCRoot.cs" />
+    <Compile Include="IHotColdRegions.cs" />
+    <Compile Include="IILInfo.cs" />
+    <Compile Include="ILToNativeMap.cs" />
+    <Compile Include="IObjectSet.cs" />
+    <Compile Include="IRcwData.cs" />
+    <Compile Include="IRootPath.cs" />
     <Compile Include="ISettingsRepository.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
