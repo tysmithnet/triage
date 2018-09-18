@@ -101,18 +101,46 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnalyzerTaskFactory.cs" />
+    <Compile Include="Adapters\ClrExceptionAdapter.cs" />
+    <Compile Include="Adapters\ClrObjectAdapter.cs" />
+    <Compile Include="Adapters\ClrRootAdapter.cs" />
+    <Compile Include="Adapters\ClrRuntimeAdapter.cs" />
+    <Compile Include="Adapters\ClrSegmentAdapter.cs" />
+    <Compile Include="ClrStackFrame.cs" />
+    <Compile Include="Adapters\ClrStaticFieldAdapter.cs" />
+    <Compile Include="Adapters\ClrThreadAdapter.cs" />
+    <Compile Include="Adapters\ClrThreadPoolAdapter.cs" />
+    <Compile Include="Adapters\ClrThreadStaticFieldAdapter.cs" />
+    <Compile Include="Adapters\ClrTypeAdapter.cs" />
+    <Compile Include="Adapters\ClrValueClassAdapter.cs" />
+    <Compile Include="ComInterfaceData.cs" />
     <Compile Include="ConfigOptions.cs" />
     <Compile Include="Converter.cs" />
+    <Compile Include="Adapters\DacInfoAdapter.cs" />
+    <Compile Include="Adapters\DataReaderAdapter.cs" />
+    <Compile Include="Adapters\DataTargetAdapter.cs" />
     <Compile Include="DefaultOptions.cs" />
     <Compile Include="Domain\DebuggerProxy.cs" />
     <Compile Include="Domain\DefaultObjectExtractor.cs" />
     <Compile Include="EventHub.cs" />
+    <Compile Include="Adapters\FileVersionInfoAdapter.cs" />
+    <Compile Include="Adapters\GcRootAdapter.cs" />
+    <Compile Include="Adapters\HotColdRegionsAdapter.cs" />
+    <Compile Include="IlInfoAdapter.cs" />
+    <Compile Include="Adapters\ManagedWorkItemAdapter.cs" />
+    <Compile Include="Adapters\ModuleInfoAdapter.cs" />
+    <Compile Include="Adapters\NativeWorkItemAdapter.cs" />
+    <Compile Include="Adapters\ObjectSetAdapter.cs" />
+    <Compile Include="Adapters\PdbInfoAdapter.cs" />
+    <Compile Include="Adapters\PeFileAdapter.cs" />
+    <Compile Include="Adapters\RcwDataAdapter.cs" />
     <Compile Include="Repository\DumpAppDomainRepository.cs" />
     <Compile Include="Repository\DumpModuleRepository.cs" />
     <Compile Include="Repository\DumpThreadRepository.cs" />
     <Compile Include="Repository\DumpTypeRepository.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Repository\DumpObjectRepository.cs" />
+    <Compile Include="Adapters\RootPathAdapter.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Repository\SettingsRepository.cs" />
     <Compile Include="Repository\DumpInformationRepository.cs" />
@@ -121,6 +149,9 @@
     <Compile Include="CoreComponentFactory.cs" />
     <Compile Include="StringExtractor.cs" />
     <Compile Include="StringDumpObject.cs" />
+    <Compile Include="Adapters\SymbolLocatorAdapter.cs" />
+    <Compile Include="Adapters\SymbolProviderAdapter.cs" />
+    <Compile Include="Adapters\SymbolResolverAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -157,8 +188,6 @@
   <ItemGroup>
     <Analyzer Include="..\packages\AWSSDK.S3.3.3.16\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Converters\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
