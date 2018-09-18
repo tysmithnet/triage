@@ -7,7 +7,7 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     An object capable of managing all the types extracted from the memory dump
     /// </summary>
-    public class DumpTypeRepository
+    public class DumpTypeRepository : IDumpTypeRepository
     {
         /// <summary>
         ///     The types extracted from the memory dump

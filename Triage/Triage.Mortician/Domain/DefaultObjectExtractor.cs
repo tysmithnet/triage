@@ -6,7 +6,7 @@ namespace Triage.Mortician.Domain
     ///     Default object extractor
     ///     Used when all else fails
     /// </summary>
-    public class DefaultObjectExtractor
+    public class DefaultObjectExtractor : IDumpObjectExtractor
     {
         public bool CanExtract(ClrObject clrObject, ClrRuntime clrRuntime)
         {

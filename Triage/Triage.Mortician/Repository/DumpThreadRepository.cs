@@ -8,7 +8,7 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     Represents a repository that stores threads that were extracted from the memory dump
     /// </summary>
-    public class DumpThreadRepository
+    public class DumpThreadRepository : IDumpThreadRepository
     {
         /// <summary>
         ///     Gets or sets the dump threads.

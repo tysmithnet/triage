@@ -109,7 +109,7 @@ namespace Triage.Mortician
             var eventHub = new EventHub();
             /*
              * IMPORTANT
-             * These are left as thread unsafe collections because they are written to on 1 thread and then
+             * These are left as thread unsafe collections because they must execute on the same thread
              * READ ONLY accessed from multiple threads
              */
             var objectStore = new Dictionary<ulong, DumpObject>();
@@ -136,14 +136,14 @@ namespace Triage.Mortician
             var moduleRepo = new DumpModuleRepository(moduleStore);
             var typeRepo = new DumpTypeRepository(typeStore);
 
-            CompositionContainer.ComposeExportedValue(eventHub);
-            CompositionContainer.ComposeExportedValue(dumpInformationRepository);
-            CompositionContainer.ComposeExportedValue(settingsRepository);
-            CompositionContainer.ComposeExportedValue(dumpRepo);
-            CompositionContainer.ComposeExportedValue(threadRepo);
-            CompositionContainer.ComposeExportedValue(appDomainRepo);
-            CompositionContainer.ComposeExportedValue(moduleRepo);
-            CompositionContainer.ComposeExportedValue(typeRepo);
+            CompositionContainer.ComposeExportedValue<IEventHub>(eventHub);
+            CompositionContainer.ComposeExportedValue<IDumpInformationRepository>(dumpInformationRepository);
+            CompositionContainer.ComposeExportedValue<ISettingsRepository>(settingsRepository);
+            CompositionContainer.ComposeExportedValue<IDumpObjectRepository>(dumpRepo);
+            CompositionContainer.ComposeExportedValue<IDumpThreadRepository>(threadRepo);
+            CompositionContainer.ComposeExportedValue<IDumpAppDomainRepository>(appDomainRepo);
+            CompositionContainer.ComposeExportedValue<IDumpModuleRepository>(moduleRepo);
+            CompositionContainer.ComposeExportedValue<IDumpTypeRepository>(typeRepo);
         }
 
         private void EstablishObjectRelationships(Dictionary<ulong, List<ulong>> objectHierarchy,

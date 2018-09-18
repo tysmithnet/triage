@@ -32,7 +32,7 @@ namespace Triage.Mortician.ExcelAnalyzer
         ///     The dump object repository.
         /// </value>
         [Import]
-        protected internal DumpObjectRepository DumpObjectRepository { get; set; }
+        protected internal IDumpObjectRepository DumpObjectRepository { get; set; }
 
         /// <inheritdoc />
         /// <summary>

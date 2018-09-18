@@ -6,7 +6,7 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     Represents an object that is capable of getting the settings for this process
     /// </summary>
-    public class SettingsRepository
+    public class SettingsRepository : ISettingsRepository
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="SettingsRepository" /> class.

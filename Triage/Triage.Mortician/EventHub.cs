@@ -8,8 +8,8 @@ namespace Triage.Mortician
     /// <summary>
     ///     Represents a centralized hub for message passing between components
     /// </summary>
-    [Export]
-    public class EventHub
+    [Export(typeof(IEventHub))]
+    public class EventHub : IEventHub
     {
         /// <summary>
         ///     The observable backing object
@@ -38,7 +38,7 @@ namespace Triage.Mortician
         /// <summary>
         ///     Indicate to observers that there are no more events coming
         /// </summary>
-        internal void Shutdown()
+        public void Shutdown()
         {
             Subject.OnCompleted();
         }

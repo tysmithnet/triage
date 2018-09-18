@@ -100,6 +100,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnalyzerTaskFactory.cs" />
     <Compile Include="ConfigOptions.cs" />
     <Compile Include="DefaultOptions.cs" />
     <Compile Include="Domain\DebuggerProxy.cs" />
@@ -107,6 +108,9 @@
     <Compile Include="Domain\DumpAppDomain.cs" />
     <Compile Include="EventHub.cs" />
     <Compile Include="IAnalysisObserver.cs" />
+    <Compile Include="IAnalyzerTaskFactory.cs" />
+    <Compile Include="IEngine.cs" />
+    <Compile Include="IEventHub.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Repository\DumpAppDomainRepository.cs" />
     <Compile Include="Domain\DumpModule.cs" />
@@ -123,6 +127,13 @@
     <Compile Include="Repository\DumpObjectRepository.cs" />
     <Compile Include="IAnalyzer.cs" />
     <Compile Include="IDumpObjectExtractor.cs" />
+    <Compile Include="Repository\IDumpAppDomainRepository.cs" />
+    <Compile Include="Repository\IDumpInformationRepository.cs" />
+    <Compile Include="Repository\IDumpModuleRepository.cs" />
+    <Compile Include="Repository\IDumpObjectRepository.cs" />
+    <Compile Include="Repository\IDumpThreadRepository.cs" />
+    <Compile Include="Repository\IDumpTypeRepository.cs" />
+    <Compile Include="Repository\ISettingsRepository.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Repository\SettingsRepository.cs" />
     <Compile Include="Repository\DumpInformationRepository.cs" />

@@ -7,7 +7,7 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     An object capable of managing all the discovered modules in the memory dump
     /// </summary>
-    public class DumpModuleRepository
+    public class DumpModuleRepository : IDumpModuleRepository
     {
         /// <summary>
         ///     The extracted modules found in the memory dump

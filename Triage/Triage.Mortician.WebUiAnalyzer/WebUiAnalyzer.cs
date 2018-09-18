@@ -17,25 +17,25 @@ namespace Triage.Mortician.WebUiAnalyzer
     public class WebUiAnalyzer : IAnalyzer
     {
         [Import]
-        internal DumpInformationRepository DumpInformationRepository { get; set; }
+        internal IDumpInformationRepository DumpInformationRepository { get; set; }
 
         [Import]
-        internal DumpObjectRepository DumpObjectRepository { get; set; }
+        internal IDumpObjectRepository DumpObjectRepository { get; set; }
 
         [Import]
-        internal DumpAppDomainRepository DumpAppDomainRepository { get; set; }
+        internal IDumpAppDomainRepository DumpAppDomainRepository { get; set; }
 
         [Import]
-        internal DumpModuleRepository DumpModuleRepository { get; set; }
+        internal IDumpModuleRepository DumpModuleRepository { get; set; }
 
         [Import]
-        internal DumpThreadRepository DumpThreadRepository { get; set; }
+        internal IDumpThreadRepository DumpThreadRepository { get; set; }
 
         [Import]
-        internal DumpTypeRepository DumpTypeRepository { get; set; }
+        internal IDumpTypeRepository DumpTypeRepository { get; set; }
 
         [Import]
-        internal EventHub EventHub { get; set; }
+        internal IEventHub EventHub { get; set; }
 
         /// <summary>
         ///     Gets or sets the host.

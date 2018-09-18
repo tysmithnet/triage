@@ -24,3 +24,5 @@ Mortician takes a memory dump. That's it.
 ### Todo
 - [ ] test suite
 - [ ] web interface
+- [ ] x86 support
+- [ ] improve object/type extraction
