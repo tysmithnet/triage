@@ -100,6 +100,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnalyzerTaskFactory.cs" />
     <Compile Include="ConfigOptions.cs" />
     <Compile Include="DefaultOptions.cs" />
     <Compile Include="Domain\DebuggerProxy.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="Domain\DumpAppDomain.cs" />
     <Compile Include="EventHub.cs" />
     <Compile Include="IAnalysisObserver.cs" />
+    <Compile Include="IAnalyzerTaskFactory.cs" />
     <Compile Include="IEngine.cs" />
     <Compile Include="IEventHub.cs" />
     <Compile Include="Message.cs" />

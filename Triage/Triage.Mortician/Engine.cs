@@ -47,6 +47,9 @@ namespace Triage.Mortician
         [Import]
         protected internal IEventHub EventHub { get; set; }
 
+        [Import]
+        protected internal IAnalyzerTaskFactory AnalyzerTaskFactory { get; set; }
+
         /// <summary>
         ///     Processes the analyzers
         /// </summary>
@@ -65,10 +68,10 @@ namespace Triage.Mortician
 
             Log.Trace("Engine starting...");
             var analysisObserverTasks = StartAnalysisObservers(analysisToken);
-            var analyzerTasks = StartAnalyzers(internalToken);
+            var analyzersTask = AnalyzerTaskFactory.StartAnalyzers(Analyzers, internalToken);
 
             // analyzer tasks handle the exceptions internally
-            await Task.WhenAll(analyzerTasks);
+            await analyzersTask;
             EventHub.Shutdown();
             try
             {
