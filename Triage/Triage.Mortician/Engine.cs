@@ -30,6 +30,15 @@ namespace Triage.Mortician
         protected internal IAnalyzer[] Analyzers { get; set; }
         
         /// <summary>
+        ///     Gets or sets the analysis observers.
+        /// </summary>
+        /// <value>
+        ///     The analysis observers.
+        /// </value>
+        [ImportMany]
+        protected internal IAnalysisObserver[] AnalysisObservers { get; set; }
+
+        /// <summary>
         ///     Gets or sets the event hub.
         /// </summary>
         /// <value>
@@ -49,6 +58,8 @@ namespace Triage.Mortician
         {
             var internalCts = new CancellationTokenSource();
             var internalToken = internalCts.Token;
+            var analysisCts = new CancellationTokenSource();
+            var analysisToken = analysisCts.Token;
             if (Analyzers == null || Analyzers.Length == 0)
             {
                 Log.Fatal("No analyzers were found!");
@@ -56,11 +67,20 @@ namespace Triage.Mortician
             }
 
             Log.Trace("Engine starting...");
+            var analysisObserversTask = AnalyzerTaskFactory.StartAnalyzers(AnalysisObservers, analysisToken);
             var analyzersTask = AnalyzerTaskFactory.StartAnalyzers(Analyzers, internalToken);
 
             // analyzer tasks handle the exceptions internally
             await analyzersTask;
             EventHub.Shutdown();
+            try
+            {
+                await analysisObserversTask;
+            }
+            catch (TaskCanceledException)
+            {
+                // we are expecting this
+            }
             Log.Trace("Execution complete");
         }
     }
