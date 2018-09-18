@@ -7,12 +7,12 @@ namespace Triage.Mortician.Adapters
     internal class ClrTypeAdapter : IClrType
     {
         /// <inheritdoc />
-        public ClrTypeAdapter(Microsoft.Diagnostics.Runtime.ClrThread clrThread)
+        public ClrTypeAdapter(Microsoft.Diagnostics.Runtime.ClrType type)
         {
-            _clrThread = clrThread ?? throw new ArgumentNullException(nameof(clrThread));
+            _clrType = type ?? throw new ArgumentNullException(nameof(type));
         }
 
-        internal Microsoft.Diagnostics.Runtime.ClrThread _clrThread;
+        internal Microsoft.Diagnostics.Runtime.ClrType _clrType;
 
         /// <inheritdoc />
         public IEnumerable<ulong> EnumerateMethodTables()

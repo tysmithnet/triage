@@ -5,7 +5,7 @@ using ClrMd = Microsoft.Diagnostics.Runtime;
 
 namespace Triage.Mortician
 {
-    public static class Converter
+    internal class Converter
     {
         public static Architecture Convert(ClrMd.Architecture architecture)
         {
@@ -126,10 +126,18 @@ namespace Triage.Mortician
             {
                 case ClrMd.ClrFlavor.Desktop:
                     return ClrFlavor.Desktop;
+#pragma warning disable CS0612 // Type or member is obsolete
                 case ClrMd.ClrFlavor.CoreCLR:
+#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning disable CS0612 // Type or member is obsolete
                     return ClrFlavor.CoreCLR;
+#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
                 case ClrMd.ClrFlavor.Native:
+#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning disable 618
                     return ClrFlavor.Native;
+#pragma warning restore 618
                 case ClrMd.ClrFlavor.Core:
                     return ClrFlavor.Core;
                 default:
@@ -259,6 +267,141 @@ namespace Triage.Mortician
                 default:
                     throw new ArgumentOutOfRangeException(nameof(compilationType), compilationType, null);
             }
+        }
+
+        public static ISymbolResolver Convert(ClrMd.ISymbolResolver resolver)
+        {
+            return new SymbolResolverAdapter(resolver);
+        }
+
+        public static ISymbolProvider Convert(ClrMd.ISymbolProvider provider)
+        {
+            return new SymbolProviderAdapter(provider);
+        }
+
+        public static ISymbolLocator Convert(ClrMd.Utilities.SymbolLocator locator)
+        {
+            return new SymbolLocatorAdapter(locator);
+        }
+
+        public static IRootPath Convert(ClrMd.RootPath path)
+        {
+            return new RootPathAdapter(path);
+        }
+
+        public static IRcwData Convert(ClrMd.RcwData data)
+        {
+            return new RcwDataAdapter(data);
+        }
+
+        public static IPeFile Convert(ClrMd.Utilities.PEFile peFile)
+        {
+            return new PeFileAdapter(peFile);
+        }
+
+        public static IPdbInfo Convert(ClrMd.PdbInfo info)
+        {
+            return new PdbInfoAdapter(info);
+        }
+
+        public static IObjectSet Convert(ClrMd.ObjectSet objectSet)
+        {
+            return new ObjectSetAdapter(objectSet);
+        }
+
+        public static INativeWorkItem Convert(ClrMd.NativeWorkItem nativeWorkItem)
+        {
+            return new NativeWorkItemAdapter(nativeWorkItem);
+        }
+
+        public static IModuleInfo Convert(ClrMd.ModuleInfo moduleInfo)
+        {
+            return new ModuleInfoAdapter(moduleInfo);
+        }
+
+        public static IManagedWorkItem Convert(ClrMd.ManagedWorkItem workItem)
+        {
+            return new ManagedWorkItemAdapter(workItem);
+        }
+
+        public static IHotColdRegions Convert(ClrMd.HotColdRegions hotColdRegions)
+        {
+            return new HotColdRegionsAdapter(hotColdRegions);
+        }
+
+        public static IFileVersionInfo Convert(ClrMd.Utilities.FileVersionInfo fileVersionInfo)
+        {
+            return new FileVersionInfoAdapter(fileVersionInfo);
+        }
+
+        public static IDataTarget Convert(ClrMd.DataTarget dataTarget)
+        {
+            return new DataTargetAdapter(dataTarget);
+        }
+
+        public static IDataReader Convert(ClrMd.IDataReader dataReader)
+        {
+            return new DataReaderAdapter(dataReader);
+        }
+
+        public static IDacInfo Convert(ClrMd.DacInfo dacInfo)
+        {
+            return new DacInfoAdapter(dacInfo);
+        }
+
+        public static IClrValueClass Convert(ClrMd.ClrValueClass valueClass)
+        {
+            return new ClrValueClassAdapter(valueClass);
+        }
+
+        public static IClrType Convert(ClrMd.ClrType type)
+        {
+            return new ClrTypeAdapter(type);
+        }
+
+        public static IClrThreadStaticField Convert(ClrMd.ClrThreadStaticField field)
+        {
+            return new ClrThreadStaticFieldAdapter(field);
+        }
+
+        public static IClrThreadPool Convert(ClrMd.ClrThreadPool pool)
+        {
+            return new ClrThreadPoolAdapter(pool);
+        }
+
+        public static IClrThread Convert(ClrMd.ClrThread thread)
+        {
+            return new ClrThreadAdapter(thread);
+        }
+
+        public static IClrStaticField Convert(ClrMd.ClrStaticField staticField)
+        {
+            return new ClrStaticFieldAdapter(staticField);
+        }
+
+        public static IClrSegment Convert(ClrMd.ClrSegment segment)
+        {
+            return new ClrSegmentAdapter(segment);
+        }
+
+        public static IClrRuntime Convert(ClrMd.ClrRuntime runtime)
+        {
+            return new ClrRuntimeAdapter(runtime);
+        }
+
+        public static IClrRoot Convert(ClrMd.ClrRoot root)
+        {
+            return new ClrRootAdapter(root);
+        }
+
+        public static IClrObject Convert(ClrMd.ClrObject o)
+        {
+            return new ClrObjectAdapter(o);
+        }
+
+        public static IClrException Convert(ClrMd.ClrException exception)
+        {
+            return new ClrExceptionAdapter(exception);
         }
 
         public static VersionInfo Convert(ClrMd.VersionInfo versionInfo)
