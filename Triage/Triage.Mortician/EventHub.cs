@@ -16,13 +16,14 @@ using System;
 using System.ComponentModel.Composition;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Triage.Mortician.Core;
 
 namespace Triage.Mortician
 {
     /// <summary>
     ///     Represents a centralized hub for message passing between components
     /// </summary>
-    /// <seealso cref="Triage.Mortician.IEventHub" />
+    /// <seealso cref="IEventHub" />
     [Export(typeof(IEventHub))]
     public class EventHub : IEventHub
     {

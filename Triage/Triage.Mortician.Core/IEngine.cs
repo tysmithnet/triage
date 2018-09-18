@@ -1,23 +1,30 @@
 ﻿// ***********************************************************************
 // Assembly         : Triage.Mortician
 // Author           : @tysmithnet
-// Created          : 09-17-2018
+// Created          : 09-18-2018
 //
 // Last Modified By : @tysmithnet
 // Last Modified On : 09-18-2018
 // ***********************************************************************
-// <copyright file="IDumpTypeRepository.cs" company="">
+// <copyright file="IEngine.cs" company="">
 //     Copyright ©  2017
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
 
-namespace Triage.Mortician.Repository
+using System.Threading.Tasks;
+
+namespace Triage.Mortician.Core
 {
     /// <summary>
-    ///     Interface IDumpTypeRepository
+    ///     Interface IEngine
     /// </summary>
-    public interface IDumpTypeRepository
+    public interface IEngine
     {
+        /// <summary>
+        ///     Processes the analyzers
+        /// </summary>
+        /// <returns>A Task representing the completion of all the analyzers</returns>
+        Task Process();
     }
 }

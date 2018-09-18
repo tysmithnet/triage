@@ -16,6 +16,7 @@ using System.ComponentModel.Composition;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
+using Triage.Mortician.Core;
 
 namespace Triage.Mortician
 {
@@ -23,7 +24,7 @@ namespace Triage.Mortician
     ///     Represents the core execution component of the application. It is responsible for executing the analyzers
     ///     in concert with each other.
     /// </summary>
-    /// <seealso cref="Triage.Mortician.IEngine" />
+    /// <seealso cref="IEngine" />
     [Export(typeof(IEngine))]
     public class Engine : IEngine
     {

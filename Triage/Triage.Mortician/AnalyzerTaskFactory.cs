@@ -19,13 +19,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
+using Triage.Mortician.Core;
 
 namespace Triage.Mortician
 {
     /// <summary>
     ///     Class AnalyzerTaskFactory.
     /// </summary>
-    /// <seealso cref="Triage.Mortician.IAnalyzerTaskFactory" />
+    /// <seealso cref="IAnalyzerTaskFactory" />
     [Export(typeof(IAnalyzerTaskFactory))]
     public class AnalyzerTaskFactory : IAnalyzerTaskFactory
     {

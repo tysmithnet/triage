@@ -6,35 +6,32 @@
 // Last Modified By : @tysmithnet
 // Last Modified On : 09-18-2018
 // ***********************************************************************
-// <copyright file="IDumpObjectRepository.cs" company="">
+// <copyright file="IDumpAppDomainRepository.cs" company="">
 //     Copyright ©  2017
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
 
-using System;
 using System.Collections.Generic;
-using Triage.Mortician.Domain;
 
-namespace Triage.Mortician.Repository
+namespace Triage.Mortician.Core
 {
     /// <summary>
-    ///     Interface IDumpObjectRepository
+    ///     Interface IDumpAppDomainRepository
     /// </summary>
-    public interface IDumpObjectRepository
+    public interface IDumpAppDomainRepository
     {
         /// <summary>
-        ///     Gets the object at the specified address
+        ///     Gets the app domain associated with the provided address
         /// </summary>
         /// <param name="address">The address.</param>
-        /// <returns>The object at the specified address</returns>
-        /// <exception cref="IndexOutOfRangeException">The provided address is not a valid object address</exception>
-        DumpObject Get(ulong address);
+        /// <returns>DumpAppDomain.</returns>
+        DumpAppDomain Get(ulong address);
 
         /// <summary>
-        ///     Get all dump objects extracted from the heap
+        ///     Gets all the extracted appd domains
         /// </summary>
-        /// <returns>All dump objects extracted from the heap</returns>
-        IEnumerable<DumpObject> Get();
+        /// <returns>IEnumerable&lt;DumpAppDomain&gt;.</returns>
+        IEnumerable<DumpAppDomain> Get();
     }
 }

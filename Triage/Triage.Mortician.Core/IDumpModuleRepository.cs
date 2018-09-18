@@ -6,33 +6,33 @@
 // Last Modified By : @tysmithnet
 // Last Modified On : 09-18-2018
 // ***********************************************************************
-// <copyright file="IDumpAppDomainRepository.cs" company="">
+// <copyright file="IDumpModuleRepository.cs" company="">
 //     Copyright ©  2017
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
 
 using System.Collections.Generic;
-using Triage.Mortician.Domain;
 
-namespace Triage.Mortician.Repository
+namespace Triage.Mortician.Core
 {
     /// <summary>
-    ///     Interface IDumpAppDomainRepository
+    ///     Interface IDumpModuleRepository
     /// </summary>
-    public interface IDumpAppDomainRepository
+    public interface IDumpModuleRepository
     {
         /// <summary>
-        ///     Gets the app domain associated with the provided address
+        ///     Gets the specified assembly identifier.
         /// </summary>
-        /// <param name="address">The address.</param>
-        /// <returns>DumpAppDomain.</returns>
-        DumpAppDomain Get(ulong address);
+        /// <param name="assemblyId">The assembly identifier.</param>
+        /// <param name="moduleName">Name of the module.</param>
+        /// <returns>DumpModule.</returns>
+        DumpModule Get(ulong assemblyId, string moduleName);
 
         /// <summary>
-        ///     Gets all the extracted appd domains
+        ///     Gets this instance.
         /// </summary>
-        /// <returns>IEnumerable&lt;DumpAppDomain&gt;.</returns>
-        IEnumerable<DumpAppDomain> Get();
+        /// <returns>IEnumerable&lt;DumpModule&gt;.</returns>
+        IEnumerable<DumpModule> Get();
     }
 }

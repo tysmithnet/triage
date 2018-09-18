@@ -16,7 +16,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Triage.Mortician.Domain
+namespace Triage.Mortician.Core
 {
     /// <summary>
     ///     Represents a managed object on the managed heap

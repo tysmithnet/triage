@@ -105,35 +105,13 @@
     <Compile Include="DefaultOptions.cs" />
     <Compile Include="Domain\DebuggerProxy.cs" />
     <Compile Include="Domain\DefaultObjectExtractor.cs" />
-    <Compile Include="Domain\DumpAppDomain.cs" />
     <Compile Include="EventHub.cs" />
-    <Compile Include="IAnalysisObserver.cs" />
-    <Compile Include="IAnalyzerTaskFactory.cs" />
-    <Compile Include="IEngine.cs" />
-    <Compile Include="IEventHub.cs" />
-    <Compile Include="Message.cs" />
     <Compile Include="Repository\DumpAppDomainRepository.cs" />
-    <Compile Include="Domain\DumpModule.cs" />
     <Compile Include="Repository\DumpModuleRepository.cs" />
-    <Compile Include="Domain\DumpObjectRoot.cs" />
-    <Compile Include="Domain\DumpStackFrame.cs" />
-    <Compile Include="Domain\DumpThread.cs" />
     <Compile Include="Repository\DumpThreadRepository.cs" />
-    <Compile Include="Domain\DumpType.cs" />
-    <Compile Include="Domain\DumpTypeKey.cs" />
     <Compile Include="Repository\DumpTypeRepository.cs" />
     <Compile Include="Engine.cs" />
-    <Compile Include="Domain\DumpObject.cs" />
     <Compile Include="Repository\DumpObjectRepository.cs" />
-    <Compile Include="IAnalyzer.cs" />
-    <Compile Include="IDumpObjectExtractor.cs" />
-    <Compile Include="Repository\IDumpAppDomainRepository.cs" />
-    <Compile Include="Repository\IDumpInformationRepository.cs" />
-    <Compile Include="Repository\IDumpModuleRepository.cs" />
-    <Compile Include="Repository\IDumpObjectRepository.cs" />
-    <Compile Include="Repository\IDumpThreadRepository.cs" />
-    <Compile Include="Repository\IDumpTypeRepository.cs" />
-    <Compile Include="Repository\ISettingsRepository.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Repository\SettingsRepository.cs" />
     <Compile Include="Repository\DumpInformationRepository.cs" />
@@ -169,6 +147,10 @@
     <ProjectReference Include="..\clrmd\src\Microsoft.Diagnostics.Runtime\Microsoft.Diagnostics.Runtime.csproj">
       <Project>{a82126ca-23aa-41f1-8586-a5938d44d0a7}</Project>
       <Name>Microsoft.Diagnostics.Runtime</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Triage.Mortician.Core\Triage.Mortician.Core.csproj">
+      <Project>{2f433d34-bac1-4a64-aec9-46eb112946ea}</Project>
+      <Name>Triage.Mortician.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

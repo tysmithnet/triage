@@ -15,7 +15,7 @@
 using System;
 using System.IO;
 
-namespace Triage.Mortician.Repository
+namespace Triage.Mortician.Core
 {
     /// <summary>
     ///     Interface IDumpInformationRepository

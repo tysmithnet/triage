@@ -12,7 +12,7 @@
 // <summary></summary>
 // ***********************************************************************
 
-namespace Triage.Mortician.Repository
+namespace Triage.Mortician.Core
 {
     /// <summary>
     ///     Interface ISettingsRepository

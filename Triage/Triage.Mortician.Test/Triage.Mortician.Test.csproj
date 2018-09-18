@@ -97,6 +97,10 @@
     <Analyzer Include="..\packages\xunit.analyzers.0.10.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Triage.Mortician.Core\Triage.Mortician.Core.csproj">
+      <Project>{2f433d34-bac1-4a64-aec9-46eb112946ea}</Project>
+      <Name>Triage.Mortician.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Triage.Mortician\Triage.Mortician.csproj">
       <Project>{8AA350BC-CF5F-4302-92AB-1997357049BA}</Project>
       <Name>Triage.Mortician</Name>

@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Triage.Mortician.Domain
+namespace Triage.Mortician.Core
 {
     /// <summary>
     ///     Type used to represent a unique type extracted from the memory dump

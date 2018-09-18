@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Triage.Mortician.Domain
+namespace Triage.Mortician.Core
 {
     /// <summary>
     ///     A module that was discovered in the memory dump

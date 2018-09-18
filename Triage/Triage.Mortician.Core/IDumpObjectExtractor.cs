@@ -12,10 +12,7 @@
 // <summary></summary>
 // ***********************************************************************
 
-using Microsoft.Diagnostics.Runtime;
-using Triage.Mortician.Domain;
-
-namespace Triage.Mortician
+namespace Triage.Mortician.Core
 {
     /// <summary>
     ///     Represents an object cabable of extracting data from a ClrObject

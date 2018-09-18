@@ -14,7 +14,7 @@
 
 using System.Collections.Generic;
 
-namespace Triage.Mortician.Domain
+namespace Triage.Mortician.Core
 {
     /// <summary>
     ///     An object that represents a type that was extracted from the memory dump

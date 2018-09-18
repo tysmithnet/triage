@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Triage.Mortician.Domain
+namespace Triage.Mortician.Core
 {
     /// <summary>
     ///     Represents a thread that was extracted from the memory dump

@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Core
 {
     /// <summary>
     ///     Interface IEventHub

@@ -15,7 +15,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Core
 {
     /// <summary>
     ///     Represents an object that is capable of doing some intelligent analysis

@@ -14,9 +14,8 @@
 
 using System;
 using System.Collections.Generic;
-using Triage.Mortician.Domain;
 
-namespace Triage.Mortician.Repository
+namespace Triage.Mortician.Core
 {
     /// <summary>
     ///     Interface IDumpThreadRepository

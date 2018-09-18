@@ -12,7 +12,7 @@
 // <summary></summary>
 // ***********************************************************************
 
-namespace Triage.Mortician.Domain
+namespace Triage.Mortician.Core
 {
     /// <summary>
     ///     Represents a stack frame extracted from the memory dump

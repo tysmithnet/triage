@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
+using Triage.Mortician.Core;
 using Xunit;
 
 namespace Triage.Mortician.Test
