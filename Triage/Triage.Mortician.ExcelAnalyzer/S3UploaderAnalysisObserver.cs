@@ -1,4 +1,18 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.ExcelAnalyzer
+// Author           : @tysmithnet
+// Created          : 01-15-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="S3UploaderAnalysisObserver.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Net;
@@ -14,53 +28,36 @@ using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.ExcelAnalyzer
 {
-    /// <inheritdoc />
     /// <summary>
     ///     An object capable of responding to relevant report events by uploading them to S3
     /// </summary>
+    /// <seealso cref="Triage.Mortician.IAnalysisObserver" />
+    /// <inheritdoc />
     /// <seealso cref="T:Triage.Mortician.IAnalysisObserver" />
     [Export(typeof(IAnalysisObserver))]
     internal sealed class S3UploaderAnalysisObserver : IAnalysisObserver
     {
-        private const string UploadExcelToS3 = "upload-excel-to-s3";
+        /// <summary>
+        ///     The excel bucket identifier
+        /// </summary>
         private const string ExcelBucketId = "excel-bucket-id";
+
+        /// <summary>
+        ///     The upload excel to s3
+        /// </summary>
+        private const string UploadExcelToS3 = "upload-excel-to-s3";
+
+        /// <summary>
+        ///     The log
+        /// </summary>
         public ILog Log = LogManager.GetLogger(typeof(S3UploaderAnalysisObserver));
 
-        /// <summary>
-        ///     Gets or sets the event hub.
-        /// </summary>
-        /// <value>
-        ///     The event hub.
-        /// </value>
-        [Import]
-        internal IEventHub EventHub { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the settings repository.
-        /// </summary>
-        /// <value>
-        ///     The settings repository.
-        /// </value>
-        [Import]
-        internal ISettingsRepository SettingsRepository { get; set; }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Performs setup
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A task that when complete will signal the completion of this work</returns>
-        public Task Setup(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        /// <inheritdoc />
         /// <summary>
         ///     Performs the core execution
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A task that when complete will signal the completion of this work</returns>
+        /// <inheritdoc />
         public Task Process(CancellationToken cancellationToken)
         {
             return EventHub.Get<ExcelReportComplete>().ForEachAsync(message =>
@@ -116,5 +113,30 @@ namespace Triage.Mortician.ExcelAnalyzer
                 }
             }, cancellationToken);
         }
+
+        /// <summary>
+        ///     Performs setup
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A task that when complete will signal the completion of this work</returns>
+        /// <inheritdoc />
+        public Task Setup(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        ///     Gets or sets the event hub.
+        /// </summary>
+        /// <value>The event hub.</value>
+        [Import]
+        internal IEventHub EventHub { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the settings repository.
+        /// </summary>
+        /// <value>The settings repository.</value>
+        [Import]
+        internal ISettingsRepository SettingsRepository { get; set; }
     }
 }

@@ -1,4 +1,18 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 12-17-2017
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="EventHub.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.ComponentModel.Composition;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -8,6 +22,7 @@ namespace Triage.Mortician
     /// <summary>
     ///     Represents a centralized hub for message passing between components
     /// </summary>
+    /// <seealso cref="Triage.Mortician.IEventHub" />
     [Export(typeof(IEventHub))]
     public class EventHub : IEventHub
     {
@@ -29,7 +44,7 @@ namespace Triage.Mortician
         ///     Gets an observable of messages that are assignable to TMessage
         /// </summary>
         /// <typeparam name="TMessage">The type of the message.</typeparam>
-        /// <returns></returns>
+        /// <returns>IObservable&lt;TMessage&gt;.</returns>
         public IObservable<TMessage> Get<TMessage>() where TMessage : Message
         {
             return Subject.OfType<TMessage>();

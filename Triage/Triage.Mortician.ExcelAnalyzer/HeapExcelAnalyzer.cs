@@ -1,4 +1,18 @@
-﻿using System.Collections.Generic;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.ExcelAnalyzer
+// Author           : @tysmithnet
+// Created          : 01-14-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="HeapExcelAnalyzer.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
@@ -9,47 +23,20 @@ using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.ExcelAnalyzer
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Represents an excel analyzer that is capable of producing a report based on the objects in the heap
     /// </summary>
+    /// <seealso cref="Triage.Mortician.ExcelAnalyzer.IExcelAnalyzer" />
+    /// <inheritdoc />
     /// <seealso cref="T:Triage.Mortician.ExcelAnalyzer.IExcelAnalyzer" />
     [Export(typeof(IExcelAnalyzer))]
     public class HeapExcelAnalyzer : IExcelAnalyzer
     {
         /// <summary>
-        ///     Gets or sets the log.
-        /// </summary>
-        /// <value>
-        ///     The log.
-        /// </value>
-        protected ILog Log { get; set; } = LogManager.GetLogger(typeof(HeapExcelAnalyzer));
-
-        /// <summary>
-        ///     Gets or sets the dump object repository.
-        /// </summary>
-        /// <value>
-        ///     The dump object repository.
-        /// </value>
-        [Import]
-        protected internal IDumpObjectRepository DumpObjectRepository { get; set; }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Setups the specified cancellation token.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns></returns>
-        public Task Setup(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        /// <inheritdoc />
-        /// <summary>
         ///     Contributes the specified shared document.
         /// </summary>
         /// <param name="sharedDocument">The shared document.</param>
+        /// <inheritdoc />
         public void Contribute(SLDocument sharedDocument)
         {
             var stats = new Dictionary<string, StatsLine>();
@@ -82,6 +69,7 @@ namespace Triage.Mortician.ExcelAnalyzer
                         continue;
                 }
             }
+
             sharedDocument.SelectWorksheet("Object Counts");
             var count = 0;
             foreach (var statline in stats.OrderByDescending(s =>
@@ -110,17 +98,80 @@ namespace Triage.Mortician.ExcelAnalyzer
         }
 
         /// <summary>
+        ///     Setups the specified cancellation token.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A Task, that when complete will signal the setup completion</returns>
+        /// <inheritdoc />
+        public Task Setup(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        ///     Gets or sets the dump object repository.
+        /// </summary>
+        /// <value>The dump object repository.</value>
+        [Import]
+        protected internal IDumpObjectRepository DumpObjectRepository { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the log.
+        /// </summary>
+        /// <value>The log.</value>
+        protected ILog Log { get; set; } = LogManager.GetLogger(typeof(HeapExcelAnalyzer));
+
+        /// <summary>
         ///     DTO for the running totals
         /// </summary>
         private class StatsLine
         {
+            /// <summary>
+            ///     Gets or sets the gen0 count.
+            /// </summary>
+            /// <value>The gen0 count.</value>
             public ulong Gen0Count { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the size of the gen0.
+            /// </summary>
+            /// <value>The size of the gen0.</value>
             public ulong Gen0Size { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the gen1 count.
+            /// </summary>
+            /// <value>The gen1 count.</value>
             public ulong Gen1Count { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the size of the gen1.
+            /// </summary>
+            /// <value>The size of the gen1.</value>
             public ulong Gen1Size { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the gen2 count.
+            /// </summary>
+            /// <value>The gen2 count.</value>
             public ulong Gen2Count { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the size of the gen2.
+            /// </summary>
+            /// <value>The size of the gen2.</value>
             public ulong Gen2Size { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the loh count.
+            /// </summary>
+            /// <value>The loh count.</value>
             public ulong LohCount { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the size of the loh.
+            /// </summary>
+            /// <value>The size of the loh.</value>
             public ulong LohSize { get; set; }
         }
     }

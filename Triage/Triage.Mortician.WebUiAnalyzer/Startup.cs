@@ -1,4 +1,18 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.WebUiAnalyzer
+// Author           : @tysmithnet
+// Created          : 09-17-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-17-2018
+// ***********************************************************************
+// <copyright file="Startup.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,16 +40,20 @@ namespace Triage.Mortician.WebUiAnalyzer
         }
 
         /// <summary>
-        ///     Gets or sets the current environment.
+        ///     Configures the specified application.
         /// </summary>
-        /// <value>The current environment.</value>
-        private IHostingEnvironment CurrentEnvironment { get; set; }
+        /// <param name="app">The application.</param>
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseStaticFiles();
 
-        /// <summary>
-        ///     Gets the configuration.
-        /// </summary>
-        /// <value>The configuration.</value>
-        private IConfigurationRoot Configuration { get; }
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    "default",
+                    "{controller=Home}/{action=Index}/{id?}");
+            });
+        }
 
         /// <summary>
         ///     Configures the services.
@@ -59,19 +77,15 @@ namespace Triage.Mortician.WebUiAnalyzer
         }
 
         /// <summary>
-        ///     Configures the specified application.
+        ///     Gets the configuration.
         /// </summary>
-        /// <param name="app">The application.</param>
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseStaticFiles();
+        /// <value>The configuration.</value>
+        private IConfigurationRoot Configuration { get; }
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    "default",
-                    "{controller=Home}/{action=Index}/{id?}");
-            });
-        }
+        /// <summary>
+        ///     Gets or sets the current environment.
+        /// </summary>
+        /// <value>The current environment.</value>
+        private IHostingEnvironment CurrentEnvironment { get; set; }
     }
 }

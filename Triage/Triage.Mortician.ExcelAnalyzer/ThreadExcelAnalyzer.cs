@@ -1,4 +1,18 @@
-﻿using System.ComponentModel.Composition;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.ExcelAnalyzer
+// Author           : @tysmithnet
+// Created          : 01-15-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="ThreadExcelAnalyzer.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
@@ -10,10 +24,11 @@ using Triage.Mortician.Analyzers;
 
 namespace Triage.Mortician.ExcelAnalyzer
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Represents an object that is capable of reporting on the threads from the memory dump
     /// </summary>
+    /// <seealso cref="Triage.Mortician.ExcelAnalyzer.IExcelAnalyzer" />
+    /// <inheritdoc />
     /// <seealso cref="T:Triage.Mortician.Analyzers.IExcelAnalyzer" />
     [Export(typeof(IExcelAnalyzer))]
     public class ThreadExcelAnalyzer : IExcelAnalyzer
@@ -23,49 +38,11 @@ namespace Triage.Mortician.ExcelAnalyzer
         /// </summary>
         protected ILog Log = LogManager.GetLogger(typeof(ThreadExcelAnalyzer));
 
-        [Import]
-        protected internal IEventHub EventHub { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the stack frame breakdown message.
-        /// </summary>
-        /// <value>
-        ///     The stack frame breakdown message.
-        /// </value>
-        protected internal StackFrameBreakdownMessage StackFrameBreakdownMessage { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the unique stacks message.
-        /// </summary>
-        /// <value>
-        ///     The unique stacks message.
-        /// </value>
-        protected internal UniqueStacksMessage UniqueStacksMessage { get; set; }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Performs any required setup like number crunching etc.
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>
-        ///     A Task, that when complete will signal the setup completion
-        /// </returns>
-        public async Task Setup(CancellationToken cancellationToken)
-        {
-            var stackFrameBreakdownTask = EventHub.Get<StackFrameBreakdownMessage>()
-                .FirstOrDefaultAsync().ToTask(cancellationToken);
-            var uniqueStackTask = EventHub.Get<UniqueStacksMessage>().FirstOrDefaultAsync().ToTask(cancellationToken);
-            await Task.WhenAll(stackFrameBreakdownTask, uniqueStackTask);
-
-            StackFrameBreakdownMessage = stackFrameBreakdownTask.Result;
-            UniqueStacksMessage = uniqueStackTask.Result;
-        }
-
-        /// <inheritdoc />
         /// <summary>
         ///     Contributes the specified shared document.
         /// </summary>
         /// <param name="sharedDocument">The shared document.</param>
+        /// <inheritdoc />
         public void Contribute(SLDocument sharedDocument)
         {
             if (UniqueStacksMessage != null)
@@ -77,6 +54,23 @@ namespace Triage.Mortician.ExcelAnalyzer
                 PopulateManagedStackFrames(sharedDocument);
             else
                 Log.Trace("No stack frame breakdown message received");
+        }
+
+        /// <summary>
+        ///     Performs any required setup like number crunching etc.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A Task, that when complete will signal the setup completion</returns>
+        /// <inheritdoc />
+        public async Task Setup(CancellationToken cancellationToken)
+        {
+            var stackFrameBreakdownTask = EventHub.Get<StackFrameBreakdownMessage>()
+                .FirstOrDefaultAsync().ToTask(cancellationToken);
+            var uniqueStackTask = EventHub.Get<UniqueStacksMessage>().FirstOrDefaultAsync().ToTask(cancellationToken);
+            await Task.WhenAll(stackFrameBreakdownTask, uniqueStackTask);
+
+            StackFrameBreakdownMessage = stackFrameBreakdownTask.Result;
+            UniqueStacksMessage = uniqueStackTask.Result;
         }
 
         /// <summary>
@@ -139,5 +133,24 @@ namespace Triage.Mortician.ExcelAnalyzer
                 curStackRow += max + 5;
             }
         }
+
+        /// <summary>
+        ///     Gets or sets the event hub.
+        /// </summary>
+        /// <value>The event hub.</value>
+        [Import]
+        protected internal IEventHub EventHub { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the stack frame breakdown message.
+        /// </summary>
+        /// <value>The stack frame breakdown message.</value>
+        protected internal StackFrameBreakdownMessage StackFrameBreakdownMessage { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the unique stacks message.
+        /// </summary>
+        /// <value>The unique stacks message.</value>
+        protected internal UniqueStacksMessage UniqueStacksMessage { get; set; }
     }
 }

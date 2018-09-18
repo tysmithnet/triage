@@ -1,4 +1,18 @@
-﻿using Microsoft.Diagnostics.Runtime;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 12-13-2017
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 12-19-2017
+// ***********************************************************************
+// <copyright file="IDumpObjectExtractor.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Domain;
 
 namespace Triage.Mortician
@@ -13,9 +27,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="clrObject">The object to try to get values from</param>
         /// <param name="clrRuntime">The clr runtime being used</param>
-        /// <returns>
-        ///     <c>true</c> if this instance can extract from the object; otherwise, <c>false</c>.
-        /// </returns>
+        /// <returns><c>true</c> if this instance can extract from the object; otherwise, <c>false</c>.</returns>
         bool CanExtract(ClrObject clrObject, ClrRuntime clrRuntime);
 
         /// <summary>

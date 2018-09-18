@@ -1,4 +1,18 @@
-﻿using System.Collections.Concurrent;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 12-19-2017
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="DumpObject.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -59,8 +73,8 @@ namespace Triage.Mortician.Domain
         /// <summary>
         ///     Get a short description of the object.
         /// </summary>
-        /// <remarks>The return value is intended to be shown on a single line</remarks>
         /// <returns>A short description of this object</returns>
+        /// <remarks>The return value is intended to be shown on a single line</remarks>
         protected virtual string ToShortDescription()
         {
             return $"{FullTypeName} : {Size} : {Address:x8} ({Address})";
@@ -69,58 +83,44 @@ namespace Triage.Mortician.Domain
         /// <summary>
         ///     Gets the address of this object
         /// </summary>
-        /// <value>
-        ///     The address of this object
-        /// </value>
+        /// <value>The address of this object</value>
         public ulong Address { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the type of the object
         /// </summary>
-        /// <value>
-        ///     The type of the dump.
-        /// </value>
+        /// <value>The type of the dump.</value>
         public DumpType DumpType { get; protected internal set; }
 
         /// <summary>
         ///     Gets the full name of the type of this object.
         /// </summary>
-        /// <value>
-        ///     The full name of the type of this object.
-        /// </value>
+        /// <value>The full name of the type of this object.</value>
         public string FullTypeName { get; protected internal set; }
 
         /// <summary>
         ///     Gets the gc generation for this object. 0,1,2,3 where 3 is the large object heap
         /// </summary>
-        /// <value>
-        ///     The gc generation for this object
-        /// </value>
+        /// <value>The gc generation for this object</value>
         public int Gen { get; protected internal set; }
 
         /// <summary>
         ///     Gets the objects that reference this object
         /// </summary>
-        /// <value>
-        ///     The referencers.
-        /// </value>
+        /// <value>The referencers.</value>
         public IEnumerable<DumpObject> Referencers => ReferencersInternal.Values;
 
         /// <summary>
         ///     Gets the references that this object has.
         /// </summary>
-        /// <value>
-        ///     The references that this object has.
-        /// </value>
+        /// <value>The references that this object has.</value>
         public IEnumerable<DumpObject> References => ReferencesInternal.Values;
 
         /// <summary>
         ///     Gets the size of this object
         ///     Note that this is the type heap for most types, but will be the size of the array in a byte[] for example
         /// </summary>
-        /// <value>
-        ///     The size of this object
-        /// </value>
+        /// <value>The size of this object</value>
         public ulong Size { get; protected internal set; }
     }
 }

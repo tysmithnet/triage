@@ -1,4 +1,18 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 12-19-2017
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 12-19-2017
+// ***********************************************************************
+// <copyright file="DumpTypeKey.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 
 namespace Triage.Mortician.Domain
 {
@@ -12,17 +26,13 @@ namespace Triage.Mortician.Domain
         /// <summary>
         ///     Gets or sets the method table.
         /// </summary>
-        /// <value>
-        ///     The method table.
-        /// </value>
+        /// <value>The method table.</value>
         public ulong MethodTable { get; set; }
 
         /// <summary>
         ///     Gets or sets the name of the type.
         /// </summary>
-        /// <value>
-        ///     The name of the type.
-        /// </value>
+        /// <value>The name of the type.</value>
         public string TypeName { get; set; }
 
         /// <summary>
@@ -30,6 +40,8 @@ namespace Triage.Mortician.Domain
         /// </summary>
         /// <param name="methodTable">The method table.</param>
         /// <param name="typeName">Name of the type.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">methodTable</exception>
+        /// <exception cref="System.ArgumentNullException">typeName</exception>
         public DumpTypeKey(ulong methodTable, string typeName)
         {
             if (methodTable == 0)

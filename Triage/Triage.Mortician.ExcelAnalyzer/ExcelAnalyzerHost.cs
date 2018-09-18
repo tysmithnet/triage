@@ -1,4 +1,18 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.ExcelAnalyzer
+// Author           : @tysmithnet
+// Created          : 01-14-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="ExcelAnalyzerHost.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
@@ -10,10 +24,11 @@ using SpreadsheetLight;
 
 namespace Triage.Mortician.ExcelAnalyzer
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Represents an analyzer that provides an environment for other excel analyzers to work
     /// </summary>
+    /// <seealso cref="Triage.Mortician.IAnalyzer" />
+    /// <inheritdoc />
     /// <seealso cref="T:Triage.Mortician.Abstraction.IAnalyzer" />
     [Export(typeof(IAnalyzer))]
     public class ExcelAnalyzerHost : IAnalyzer
@@ -24,53 +39,11 @@ namespace Triage.Mortician.ExcelAnalyzer
         protected ILog Log = LogManager.GetLogger(typeof(ExcelAnalyzerHost));
 
         /// <summary>
-        ///     Gets or sets the excel analyzers.
-        /// </summary>
-        /// <value>
-        ///     The excel analyzers.
-        /// </value>
-        [ImportMany]
-        protected internal IExcelAnalyzer[] ExcelAnalyzers { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the excel post processors.
-        /// </summary>
-        /// <value>
-        ///     The excel post processors.
-        /// </value>
-        [ImportMany]
-        protected internal IExcelPostProcessor[] ExcelPostProcessors { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the event hub.
-        /// </summary>
-        /// <value>
-        ///     The event hub.
-        /// </value>
-        [Import]
-        protected internal IEventHub EventHub { get; set; }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Performs any necessary setup prior to processing
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>
-        ///     A Task that when complete will signal the completion of the setup procedure
-        /// </returns>
-        public Task Setup(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
-
-        /// <inheritdoc />
-        /// <summary>
         ///     Performs the analysis
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>
-        ///     A Task that when complete will signal the completion of the setup procedure
-        /// </returns>
+        /// <returns>A Task that when complete will signal the completion of the setup procedure</returns>
+        /// <inheritdoc />
         // todo: breakup method
         public async Task Process(CancellationToken cancellationToken)
         {
@@ -87,6 +60,7 @@ namespace Triage.Mortician.ExcelAnalyzer
                 var task = Task.Run(() => analyzer.Setup(cancellationToken), cancellationToken);
                 analyzerSetupTasks.Add(task, analyzer);
             }
+
             using (var stream = File.OpenRead("template.xlsx"))
             {
                 var doc = new SLDocument(stream);
@@ -114,8 +88,10 @@ namespace Triage.Mortician.ExcelAnalyzer
                             $"ExcelAnalyzer {analyzer.GetType().FullName} was successfully setup, starting contribution..");
                         analyzer.Contribute(doc);
                     }
+
                     analyzerSetupTasks.Remove(task);
                 }
+
                 var fileName = DateTime.Now.ToString("yyyy_MM_dd-hh_mm_ss") + ".xlsx";
                 try
                 {
@@ -155,5 +131,37 @@ namespace Triage.Mortician.ExcelAnalyzer
                 });
             }
         }
+
+        /// <summary>
+        ///     Performs any necessary setup prior to processing
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A Task that when complete will signal the completion of the setup procedure</returns>
+        /// <inheritdoc />
+        public Task Setup(CancellationToken cancellationToken)
+        {
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        ///     Gets or sets the event hub.
+        /// </summary>
+        /// <value>The event hub.</value>
+        [Import]
+        protected internal IEventHub EventHub { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the excel analyzers.
+        /// </summary>
+        /// <value>The excel analyzers.</value>
+        [ImportMany]
+        protected internal IExcelAnalyzer[] ExcelAnalyzers { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the excel post processors.
+        /// </summary>
+        /// <value>The excel post processors.</value>
+        [ImportMany]
+        protected internal IExcelPostProcessor[] ExcelPostProcessors { get; set; }
     }
 }

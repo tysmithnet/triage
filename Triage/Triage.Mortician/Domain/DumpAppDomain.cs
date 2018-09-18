@@ -1,4 +1,18 @@
-﻿using System.Collections.Generic;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 09-18-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="DumpAppDomain.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System.Collections.Generic;
 
 namespace Triage.Mortician.Domain
 {
@@ -18,41 +32,31 @@ namespace Triage.Mortician.Domain
         /// <summary>
         ///     Gets or sets the address of where the app domain has been loaded in memory
         /// </summary>
-        /// <value>
-        ///     The address.
-        /// </value>
+        /// <value>The address.</value>
         public ulong Address { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the application base if one exists e.g. /LM/W3SVC/2/ROOT-1-13157282501912414
         /// </summary>
-        /// <value>
-        ///     The application base.
-        /// </value>
+        /// <value>The application base.</value>
         public string ApplicationBase { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the configuration file for this module
         /// </summary>
-        /// <value>
-        ///     The configuration file.
-        /// </value>
+        /// <value>The configuration file.</value>
         public string ConfigFile { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the loaded modules.
         /// </summary>
-        /// <value>
-        ///     The loaded modules.
-        /// </value>
+        /// <value>The loaded modules.</value>
         public IEnumerable<DumpModule> LoadedModules => LoadedModulesInternal;
 
         /// <summary>
         ///     Gets or sets the name of this module e.g. System.Net
         /// </summary>
-        /// <value>
-        ///     The name.
-        /// </value>
+        /// <value>The name.</value>
         public string Name { get; protected internal set; }
     }
 }

@@ -1,4 +1,18 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 12-19-2017
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="DumpAppDomainRepository.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.Collections.Generic;
 using Triage.Mortician.Domain;
 
@@ -7,6 +21,7 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     An object capable of managing the discovered app domains from the memory dump
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Repository.IDumpAppDomainRepository" />
     public class DumpAppDomainRepository : IDumpAppDomainRepository
     {
         /// <summary>
@@ -14,6 +29,7 @@ namespace Triage.Mortician.Repository
         ///     to the dictionary is the address of the app domain in memory
         /// </summary>
         /// <param name="appDomains">The application domains.</param>
+        /// <exception cref="System.ArgumentNullException">appDomains</exception>
         /// <exception cref="ArgumentNullException">appDomains</exception>
         protected internal DumpAppDomainRepository(Dictionary<ulong, DumpAppDomain> appDomains)
         {
@@ -29,7 +45,7 @@ namespace Triage.Mortician.Repository
         ///     Gets the app domain associated with the provided address
         /// </summary>
         /// <param name="address">The address.</param>
-        /// <returns></returns>
+        /// <returns>DumpAppDomain.</returns>
         public DumpAppDomain Get(ulong address)
         {
             return AppDomains[address];
@@ -38,7 +54,7 @@ namespace Triage.Mortician.Repository
         /// <summary>
         ///     Gets all the extracted appd domains
         /// </summary>
-        /// <returns></returns>
+        /// <returns>IEnumerable&lt;DumpAppDomain&gt;.</returns>
         public IEnumerable<DumpAppDomain> Get()
         {
             return AppDomains.Values;

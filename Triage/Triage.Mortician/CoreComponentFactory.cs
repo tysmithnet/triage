@@ -1,4 +1,18 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 12-12-2017
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="CoreComponentFactory.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
@@ -24,6 +38,11 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="compositionContainer">The composition container.</param>
         /// <param name="dumpFile">Dump file to analzye</param>
+        /// <exception cref="System.ArgumentNullException">
+        ///     compositionContainer
+        ///     or
+        ///     dumpFile
+        /// </exception>
         /// <exception cref="ArgumentNullException">
         ///     compositionContainer
         ///     or
@@ -122,6 +141,11 @@ namespace Triage.Mortician
             CompositionContainer.ComposeExportedValue<IDumpTypeRepository>(typeRepo);
         }
 
+        /// <summary>
+        ///     Establishes the object relationships.
+        /// </summary>
+        /// <param name="objectHierarchy">The object hierarchy.</param>
+        /// <param name="objectStore">The object store.</param>
         private void EstablishObjectRelationships(Dictionary<ulong, List<ulong>> objectHierarchy,
             Dictionary<ulong, DumpObject> objectStore)
         {
@@ -153,6 +177,13 @@ namespace Triage.Mortician
             });
         }
 
+        /// <summary>
+        ///     Setups the modules and types.
+        /// </summary>
+        /// <param name="rt">The rt.</param>
+        /// <param name="appDomainStore">The application domain store.</param>
+        /// <param name="typeStore">The type store.</param>
+        /// <param name="moduleStore">The module store.</param>
         private void SetupModulesAndTypes(ClrRuntime rt, Dictionary<ulong, DumpAppDomain> appDomainStore,
             Dictionary<DumpTypeKey, DumpType> typeStore,
             Dictionary<(ulong, string), DumpModule> moduleStore)
@@ -233,6 +264,16 @@ namespace Triage.Mortician
                 typeStore[pair.Key].BaseDumpType = typeStore[pair.Value];
         }
 
+        /// <summary>
+        ///     Setups the objects.
+        /// </summary>
+        /// <param name="heapObjectExtractors">The heap object extractors.</param>
+        /// <param name="rt">The rt.</param>
+        /// <param name="objectStore">The object store.</param>
+        /// <param name="objectHierarchy">The object hierarchy.</param>
+        /// <param name="typeStore">The type store.</param>
+        /// <param name="appDomainStore">The application domain store.</param>
+        /// <param name="objectRootStore">The object root store.</param>
         private void SetupObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime rt,
             Dictionary<ulong, DumpObject> objectStore, Dictionary<ulong, List<ulong>> objectHierarchy,
             Dictionary<DumpTypeKey, DumpType> typeStore, Dictionary<ulong, DumpAppDomain> appDomainStore,
@@ -299,6 +340,12 @@ namespace Triage.Mortician
             }
         }
 
+        /// <summary>
+        ///     Setups the threads.
+        /// </summary>
+        /// <param name="rt">The rt.</param>
+        /// <param name="threadStore">The thread store.</param>
+        /// <param name="objectRootsStore">The object roots store.</param>
         private void SetupThreads(ClrRuntime rt,
             Dictionary<uint, DumpThread> threadStore, Dictionary<ulong, DumpObjectRoot> objectRootsStore)
         {
@@ -425,25 +472,19 @@ namespace Triage.Mortician
         /// <summary>
         ///     Gets or sets the composition container.
         /// </summary>
-        /// <value>
-        ///     The composition container.
-        /// </value>
+        /// <value>The composition container.</value>
         public CompositionContainer CompositionContainer { get; set; }
 
         /// <summary>
         ///     Gets or sets the data target.
         /// </summary>
-        /// <value>
-        ///     The data target.
-        /// </value>
+        /// <value>The data target.</value>
         public DataTarget DataTarget { get; set; }
 
         /// <summary>
         ///     Gets or sets the location of the dump file
         /// </summary>
-        /// <value>
-        ///     The dump file location.
-        /// </value>
+        /// <value>The dump file location.</value>
         public FileInfo DumpFile { get; protected set; }
     }
 }

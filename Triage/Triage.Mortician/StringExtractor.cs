@@ -1,41 +1,52 @@
-﻿using System.ComponentModel.Composition;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 12-12-2017
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 12-19-2017
+// ***********************************************************************
+// <copyright file="StringExtractor.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Domain;
 
 namespace Triage.Mortician
 {
-    /// <inheritdoc />
     /// <summary>
     ///     DumpObjectExtractor capable of parsing System.String objects
     /// </summary>
+    /// <seealso cref="Triage.Mortician.IDumpObjectExtractor" />
+    /// <inheritdoc />
     /// <seealso cref="T:Triage.Mortician.IDumpObjectExtractor" />
     [Export(typeof(IDumpObjectExtractor))]
     public class StringExtractor : IDumpObjectExtractor
     {
-        /// <inheritdoc />
         /// <summary>
         ///     Determines whether this instance can extract from the provided object
         /// </summary>
         /// <param name="clrObject">The object to try to get values from</param>
         /// <param name="clrRuntime">The clr runtime being used</param>
-        /// <returns>
-        ///     <c>true</c> if this instance can extract from the object; otherwise, <c>false</c>.
-        /// </returns>
+        /// <returns><c>true</c> if this instance can extract from the object; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
         public bool CanExtract(ClrObject clrObject, ClrRuntime clrRuntime)
         {
             return clrObject.Type?.Name == "System.String";
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Extracts data from the provided object
         /// </summary>
         /// <param name="clrObject">The object.</param>
         /// <param name="clrRuntime">The runtime.</param>
-        /// <returns>
-        ///     Extracted dump object
-        /// </returns>
+        /// <returns>Extracted dump object</returns>
+        /// <inheritdoc />
         public DumpObject Extract(ClrObject clrObject, ClrRuntime clrRuntime)
         {
             var value = (string) clrObject.Type.GetValue(clrObject.Address);
