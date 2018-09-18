@@ -11,6 +11,16 @@ namespace Triage.Mortician.Repository
     public class DumpThreadRepository : IDumpThreadRepository
     {
         /// <summary>
+        ///     Initializes a new instance of the <see cref="DumpThreadRepository" /> class.
+        /// </summary>
+        /// <param name="dumpThreads">The dump threads.</param>
+        /// <exception cref="ArgumentNullException">dumpThreads</exception>
+        protected internal DumpThreadRepository(Dictionary<uint, DumpThread> dumpThreads)
+        {
+            DumpThreads = dumpThreads ?? throw new ArgumentNullException(nameof(dumpThreads));
+        }
+
+        /// <summary>
         ///     Gets or sets the dump threads.
         /// </summary>
         /// <value>
@@ -22,16 +32,6 @@ namespace Triage.Mortician.Repository
         ///     The log
         /// </summary>
         protected internal ILog Log = LogManager.GetLogger(typeof(DumpThreadRepository));
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="DumpThreadRepository" /> class.
-        /// </summary>
-        /// <param name="dumpThreads">The dump threads.</param>
-        /// <exception cref="ArgumentNullException">dumpThreads</exception>
-        protected internal DumpThreadRepository(Dictionary<uint, DumpThread> dumpThreads)
-        {
-            DumpThreads = dumpThreads ?? throw new ArgumentNullException(nameof(dumpThreads));
-        }
 
         /// <summary>
         ///     Gets the thread with the provided id

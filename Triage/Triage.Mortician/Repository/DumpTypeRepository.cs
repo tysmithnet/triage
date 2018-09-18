@@ -10,11 +10,6 @@ namespace Triage.Mortician.Repository
     public class DumpTypeRepository : IDumpTypeRepository
     {
         /// <summary>
-        ///     The types extracted from the memory dump
-        /// </summary>
-        protected internal Dictionary<DumpTypeKey, DumpType> Types;
-
-        /// <summary>
         ///     Initializes a new instance of the <see cref="DumpTypeRepository" /> class.
         /// </summary>
         /// <param name="dumpTypes">The dump types.</param>
@@ -23,5 +18,10 @@ namespace Triage.Mortician.Repository
         {
             Types = dumpTypes ?? throw new ArgumentNullException(nameof(dumpTypes));
         }
+
+        /// <summary>
+        ///     The types extracted from the memory dump
+        /// </summary>
+        protected internal Dictionary<DumpTypeKey, DumpType> Types;
     }
 }

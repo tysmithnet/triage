@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
@@ -12,8 +11,6 @@ namespace Triage.Mortician
     [Export(typeof(IAnalyzerTaskFactory))]
     public class AnalyzerTaskFactory : IAnalyzerTaskFactory
     {
-        private ILog Log { get; } = LogManager.GetLogger<AnalyzerTaskFactory>();
-
         public Task StartAnalyzers(IEnumerable<IAnalyzer> analyzers, CancellationToken cancellationToken)
         {
             var tasks = analyzers.Select(analyzer => Task.Run(async () =>
@@ -49,5 +46,7 @@ namespace Triage.Mortician
             }, cancellationToken));
             return Task.WhenAll(tasks);
         }
+
+        private ILog Log { get; } = LogManager.GetLogger<AnalyzerTaskFactory>();
     }
 }

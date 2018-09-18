@@ -24,6 +24,17 @@ namespace Triage.Mortician
             Value = value;
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        ///     Get a short description of the object.
+        /// </summary>
+        /// <returns>A short description of this object</returns>
+        /// <remarks>The return value is intended to be shown on a single line</remarks>
+        protected override string ToShortDescription()
+        {
+            return base.ToShortDescription() + $" - {Value}";
+        }
+
         /// <summary>
         ///     The string value from this heap object
         /// </summary>
@@ -31,16 +42,5 @@ namespace Triage.Mortician
         ///     The value.
         /// </value>
         public string Value { get; internal set; }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Get a short description of the object.
-        /// </summary>
-        /// <returns>A short description of this object</returns>
-        /// <remarks>The return value is intended to be shown on a single line</remarks>
-        protected override string ToShortDescription()
-        {
-            return base.ToShortDescription() + $" - {Value}" ;
-        }
     }
 }

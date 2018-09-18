@@ -10,6 +10,13 @@ namespace Triage.Mortician.Repository
     /// </summary>
     public class DumpObjectRepository : IDumpObjectRepository
     {
+        public DumpObjectRepository(Dictionary<ulong, DumpObject> objects,
+            Dictionary<ulong, DumpObjectRoot> objectRoots)
+        {
+            Objects = objects ?? throw new ArgumentNullException(nameof(objects));
+            ObjectRoots = objectRoots ?? throw new ArgumentNullException(nameof(objectRoots));
+        }
+
         /// <summary>
         ///     The log
         /// </summary>
@@ -24,13 +31,6 @@ namespace Triage.Mortician.Repository
         ///     The heap objects
         /// </summary>
         protected internal Dictionary<ulong, DumpObject> Objects;
-
-        public DumpObjectRepository(Dictionary<ulong, DumpObject> objects,
-            Dictionary<ulong, DumpObjectRoot> objectRoots)
-        {
-            Objects = objects ?? throw new ArgumentNullException(nameof(objects));
-            ObjectRoots = objectRoots ?? throw new ArgumentNullException(nameof(objectRoots));
-        }
 
         /// <summary>
         ///     Gets the object at the specified address

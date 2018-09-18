@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
+﻿using System.ComponentModel.Composition;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
@@ -19,36 +16,6 @@ namespace Triage.Mortician
         ///     The log
         /// </summary>
         protected ILog Log = LogManager.GetLogger(typeof(Engine));
-
-        /// <summary>
-        ///     Gets or sets the analyzers.
-        /// </summary>
-        /// <value>
-        ///     The analyzers.
-        /// </value>
-        [ImportMany]
-        protected internal IAnalyzer[] Analyzers { get; set; }
-        
-        /// <summary>
-        ///     Gets or sets the analysis observers.
-        /// </summary>
-        /// <value>
-        ///     The analysis observers.
-        /// </value>
-        [ImportMany]
-        protected internal IAnalysisObserver[] AnalysisObservers { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the event hub.
-        /// </summary>
-        /// <value>
-        ///     The event hub.
-        /// </value>
-        [Import]
-        protected internal IEventHub EventHub { get; set; }
-
-        [Import]
-        protected internal IAnalyzerTaskFactory AnalyzerTaskFactory { get; set; }
 
         /// <summary>
         ///     Processes the analyzers
@@ -81,7 +48,38 @@ namespace Triage.Mortician
             {
                 // we are expecting this
             }
+
             Log.Trace("Execution complete");
         }
+
+        /// <summary>
+        ///     Gets or sets the analysis observers.
+        /// </summary>
+        /// <value>
+        ///     The analysis observers.
+        /// </value>
+        [ImportMany]
+        protected internal IAnalysisObserver[] AnalysisObservers { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the analyzers.
+        /// </summary>
+        /// <value>
+        ///     The analyzers.
+        /// </value>
+        [ImportMany]
+        protected internal IAnalyzer[] Analyzers { get; set; }
+
+        [Import]
+        protected internal IAnalyzerTaskFactory AnalyzerTaskFactory { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the event hub.
+        /// </summary>
+        /// <value>
+        ///     The event hub.
+        /// </value>
+        [Import]
+        protected internal IEventHub EventHub { get; set; }
     }
 }

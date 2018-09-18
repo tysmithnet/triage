@@ -11,8 +11,6 @@ namespace Triage.Mortician
     /// </summary>
     internal static class Settings
     {
-        internal static SettingsInternal SettingsInstance;
-
         static Settings()
         {
             try
@@ -28,16 +26,7 @@ namespace Triage.Mortician
             }
         }
 
-        public static ILog Log { get; set; } = LogManager.GetLogger(typeof(Settings));
-
-        /// <summary>
-        ///     Gets the settings.
-        /// </summary>
-        /// <returns></returns>
-        internal static Dictionary<string, string> GetSettings()
-        {
-            return SettingsInstance.GeneralSettings;
-        }
+        internal static SettingsInternal SettingsInstance;
 
         /// <summary>
         ///     Saves the settings.
@@ -53,16 +42,27 @@ namespace Triage.Mortician
             }
         }
 
+        /// <summary>
+        ///     Gets the settings.
+        /// </summary>
+        /// <returns></returns>
+        internal static Dictionary<string, string> GetSettings()
+        {
+            return SettingsInstance.GeneralSettings;
+        }
+
+        public static ILog Log { get; set; } = LogManager.GetLogger(typeof(Settings));
+
         internal class SettingsInternal
         {
-            [JsonProperty("general_settings")]
-            public Dictionary<string, string> GeneralSettings { get; set; } = new Dictionary<string, string>();
-
             [JsonProperty("blacklisted_assemblies")]
             public string[] BlacklistedAssemblies { get; set; } = new string[0];
 
             [JsonProperty("blacklisted_types")]
             public string[] BlacklistedTypes { get; set; } = new string[0];
+
+            [JsonProperty("general_settings")]
+            public Dictionary<string, string> GeneralSettings { get; set; } = new Dictionary<string, string>();
         }
     }
 }

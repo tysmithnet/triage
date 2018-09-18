@@ -21,41 +21,6 @@ namespace Triage.Mortician
         internal static ILog Log = LogManager.GetLogger(typeof(Program));
 
         /// <summary>
-        ///     Entry point to the application
-        /// </summary>
-        /// <param name="args">The arguments.</param>
-        private static void Main(string[] args)
-        {
-            Log.Trace($"Starting mortician at {DateTime.UtcNow.ToString()} UTC");
-            WarnIfNoDebuggingKitOnPath();
-
-            Parser.Default.ParseArguments<DefaultOptions, ConfigOptions>(args).MapResult(
-                (DefaultOptions opts) => DefaultExecution(opts),
-                (ConfigOptions opts) => ConfigExecution(opts),
-                errs => -1
-            );
-        }
-
-        /// <summary>
-        ///     CLRMd relies on certain debugging specific assemblies to inspect memory dumps. You get these assemblies
-        ///     with the Windows Debugging Kit. Install it from https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/
-        ///     Then you must add to your path where these assemblies are:
-        ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64
-        ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\winext
-        /// </summary>
-        private static void WarnIfNoDebuggingKitOnPath()
-        {
-            var path = Environment.GetEnvironmentVariable("PATH") ?? "";
-            if (!Regex.IsMatch(path, @"[Dd]ebuggers[/\\]x64"))
-                Log.Warn(
-                    "Did not find Debuggers\\x64 in PATH. Did you install the Windows Debugging Kit and set Debuggers\\x64 as part of PATH?");
-
-            if (!Regex.IsMatch(path, @"[Dd]ebuggers[/\\]x64[/\\]winext"))
-                Log.Warn(
-                    "Did not find Debuggers\\x64\\winext in PATH. Did you install the Windows Debugging Kit and set Debuggers\\x64\\winext as part of PATH?");
-        }
-
-        /// <summary>
         ///     Executes the configuration module
         /// </summary>
         /// <param name="configOptions">The the configuration command line options</param>
@@ -112,7 +77,8 @@ namespace Triage.Mortician
             var blacklistedTypes = Settings.SettingsInstance.BlacklistedTypes;
             var executionLocation = Assembly.GetEntryAssembly().Location;
             var morticianAssemblyFiles =
-                Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation), "Triage.Mortician.*.dll"); // todo: not ideal to require assembly name
+                Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation),
+                    "Triage.Mortician.*.dll"); // todo: not ideal to require assembly name
             var toLoad =
                 morticianAssemblyFiles.Except(AppDomain.CurrentDomain.GetAssemblies().Select(x => x.Location))
                     .Select(x => new FileInfo(x)).Where(x => !blacklistedAssemblies.Contains(x.Name));
@@ -132,6 +98,7 @@ namespace Triage.Mortician
                 {
                     Log.Error($"Unable to load {assembly.FullName}, it will not be available because {e.Message}");
                 }
+
             aggregateCatalog.Catalogs.Add(new AssemblyCatalog(Assembly.GetExecutingAssembly()));
             var compositionContainer = new CompositionContainer(aggregateCatalog);
             // todo: allow for export/import manipulation
@@ -142,6 +109,41 @@ namespace Triage.Mortician
             engine.Process().Wait();
 
             return 0;
+        }
+
+        /// <summary>
+        ///     Entry point to the application
+        /// </summary>
+        /// <param name="args">The arguments.</param>
+        private static void Main(string[] args)
+        {
+            Log.Trace($"Starting mortician at {DateTime.UtcNow.ToString()} UTC");
+            WarnIfNoDebuggingKitOnPath();
+
+            Parser.Default.ParseArguments<DefaultOptions, ConfigOptions>(args).MapResult(
+                (DefaultOptions opts) => DefaultExecution(opts),
+                (ConfigOptions opts) => ConfigExecution(opts),
+                errs => -1
+            );
+        }
+
+        /// <summary>
+        ///     CLRMd relies on certain debugging specific assemblies to inspect memory dumps. You get these assemblies
+        ///     with the Windows Debugging Kit. Install it from https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/
+        ///     Then you must add to your path where these assemblies are:
+        ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64
+        ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\winext
+        /// </summary>
+        private static void WarnIfNoDebuggingKitOnPath()
+        {
+            var path = Environment.GetEnvironmentVariable("PATH") ?? "";
+            if (!Regex.IsMatch(path, @"[Dd]ebuggers[/\\]x64"))
+                Log.Warn(
+                    "Did not find Debuggers\\x64 in PATH. Did you install the Windows Debugging Kit and set Debuggers\\x64 as part of PATH?");
+
+            if (!Regex.IsMatch(path, @"[Dd]ebuggers[/\\]x64[/\\]winext"))
+                Log.Warn(
+                    "Did not find Debuggers\\x64\\winext in PATH. Did you install the Windows Debugging Kit and set Debuggers\\x64\\winext as part of PATH?");
         }
     }
 }

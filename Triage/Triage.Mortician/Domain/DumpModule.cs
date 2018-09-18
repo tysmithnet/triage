@@ -20,20 +20,12 @@ namespace Triage.Mortician.Domain
         protected internal IList<DumpType> TypesInternal = new List<DumpType>();
 
         /// <summary>
-        ///     Gets or sets the name of the assembly.
+        ///     Gets or sets the application domains.
         /// </summary>
         /// <value>
-        ///     The name of the assembly.
+        ///     The application domains.
         /// </value>
-        public string AssemblyName { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets the name of the file if this module is backed by a physical file, null otherwise
-        /// </summary>
-        /// <value>
-        ///     The name of the file.
-        /// </value>
-        public string FileName { get; protected internal set; }
+        public IEnumerable<DumpAppDomain> AppDomains => AppDomainsInternal;
 
         /// <summary>
         ///     Gets or sets the assembly id that this module is associated iwth
@@ -44,20 +36,12 @@ namespace Triage.Mortician.Domain
         public ulong AssemblyId { get; protected internal set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether this module is a dynamic module
+        ///     Gets or sets the name of the assembly.
         /// </summary>
         /// <value>
-        ///     <c>true</c> if this instance is dynamic; otherwise, <c>false</c>.
+        ///     The name of the assembly.
         /// </value>
-        public bool IsDynamic { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets the application domains.
-        /// </summary>
-        /// <value>
-        ///     The application domains.
-        /// </value>
-        public IEnumerable<DumpAppDomain> AppDomains => AppDomainsInternal;
+        public string AssemblyName { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the debugging mode for this assembly (edit and continue, etc)
@@ -68,6 +52,14 @@ namespace Triage.Mortician.Domain
         public DebuggableAttribute.DebuggingModes DebuggingMode { get; protected internal set; }
 
         /// <summary>
+        ///     Gets or sets the name of the file if this module is backed by a physical file, null otherwise
+        /// </summary>
+        /// <value>
+        ///     The name of the file.
+        /// </value>
+        public string FileName { get; protected internal set; }
+
+        /// <summary>
         ///     Gets or sets the address for which this module is loaded in memory, but can be null if
         ///     it not backed by phsical memory
         /// </summary>
@@ -75,6 +67,14 @@ namespace Triage.Mortician.Domain
         ///     The image base.
         /// </value>
         public ulong? ImageBase { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this module is a dynamic module
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if this instance is dynamic; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsDynamic { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this module comes from a file
@@ -93,14 +93,6 @@ namespace Triage.Mortician.Domain
         public string Name { get; protected internal set; }
 
         /// <summary>
-        ///     Gets or sets the size of this module
-        /// </summary>
-        /// <value>
-        ///     The size.
-        /// </value>
-        public ulong Size { get; protected internal set; }
-
-        /// <summary>
         ///     Gets or sets the PDB file location if available, null otherwise
         /// </summary>
         /// <value>
@@ -115,5 +107,13 @@ namespace Triage.Mortician.Domain
         ///     The PDB unique identifier.
         /// </value>
         public Guid? PdbGuid { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets the size of this module
+        /// </summary>
+        /// <value>
+        ///     The size.
+        /// </value>
+        public ulong Size { get; protected internal set; }
     }
 }

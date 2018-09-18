@@ -19,14 +19,6 @@ namespace Triage.Mortician.Repository
         }
 
         /// <summary>
-        ///     Gets or sets the internal settings
-        /// </summary>
-        /// <value>
-        ///     The settings internal.
-        /// </value>
-        protected internal Dictionary<string, string> SettingsInternal { get; set; }
-
-        /// <summary>
         ///     Gets the setting associated with the provided key
         /// </summary>
         /// <param name="key">The key.</param>
@@ -60,5 +52,13 @@ namespace Triage.Mortician.Repository
                 return false;
             }
         }
+
+        /// <summary>
+        ///     Gets or sets the internal settings
+        /// </summary>
+        /// <value>
+        ///     The settings internal.
+        /// </value>
+        protected internal Dictionary<string, string> SettingsInternal { get; set; }
     }
 }

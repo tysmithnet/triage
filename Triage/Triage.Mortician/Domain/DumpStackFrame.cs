@@ -14,20 +14,20 @@
         public string DisplayString { get; protected internal set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether this stack frame is a managed frame
-        /// </summary>
-        /// <value>
-        ///     <c>true</c> if this instance is managed; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsManaged { get; protected internal set; }
-
-        /// <summary>
         ///     Gets or sets the instruction pointer for this frame
         /// </summary>
         /// <value>
         ///     The instruction pointer.
         /// </value>
         public ulong InstructionPointer { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this stack frame is a managed frame
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if this instance is managed; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsManaged { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the name of the module that contains the code for this frame (can be null)

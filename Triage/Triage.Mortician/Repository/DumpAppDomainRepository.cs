@@ -10,11 +10,6 @@ namespace Triage.Mortician.Repository
     public class DumpAppDomainRepository : IDumpAppDomainRepository
     {
         /// <summary>
-        ///     The application domains index by their address
-        /// </summary>
-        protected internal Dictionary<ulong, DumpAppDomain> AppDomains;
-
-        /// <summary>
         ///     Initializes a new instance of the <see cref="DumpAppDomainRepository" /> class. The key
         ///     to the dictionary is the address of the app domain in memory
         /// </summary>
@@ -24,6 +19,11 @@ namespace Triage.Mortician.Repository
         {
             AppDomains = appDomains ?? throw new ArgumentNullException(nameof(appDomains));
         }
+
+        /// <summary>
+        ///     The application domains index by their address
+        /// </summary>
+        protected internal Dictionary<ulong, DumpAppDomain> AppDomains;
 
         /// <summary>
         ///     Gets the app domain associated with the provided address

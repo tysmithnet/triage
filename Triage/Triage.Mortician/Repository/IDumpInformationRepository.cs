@@ -6,60 +6,44 @@ namespace Triage.Mortician.Repository
     public interface IDumpInformationRepository
     {
         /// <summary>
-        ///     Gets or sets the minimum threads in the CLR. This is usually the same as the number of CPU cores
+        ///     Gets or sets the cpu utilization.
         /// </summary>
         /// <value>
-        ///     The minimum threads.
+        ///     The cpu utilization.
         /// </value>
-        int MinThreads { get; }
+        int CpuUtilization { get; }
 
         /// <summary>
-        ///     Gets or sets the maximum number of threads the CLR can have
+        ///     Gets or sets the dump file.
         /// </summary>
         /// <value>
-        ///     The maximum threads.
+        ///     The dump file.
         /// </value>
-        int MaxThreads { get; }
+        FileInfo DumpFile { get; }
 
         /// <summary>
-        ///     Gets or sets the start time UTC.
+        ///     Gets or sets the heap count.
         /// </summary>
         /// <value>
-        ///     The start time UTC.
+        ///     The heap count.
         /// </value>
-        DateTime StartTimeUtc { get; }
+        int HeapCount { get; }
 
         /// <summary>
-        ///     Gets or sets the total size of the heap.
+        ///     Gets or sets a value indicating whether this instance is mini dump.
         /// </summary>
         /// <value>
-        ///     The total size of the heap.
+        ///     <c>true</c> if this instance is mini dump; otherwise, <c>false</c>.
         /// </value>
-        ulong TotalHeapSize { get; }
+        bool IsMiniDump { get; }
 
         /// <summary>
-        ///     Gets or sets the total threads.
+        ///     Gets or sets a value indicating whether this instance is server gc.
         /// </summary>
         /// <value>
-        ///     The total threads.
+        ///     <c>true</c> if this instance is server gc; otherwise, <c>false</c>.
         /// </value>
-        int TotalThreads { get; }
-
-        /// <summary>
-        ///     Gets or sets the number running threads.
-        /// </summary>
-        /// <value>
-        ///     The number running threads.
-        /// </value>
-        int NumRunningThreads { get; }
-
-        /// <summary>
-        ///     Gets or sets the minimum number io completion ports.
-        /// </summary>
-        /// <value>
-        ///     The minimum number io completion ports.
-        /// </value>
-        int MinNumberIoCompletionPorts { get; }
+        bool IsServerGc { get; }
 
         /// <summary>
         ///     Gets or sets the maximum number free io completion ports.
@@ -78,12 +62,28 @@ namespace Triage.Mortician.Repository
         int MaxNumberIoCompletionPorts { get; }
 
         /// <summary>
-        ///     Gets or sets the number idle threads.
+        ///     Gets or sets the maximum number of threads the CLR can have
         /// </summary>
         /// <value>
-        ///     The number idle threads.
+        ///     The maximum threads.
         /// </value>
-        int NumberIdleThreads { get; }
+        int MaxThreads { get; }
+
+        /// <summary>
+        ///     Gets or sets the minimum number io completion ports.
+        /// </summary>
+        /// <value>
+        ///     The minimum number io completion ports.
+        /// </value>
+        int MinNumberIoCompletionPorts { get; }
+
+        /// <summary>
+        ///     Gets or sets the minimum threads in the CLR. This is usually the same as the number of CPU cores
+        /// </summary>
+        /// <value>
+        ///     The minimum threads.
+        /// </value>
+        int MinThreads { get; }
 
         /// <summary>
         ///     Gets or sets the number free io completion ports.
@@ -94,44 +94,28 @@ namespace Triage.Mortician.Repository
         int NumberFreeIoCompletionPorts { get; }
 
         /// <summary>
-        ///     Gets or sets the cpu utilization.
+        ///     Gets or sets the number idle threads.
         /// </summary>
         /// <value>
-        ///     The cpu utilization.
+        ///     The number idle threads.
         /// </value>
-        int CpuUtilization { get; }
+        int NumberIdleThreads { get; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether this instance is server gc.
+        ///     Gets or sets the number running threads.
         /// </summary>
         /// <value>
-        ///     <c>true</c> if this instance is server gc; otherwise, <c>false</c>.
+        ///     The number running threads.
         /// </value>
-        bool IsServerGc { get; }
+        int NumRunningThreads { get; }
 
         /// <summary>
-        ///     Gets or sets the heap count.
+        ///     Gets or sets the start time UTC.
         /// </summary>
         /// <value>
-        ///     The heap count.
+        ///     The start time UTC.
         /// </value>
-        int HeapCount { get; }
-
-        /// <summary>
-        ///     Gets or sets the dump file.
-        /// </summary>
-        /// <value>
-        ///     The dump file.
-        /// </value>
-        FileInfo DumpFile { get; }
-
-        /// <summary>
-        ///     Gets or sets the symbol path.
-        /// </summary>
-        /// <value>
-        ///     The symbol path.
-        /// </value>
-        string SymbolPath { get; }
+        DateTime StartTimeUtc { get; }
 
         /// <summary>
         ///     Gets or sets the symbol cachce.
@@ -142,11 +126,27 @@ namespace Triage.Mortician.Repository
         string SymbolCache { get; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether this instance is mini dump.
+        ///     Gets or sets the symbol path.
         /// </summary>
         /// <value>
-        ///     <c>true</c> if this instance is mini dump; otherwise, <c>false</c>.
+        ///     The symbol path.
         /// </value>
-        bool IsMiniDump { get; }
+        string SymbolPath { get; }
+
+        /// <summary>
+        ///     Gets or sets the total size of the heap.
+        /// </summary>
+        /// <value>
+        ///     The total size of the heap.
+        /// </value>
+        ulong TotalHeapSize { get; }
+
+        /// <summary>
+        ///     Gets or sets the total threads.
+        /// </summary>
+        /// <value>
+        ///     The total threads.
+        /// </value>
+        int TotalThreads { get; }
     }
 }

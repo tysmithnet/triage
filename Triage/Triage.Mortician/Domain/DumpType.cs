@@ -13,14 +13,6 @@ namespace Triage.Mortician.Domain
         protected internal Dictionary<ulong, DumpObject> ObjectsInternal = new Dictionary<ulong, DumpObject>();
 
         /// <summary>
-        ///     Gets or sets the size of the type fields
-        /// </summary>
-        /// <value>
-        ///     The size of the type fields
-        /// </value>
-        public int BaseSize { get; protected internal set; }
-
-        /// <summary>
         ///     Gets or sets the type of base type
         /// </summary>
         /// <value>
@@ -29,12 +21,28 @@ namespace Triage.Mortician.Domain
         public DumpType BaseDumpType { get; protected internal set; }
 
         /// <summary>
-        ///     Gets or sets the module this type is defined in
+        ///     Gets or sets the size of the type fields
         /// </summary>
         /// <value>
-        ///     The module.
+        ///     The size of the type fields
         /// </value>
-        public DumpModule Module { get; protected internal set; }
+        public int BaseSize { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether [contains pointers].
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if [contains pointers]; otherwise, <c>false</c>.
+        /// </value>
+        public bool ContainsPointers { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets the key to uniquely identify this type
+        /// </summary>
+        /// <value>
+        ///     The dump type key.
+        /// </value>
+        public DumpTypeKey DumpTypeKey { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is abstract.
@@ -43,14 +51,6 @@ namespace Triage.Mortician.Domain
         ///     <c>true</c> if this instance is abstract; otherwise, <c>false</c>.
         /// </value>
         public bool IsAbstract { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether this instance is an interface.
-        /// </summary>
-        /// <value>
-        ///     <c>true</c> if this instance is interface; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsInterface { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is an array.
@@ -69,14 +69,6 @@ namespace Triage.Mortician.Domain
         public bool IsEnum { get; protected internal set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether [contains pointers].
-        /// </summary>
-        /// <value>
-        ///     <c>true</c> if [contains pointers]; otherwise, <c>false</c>.
-        /// </value>
-        public bool ContainsPointers { get; protected internal set; }
-
-        /// <summary>
         ///     Gets or sets a value indicating whether this instance is exception.
         /// </summary>
         /// <value>
@@ -93,36 +85,20 @@ namespace Triage.Mortician.Domain
         public bool IsFinalizable { get; protected internal set; }
 
         /// <summary>
+        ///     Gets or sets a value indicating whether this instance is an interface.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if this instance is interface; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsInterface { get; protected internal set; }
+
+        /// <summary>
         ///     Gets or sets a value indicating whether this instance is internal.
         /// </summary>
         /// <value>
         ///     <c>true</c> if this instance is internal; otherwise, <c>false</c>.
         /// </value>
         public bool IsInternal { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether this instance is runtime type.
-        /// </summary>
-        /// <value>
-        ///     <c>true</c> if this instance is runtime type; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsRuntimeType { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether this instance is protected.
-        /// </summary>
-        /// <value>
-        ///     <c>true</c> if this instance is protected; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsProtected { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether this instance is private.
-        /// </summary>
-        /// <value>
-        ///     <c>true</c> if this instance is private; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsPrivate { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is pointer.
@@ -133,20 +109,44 @@ namespace Triage.Mortician.Domain
         public bool IsPointer { get; protected internal set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether this instance is sealed.
-        /// </summary>
-        /// <value>
-        ///     <c>true</c> if this instance is sealed; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsSealed { get; protected internal set; }
-
-        /// <summary>
         ///     Gets or sets a value indicating whether this instance is primitive.
         /// </summary>
         /// <value>
         ///     <c>true</c> if this instance is primitive; otherwise, <c>false</c>.
         /// </value>
         public bool IsPrimitive { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is private.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if this instance is private; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsPrivate { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is protected.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if this instance is protected; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsProtected { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is runtime type.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if this instance is runtime type; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsRuntimeType { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is sealed.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if this instance is sealed; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsSealed { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is string.
@@ -157,12 +157,20 @@ namespace Triage.Mortician.Domain
         public bool IsString { get; protected internal set; }
 
         /// <summary>
-        ///     Gets or sets the objects.
+        ///     Gets or sets the method table.
         /// </summary>
         /// <value>
-        ///     The objects.
+        ///     The method table.
         /// </value>
-        public IEnumerable<DumpObject> Objects { get; protected internal set; }
+        public ulong MethodTable { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets the module this type is defined in
+        /// </summary>
+        /// <value>
+        ///     The module.
+        /// </value>
+        public DumpModule Module { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the name.
@@ -173,20 +181,12 @@ namespace Triage.Mortician.Domain
         public string Name { get; protected internal set; }
 
         /// <summary>
-        ///     Gets or sets the method table.
+        ///     Gets or sets the objects.
         /// </summary>
         /// <value>
-        ///     The method table.
+        ///     The objects.
         /// </value>
-        public ulong MethodTable { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets the key to uniquely identify this type
-        /// </summary>
-        /// <value>
-        ///     The dump type key.
-        /// </value>
-        public DumpTypeKey DumpTypeKey { get; protected internal set; }
+        public IEnumerable<DumpObject> Objects { get; protected internal set; }
 
         // todo: add methods
     }

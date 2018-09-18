@@ -10,17 +10,17 @@ namespace Triage.Mortician
     public interface IAnalyzer
     {
         /// <summary>
-        ///     Performs any necessary setup prior to processing
-        /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A Task that when complete will signal the completion of the setup procedure</returns>
-        Task Setup(CancellationToken cancellationToken);
-
-        /// <summary>
         ///     Performs the analysis
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A Task that when complete will signal the completion of the setup procedure</returns>
         Task Process(CancellationToken cancellationToken);
+
+        /// <summary>
+        ///     Performs any necessary setup prior to processing
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A Task that when complete will signal the completion of the setup procedure</returns>
+        Task Setup(CancellationToken cancellationToken);
     }
 }

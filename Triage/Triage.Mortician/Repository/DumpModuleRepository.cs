@@ -10,12 +10,6 @@ namespace Triage.Mortician.Repository
     public class DumpModuleRepository : IDumpModuleRepository
     {
         /// <summary>
-        ///     The extracted modules found in the memory dump
-        ///     Note that a module is identified by the tuble (assemblyId, moduleName)
-        /// </summary>
-        protected internal Dictionary<(ulong, string), DumpModule> DumpModules;
-
-        /// <summary>
         ///     Initializes a new instance of the <see cref="DumpModuleRepository" /> class.
         /// </summary>
         /// <param name="dumpModules">The dump modules.</param>
@@ -24,6 +18,12 @@ namespace Triage.Mortician.Repository
         {
             DumpModules = dumpModules ?? throw new ArgumentNullException(nameof(dumpModules));
         }
+
+        /// <summary>
+        ///     The extracted modules found in the memory dump
+        ///     Note that a module is identified by the tuble (assemblyId, moduleName)
+        /// </summary>
+        protected internal Dictionary<(ulong, string), DumpModule> DumpModules;
 
         /// <summary>
         ///     Gets the specified assembly identifier.
