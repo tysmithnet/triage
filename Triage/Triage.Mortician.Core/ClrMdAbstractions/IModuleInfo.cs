@@ -24,7 +24,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     If the PEFile cannot be constructed correctly, null is returned
         /// </summary>
         /// <returns>IPEFile.</returns>
-        IPEFile GetPEFile();
+        IPeFile GetPEFile();
 
         /// <summary>
         ///     To string.

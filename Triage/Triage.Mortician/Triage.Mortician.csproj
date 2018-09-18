@@ -102,6 +102,7 @@
   <ItemGroup>
     <Compile Include="AnalyzerTaskFactory.cs" />
     <Compile Include="ConfigOptions.cs" />
+    <Compile Include="Converter.cs" />
     <Compile Include="DefaultOptions.cs" />
     <Compile Include="Domain\DebuggerProxy.cs" />
     <Compile Include="Domain\DefaultObjectExtractor.cs" />

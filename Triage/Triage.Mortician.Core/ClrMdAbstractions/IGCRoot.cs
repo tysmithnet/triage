@@ -28,7 +28,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     the number of objects processed will ever reach the total number of objects on the heap.  That's because there
         ///     will be garbage objects on the heap we can't reach.
         /// </summary>
-        event GCRootProgressEvent ProgressUpdate;
+        event GcRootProgressEvent ProgressUpdate;
 
         /// <summary>
         ///     Builds a cache of the GC heap and roots.  This will consume a LOT of memory, so when calling it you must wrap this

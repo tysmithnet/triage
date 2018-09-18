@@ -21,6 +21,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using CommandLine;
 using Common.Logging;
+using Triage.Mortician.Core;
 
 namespace Triage.Mortician
 {

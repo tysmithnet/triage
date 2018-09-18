@@ -19,7 +19,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
     /// <summary>
     ///     Interface IPEFile
     /// </summary>
-    public interface IPEFile
+    public interface IPeFile
     {
         /// <summary>
         ///     Closes any file handles and cleans up resources.
