@@ -33,7 +33,7 @@ namespace Triage.Mortician.Analyzers
         ///     The event hub.
         /// </value>
         [Import]
-        protected internal EventHub EventHub { get; set; }
+        protected internal IEventHub EventHub { get; set; }
 
         /// <summary>
         ///     Gets or sets the dump thread repository.

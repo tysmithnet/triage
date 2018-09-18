@@ -136,7 +136,7 @@ namespace Triage.Mortician
             var moduleRepo = new DumpModuleRepository(moduleStore);
             var typeRepo = new DumpTypeRepository(typeStore);
 
-            CompositionContainer.ComposeExportedValue(eventHub);
+            CompositionContainer.ComposeExportedValue<IEventHub>(eventHub);
             CompositionContainer.ComposeExportedValue(dumpInformationRepository);
             CompositionContainer.ComposeExportedValue(settingsRepository);
             CompositionContainer.ComposeExportedValue(dumpRepo);

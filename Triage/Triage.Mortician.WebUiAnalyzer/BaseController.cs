@@ -11,6 +11,6 @@ namespace Triage.Mortician.WebUiAnalyzer
         internal static DumpModuleRepository DumpModuleRepository { get; set; }
         internal static DumpThreadRepository DumpThreadRepository { get; set; }
         internal static DumpTypeRepository DumpTypeRepository { get; set; }
-        internal static EventHub EventHub { get; set; }
+        internal static IEventHub EventHub { get; set; }
     }
 }

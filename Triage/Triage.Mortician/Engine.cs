@@ -45,7 +45,7 @@ namespace Triage.Mortician
         ///     The event hub.
         /// </value>
         [Import]
-        protected internal EventHub EventHub { get; set; }
+        protected internal IEventHub EventHub { get; set; }
 
         /// <summary>
         ///     Processes the analyzers

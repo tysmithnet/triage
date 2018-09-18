@@ -33,7 +33,7 @@ namespace Triage.Mortician.ExcelAnalyzer
         ///     The event hub.
         /// </value>
         [Import]
-        internal EventHub EventHub { get; set; }
+        internal IEventHub EventHub { get; set; }
 
         /// <summary>
         ///     Gets or sets the settings repository.

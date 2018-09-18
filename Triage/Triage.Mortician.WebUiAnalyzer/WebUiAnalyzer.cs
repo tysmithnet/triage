@@ -35,7 +35,7 @@ namespace Triage.Mortician.WebUiAnalyzer
         internal DumpTypeRepository DumpTypeRepository { get; set; }
 
         [Import]
-        internal EventHub EventHub { get; set; }
+        internal IEventHub EventHub { get; set; }
 
         /// <summary>
         ///     Gets or sets the host.
