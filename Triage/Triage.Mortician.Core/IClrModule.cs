@@ -8,13 +8,13 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Gets the runtime which contains this module.
         /// </summary>
-        ClrRuntime Runtime { get; }
+        IClrRuntime Runtime { get; }
 
         /// <summary>
         /// Returns a list of all AppDomains this module is loaded into.  Please note that unlike
         /// ClrRuntime.AppDomains, this list may include the shared AppDomain.
         /// </summary>
-        IList<ClrAppDomain> AppDomains { get; }
+        IList<IClrAppDomain> AppDomains { get; }
 
         /// <summary>
         /// Returns the name of the assembly that this module is defined in.
@@ -87,12 +87,12 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Returns the pdb information for this module.
         /// </summary>
-        PdbInfo Pdb { get; }
+        IPdbInfo Pdb { get; }
 
         /// <summary>
         /// Enumerate all types defined by this module.
         /// </summary>
-        IEnumerable<ClrType> EnumerateTypes();
+        IEnumerable<IClrType> EnumerateTypes();
 
         /// <summary>
         /// Attempts to obtain a ClrType based on the name of the type.  Note this is a "best effort" due to
@@ -102,7 +102,7 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <param name="name">The name of the type.  (This would be the EXACT value returned by ClrType.Name.</param>
         /// <returns>The requested ClrType, or null if the type doesn't exist or couldn't be constructed.</returns>
-        ClrType GetTypeByName(string name);
+        IClrType GetTypeByName(string name);
 
         /// <summary>
         /// Returns a name for the assembly.

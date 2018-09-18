@@ -12,6 +12,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using Triage.Mortician.Core;
 using Triage.Mortician.Domain;
 
 namespace Triage.Mortician
@@ -19,7 +20,7 @@ namespace Triage.Mortician
     /// <summary>
     ///     Represents a System.String object from the managed heap
     /// </summary>
-    /// <seealso cref="Triage.Mortician.Domain.DumpObject" />
+    /// <seealso cref="DumpObject" />
     /// <inheritdoc />
     /// <seealso cref="T:Triage.Mortician.DumpObject" />
     public class StringDumpObject : DumpObject

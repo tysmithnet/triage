@@ -18,13 +18,14 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
+using Triage.Mortician.Core;
 
 namespace Triage.Mortician.Repository
 {
     /// <summary>
     ///     Represents a collection of high level information about the dump being analyzed
     /// </summary>
-    /// <seealso cref="Triage.Mortician.Repository.IDumpInformationRepository" />
+    /// <seealso cref="IDumpInformationRepository" />
     [Export]
     public class DumpInformationRepository : IDumpInformationRepository
     {

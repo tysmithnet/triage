@@ -23,8 +23,11 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Common.Logging;
 using Microsoft.Diagnostics.Runtime;
+using Triage.Mortician.Core;
 using Triage.Mortician.Domain;
 using Triage.Mortician.Repository;
+using ClrStackFrameType = Microsoft.Diagnostics.Runtime.ClrStackFrameType;
+using GCRootKind = Microsoft.Diagnostics.Runtime.GCRootKind;
 
 namespace Triage.Mortician
 {

@@ -43,6 +43,6 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Returns the list of interfaces this RCW implements.
         /// </summary>
-        IList<ComInterfaceData> Interfaces { get; }
+        IList<IComInterfaceData> Interfaces { get; }
     }
 }

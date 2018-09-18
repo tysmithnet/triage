@@ -15,7 +15,7 @@
         /// <summary>
         /// The type of the object.
         /// </summary>
-        ClrType Type { get; }
+        IClrType Type { get; }
 
         /// <summary>
         /// Gets the given object reference field from this ClrObject.  Throws ArgumentException if the given field does
@@ -23,7 +23,7 @@
         /// </summary>
         /// <param name="fieldName">The name of the field to retrieve.</param>
         /// <returns>A ClrObject of the given field.</returns>
-        ClrObject GetObjectField(string fieldName);
+        IClrObject GetObjectField(string fieldName);
 
         /// <summary>
         /// Gets the value of a primitive field.  This will throw an InvalidCastException if the type parameter
@@ -38,7 +38,7 @@
         /// </summary>
         /// <param name="fieldName"></param>
         /// <returns></returns>
-        ClrValueClass GetValueClassField(string fieldName);
+        IClrValueClass GetValueClassField(string fieldName);
 
         /// <summary>
         /// Gets a string field from the object.  Note that the type must match exactly, as this method

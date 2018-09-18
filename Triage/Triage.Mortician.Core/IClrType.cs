@@ -31,7 +31,7 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// All types know the heap they belong to.  
         /// </summary>
-        ClrHeap Heap { get; }
+        IClrHeap Heap { get; }
 
         /// <summary>
         /// Returns true if this object is a 'RuntimeType' (that is, the concrete System.RuntimeType class
@@ -42,7 +42,7 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Returns the module this type is defined in.
         /// </summary>
-        ClrModule Module { get; }
+        IClrModule Module { get; }
 
         /// <summary>
         /// Returns the ElementType of this Type.  Can return ELEMENT_TYPE_VOID on error.
@@ -70,7 +70,7 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Returns the list of interfaces this type implements.
         /// </summary>
-        IList<ClrInterface> Interfaces { get; }
+        IList<IClrInterface> Interfaces { get; }
 
         /// <summary>
         /// Returns whether objects of this type are finalizable.
@@ -116,27 +116,27 @@ namespace Triage.Mortician.Core
         /// Returns all possible fields in this type.   It does not return dynamically typed fields.  
         /// Returns an empty list if there are no fields.
         /// </summary>
-        IList<ClrInstanceField> Fields { get; }
+        IList<IClrInstanceField> Fields { get; }
 
         /// <summary>
         /// Returns a list of static fields on this type.  Returns an empty list if there are no fields.
         /// </summary>
-        IList<ClrStaticField> StaticFields { get; }
+        IList<IClrStaticField> StaticFields { get; }
 
         /// <summary>
         /// Returns a list of thread static fields on this type.  Returns an empty list if there are no fields.
         /// </summary>
-        IList<ClrThreadStaticField> ThreadStaticFields { get; }
+        IList<IClrThreadStaticField> ThreadStaticFields { get; }
 
         /// <summary>
         /// Gets the list of methods this type implements.
         /// </summary>
-        IList<ClrMethod> Methods { get; }
+        IList<IClrMethod> Methods { get; }
 
         /// <summary>
         /// If this type inherits from another type, this is that type.  Can return null if it does not inherit (or is unknown)
         /// </summary>
-        ClrType BaseType { get; }
+        IClrType BaseType { get; }
 
         /// <summary>
         /// Indicates if the type is in fact a pointer. If so, the pointer operators
@@ -147,7 +147,7 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Gets the type of the element referenced by the pointer.
         /// </summary>
-        ClrType ComponentType { get; }
+        IClrType ComponentType { get; }
 
         /// <summary>
         /// A type is an array if you can use the array operators below, Abstractly arrays are objects 
@@ -227,7 +227,7 @@ namespace Triage.Mortician.Core
         /// <param name="obj">The object in question.</param>
         /// <param name="carefully">Whether to bounds check along the way (useful in cases where
         /// the heap may be in an inconsistent state.)</param>
-        IEnumerable<ClrObject> EnumerateObjectReferences(ulong obj, bool carefully = false);
+        IEnumerable<IClrObject> EnumerateObjectReferences(ulong obj, bool carefully = false);
 
         /// <summary>
         /// Returns the concrete type (in the target process) that this RuntimeType represents.
@@ -239,7 +239,7 @@ namespace Triage.Mortician.Core
         ///          is actually a typehandle (which unfortunately ClrMD cannot convert into a ClrType due to
         ///          limitations in the underlying APIs.  (So always null-check the return value of this
         ///          function.) </returns>
-        ClrType GetRuntimeType(ulong obj);
+        IClrType GetRuntimeType(ulong obj);
 
         /// <summary>
         /// Returns true if the finalization is suppressed for an object.  (The user program called
@@ -255,17 +255,17 @@ namespace Triage.Mortician.Core
         /// GetFieldForOffset repeatedly until the childFieldOffset is 0 will retrieve the whole chain.  
         /// </summary>
         /// <returns>true if successful.  Will fail if it 'this' is an array type</returns>
-        bool GetFieldForOffset(int fieldOffset, bool inner, out ClrInstanceField childField, out int childFieldOffset);
+        bool GetFieldForOffset(int fieldOffset, bool inner, out IClrInstanceField childField, out int childFieldOffset);
 
         /// <summary>
         /// Returns the field given by 'name', case sensitive.  Returns NULL if no such field name exists (or on error).
         /// </summary>
-        ClrInstanceField GetFieldByName(string name);
+        IClrInstanceField GetFieldByName(string name);
 
         /// <summary>
         /// Returns the field given by 'name', case sensitive.  Returns NULL if no such field name exists (or on error).
         /// </summary>
-        ClrStaticField GetStaticFieldByName(string name);
+        IClrStaticField GetStaticFieldByName(string name);
 
         /// <summary>
         /// Returns true if the given object is a Com-Callable-Wrapper.  This is only supported in v4.5 and later.
@@ -278,7 +278,7 @@ namespace Triage.Mortician.Core
         /// Returns the CCWData for the given object.  Note you may only call this function if IsCCW returns true.
         /// </summary>
         /// <returns>The CCWData associated with the object, undefined result of obj is not a CCW.</returns>
-        CcwData GetCCWData(ulong obj);
+        ICcwData GetCCWData(ulong obj);
 
         /// <summary>
         /// Returns true if the given object is a Runtime-Callable-Wrapper.  This is only supported in v4.5 and later.
@@ -291,7 +291,7 @@ namespace Triage.Mortician.Core
         /// Returns the RCWData for the given object.  Note you may only call this function if IsRCW returns true.
         /// </summary>
         /// <returns>The RCWData associated with the object, undefined result of obj is not a RCW.</returns>
-        RcwData GetRCWData(ulong obj);
+        IRcwData GetRCWData(ulong obj);
 
         /// <summary>
         /// If the type is an array, then GetArrayLength returns the number of elements in the array.  Undefined

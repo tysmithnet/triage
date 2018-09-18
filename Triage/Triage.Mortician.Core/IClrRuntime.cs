@@ -7,17 +7,17 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// In .NET native crash dumps, we have a list of serialized exceptions objects. This property expose them as ClrException objects.
         /// </summary>
-        IEnumerable<ClrException> EnumerateSerializedExceptions();
+        IEnumerable<IClrException> EnumerateSerializedExceptions();
 
         /// <summary>
         /// The ClrInfo of the current runtime.
         /// </summary>
-        ClrInfo ClrInfo { get; }
+        IClrInfo ClrInfo { get; }
 
         /// <summary>
         /// Returns the DataTarget associated with this runtime.
         /// </summary>
-        DataTarget DataTarget { get; }
+        IDataTarget DataTarget { get; }
 
         /// <summary>
         /// Whether or not the process is running in server GC mode or not.
@@ -39,38 +39,38 @@ namespace Triage.Mortician.Core
         /// Enumerates the list of appdomains in the process.  Note the System appdomain and Shared
         /// AppDomain are omitted.
         /// </summary>
-        IList<ClrAppDomain> AppDomains { get; }
+        IList<IClrAppDomain> AppDomains { get; }
 
         /// <summary>
         /// Give access to the System AppDomain
         /// </summary>
-        ClrAppDomain SystemDomain { get; }
+        IClrAppDomain SystemDomain { get; }
 
         /// <summary>
         /// Give access to the Shared AppDomain
         /// </summary>
-        ClrAppDomain SharedDomain { get; }
+        IClrAppDomain SharedDomain { get; }
 
         /// <summary>
         /// Enumerates all managed threads in the process.  Only threads which have previously run managed
         /// code will be enumerated.
         /// </summary>
-        IList<ClrThread> Threads { get; }
+        IList<IClrThread> Threads { get; }
 
         /// <summary>
         /// Gets the GC heap of the process.
         /// </summary>
-        ClrHeap Heap { get; }
+        IClrHeap Heap { get; }
 
         /// <summary>
         /// Returns data on the CLR thread pool for this runtime.
         /// </summary>
-        ClrThreadPool ThreadPool { get; }
+        IClrThreadPool ThreadPool { get; }
 
         /// <summary>
         /// A list of all modules loaded into the process.
         /// </summary>
-        IList<ClrModule> Modules { get; }
+        IList<IClrModule> Modules { get; }
 
         /// <summary>
         /// Enumerates the OS thread ID of GC threads in the runtime.  
@@ -88,7 +88,7 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <param name="methodHandle">The method handle (MethodDesc) to look up.</param>
         /// <returns>The ClrMethod for the given method handle, or null if no method was found.</returns>
-        ClrMethod GetMethodByHandle(ulong methodHandle);
+        IClrMethod GetMethodByHandle(ulong methodHandle);
 
         /// <summary>
         /// Returns the CCW data associated with the given address.  This is used when looking at stowed
@@ -96,7 +96,7 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <param name="addr">The address of the CCW obtained from stowed exception data.</param>
         /// <returns>The CcwData describing the given CCW, or null.</returns>
-        CcwData GetCcwDataByAddress(ulong addr);
+        ICcwData GetCcwDataByAddress(ulong addr);
 
         /// <summary>
         /// Read data out of the target process.
@@ -123,17 +123,17 @@ namespace Triage.Mortician.Core
         /// depending on the state of the process when we attempt to walk the handle table.
         /// </summary>
         /// <returns>The list of GC handles in the process, NULL on catastrophic error.</returns>
-        IEnumerable<ClrHandle> EnumerateHandles();
+        IEnumerable<IClrHandle> EnumerateHandles();
 
         /// <summary>
         /// Gets the GC heap of the process.
         /// </summary>
-        ClrHeap GetHeap();
+        IClrHeap GetHeap();
 
         /// <summary>
         /// Returns data on the CLR thread pool for this runtime.
         /// </summary>
-        ClrThreadPool GetThreadPool();
+        IClrThreadPool GetThreadPool();
 
         /// <summary>
         /// Enumerates regions of memory which CLR has allocated with a description of what data
@@ -141,13 +141,13 @@ namespace Triage.Mortician.Core
         /// that CLR allocates.
         /// </summary>
         /// <returns>An enumeration of memory regions in the process.</returns>
-        IEnumerable<ClrMemoryRegion> EnumerateMemoryRegions();
+        IEnumerable<IClrMemoryRegion> EnumerateMemoryRegions();
 
         /// <summary>
         /// Attempts to get a ClrMethod for the given instruction pointer.  This will return NULL if the
         /// given instruction pointer is not within any managed method.
         /// </summary>
-        ClrMethod GetMethodByAddress(ulong ip);
+        IClrMethod GetMethodByAddress(ulong ip);
 
         /// <summary>
         /// Flushes the dac cache.  This function MUST be called any time you expect to call the same function
@@ -158,11 +158,89 @@ namespace Triage.Mortician.Core
         /// again after Flush to get a new instance.)
         /// </summary>
         void Flush();
+    }
+
+
+    /// <summary>
+    /// Types of memory regions in a Clr process.
+    /// </summary>
+    public enum ClrMemoryRegionType
+    {
+        // Loader heaps
+        /// <summary>
+        /// Data on the loader heap.
+        /// </summary>
+        LowFrequencyLoaderHeap,
 
         /// <summary>
-        /// Called whenever the runtime is being flushed.  All references to ClrMD objects need to be released
-        /// and not used for the given runtime after this call.
+        /// Data on the loader heap.
         /// </summary>
-        event ClrRuntime.RuntimeFlushedCallback RuntimeFlushed;
+        HighFrequencyLoaderHeap,
+
+        /// <summary>
+        /// Data on the stub heap.
+        /// </summary>
+        StubHeap,
+
+        // Virtual Call Stub heaps
+        /// <summary>
+        /// Clr implementation detail (this is here to allow you to distinguish from other
+        /// heap types).
+        /// </summary>
+        IndcellHeap,
+        /// <summary>
+        /// Clr implementation detail (this is here to allow you to distinguish from other
+        /// heap types).
+        /// </summary>
+        LookupHeap,
+        /// <summary>
+        /// Clr implementation detail (this is here to allow you to distinguish from other
+        /// heap types).
+        /// </summary>
+        ResolveHeap,
+        /// <summary>
+        /// Clr implementation detail (this is here to allow you to distinguish from other
+        /// heap types).
+        /// </summary>
+        DispatchHeap,
+        /// <summary>
+        /// Clr implementation detail (this is here to allow you to distinguish from other
+        /// heap types).
+        /// </summary>
+        CacheEntryHeap,
+
+        // Other regions
+        /// <summary>
+        /// Heap for JIT code data.
+        /// </summary>
+        JitHostCodeHeap,
+        /// <summary>
+        /// Heap for JIT loader data.
+        /// </summary>
+        JitLoaderCodeHeap,
+        /// <summary>
+        /// Heap for module jump thunks.
+        /// </summary>
+        ModuleThunkHeap,
+        /// <summary>
+        /// Heap for module lookup tables.
+        /// </summary>
+        ModuleLookupTableHeap,
+
+        /// <summary>
+        /// A segment on the GC heap (committed memory).
+        /// </summary>
+        GCSegment,
+
+        /// <summary>
+        /// A segment on the GC heap (reserved, but not committed, memory).
+        /// </summary>
+        ReservedGCSegment,
+
+        /// <summary>
+        /// A portion of Clr's handle table.
+        /// </summary>
+        HandleTableChunk
     }
+
 }

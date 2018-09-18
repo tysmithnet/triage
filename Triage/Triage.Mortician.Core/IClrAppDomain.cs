@@ -7,7 +7,7 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Gets the runtime associated with this ClrAppDomain.
         /// </summary>
-        ClrRuntime Runtime { get; }
+        IClrRuntime Runtime { get; }
 
         /// <summary>
         /// Address of the AppDomain.
@@ -27,7 +27,7 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Returns a list of modules loaded into this AppDomain.
         /// </summary>
-        IList<ClrModule> Modules { get; }
+        IList<IClrModule> Modules { get; }
 
         /// <summary>
         /// Returns the config file used for the AppDomain.  This may be null if there was no config file

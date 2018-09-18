@@ -7,7 +7,7 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Returns the GCHeapType for this exception object.
         /// </summary>
-        ClrType Type { get; }
+        IClrType Type { get; }
 
         /// <summary>
         /// Returns the exception message.
@@ -22,7 +22,7 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Returns the inner exception, if one exists, null otherwise.
         /// </summary>
-        ClrException Inner { get; }
+        IClrException Inner { get; }
 
         /// <summary>
         /// Returns the HRESULT associated with this exception (or S_OK if there isn't one).
@@ -35,6 +35,6 @@ namespace Triage.Mortician.Core
         /// the middle of constructing the stackwalk.)  This returns an empty list if no stack trace is
         /// associated with this exception object.
         /// </summary>
-        IList<ClrStackFrame> StackTrace { get; }
+        IList<IClrStackFrame> StackTrace { get; }
     }
 }

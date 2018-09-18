@@ -2,6 +2,24 @@
 
 namespace Triage.Mortician.Core
 {
+    public enum MethodCompilationType
+    {
+        /// <summary>
+        /// Method is not yet JITed and no NGEN image exists.
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// Method was JITed.
+        /// </summary>
+        Jit,
+
+        /// <summary>
+        /// Method was NGEN'ed (pre-JITed).
+        /// </summary>
+        Ngen
+    }
+
     public interface IClrMethod
     {
         /// <summary>
@@ -25,12 +43,12 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Returns the location in memory of the IL for this method.
         /// </summary>
-        ILInfo IL { get; }
+        IILInfo IL { get; }
 
         /// <summary>
         /// Returns the regions of memory that 
         /// </summary>
-        HotColdRegions HotColdInfo { get; }
+        IHotColdRegions HotColdInfo { get; }
 
         /// <summary>
         /// Returns the way this method was compiled.
@@ -50,7 +68,7 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Returns the enclosing type of this method.
         /// </summary>
-        ClrType Type { get; }
+        IClrType Type { get; }
 
         /// <summary>
         /// Returns if this method is public.

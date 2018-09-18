@@ -23,6 +23,30 @@ namespace Triage.Mortician.Core
     /// </summary>
     public class DumpModule
     {
+        /// <inheritdoc />
+        public DumpModule(ulong assemblyId = 0, string assemblyName = null,
+            DebuggableAttribute.DebuggingModes debuggingMode = DebuggableAttribute.DebuggingModes.None,
+            string fileName = null, ulong? imageBase = default(ulong?), bool isDynamic = false, bool isFile = false,
+            string name = null, string pdbFile = null, Guid? pdbGuid = default(Guid?), ulong size = 0)
+        {
+            AssemblyId = assemblyId;
+            AssemblyName = assemblyName;
+            DebuggingMode = debuggingMode;
+            FileName = fileName;
+            ImageBase = imageBase;
+            IsDynamic = isDynamic;
+            IsFile = isFile;
+            Name = name;
+            PdbFile = pdbFile;
+            PdbGuid = pdbGuid;
+            Size = size;
+        }
+
+        internal DumpModule()
+        {
+
+        }
+
         /// <summary>
         ///     The app domains for which this module is loaded
         /// </summary>

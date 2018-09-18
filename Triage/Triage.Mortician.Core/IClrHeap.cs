@@ -3,13 +3,45 @@ using System.Threading;
 
 namespace Triage.Mortician.Core
 {
+    /// <summary>
+    /// This sets the policy for how ClrHeap walks the stack when enumerating roots.  There is a choice here because the 'Exact' stack walking
+    /// gives the correct answer (without overreporting), but unfortunately is poorly implemented in CLR's debugging layer.
+    /// This means it could take 10-30 minutes (!) to enumerate roots on crash dumps with 4000+ threads.
+    /// </summary>
+    public enum ClrRootStackwalkPolicy
+    {
+        /// <summary>
+        /// The GCRoot class will attempt to select a policy for you based on the number of threads in the process.
+        /// </summary>
+        Automatic,
+
+        /// <summary>
+        /// Use real stack roots.  This is much slower than 'Fast', but provides no false-positives for more accurate
+        /// results.  Note that this can actually take 10s of minutes to enumerate the roots themselves in the worst
+        /// case scenario.
+        /// </summary>
+        Exact,
+
+        /// <summary>
+        /// Walks each pointer alighed address on all stacks and if it points to an object it treats that location
+        /// as a real root.  This can over-report roots when a value is left on the stack, but the GC does not
+        /// consider it a real root.
+        /// </summary>
+        Fast,
+
+        /// <summary>
+        /// Do not walk stack roots.
+        /// </summary>
+        SkipStack,
+    }
+
     public interface IClrHeap
     {
         /// <summary>
         /// Obtains the type of an object at the given address.  Returns null if objRef does not point to
         /// a valid managed object.
         /// </summary>
-        ClrType GetObjectType(ulong objRef);
+        IClrType GetObjectType(ulong objRef);
 
         /// <summary>
         /// Returns whether this version of CLR has component MethodTables.  Component MethodTables were removed from
@@ -21,13 +53,13 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Returns the runtime associated with this heap.
         /// </summary>
-        ClrRuntime Runtime { get; }
+        IClrRuntime Runtime { get; }
 
         /// <summary>
         /// A heap is has a list of contiguous memory regions called segments.  This list is returned in order of
         /// of increasing object addresses.  
         /// </summary>
-        IList<ClrSegment> Segments { get; }
+        IList<IClrSegment> Segments { get; }
 
         /// <summary>
         /// Sets the stackwalk policy for enumerating roots.  See ClrRootStackwalkPolicy for more information.
@@ -49,7 +81,7 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Returns the ClrType representing free space on the GC heap.
         /// </summary>
-        ClrType Free { get; }
+        IClrType Free { get; }
 
         /// <summary>
         /// Returns true if the GC heap is in a consistent state for heap enumeration.  This will return false
@@ -115,13 +147,13 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Returns a  wrapper around a System.Exception object (or one of its subclasses).
         /// </summary>
-        ClrException GetExceptionObject(ulong objRef);
+        IClrException GetExceptionObject(ulong objRef);
 
         /// <summary>
         /// Enumerate the roots of the process.  (That is, all objects which keep other objects alive.)
         /// Equivalent to EnumerateRoots(true).
         /// </summary>
-        IEnumerable<ClrRoot> EnumerateRoots();
+        IEnumerable<IClrRoot> EnumerateRoots();
 
         /// <summary>
         /// Caches all relevant heap information into memory so future heap operations run faster and
@@ -151,7 +183,7 @@ namespace Triage.Mortician.Core
         /// <param name="name">The name of the type.</param>
         /// <returns>The ClrType matching 'name', null if the type was not found, and undefined if more than one
         /// type shares the same name.</returns>
-        ClrType GetTypeByName(string name);
+        IClrType GetTypeByName(string name);
 
         /// <summary>
         /// Retrieves the given type by its MethodTable/ComponentMethodTable pair.
@@ -159,7 +191,7 @@ namespace Triage.Mortician.Core
         /// <param name="methodTable">The ClrType.MethodTable for the requested type.</param>
         /// <param name="componentMethodTable">The ClrType's component MethodTable for the requested type.</param>
         /// <returns>A ClrType object, or null if no such type exists.</returns>
-        ClrType GetTypeByMethodTable(ulong methodTable, ulong componentMethodTable);
+        IClrType GetTypeByMethodTable(ulong methodTable, ulong componentMethodTable);
 
         /// <summary>
         /// Retrieves the given type by its MethodTable/ComponentMethodTable pair.  Note this is only valid if
@@ -167,7 +199,7 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <param name="methodTable">The ClrType.MethodTable for the requested type.</param>
         /// <returns>A ClrType object, or null if no such type exists.</returns>
-        ClrType GetTypeByMethodTable(ulong methodTable);
+        IClrType GetTypeByMethodTable(ulong methodTable);
 
         /// <summary>
         /// Enumerate the roots in the process.
@@ -177,14 +209,14 @@ namespace Triage.Mortician.Core
         /// since all static variables are pinned by handles on the HandleTable (which is also enumerated with 
         /// EnumerateRoots).  You would want to enumerate statics with roots if you care about what exact statics
         /// root what objects, but not if you care about performance.</param>
-        IEnumerable<ClrRoot> EnumerateRoots(bool enumerateStatics);
+        IEnumerable<IClrRoot> EnumerateRoots(bool enumerateStatics);
 
         /// <summary>
         /// Enumerates all types in the runtime.
         /// </summary>
         /// <returns>An enumeration of all types in the target process.  May return null if it's unsupported for
         /// that version of CLR.</returns>
-        IEnumerable<ClrType> EnumerateTypes();
+        IEnumerable<IClrType> EnumerateTypes();
 
         /// <summary>
         /// Enumerates all finalizable objects on the heap.
@@ -196,7 +228,7 @@ namespace Triage.Mortician.Core
         /// or implicitly through "lock (obj)".  This is roughly equivalent to combining SOS's !syncblk command
         /// with !dumpheap -thinlock.
         /// </summary>
-        IEnumerable<BlockingObject> EnumerateBlockingObjects();
+        IEnumerable<IBlockingObject> EnumerateBlockingObjects();
 
         /// <summary>
         /// Enumerates all objects on the heap.  This is equivalent to enumerating all segments then walking
@@ -210,7 +242,7 @@ namespace Triage.Mortician.Core
         /// Enumerates all objects on the heap.
         /// </summary>
         /// <returns>An enumerator for all objects on the heap.</returns>
-        IEnumerable<ClrObject> EnumerateObjects();
+        IEnumerable<IClrObject> EnumerateObjects();
 
         /// <summary>
         /// Get the size by generation 0, 1, 2, 3.  The large object heap is Gen 3 here. 
@@ -233,7 +265,7 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Returns the GC segment for the given object.
         /// </summary>
-        ClrSegment GetSegmentByAddress(ulong objRef);
+        IClrSegment GetSegmentByAddress(ulong objRef);
 
         /// <summary>
         /// Returns true if the given address resides somewhere on the managed heap.

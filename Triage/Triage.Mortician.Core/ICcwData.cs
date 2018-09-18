@@ -27,6 +27,6 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Returns the interfaces that this CCW implements.
         /// </summary>
-        IList<ComInterfaceData> Interfaces { get; }
+        IList<IComInterfaceData> Interfaces { get; }
     }
 }

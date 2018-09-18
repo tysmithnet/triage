@@ -5,7 +5,7 @@
         /// <summary>
         /// The CLR type this represents.
         /// </summary>
-        ClrType Type { get; }
+        IClrType Type { get; }
 
         /// <summary>
         /// The interface pointer of Type.

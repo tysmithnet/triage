@@ -12,7 +12,7 @@
 // <summary></summary>
 // ***********************************************************************
 
-using Microsoft.Diagnostics.Runtime;
+using Triage.Mortician.Core;
 
 namespace Triage.Mortician.Domain
 {
@@ -20,7 +20,7 @@ namespace Triage.Mortician.Domain
     ///     Default object extractor
     ///     Used when all else fails
     /// </summary>
-    /// <seealso cref="Triage.Mortician.IDumpObjectExtractor" />
+    /// <seealso cref="IDumpObjectExtractor" />
     public class DefaultObjectExtractor : IDumpObjectExtractor
     {
         /// <summary>
@@ -29,7 +29,7 @@ namespace Triage.Mortician.Domain
         /// <param name="clrObject">The object to try to get values from</param>
         /// <param name="clrRuntime">The clr runtime being used</param>
         /// <returns><c>true</c> if this instance can extract from the object; otherwise, <c>false</c>.</returns>
-        public bool CanExtract(ClrObject clrObject, ClrRuntime clrRuntime)
+        public bool CanExtract(IClrObject clrObject, IClrRuntime clrRuntime)
         {
             return true;
         }
@@ -40,7 +40,7 @@ namespace Triage.Mortician.Domain
         /// <param name="clrObject">The object.</param>
         /// <param name="clrRuntime">The runtime.</param>
         /// <returns>Extracted dump object</returns>
-        public DumpObject Extract(ClrObject clrObject, ClrRuntime clrRuntime)
+        public DumpObject Extract(IClrObject clrObject, IClrRuntime clrRuntime)
         {
             var address = clrObject.Address;
             var gen = clrRuntime.Heap.GetGeneration(address);

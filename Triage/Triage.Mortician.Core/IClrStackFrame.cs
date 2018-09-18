@@ -5,7 +5,7 @@
         /// <summary>
         /// Returns the thread this stack frame came from.
         /// </summary>
-        ClrThread Thread { get; }
+        IClrThread Thread { get; }
 
         /// <summary>
         /// The instruction pointer of this frame.
@@ -32,7 +32,7 @@
         /// current frame is actually a CLR "Internal Frame" representing a marker on the stack, and that
         /// stack marker does not have a managed method associated with it.
         /// </summary>
-        ClrMethod Method { get; }
+        IClrMethod Method { get; }
 
         /// <summary>
         /// Returns the module name to use for building the stack trace.

@@ -5,11 +5,11 @@
         /// <summary>
         /// The location that roots the object.
         /// </summary>
-        ClrRoot Root { get; set; }
+        IClrRoot Root { get; set; }
 
         /// <summary>
         /// The path from Root to a given target object.
         /// </summary>
-        ClrObject[] Path { get; set; }
+        IClrObject[] Path { get; set; }
     }
 }

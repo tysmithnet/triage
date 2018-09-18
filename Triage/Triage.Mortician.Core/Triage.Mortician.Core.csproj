@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Architecture.cs" />
+    <Compile Include="BlockingReason.cs" />
+    <Compile Include="ClrFlavor.cs" />
     <Compile Include="ClrElementType.cs" />
     <Compile Include="DumpAppDomain.cs" />
     <Compile Include="DumpModule.cs" />
@@ -51,24 +53,38 @@
     <Compile Include="DumpThread.cs" />
     <Compile Include="DumpType.cs" />
     <Compile Include="DumpTypeKey.cs" />
+    <Compile Include="GcMode.cs" />
+    <Compile Include="GcSegmentType.cs" />
     <Compile Include="IAnalysisObserver.cs" />
     <Compile Include="IAnalyzer.cs" />
     <Compile Include="IAnalyzerTaskFactory.cs" />
+    <Compile Include="IBlockingObject.cs" />
     <Compile Include="ICcwData.cs" />
     <Compile Include="IClrAppDomain.cs" />
     <Compile Include="IClrException.cs" />
     <Compile Include="IClrField.cs" />
+    <Compile Include="IClrHandle.cs" />
     <Compile Include="IClrHeap.cs" />
+    <Compile Include="IClrInfo.cs" />
     <Compile Include="IClrInstanceField.cs" />
     <Compile Include="IClrInterface.cs" />
+    <Compile Include="IClrMemoryRegion.cs" />
     <Compile Include="IClrMethod.cs" />
     <Compile Include="IClrModule.cs" />
     <Compile Include="IClrObject.cs" />
+    <Compile Include="IClrRoot.cs" />
     <Compile Include="IClrRuntime.cs" />
+    <Compile Include="IClrSegment.cs" />
     <Compile Include="IClrStackFrame.cs" />
+    <Compile Include="IClrStaticField.cs" />
+    <Compile Include="IClrThread.cs" />
+    <Compile Include="IClrThreadPool.cs" />
+    <Compile Include="IClrThreadStaticField.cs" />
     <Compile Include="IClrType.cs" />
     <Compile Include="IClrValueClass.cs" />
     <Compile Include="IComInterfaceData.cs" />
+    <Compile Include="IDacInfo.cs" />
+    <Compile Include="IDataTarget.cs" />
     <Compile Include="IDumpAppDomainRepository.cs" />
     <Compile Include="IDumpInformationRepository.cs" />
     <Compile Include="IDumpModuleRepository.cs" />
@@ -78,16 +94,24 @@
     <Compile Include="IDumpTypeRepository.cs" />
     <Compile Include="IEngine.cs" />
     <Compile Include="IEventHub.cs" />
+    <Compile Include="IFileVersionInfo.cs" />
     <Compile Include="IGCRoot.cs" />
     <Compile Include="IHotColdRegions.cs" />
     <Compile Include="IILInfo.cs" />
     <Compile Include="ILToNativeMap.cs" />
+    <Compile Include="IManagedWorkItem.cs" />
+    <Compile Include="IModuleInfo.cs" />
+    <Compile Include="INativeWorkItem.cs" />
     <Compile Include="IObjectSet.cs" />
+    <Compile Include="IPdbInfo.cs" />
+    <Compile Include="IPEFile.cs" />
     <Compile Include="IRcwData.cs" />
     <Compile Include="IRootPath.cs" />
     <Compile Include="ISettingsRepository.cs" />
+    <Compile Include="ISymbolLocator.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VersionInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

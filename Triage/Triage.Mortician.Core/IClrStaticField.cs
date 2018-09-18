@@ -1,51 +1,67 @@
 ﻿namespace Triage.Mortician.Core
 {
-    public interface IClrInstanceField
+    /// <summary>
+    /// The type of frame the ClrStackFrame represents.
+    /// </summary>
+    public enum ClrStackFrameType
     {
         /// <summary>
-        /// Returns the value of this field.  Equivalent to GetFieldValue(objRef, false).
+        /// Indicates this stack frame is unknown
         /// </summary>
-        /// <param name="objRef">The object to get the field value for.</param>
-        /// <returns>The value of the field.</returns>
-        object GetValue(ulong objRef);
+        Unknown = -1,
 
         /// <summary>
-        /// Returns the value of this field, optionally specifying if this field is
-        /// on a value class which is on the interior of another object.
+        /// Indicates this stack frame is a standard managed method.
         /// </summary>
-        /// <param name="objRef">The object to get the field value for.</param>
-        /// <param name="interior">Whether the enclosing type of this field is a value class,
-        /// and that value class is embedded in another object.</param>
-        /// <returns>The value of the field.</returns>
-        object GetValue(ulong objRef, bool interior);
+        ManagedMethod = 0,
 
         /// <summary>
-        /// Returns the value of this field, optionally specifying if this field is
-        /// on a value class which is on the interior of another object.
+        /// Indicates this stack frame is a special stack marker that the Clr runtime leaves on the stack.
+        /// Note that the ClrStackFrame may still have a ClrMethod associated with the marker.
         /// </summary>
-        /// <param name="objRef">The object to get the field value for.</param>
-        /// <param name="interior">Whether the enclosing type of this field is a value class,
-        /// and that value class is embedded in another object.</param>
+        Runtime = 1
+    }
+
+    public interface IClrStaticField
+    {
+        /// <summary>
+        /// Returns whether this static field has been initialized in a particular AppDomain
+        /// or not.  If a static variable has not been initialized, then its class constructor
+        /// may have not been run yet.  Calling GetFieldValue on an uninitialized static
+        /// will result in returning either NULL or a value of 0.
+        /// </summary>
+        /// <param name="appDomain">The AppDomain to see if the variable has been initialized.</param>
+        /// <returns>True if the field has been initialized (even if initialized to NULL or a default
+        /// value), false if the runtime has not initialized this variable.</returns>
+        bool IsInitialized(IClrAppDomain appDomain);
+
+        /// <summary>
+        /// Gets the value of the static field.
+        /// </summary>
+        /// <param name="appDomain">The AppDomain in which to get the value.</param>
+        /// <returns>The value of this static field.</returns>
+        object GetValue(IClrAppDomain appDomain);
+
+        /// <summary>
+        /// Gets the value of the static field.
+        /// </summary>
+        /// <param name="appDomain">The AppDomain in which to get the value.</param>
         /// <param name="convertStrings">When true, the value of a string field will be 
         /// returned as a System.String object; otherwise the address of the String object will be returned.</param>
-        /// <returns>The value of the field.</returns>
-        object GetValue(ulong objRef, bool interior, bool convertStrings);
+        /// <returns>The value of this static field.</returns>
+        object GetValue(IClrAppDomain appDomain, bool convertStrings);
 
         /// <summary>
-        /// Returns the address of the value of this field.  Equivalent to GetFieldAddress(objRef, false).
+        /// Returns the address of the static field's value in memory.
         /// </summary>
-        /// <param name="objRef">The object to get the field address for.</param>
-        /// <returns>The value of the field.</returns>
-        ulong GetAddress(ulong objRef);
+        /// <param name="appDomain">The AppDomain in which to get the field's address.</param>
+        /// <returns>The address of the field's value.</returns>
+        ulong GetAddress(IClrAppDomain appDomain);
 
         /// <summary>
-        /// Returns the address of the value of this field.  Equivalent to GetFieldAddress(objRef, false).
+        /// Returns true if the static field has a default value (and if we can obtain it).
         /// </summary>
-        /// <param name="objRef">The object to get the field address for.</param>
-        /// <param name="interior">Whether the enclosing type of this field is a value class,
-        /// and that value class is embedded in another object.</param>
-        /// <returns>The value of the field.</returns>
-        ulong GetAddress(ulong objRef, bool interior);
+        bool HasDefaultValue { get; }
 
         /// <summary>
         /// The name of the field.
@@ -122,6 +138,12 @@
         /// If the field has a well defined offset from the base of the object, return it (otherwise -1). 
         /// </summary>
         int Offset { get; }
+
+        /// <summary>
+        /// The default value of the field.
+        /// </summary>
+        /// <returns>The default value of the field.</returns>
+        object GetDefaultValue();
 
         /// <summary>
         /// Returns a string representation of this object.

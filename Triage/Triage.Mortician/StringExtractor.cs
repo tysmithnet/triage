@@ -15,6 +15,7 @@
 using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
+using Triage.Mortician.Core;
 using Triage.Mortician.Domain;
 
 namespace Triage.Mortician
@@ -22,7 +23,7 @@ namespace Triage.Mortician
     /// <summary>
     ///     DumpObjectExtractor capable of parsing System.String objects
     /// </summary>
-    /// <seealso cref="Triage.Mortician.IDumpObjectExtractor" />
+    /// <seealso cref="IDumpObjectExtractor" />
     /// <inheritdoc />
     /// <seealso cref="T:Triage.Mortician.IDumpObjectExtractor" />
     [Export(typeof(IDumpObjectExtractor))]
@@ -35,7 +36,7 @@ namespace Triage.Mortician
         /// <param name="clrRuntime">The clr runtime being used</param>
         /// <returns><c>true</c> if this instance can extract from the object; otherwise, <c>false</c>.</returns>
         /// <inheritdoc />
-        public bool CanExtract(ClrObject clrObject, ClrRuntime clrRuntime)
+        public bool CanExtract(IClrObject clrObject, IClrRuntime clrRuntime)
         {
             return clrObject.Type?.Name == "System.String";
         }
@@ -47,7 +48,7 @@ namespace Triage.Mortician
         /// <param name="clrRuntime">The runtime.</param>
         /// <returns>Extracted dump object</returns>
         /// <inheritdoc />
-        public DumpObject Extract(ClrObject clrObject, ClrRuntime clrRuntime)
+        public DumpObject Extract(IClrObject clrObject, IClrRuntime clrRuntime)
         {
             var value = (string) clrObject.Type.GetValue(clrObject.Address);
             var preview = new string(value.Take(100).ToArray());

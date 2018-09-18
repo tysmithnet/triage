@@ -10,7 +10,7 @@
         /// <summary>
         /// The interface that this interface inherits from.
         /// </summary>
-        ClrInterface BaseInterface { get; }
+        IClrInterface BaseInterface { get; }
 
         /// <summary>
         /// Display string for this interface.

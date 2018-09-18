@@ -3,6 +3,14 @@ using System.Threading;
 
 namespace Triage.Mortician.Core
 {
+    /// <summary>
+    /// A delegate for reporting GCRoot progress.
+    /// </summary>
+    /// <param name="source">The GCRoot sending the event.</param>
+    /// <param name="current">The total number of objects processed.</param>
+    /// <param name="total">The total number of objects in the heap, if that number is known, otherwise -1.</param>
+    public delegate void GCRootProgressEvent(IGCRoot source, long current, long total);
+
     public interface IGCRoot
     {
         /// <summary>
@@ -16,7 +24,7 @@ namespace Triage.Mortician.Core
         /// <summary>
         /// Returns the heap that's associated with this GCRoot instance.
         /// </summary>
-        ClrHeap Heap { get; }
+        IClrHeap Heap { get; }
 
         /// <summary>
         /// Whether or not to allow GC root to search in parallel or not.  Note that GCRoot does not have to respect this
@@ -42,7 +50,7 @@ namespace Triage.Mortician.Core
         /// <param name="target">The target object to search for GC rooting.</param>
         /// <param name="cancelToken">A cancellation token to stop enumeration.</param>
         /// <returns>An enumeration of all GC roots found for target.</returns>
-        IEnumerable<RootPath> EnumerateGCRoots(ulong target, CancellationToken cancelToken);
+        IEnumerable<IRootPath> EnumerateGCRoots(ulong target, CancellationToken cancelToken);
 
         /// <summary>
         /// Enumerates GCRoots of a given object.  Similar to !gcroot.
@@ -51,7 +59,7 @@ namespace Triage.Mortician.Core
         /// <param name="unique">Whether to only return fully unique paths.</param>
         /// <param name="cancelToken">A cancellation token to stop enumeration.</param>
         /// <returns>An enumeration of all GC roots found for target.</returns>
-        IEnumerable<RootPath> EnumerateGCRoots(ulong target, bool unique, CancellationToken cancelToken);
+        IEnumerable<IRootPath> EnumerateGCRoots(ulong target, bool unique, CancellationToken cancelToken);
 
         /// <summary>
         /// Returns the path from the start object to the end object (or null if no such path exists).
@@ -60,7 +68,7 @@ namespace Triage.Mortician.Core
         /// <param name="target">The object we are searching for.</param>
         /// <param name="cancelToken">A cancellation token to stop searching.</param>
         /// <returns>A path from 'source' to 'target' if one exists, null if one does not.</returns>
-        LinkedList<ClrObject> FindSinglePath(ulong source, ulong target, CancellationToken cancelToken);
+        LinkedList<IClrObject> FindSinglePath(ulong source, ulong target, CancellationToken cancelToken);
 
         /// <summary>
         /// Returns the path from the start object to the end object (or null if no such path exists).
@@ -70,7 +78,7 @@ namespace Triage.Mortician.Core
         /// <param name="unique">Whether to only enumerate fully unique paths.</param>
         /// <param name="cancelToken">A cancellation token to stop enumeration.</param>
         /// <returns>A path from 'source' to 'target' if one exists, null if one does not.</returns>
-        IEnumerable<LinkedList<ClrObject>> EnumerateAllPaths(ulong source, ulong target, bool unique, CancellationToken cancelToken);
+        IEnumerable<LinkedList<IClrObject>> EnumerateAllPaths(ulong source, ulong target, bool unique, CancellationToken cancelToken);
 
         /// <summary>
         /// Builds a cache of the GC heap and roots.  This will consume a LOT of memory, so when calling it you must wrap this in

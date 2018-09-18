@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using Common.Logging;
+using Triage.Mortician.Core;
 using Triage.Mortician.Domain;
 
 namespace Triage.Mortician.Repository
@@ -22,7 +23,7 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     Repository for objects that were extracted from the managed heap
     /// </summary>
-    /// <seealso cref="Triage.Mortician.Repository.IDumpObjectRepository" />
+    /// <seealso cref="IDumpObjectRepository" />
     public class DumpObjectRepository : IDumpObjectRepository
     {
         /// <summary>

@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using Triage.Mortician.Core;
 using Triage.Mortician.Domain;
 
 namespace Triage.Mortician.Repository
@@ -21,7 +22,7 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     An object capable of managing all the discovered modules in the memory dump
     /// </summary>
-    /// <seealso cref="Triage.Mortician.Repository.IDumpModuleRepository" />
+    /// <seealso cref="IDumpModuleRepository" />
     public class DumpModuleRepository : IDumpModuleRepository
     {
         /// <summary>
