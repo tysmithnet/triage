@@ -79,6 +79,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnalyzerTaskFactory_Should.cs" />
     <Compile Include="Builders\AnalyzerBuilder.cs" />
     <Compile Include="Engine_Should.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
