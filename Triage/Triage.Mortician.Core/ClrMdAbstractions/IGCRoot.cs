@@ -3,15 +3,7 @@ using System.Threading;
 
 namespace Triage.Mortician.Core.ClrMdAbstractions
 {
-    /// <summary>
-    /// A delegate for reporting GCRoot progress.
-    /// </summary>
-    /// <param name="source">The GCRoot sending the event.</param>
-    /// <param name="current">The total number of objects processed.</param>
-    /// <param name="total">The total number of objects in the heap, if that number is known, otherwise -1.</param>
-    public delegate void GCRootProgressEvent(IGCRoot source, long current, long total);
-
-    public interface IGCRoot
+    public interface IGcRoot
     {
         /// <summary>
         /// Since GCRoot can be long running, this event will provide periodic updates to how many objects the algorithm
