@@ -24,6 +24,7 @@ using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Common.Logging;
+using Triage.Mortician.Core;
 using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.ExcelAnalyzer
@@ -31,7 +32,7 @@ namespace Triage.Mortician.ExcelAnalyzer
     /// <summary>
     ///     An object capable of responding to relevant report events by uploading them to S3
     /// </summary>
-    /// <seealso cref="Triage.Mortician.IAnalysisObserver" />
+    /// <seealso cref="IAnalysisObserver" />
     /// <inheritdoc />
     /// <seealso cref="T:Triage.Mortician.IAnalysisObserver" />
     [Export(typeof(IAnalysisObserver))]

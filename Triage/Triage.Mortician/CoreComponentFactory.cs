@@ -288,11 +288,13 @@ namespace Triage.Mortician
                 .Where(o => !o.IsNull && !o.Type.IsFree))
             {
                 var isExtracted = false;
+                var convertedClrObject = Converter.Convert(clrObject);
+                var convertedRuntime = Converter.Convert(rt);
                 foreach (var heapObjectExtractor in heapObjectExtractors)
                 {
-                    if (!heapObjectExtractor.CanExtract(clrObject, rt))
+                    if (!heapObjectExtractor.CanExtract(convertedClrObject, convertedRuntime))
                         continue;
-                    var extracted = heapObjectExtractor.Extract(clrObject, rt);
+                    var extracted = heapObjectExtractor.Extract(convertedClrObject, convertedRuntime);
                     var dumpType = typeStore[new DumpTypeKey(clrObject.Type.MethodTable, clrObject.Type.Name)];
                     extracted.DumpType = dumpType;
                     dumpType.ObjectsInternal.Add(extracted.Address, extracted);
@@ -303,7 +305,7 @@ namespace Triage.Mortician
 
                 if (!isExtracted)
                 {
-                    var newDumpObject = defaultExtractor.Extract(clrObject, rt);
+                    var newDumpObject = defaultExtractor.Extract(convertedClrObject, convertedRuntime);
                     objectStore.Add(newDumpObject.Address, newDumpObject);
                 }
 

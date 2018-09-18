@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Common.Logging;
 using SpreadsheetLight;
 using Triage.Mortician.Analyzers;
+using Triage.Mortician.Core;
 
 namespace Triage.Mortician.ExcelAnalyzer
 {

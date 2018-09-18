@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Moq;
+using Triage.Mortician.Core;
 
 namespace Triage.Mortician.Test.Builders
 {

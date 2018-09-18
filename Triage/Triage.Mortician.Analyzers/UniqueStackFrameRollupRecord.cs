@@ -13,6 +13,7 @@
 // ***********************************************************************
 
 using System.Collections.Generic;
+using Triage.Mortician.Core;
 using Triage.Mortician.Domain;
 
 namespace Triage.Mortician.Analyzers

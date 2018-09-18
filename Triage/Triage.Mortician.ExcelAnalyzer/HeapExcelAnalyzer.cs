@@ -19,6 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
 using SpreadsheetLight;
+using Triage.Mortician.Core;
 using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.ExcelAnalyzer

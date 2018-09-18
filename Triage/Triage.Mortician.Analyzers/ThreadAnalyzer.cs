@@ -17,6 +17,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Triage.Mortician.Core;
 using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.Analyzers
@@ -24,7 +25,7 @@ namespace Triage.Mortician.Analyzers
     /// <summary>
     ///     Analyzer that will provide information on the threads in the memory dump
     /// </summary>
-    /// <seealso cref="Triage.Mortician.IAnalyzer" />
+    /// <seealso cref="IAnalyzer" />
     /// <inheritdoc />
     /// <seealso cref="T:Triage.Mortician.IAnalyzer" />
     [Export(typeof(IAnalyzer))]

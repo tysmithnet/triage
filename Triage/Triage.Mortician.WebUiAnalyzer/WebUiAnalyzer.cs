@@ -19,6 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
 using Microsoft.AspNetCore.Hosting;
+using Triage.Mortician.Core;
 using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.WebUiAnalyzer
@@ -26,7 +27,7 @@ namespace Triage.Mortician.WebUiAnalyzer
     /// <summary>
     ///     Class WebUiAnalyzer.
     /// </summary>
-    /// <seealso cref="Triage.Mortician.IAnalyzer" />
+    /// <seealso cref="IAnalyzer" />
     [Export(typeof(IAnalyzer))]
     public class WebUiAnalyzer : IAnalyzer
     {

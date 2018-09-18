@@ -21,13 +21,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
 using SpreadsheetLight;
+using Triage.Mortician.Core;
 
 namespace Triage.Mortician.ExcelAnalyzer
 {
     /// <summary>
     ///     Represents an analyzer that provides an environment for other excel analyzers to work
     /// </summary>
-    /// <seealso cref="Triage.Mortician.IAnalyzer" />
+    /// <seealso cref="IAnalyzer" />
     /// <inheritdoc />
     /// <seealso cref="T:Triage.Mortician.Abstraction.IAnalyzer" />
     [Export(typeof(IAnalyzer))]
