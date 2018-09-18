@@ -138,7 +138,7 @@ namespace Triage.Mortician
             var repositoryFactory = new CoreComponentFactory(compositionContainer, new FileInfo(options.DumpFile));
             repositoryFactory.RegisterRepositories();
 
-            var engine = compositionContainer.GetExportedValue<Engine>();
+            var engine = compositionContainer.GetExportedValue<IEngine>();
             engine.Process().Wait();
 
             return 0;

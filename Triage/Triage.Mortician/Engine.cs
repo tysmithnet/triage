@@ -12,8 +12,8 @@ namespace Triage.Mortician
     ///     Represents the core execution component of the application. It is responsible for executing the analyzers
     ///     in concert with each other.
     /// </summary>
-    [Export]
-    public class Engine
+    [Export(typeof(IEngine))]
+    public class Engine : IEngine
     {
         /// <summary>
         ///     The log
