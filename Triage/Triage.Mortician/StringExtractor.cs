@@ -16,6 +16,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core;
+using Triage.Mortician.Core.ClrMdAbstractions;
 using Triage.Mortician.Domain;
 
 namespace Triage.Mortician

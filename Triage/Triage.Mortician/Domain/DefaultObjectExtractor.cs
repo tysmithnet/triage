@@ -13,6 +13,7 @@
 // ***********************************************************************
 
 using Triage.Mortician.Core;
+using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Domain
 {

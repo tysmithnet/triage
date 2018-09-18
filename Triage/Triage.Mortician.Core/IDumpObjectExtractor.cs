@@ -12,6 +12,8 @@
 // <summary></summary>
 // ***********************************************************************
 
+using Triage.Mortician.Core.ClrMdAbstractions;
+
 namespace Triage.Mortician.Core
 {
     /// <summary>
