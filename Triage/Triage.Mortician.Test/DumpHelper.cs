@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace Triage.Mortician.Test
 {
-    public static class NativeMethods
+    public static class DumpHelper
     {
         public static IntPtr InvalidHandleValue = new IntPtr(-1);
 
@@ -13,9 +14,12 @@ namespace Triage.Mortician.Test
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CloseHandle(IntPtr hObject);
 
-        public static void CreateDump()
+        public static void CreateDump(string fileName = null)
         {
-            var hFile = CreateFile(Assembly.GetEntryAssembly().GetName().Name + ".dmp",
+            string dumpName = fileName ?? Assembly.GetEntryAssembly().GetName().Name + ".dmp";
+            if (File.Exists(dumpName))
+                return;
+            var hFile = CreateFile(dumpName,
                 EFileAccess.GenericWrite, EFileShare.None, IntPtr.Zero,
                 ECreationDisposition.CreateAlways,
                 EFileAttributes.Normal,
@@ -34,8 +38,8 @@ namespace Triage.Mortician.Test
                     "Can't create 32 bit dump of 64 bit process"
                 );
             }
-            var exceptInfo = new NativeMethods.MINIDUMP_EXCEPTION_INFORMATION();
-            var result = NativeMethods.MiniDumpWriteDump(
+            var exceptInfo = new DumpHelper.MINIDUMP_EXCEPTION_INFORMATION();
+            var result = DumpHelper.MiniDumpWriteDump(
                 process.Handle,
                 process.Id,
                 hFile,

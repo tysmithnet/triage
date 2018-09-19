@@ -8,7 +8,7 @@ namespace Triage.TestApplications.Console
         public static void Main(string[] args)
         {
             WriteLine("hello world");
-            NativeMethods.CreateDump();
+            DumpHelper.CreateDump("helloworld.dmp");
         }
     }
 }
