@@ -24,8 +24,6 @@ namespace Triage.Mortician.Adapters
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.ISymbolProvider" />
     internal class SymbolProviderAdapter : ISymbolProvider
     {
-        [Import]
-        internal IConverter Converter { get; set; }
         /// <summary>
         ///     Initializes a new instance of the <see cref="SymbolProviderAdapter" /> class.
         /// </summary>
@@ -50,9 +48,14 @@ namespace Triage.Mortician.Adapters
         /// <param name="age">The age of the pdb to locate.</param>
         /// <returns>A symbol resolver for the given pdb.  Null if none was found.</returns>
         /// <inheritdoc />
-        public ISymbolResolver GetSymbolResolver(string pdbName, Guid guid, int age)
-        {
-            return Converter.Convert(Provider.GetSymbolResolver(pdbName, guid, age));
-        }
+        public ISymbolResolver GetSymbolResolver(string pdbName, Guid guid, int age) =>
+            Converter.Convert(Provider.GetSymbolResolver(pdbName, guid, age));
+
+        /// <summary>
+        ///     Gets or sets the converter.
+        /// </summary>
+        /// <value>The converter.</value>
+        [Import]
+        internal IConverter Converter { get; set; }
     }
 }

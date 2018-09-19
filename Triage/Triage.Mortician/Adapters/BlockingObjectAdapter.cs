@@ -1,6 +1,22 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 09-19-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-19-2018
+// ***********************************************************************
+// <copyright file="BlockingObjectAdapter.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.Collections.Generic;
+using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
+using BlockingReason = Triage.Mortician.Core.ClrMdAbstractions.BlockingReason;
 
 namespace Triage.Mortician.Adapters
 {
@@ -16,7 +32,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="blockingObject">The blocking object.</param>
         /// <exception cref="ArgumentNullException">blockingObject</exception>
         /// <inheritdoc />
-        public BlockingObjectAdapter(Microsoft.Diagnostics.Runtime.BlockingObject blockingObject)
+        public BlockingObjectAdapter(BlockingObject blockingObject)
         {
             BlockingObject = blockingObject ?? throw new ArgumentNullException(nameof(blockingObject));
         }
@@ -24,7 +40,7 @@ namespace Triage.Mortician.Adapters
         /// <summary>
         ///     The blocking object
         /// </summary>
-        internal Microsoft.Diagnostics.Runtime.BlockingObject BlockingObject;
+        internal BlockingObject BlockingObject;
 
         /// <summary>
         ///     Returns true if this lock has only one owner.  Returns false if this lock

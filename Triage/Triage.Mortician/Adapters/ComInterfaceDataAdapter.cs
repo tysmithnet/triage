@@ -1,4 +1,18 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 09-19-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-19-2018
+// ***********************************************************************
+// <copyright file="ComInterfaceDataAdapter.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.ComponentModel.Composition;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -10,8 +24,6 @@ namespace Triage.Mortician.Adapters
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IComInterfaceData" />
     internal class ComInterfaceDataAdapter : IComInterfaceData
     {
-        [Import]
-        internal IConverter Converter { get; set; }
         /// <summary>
         ///     Initializes a new instance of the <see cref="ComInterfaceDataAdapter" /> class.
         /// </summary>
@@ -42,5 +54,12 @@ namespace Triage.Mortician.Adapters
         /// <value>The type.</value>
         /// <inheritdoc />
         public IClrType Type { get; }
+
+        /// <summary>
+        ///     Gets or sets the converter.
+        /// </summary>
+        /// <value>The converter.</value>
+        [Import]
+        internal IConverter Converter { get; set; }
     }
 }

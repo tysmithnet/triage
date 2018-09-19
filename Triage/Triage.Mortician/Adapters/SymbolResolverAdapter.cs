@@ -4,7 +4,7 @@
 // Created          : 09-18-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-19-2018
 // ***********************************************************************
 // <copyright file="SymbolResolverAdapter.cs" company="">
 //     Copyright ©  2017

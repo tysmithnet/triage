@@ -1,8 +1,23 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 09-19-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-19-2018
+// ***********************************************************************
+// <copyright file="ClrModuleAdapter.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
+using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
@@ -13,15 +28,13 @@ namespace Triage.Mortician.Adapters
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrModule" />
     internal class ClrModuleAdapter : IClrModule
     {
-        [Import]
-        internal IConverter Converter { get; set; }
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrModuleAdapter" /> class.
         /// </summary>
         /// <param name="module">The module.</param>
         /// <exception cref="ArgumentNullException">module</exception>
         /// <inheritdoc />
-        public ClrModuleAdapter(Microsoft.Diagnostics.Runtime.ClrModule module)
+        public ClrModuleAdapter(ClrModule module)
         {
             Module = module ?? throw new ArgumentNullException(nameof(module));
             AppDomains = module.AppDomains.Select(Converter.Convert).ToList();
@@ -33,7 +46,7 @@ namespace Triage.Mortician.Adapters
         /// <summary>
         ///     The module
         /// </summary>
-        internal Microsoft.Diagnostics.Runtime.ClrModule Module;
+        internal ClrModule Module;
 
         /// <summary>
         ///     Enumerate all types defined by this module.
@@ -168,5 +181,12 @@ namespace Triage.Mortician.Adapters
         /// <value>The size.</value>
         /// <inheritdoc />
         public ulong Size => Module.Size;
+
+        /// <summary>
+        ///     Gets or sets the converter.
+        /// </summary>
+        /// <value>The converter.</value>
+        [Import]
+        internal IConverter Converter { get; set; }
     }
 }

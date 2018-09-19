@@ -4,7 +4,7 @@
 // Created          : 09-18-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-19-2018
 // ***********************************************************************
 // <copyright file="ClrTypeAdapter.cs" company="">
 //     Copyright ©  2017
@@ -28,8 +28,6 @@ namespace Triage.Mortician.Adapters
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrType" />
     internal class ClrTypeAdapter : IClrType
     {
-        [Import]
-        internal IConverter Converter { get; set; }
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrTypeAdapter" /> class.
         /// </summary>
@@ -68,10 +66,7 @@ namespace Triage.Mortician.Adapters
         ///     type.
         /// </returns>
         /// <inheritdoc />
-        public IEnumerable<ulong> EnumerateMethodTables()
-        {
-            return ClrType.EnumerateMethodTables();
-        }
+        public IEnumerable<ulong> EnumerateMethodTables() => ClrType.EnumerateMethodTables();
 
         /// <summary>
         ///     Enumerates all objects that the given object references.
@@ -82,10 +77,8 @@ namespace Triage.Mortician.Adapters
         ///     the heap may be in an inconsistent state.)
         /// </param>
         /// <returns>IEnumerable&lt;IClrObject&gt;.</returns>
-        public IEnumerable<IClrObject> EnumerateObjectReferences(ulong obj, bool carefully = false)
-        {
-            return ClrType.EnumerateObjectReferences(obj, carefully).Select(Converter.Convert);
-        }
+        public IEnumerable<IClrObject> EnumerateObjectReferences(ulong obj, bool carefully = false) =>
+            ClrType.EnumerateObjectReferences(obj, carefully).Select(Converter.Convert);
 
         /// <summary>
         ///     EnumeationRefsOfObject will call 'action' once for each object reference inside 'objRef'.
@@ -119,10 +112,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="objRef">The object reference.</param>
         /// <param name="index">The index.</param>
         /// <returns>System.UInt64.</returns>
-        public ulong GetArrayElementAddress(ulong objRef, int index)
-        {
-            return ClrType.GetArrayElementAddress(objRef, index);
-        }
+        public ulong GetArrayElementAddress(ulong objRef, int index) => ClrType.GetArrayElementAddress(objRef, index);
 
         /// <summary>
         ///     Returns the array element value at the given index.  Returns 'null' if the array element is of type
@@ -131,10 +121,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="objRef">The object reference.</param>
         /// <param name="index">The index.</param>
         /// <returns>System.Object.</returns>
-        public object GetArrayElementValue(ulong objRef, int index)
-        {
-            return ClrType.GetArrayElementValue(objRef, index);
-        }
+        public object GetArrayElementValue(ulong objRef, int index) => ClrType.GetArrayElementValue(objRef, index);
 
         /// <summary>
         ///     If the type is an array, then GetArrayLength returns the number of elements in the array.  Undefined
@@ -142,29 +129,20 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <param name="objRef">The object reference.</param>
         /// <returns>System.Int32.</returns>
-        public int GetArrayLength(ulong objRef)
-        {
-            return ClrType.GetArrayLength(objRef);
-        }
+        public int GetArrayLength(ulong objRef) => ClrType.GetArrayLength(objRef);
 
         /// <summary>
         ///     Returns the CCWData for the given object.  Note you may only call this function if IsCCW returns true.
         /// </summary>
         /// <param name="obj">The object.</param>
         /// <returns>The CCWData associated with the object, undefined result of obj is not a CCW.</returns>
-        public ICcwData GetCCWData(ulong obj)
-        {
-            return Converter.Convert(ClrType.GetCCWData(obj));
-        }
+        public ICcwData GetCCWData(ulong obj) => Converter.Convert(ClrType.GetCCWData(obj));
 
         /// <summary>
         ///     Returns the element type of this enum.
         /// </summary>
         /// <returns>ClrElementType.</returns>
-        public ClrElementType GetEnumElementType()
-        {
-            return Converter.Convert(ClrType.GetEnumElementType());
-        }
+        public ClrElementType GetEnumElementType() => Converter.Convert(ClrType.GetEnumElementType());
 
         /// <summary>
         ///     Gets the name of the value in the enum, or null if the value doesn't have a name.
@@ -173,10 +151,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <param name="value">The value to lookup.</param>
         /// <returns>The name of one entry in the enum with this value, or null if none exist.</returns>
-        public string GetEnumName(object value)
-        {
-            return ClrType.GetEnumName(value);
-        }
+        public string GetEnumName(object value) => ClrType.GetEnumName(value);
 
         /// <summary>
         ///     Gets the name of the value in the enum, or null if the value doesn't have a name.
@@ -185,29 +160,20 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <param name="value">The value to lookup.</param>
         /// <returns>The name of one entry in the enum with this value, or null if none exist.</returns>
-        public string GetEnumName(int value)
-        {
-            return ClrType.GetEnumName(value);
-        }
+        public string GetEnumName(int value) => ClrType.GetEnumName(value);
 
         /// <summary>
         ///     Returns a list of names in the enum.
         /// </summary>
         /// <returns>IEnumerable&lt;System.String&gt;.</returns>
-        public IEnumerable<string> GetEnumNames()
-        {
-            return ClrType.GetEnumNames();
-        }
+        public IEnumerable<string> GetEnumNames() => ClrType.GetEnumNames();
 
         /// <summary>
         ///     Returns the field given by 'name', case sensitive.  Returns NULL if no such field name exists (or on error).
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns>IClrInstanceField.</returns>
-        public IClrInstanceField GetFieldByName(string name)
-        {
-            return Converter.Convert(ClrType.GetFieldByName(name));
-        }
+        public IClrInstanceField GetFieldByName(string name) => Converter.Convert(ClrType.GetFieldByName(name));
 
         /// <summary>
         ///     When you enumerate a object, the offset within the object is returned.  This offset might represent
@@ -233,10 +199,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <param name="obj">The object.</param>
         /// <returns>The RCWData associated with the object, undefined result of obj is not a RCW.</returns>
-        public IRcwData GetRCWData(ulong obj)
-        {
-            return Converter.Convert(ClrType.GetRCWData(obj));
-        }
+        public IRcwData GetRCWData(ulong obj) => Converter.Convert(ClrType.GetRCWData(obj));
 
         /// <summary>
         ///     Returns the concrete type (in the target process) that this RuntimeType represents.
@@ -250,30 +213,22 @@ namespace Triage.Mortician.Adapters
         ///     limitations in the underlying APIs.  (So always null-check the return value of this
         ///     function.)
         /// </returns>
-        public IClrType GetRuntimeType(ulong obj)
-        {
-            return Converter.Convert(ClrType.GetRuntimeType(obj));
-        }
+        public IClrType GetRuntimeType(ulong obj) => Converter.Convert(ClrType.GetRuntimeType(obj));
 
         /// <summary>
         ///     GetSize returns the size in bytes for the total overhead of the object 'objRef'.
         /// </summary>
         /// <param name="objRef">The object reference.</param>
         /// <returns>System.UInt64.</returns>
-        public ulong GetSize(ulong objRef)
-        {
-            return ClrType.GetSize(objRef);
-        }
+        public ulong GetSize(ulong objRef) => ClrType.GetSize(objRef);
 
         /// <summary>
         ///     Returns the field given by 'name', case sensitive.  Returns NULL if no such field name exists (or on error).
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns>IClrStaticField.</returns>
-        public IClrStaticField GetStaticFieldByName(string name)
-        {
-            return Converter.Convert(ClrType.GetStaticFieldByName(name));
-        }
+        public IClrStaticField GetStaticFieldByName(string name) =>
+            Converter.Convert(ClrType.GetStaticFieldByName(name));
 
         /// <summary>
         ///     Returns the simple value of an instance of this type.  Undefined behavior if HasSimpleValue returns false.
@@ -281,20 +236,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <param name="address">The address of an instance of this type.</param>
         /// <returns>System.Object.</returns>
-        public object GetValue(ulong address)
-        {
-            return ClrType.GetValue(address);
-        }
+        public object GetValue(ulong address) => ClrType.GetValue(address);
 
         /// <summary>
         ///     Returns true if the given object is a Com-Callable-Wrapper.  This is only supported in v4.5 and later.
         /// </summary>
         /// <param name="obj">The object to check.</param>
         /// <returns>True if this is a CCW.</returns>
-        public bool IsCCW(ulong obj)
-        {
-            return ClrType.IsCCW(obj);
-        }
+        public bool IsCCW(ulong obj) => ClrType.IsCCW(obj);
 
         /// <summary>
         ///     Returns true if the finalization is suppressed for an object.  (The user program called
@@ -303,20 +252,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <param name="obj">The object.</param>
         /// <returns><c>true</c> if [is finalize suppressed] [the specified object]; otherwise, <c>false</c>.</returns>
-        public bool IsFinalizeSuppressed(ulong obj)
-        {
-            return ClrType.IsFinalizeSuppressed(obj);
-        }
+        public bool IsFinalizeSuppressed(ulong obj) => ClrType.IsFinalizeSuppressed(obj);
 
         /// <summary>
         ///     Returns true if the given object is a Runtime-Callable-Wrapper.  This is only supported in v4.5 and later.
         /// </summary>
         /// <param name="obj">The object to check.</param>
         /// <returns>True if this is an RCW.</returns>
-        public bool IsRCW(ulong obj)
-        {
-            return ClrType.IsRCW(obj);
-        }
+        public bool IsRCW(ulong obj) => ClrType.IsRCW(obj);
 
         /// <summary>
         ///     Attempts to get the integer value for a given enum entry.  Note you should only call this function if
@@ -325,10 +268,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="name">The name of the value to get (taken from GetEnumNames).</param>
         /// <param name="value">The value to write out.</param>
         /// <returns>True if we successfully filled value, false if 'name' is not a part of the enumeration.</returns>
-        public bool TryGetEnumValue(string name, out int value)
-        {
-            return ClrType.TryGetEnumValue(name, out value);
-        }
+        public bool TryGetEnumValue(string name, out int value) => ClrType.TryGetEnumValue(name, out value);
 
         /// <summary>
         ///     Attempts to get the value for a given enum entry.  The type of "value" can be determined by the
@@ -337,10 +277,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="name">The name of the value to get (taken from GetEnumNames).</param>
         /// <param name="value">The value to write out.</param>
         /// <returns>True if we successfully filled value, false if 'name' is not a part of the enumeration.</returns>
-        public bool TryGetEnumValue(string name, out object value)
-        {
-            return ClrType.TryGetEnumValue(name, out value);
-        }
+        public bool TryGetEnumValue(string name, out object value) => ClrType.TryGetEnumValue(name, out value);
 
         /// <summary>
         ///     Returns the base size of the object.
@@ -593,5 +530,12 @@ namespace Triage.Mortician.Adapters
         /// <value>The thread static fields.</value>
         /// <inheritdoc />
         public IList<IClrThreadStaticField> ThreadStaticFields { get; }
+
+        /// <summary>
+        ///     Gets or sets the converter.
+        /// </summary>
+        /// <value>The converter.</value>
+        [Import]
+        internal IConverter Converter { get; set; }
     }
 }
