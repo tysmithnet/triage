@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
 {
     internal class ClrSegmentAdapter : IClrSegment
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <inheritdoc />
         public ClrSegmentAdapter(Microsoft.Diagnostics.Runtime.ClrSegment segment)
         {

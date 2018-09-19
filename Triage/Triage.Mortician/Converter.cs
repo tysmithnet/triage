@@ -1,13 +1,15 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using Triage.Mortician.Adapters;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrMd = Microsoft.Diagnostics.Runtime;
 
 namespace Triage.Mortician
 {
-    internal class Converter
+    [Export(typeof(IConverter))]
+    internal class Converter : IConverter
     {
-        public static Architecture Convert(ClrMd.Architecture architecture)
+        public  Architecture Convert(ClrMd.Architecture architecture)
         {
             switch (architecture)
             {
@@ -25,7 +27,7 @@ namespace Triage.Mortician
             }
         }
 
-        public static GcSegmentType Convert(ClrMd.GCSegmentType segmentType)
+        public  GcSegmentType Convert(ClrMd.GCSegmentType segmentType)
         {
             switch (segmentType)
             {
@@ -40,77 +42,77 @@ namespace Triage.Mortician
             }
         }
 
-        public static IClrInstanceField Convert(ClrMd.ClrInstanceField instanceField)
+        public  IClrInstanceField Convert(ClrMd.ClrInstanceField instanceField)
         {
             return new ClrInstanceFieldAdapter(instanceField);
         }
 
-        public static IBlockingObject Convert(ClrMd.BlockingObject blockingObject)
+        public  IBlockingObject Convert(ClrMd.BlockingObject blockingObject)
         {
             return new BlockingObjectAdapter(blockingObject);
         }
 
-        public static IClrModule Convert(ClrMd.ClrModule module)
+        public  IClrModule Convert(ClrMd.ClrModule module)
         {
             return new ClrModuleAdapter(module);
         }
 
-        public static IComInterfaceData Convert(ClrMd.ComInterfaceData interfaceData)
+        public  IComInterfaceData Convert(ClrMd.ComInterfaceData interfaceData)
         {
             return new ComInterfaceData(interfaceData);
         }
 
-        public static IClrInterface Convert(ClrMd.ClrInterface iface)
+        public  IClrInterface Convert(ClrMd.ClrInterface iface)
         {
             return new ClrInterfaceAdapter(iface);
         }
 
-        public static IClrInfo Convert(ClrMd.ClrInfo info)
+        public  IClrInfo Convert(ClrMd.ClrInfo info)
         {
             return new ClrInfoAdapter(info);
         }
 
-        public static IClrHeap Convert(ClrMd.ClrHeap heap)
+        public  IClrHeap Convert(ClrMd.ClrHeap heap)
         {
             return new HeapAdapter(heap);
         }
 
-        public static IClrMemoryRegion Convert(ClrMd.ClrMemoryRegion memoryRegion)
+        public  IClrMemoryRegion Convert(ClrMd.ClrMemoryRegion memoryRegion)
         {
             return new MemoryRegionAdapter(memoryRegion);
         }
 
-        public static IClrHandle Convert(ClrMd.ClrHandle handle)
+        public  IClrHandle Convert(ClrMd.ClrHandle handle)
         {
             return new HandleAdapter(handle);
         }
 
-        public static ICcwData Convert(ClrMd.CcwData data)
+        public  ICcwData Convert(ClrMd.CcwData data)
         {
             return new CcwDataAdapter(data);
         }
 
-        public static IClrAppDomain Convert(ClrMd.ClrAppDomain appDomain)
+        public  IClrAppDomain Convert(ClrMd.ClrAppDomain appDomain)
         {
             return new ClrAppDomainAdapter(appDomain);
         }
 
-        public static IILInfo Convert(ClrMd.ILInfo info)
+        public  IILInfo Convert(ClrMd.ILInfo info)
         {
             return new IlInfoAdapter(info);
         }
 
-        public static IClrMethod Convert(ClrMd.ClrMethod method)
+        public  IClrMethod Convert(ClrMd.ClrMethod method)
         {
             return new ClrMethodAdapter(method);
         }
 
-        public static IClrStackFrame Convert(ClrMd.ClrStackFrame frame)
+        public  IClrStackFrame Convert(ClrMd.ClrStackFrame frame)
         {
             return new StackFrameAdapter(frame);
         }
 
-        public static BlockingReason Convert(ClrMd.BlockingReason blockingReason)
+        public  BlockingReason Convert(ClrMd.BlockingReason blockingReason)
         {
             switch (blockingReason)
             {
@@ -140,7 +142,7 @@ namespace Triage.Mortician
             }
         }
 
-        public static ILToNativeMap Convert(ClrMd.ILToNativeMap map)
+        public  ILToNativeMap Convert(ClrMd.ILToNativeMap map)
         {
             return new ILToNativeMap
             {
@@ -150,7 +152,7 @@ namespace Triage.Mortician
             };
         }
 
-        public static ClrElementType Convert(ClrMd.ClrElementType clrElementType)
+        public  ClrElementType Convert(ClrMd.ClrElementType clrElementType)
         {
             switch (clrElementType)
             {
@@ -204,8 +206,8 @@ namespace Triage.Mortician
                     throw new ArgumentOutOfRangeException(nameof(clrElementType), clrElementType, null);
             }
         }
-
-        public static ClrFlavor Convert(ClrMd.ClrFlavor flavor)
+        
+        public  ClrFlavor Convert(ClrMd.ClrFlavor flavor)
         {
             switch (flavor)
             {
@@ -230,7 +232,7 @@ namespace Triage.Mortician
             }
         }
 
-        public static ClrMemoryRegionType Convert(ClrMd.ClrMemoryRegionType memoryRegionType)
+        public  ClrMemoryRegionType Convert(ClrMd.ClrMemoryRegionType memoryRegionType)
         {
             switch (memoryRegionType)
             {
@@ -269,7 +271,7 @@ namespace Triage.Mortician
             }
         }
 
-        public static ClrRootStackwalkPolicy Convert(ClrMd.ClrRootStackwalkPolicy policy)
+        public  ClrRootStackwalkPolicy Convert(ClrMd.ClrRootStackwalkPolicy policy)
         {
             switch (policy)
             {
@@ -286,7 +288,7 @@ namespace Triage.Mortician
             }
         }
 
-        public static ClrStackFrameType Convert(ClrMd.ClrStackFrameType type)
+        public  ClrStackFrameType Convert(ClrMd.ClrStackFrameType type)
         {
             switch (type)
             {
@@ -301,7 +303,7 @@ namespace Triage.Mortician
             }
         }
 
-        public static GcMode Convert(ClrMd.GcMode mode)
+        public  GcMode Convert(ClrMd.GcMode mode)
         {
             switch (mode)
             {
@@ -314,7 +316,7 @@ namespace Triage.Mortician
             }
         }
 
-        public static GcRootKind Convert(ClrMd.GCRootKind kind)
+        public  GcRootKind Convert(ClrMd.GCRootKind kind)
         {
             switch (kind)
             {
@@ -339,7 +341,7 @@ namespace Triage.Mortician
             }
         }
 
-        public static MethodCompilationType Convert(ClrMd.MethodCompilationType compilationType)
+        public  MethodCompilationType Convert(ClrMd.MethodCompilationType compilationType)
         {
             switch (compilationType)
             {
@@ -354,162 +356,162 @@ namespace Triage.Mortician
             }
         }
 
-        public static ISymbolResolver Convert(ClrMd.ISymbolResolver resolver)
+        public  ISymbolResolver Convert(ClrMd.ISymbolResolver resolver)
         {
             return new SymbolResolverAdapter(resolver);
         }
 
-        public static ISymbolProvider Convert(ClrMd.ISymbolProvider provider)
+        public  ISymbolProvider Convert(ClrMd.ISymbolProvider provider)
         {
             return new SymbolProviderAdapter(provider);
         }
 
-        public static ISymbolLocator Convert(ClrMd.Utilities.SymbolLocator locator)
+        public  ISymbolLocator Convert(ClrMd.Utilities.SymbolLocator locator)
         {
             return new SymbolLocatorAdapter(locator);
         }
 
-        public static IRootPath Convert(ClrMd.RootPath path)
+        public  IRootPath Convert(ClrMd.RootPath path)
         {
             return new RootPathAdapter(path);
         }
 
-        public static IRcwData Convert(ClrMd.RcwData data)
+        public  IRcwData Convert(ClrMd.RcwData data)
         {
             return new RcwDataAdapter(data);
         }
 
-        public static IPeFile Convert(ClrMd.Utilities.PEFile peFile)
+        public  IPeFile Convert(ClrMd.Utilities.PEFile peFile)
         {
             return new PeFileAdapter(peFile);
         }
 
-        public static IPdbInfo Convert(ClrMd.PdbInfo info)
+        public  IPdbInfo Convert(ClrMd.PdbInfo info)
         {
             return new PdbInfoAdapter(info);
         }
 
-        public static IObjectSet Convert(ClrMd.ObjectSet objectSet)
+        public  IObjectSet Convert(ClrMd.ObjectSet objectSet)
         {
             return new ObjectSetAdapter(objectSet);
         }
 
-        public static INativeWorkItem Convert(ClrMd.NativeWorkItem nativeWorkItem)
+        public  INativeWorkItem Convert(ClrMd.NativeWorkItem nativeWorkItem)
         {
             return new NativeWorkItemAdapter(nativeWorkItem);
         }
 
-        public static IModuleInfo Convert(ClrMd.ModuleInfo moduleInfo)
+        public  IModuleInfo Convert(ClrMd.ModuleInfo moduleInfo)
         {
             return new ModuleInfoAdapter(moduleInfo);
         }
 
-        public static IManagedWorkItem Convert(ClrMd.ManagedWorkItem workItem)
+        public  IManagedWorkItem Convert(ClrMd.ManagedWorkItem workItem)
         {
             return new ManagedWorkItemAdapter(workItem);
         }
 
-        public static IHotColdRegions Convert(ClrMd.HotColdRegions hotColdRegions)
+        public  IHotColdRegions Convert(ClrMd.HotColdRegions hotColdRegions)
         {
             return new HotColdRegionsAdapter(hotColdRegions);
         }
 
-        public static IFileVersionInfo Convert(ClrMd.Utilities.FileVersionInfo fileVersionInfo)
+        public  IFileVersionInfo Convert(ClrMd.Utilities.FileVersionInfo fileVersionInfo)
         {
             return new FileVersionInfoAdapter(fileVersionInfo);
         }
 
-        public static IDataTarget Convert(ClrMd.DataTarget dataTarget)
+        public  IDataTarget Convert(ClrMd.DataTarget dataTarget)
         {
             return new DataTargetAdapter(dataTarget);
         }
 
-        public static IDataReader Convert(ClrMd.IDataReader dataReader)
+        public  IDataReader Convert(ClrMd.IDataReader dataReader)
         {
             return new DataReaderAdapter(dataReader);
         }
 
-        public static IDacInfo Convert(ClrMd.DacInfo dacInfo)
+        public  IDacInfo Convert(ClrMd.DacInfo dacInfo)
         {
             return new DacInfoAdapter(dacInfo);
         }
 
-        public static IClrValueClass Convert(ClrMd.ClrValueClass valueClass)
+        public  IClrValueClass Convert(ClrMd.ClrValueClass valueClass)
         {
             return new ClrValueClassAdapter(valueClass);
         }
 
-        public static IClrType Convert(ClrMd.ClrType type)
+        public  IClrType Convert(ClrMd.ClrType type)
         {
             return new ClrTypeAdapter(type);
         }
 
-        public static IClrThreadStaticField Convert(ClrMd.ClrThreadStaticField field)
+        public  IClrThreadStaticField Convert(ClrMd.ClrThreadStaticField field)
         {
             return new ClrThreadStaticFieldAdapter(field);
         }
 
-        public static IClrThreadPool Convert(ClrMd.ClrThreadPool pool)
+        public  IClrThreadPool Convert(ClrMd.ClrThreadPool pool)
         {
             return new ClrThreadPoolAdapter(pool);
         }
 
-        public static IClrThread Convert(ClrMd.ClrThread thread)
+        public  IClrThread Convert(ClrMd.ClrThread thread)
         {
             return new ClrThreadAdapter(thread);
         }
 
-        public static IClrStaticField Convert(ClrMd.ClrStaticField staticField)
+        public IClrStaticField Convert(ClrMd.ClrStaticField field)
         {
-            return new ClrStaticFieldAdapter(staticField);
+            return new ClrStaticFieldAdapter(field);
         }
 
-        public static IClrSegment Convert(ClrMd.ClrSegment segment)
+        public  IClrSegment Convert(ClrMd.ClrSegment segment)
         {
             return new ClrSegmentAdapter(segment);
         }
 
-        public static IClrRuntime Convert(ClrMd.ClrRuntime runtime)
+        public  IClrRuntime Convert(ClrMd.ClrRuntime runtime)
         {
             return new ClrRuntimeAdapter(runtime);
         }
 
-        public static IClrRoot Convert(ClrMd.ClrRoot root)
+        public  IClrRoot Convert(ClrMd.ClrRoot root)
         {
             return new ClrRootAdapter(root);
         }
 
-        public static IClrObject Convert(ClrMd.ClrObject o)
+        public  IClrObject Convert(ClrMd.ClrObject o)
         {
             return new ClrObjectAdapter(o);
         }
 
-        public static IClrException Convert(ClrMd.ClrException exception)
+        public  IClrException Convert(ClrMd.ClrException exception)
         {
             return new ClrExceptionAdapter(exception);
         }
 
-        public static VersionInfo Convert(ClrMd.VersionInfo versionInfo)
+        public  VersionInfo Convert(ClrMd.VersionInfo versionInfo)
         {
             return new VersionInfo(versionInfo.Major, versionInfo.Minor, versionInfo.Revision, versionInfo.Patch);
         }
 
-        public static GcRootProgressEvent Convert(ClrMd.GCRootProgressEvent rootProgressEvent)
+        public  GcRootProgressEvent Convert(ClrMd.GCRootProgressEvent rootProgressEvent)
         {
             return (source, current, total) => rootProgressEvent((source as GcRootAdapter)?.Root, current, total);
         }
 
-        public static IGcRoot Convert(ClrMd.GCRoot gcRoot)
+        public  IGcRoot Convert(ClrMd.GCRoot gcRoot)
         {
             return new GcRootAdapter(gcRoot);
         }
 
-        public static VirtualQueryData Convert(ClrMd.VirtualQueryData data)
+        public  VirtualQueryData Convert(ClrMd.VirtualQueryData data)
         {
             return new VirtualQueryData(data.BaseAddress, data.Size);
         }
 
-        public static WorkItemKind Convert(ClrMd.WorkItemKind kind)
+        public  WorkItemKind Convert(ClrMd.WorkItemKind kind)
         {
             switch (kind)
             {
@@ -528,7 +530,7 @@ namespace Triage.Mortician
             }
         }
 
-        public static HandleType Convert(ClrMd.HandleType handleType)
+        public  HandleType Convert(ClrMd.HandleType handleType)
         {
             switch (handleType)
             {

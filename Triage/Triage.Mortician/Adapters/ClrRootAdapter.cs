@@ -1,10 +1,13 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
 {
     internal class ClrRootAdapter : IClrRoot
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <inheritdoc />
         public ClrRootAdapter(Microsoft.Diagnostics.Runtime.ClrRoot root)
         {

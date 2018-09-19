@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,8 @@ namespace Triage.Mortician.Adapters
 {
     internal class ClrAppDomainAdapter : IClrAppDomain
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         internal ClrMd.ClrAppDomain AppDomain;
 
         /// <inheritdoc />

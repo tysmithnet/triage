@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -27,6 +28,8 @@ namespace Triage.Mortician.Adapters
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrType" />
     internal class ClrTypeAdapter : IClrType
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrTypeAdapter" /> class.
         /// </summary>

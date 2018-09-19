@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -8,7 +9,8 @@ namespace Triage.Mortician.Adapters
     internal class CcwDataAdapter : ICcwData
     {
         internal Microsoft.Diagnostics.Runtime.CcwData CcwData;
-
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <inheritdoc />
         public CcwDataAdapter(Microsoft.Diagnostics.Runtime.CcwData data)
         {

@@ -138,6 +138,7 @@
     <Compile Include="Adapters\FileVersionInfoAdapter.cs" />
     <Compile Include="Adapters\GcRootAdapter.cs" />
     <Compile Include="Adapters\HotColdRegionsAdapter.cs" />
+    <Compile Include="IConverter.cs" />
     <Compile Include="IlInfoAdapter.cs" />
     <Compile Include="Adapters\ManagedWorkItemAdapter.cs" />
     <Compile Include="Adapters\ModuleInfoAdapter.cs" />

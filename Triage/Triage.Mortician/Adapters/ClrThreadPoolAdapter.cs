@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -7,6 +8,8 @@ namespace Triage.Mortician.Adapters
 {
     internal class ClrThreadPoolAdapter : IClrThreadPool
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <inheritdoc />
         public ClrThreadPoolAdapter(Microsoft.Diagnostics.Runtime.ClrThreadPool threadPool)
         {

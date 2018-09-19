@@ -13,6 +13,7 @@
 // ***********************************************************************
 
 using System;
+using System.ComponentModel.Composition;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
@@ -23,6 +24,8 @@ namespace Triage.Mortician.Adapters
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.ISymbolProvider" />
     internal class SymbolProviderAdapter : ISymbolProvider
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <summary>
         ///     Initializes a new instance of the <see cref="SymbolProviderAdapter" /> class.
         /// </summary>

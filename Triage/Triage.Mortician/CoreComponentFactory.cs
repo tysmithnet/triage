@@ -36,6 +36,8 @@ namespace Triage.Mortician
     /// </summary>
     internal class CoreComponentFactory
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <summary>
         ///     Initializes a new instance of the <see cref="CoreComponentFactory" /> class.
         /// </summary>

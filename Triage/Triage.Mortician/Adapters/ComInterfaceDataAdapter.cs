@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
@@ -9,6 +10,8 @@ namespace Triage.Mortician.Adapters
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IComInterfaceData" />
     internal class ComInterfaceDataAdapter : IComInterfaceData
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <summary>
         ///     Initializes a new instance of the <see cref="ComInterfaceDataAdapter" /> class.
         /// </summary>

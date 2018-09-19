@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -12,6 +13,8 @@ namespace Triage.Mortician.Adapters
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrModule" />
     internal class ClrModuleAdapter : IClrModule
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrModuleAdapter" /> class.
         /// </summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -8,6 +9,8 @@ namespace Triage.Mortician.Adapters
 {
     internal class GcRootAdapter : IGcRoot
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <inheritdoc />
         public GcRootAdapter(Microsoft.Diagnostics.Runtime.GCRoot root)
         {

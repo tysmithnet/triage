@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -66,7 +67,8 @@ namespace Triage.Mortician.Adapters
             virtualQuery = Converter.Convert(outVar);
             return res;
         }
-
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <inheritdoc />
         public bool IsMinidump => DataReader.IsMinidump;
     }

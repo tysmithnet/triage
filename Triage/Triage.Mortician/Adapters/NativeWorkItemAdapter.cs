@@ -1,10 +1,14 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
 {
     internal class NativeWorkItemAdapter : INativeWorkItem
     {
+        [Import]
+        internal IConverter Converter { get; set; }
+
         /// <inheritdoc />
         public NativeWorkItemAdapter(Microsoft.Diagnostics.Runtime.NativeWorkItem nativeWorkItem)
         {

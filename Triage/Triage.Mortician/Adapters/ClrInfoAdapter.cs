@@ -1,10 +1,13 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
 {
     internal class ClrInfoAdapter : IClrInfo
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         internal Microsoft.Diagnostics.Runtime.ClrInfo Info;
 
         /// <inheritdoc />

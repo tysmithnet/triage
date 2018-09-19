@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -8,6 +9,8 @@ namespace Triage.Mortician.Adapters
 {
     internal class ClrRuntimeAdapter : IClrRuntime
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <inheritdoc />
         public ClrRuntimeAdapter(ClrRuntime runtime)
         {

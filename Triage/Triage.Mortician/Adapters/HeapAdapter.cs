@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -8,6 +9,8 @@ namespace Triage.Mortician.Adapters
 {
     internal class HeapAdapter : IClrHeap
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         internal Microsoft.Diagnostics.Runtime.ClrHeap Heap;
 
         /// <inheritdoc />

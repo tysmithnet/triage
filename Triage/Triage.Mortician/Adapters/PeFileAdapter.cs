@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime.Utilities;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -6,6 +7,8 @@ namespace Triage.Mortician.Adapters
 {
     internal class PeFileAdapter : IPeFile
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <inheritdoc />
         public PeFileAdapter(PEFile peFile)
         {

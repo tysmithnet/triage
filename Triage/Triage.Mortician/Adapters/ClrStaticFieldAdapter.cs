@@ -1,10 +1,13 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
 {
     internal class ClrStaticFieldAdapter : IClrStaticField
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <inheritdoc />
         public ClrStaticFieldAdapter(Microsoft.Diagnostics.Runtime.ClrStaticField staticField)
         {

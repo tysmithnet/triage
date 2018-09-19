@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrMemoryRegionType = Triage.Mortician.Core.ClrMdAbstractions.ClrMemoryRegionType;
@@ -7,6 +8,8 @@ namespace Triage.Mortician.Adapters
 {
     internal class MemoryRegionAdapter : IClrMemoryRegion
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         public MemoryRegionAdapter(ClrMemoryRegion memoryRegion)
         {
             MemoryRegion = memoryRegion ?? throw new ArgumentNullException(nameof(memoryRegion));

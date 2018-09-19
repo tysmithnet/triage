@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System.ComponentModel.Composition;
+using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
 {
     internal class RootPathAdapter : IRootPath
     {
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <inheritdoc />
         public RootPathAdapter(Microsoft.Diagnostics.Runtime.RootPath rootPath)
         {
