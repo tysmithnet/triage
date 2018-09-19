@@ -88,14 +88,10 @@
     <Compile Include="EventHub_Should.cs" />
     <Compile Include="IntegrationTests\AppDomain_Extraction_Should.cs" />
     <Compile Include="IntegrationTests\Helpers.cs" />
-    <Compile Include="IntegrationTests\Scenarios\ExtensionMethods.cs" />
-    <Compile Include="IntegrationTests\Scenarios\NativeMethods.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sanity_Should.cs" />
     <Compile Include="IntegrationTests\Scenarios\Scenario.cs" />
-    <Content Include="IntegrationTests\Scenarios\Source\HelloWorld.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

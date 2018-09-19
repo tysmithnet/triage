@@ -37,10 +37,7 @@ namespace Triage.Mortician.Test.IntegrationTests.Scenarios
 
         public virtual DataTarget GetDataTarget()
         {
-            if (IsCompileNecessary())
-            {
-
-            }
+            return null;
         }
 
         private bool IsCompileNecessary() => true;

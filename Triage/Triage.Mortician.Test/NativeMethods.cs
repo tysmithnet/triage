@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace Triage.Mortician.Test.IntegrationTests.Scenarios
+namespace Triage.Mortician.Test
 {
     public static class NativeMethods
     {
@@ -10,6 +12,45 @@ namespace Triage.Mortician.Test.IntegrationTests.Scenarios
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CloseHandle(IntPtr hObject);
+
+        public static void CreateDump()
+        {
+            var hFile = CreateFile(Assembly.GetEntryAssembly().GetName().Name + ".dmp",
+                EFileAccess.GenericWrite, EFileShare.None, IntPtr.Zero,
+                ECreationDisposition.CreateAlways,
+                EFileAttributes.Normal,
+                IntPtr.Zero);
+            if (hFile == InvalidHandleValue)
+            {
+                var hr = Marshal.GetHRForLastWin32Error();
+                var ex = Marshal.GetExceptionForHR(hr);
+                throw ex;
+            }
+
+            var process = Process.GetCurrentProcess();
+            if (!process.Is32BitProcess() && IntPtr.Size == 4)
+            {
+                throw new InvalidOperationException(
+                    "Can't create 32 bit dump of 64 bit process"
+                );
+            }
+            var exceptInfo = new NativeMethods.MINIDUMP_EXCEPTION_INFORMATION();
+            var result = NativeMethods.MiniDumpWriteDump(
+                process.Handle,
+                process.Id,
+                hFile,
+                _MINIDUMP_TYPE.MiniDumpWithFullMemory,
+                ref exceptInfo,
+                UserStreamParam: IntPtr.Zero,
+                CallbackParam: IntPtr.Zero
+            );
+            if (result == false)
+            {
+                var hr = Marshal.GetHRForLastWin32Error();
+                var ex = Marshal.GetExceptionForHR(hr);
+                throw ex;
+            }
+        }
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         public static extern IntPtr CreateFile(
@@ -24,6 +65,20 @@ namespace Triage.Mortician.Test.IntegrationTests.Scenarios
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr GetCurrentProcess();
+
+        public static bool Is32BitProcess(this Process proc)
+        {
+            var is32BitProcess = IntPtr.Size == 4;
+            // if machine is 32 bit then all procs are 32 bit
+            if (IsWow64Process(GetCurrentProcess(), out var fIsRunningUnderWow64)
+                && fIsRunningUnderWow64)
+                if (IsWow64Process(proc.Handle, out fIsRunningUnderWow64)
+                    && fIsRunningUnderWow64)
+                    is32BitProcess = true;
+                else
+                    is32BitProcess = false;
+            return is32BitProcess;
+        }
 
         [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
         [return: MarshalAs(UnmanagedType.Bool)]
