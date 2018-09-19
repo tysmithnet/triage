@@ -1,4 +1,18 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 12-12-2017
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="CoreComponentFactory.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
@@ -9,8 +23,11 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Common.Logging;
 using Microsoft.Diagnostics.Runtime;
+using Triage.Mortician.Core;
 using Triage.Mortician.Domain;
 using Triage.Mortician.Repository;
+using ClrStackFrameType = Microsoft.Diagnostics.Runtime.ClrStackFrameType;
+using GCRootKind = Microsoft.Diagnostics.Runtime.GCRootKind;
 
 namespace Triage.Mortician
 {
@@ -19,16 +36,18 @@ namespace Triage.Mortician
     /// </summary>
     internal class CoreComponentFactory
     {
-        /// <summary>
-        ///     The log
-        /// </summary>
-        public ILog Log = LogManager.GetLogger(typeof(CoreComponentFactory));
-
+        [Import]
+        internal IConverter Converter { get; set; }
         /// <summary>
         ///     Initializes a new instance of the <see cref="CoreComponentFactory" /> class.
         /// </summary>
         /// <param name="compositionContainer">The composition container.</param>
         /// <param name="dumpFile">Dump file to analzye</param>
+        /// <exception cref="System.ArgumentNullException">
+        ///     compositionContainer
+        ///     or
+        ///     dumpFile
+        /// </exception>
         /// <exception cref="ArgumentNullException">
         ///     compositionContainer
         ///     or
@@ -52,28 +71,9 @@ namespace Triage.Mortician
         }
 
         /// <summary>
-        ///     Gets or sets the location of the dump file
+        ///     The log
         /// </summary>
-        /// <value>
-        ///     The dump file location.
-        /// </value>
-        public FileInfo DumpFile { get; protected set; }
-
-        /// <summary>
-        ///     Gets or sets the composition container.
-        /// </summary>
-        /// <value>
-        ///     The composition container.
-        /// </value>
-        public CompositionContainer CompositionContainer { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the data target.
-        /// </summary>
-        /// <value>
-        ///     The data target.
-        /// </value>
-        public DataTarget DataTarget { get; set; }
+        public ILog Log = LogManager.GetLogger(typeof(CoreComponentFactory));
 
         /// <summary>
         ///     Registers the repositories.
@@ -146,6 +146,11 @@ namespace Triage.Mortician
             CompositionContainer.ComposeExportedValue<IDumpTypeRepository>(typeRepo);
         }
 
+        /// <summary>
+        ///     Establishes the object relationships.
+        /// </summary>
+        /// <param name="objectHierarchy">The object hierarchy.</param>
+        /// <param name="objectStore">The object store.</param>
         private void EstablishObjectRelationships(Dictionary<ulong, List<ulong>> objectHierarchy,
             Dictionary<ulong, DumpObject> objectStore)
         {
@@ -158,6 +163,7 @@ namespace Triage.Mortician
                         $"Object relationship says that there is a parent-child relationship between {relationship.Key} and {relationship.Value}, but cannot find the parent");
                     return;
                 }
+
                 var parent = objectStore[relationship.Key];
 
                 foreach (var childAddress in relationship.Value)
@@ -168,6 +174,7 @@ namespace Triage.Mortician
                             $"Object relationship says that there is a parent-child relationship between {relationship.Key} and {childAddress}, but cannot find the child");
                         return;
                     }
+
                     var child = objectStore[childAddress];
                     parent.AddReference(child);
                     child.AddReferencer(parent);
@@ -175,6 +182,13 @@ namespace Triage.Mortician
             });
         }
 
+        /// <summary>
+        ///     Setups the modules and types.
+        /// </summary>
+        /// <param name="rt">The rt.</param>
+        /// <param name="appDomainStore">The application domain store.</param>
+        /// <param name="typeStore">The type store.</param>
+        /// <param name="moduleStore">The module store.</param>
         private void SetupModulesAndTypes(ClrRuntime rt, Dictionary<ulong, DumpAppDomain> appDomainStore,
             Dictionary<DumpTypeKey, DumpType> typeStore,
             Dictionary<(ulong, string), DumpModule> moduleStore)
@@ -208,6 +222,7 @@ namespace Triage.Mortician
 
                         appDomainStore.Add(newDumpAppDomain.Address, newDumpAppDomain);
                     }
+
                     var dumpAppDomain = appDomainStore[clrAppDomain.Address];
                     dumpModule.AppDomainsInternal.Add(appDomainStore[clrAppDomain.Address]);
                     dumpAppDomain.LoadedModulesInternal.Add(dumpModule);
@@ -249,10 +264,95 @@ namespace Triage.Mortician
                 moduleStore.Add((dumpModule.AssemblyId, dumpModule.Name),
                     dumpModule);
             }
+
             foreach (var pair in baseClassMapping)
                 typeStore[pair.Key].BaseDumpType = typeStore[pair.Value];
         }
 
+        /// <summary>
+        ///     Setups the objects.
+        /// </summary>
+        /// <param name="heapObjectExtractors">The heap object extractors.</param>
+        /// <param name="rt">The rt.</param>
+        /// <param name="objectStore">The object store.</param>
+        /// <param name="objectHierarchy">The object hierarchy.</param>
+        /// <param name="typeStore">The type store.</param>
+        /// <param name="appDomainStore">The application domain store.</param>
+        /// <param name="objectRootStore">The object root store.</param>
+        private void SetupObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime rt,
+            Dictionary<ulong, DumpObject> objectStore, Dictionary<ulong, List<ulong>> objectHierarchy,
+            Dictionary<DumpTypeKey, DumpType> typeStore, Dictionary<ulong, DumpAppDomain> appDomainStore,
+            Dictionary<ulong, DumpObjectRoot> objectRootStore)
+        {
+            Log.Trace("Using registered object extractors to process objects on the heap");
+            var defaultExtractor = new DefaultObjectExtractor();
+            foreach (var clrObject in rt.Heap.EnumerateObjects()
+                .Where(o => !o.IsNull && !o.Type.IsFree))
+            {
+                var isExtracted = false;
+                var convertedClrObject = Converter.Convert(clrObject);
+                var convertedRuntime = Converter.Convert(rt);
+                foreach (var heapObjectExtractor in heapObjectExtractors)
+                {
+                    if (!heapObjectExtractor.CanExtract(convertedClrObject, convertedRuntime))
+                        continue;
+                    var extracted = heapObjectExtractor.Extract(convertedClrObject, convertedRuntime);
+                    var dumpType = typeStore[new DumpTypeKey(clrObject.Type.MethodTable, clrObject.Type.Name)];
+                    extracted.DumpType = dumpType;
+                    dumpType.ObjectsInternal.Add(extracted.Address, extracted);
+                    objectStore.Add(clrObject.Address, extracted);
+                    isExtracted = true;
+                    break;
+                }
+
+                if (!isExtracted)
+                {
+                    var newDumpObject = defaultExtractor.Extract(convertedClrObject, convertedRuntime);
+                    objectStore.Add(newDumpObject.Address, newDumpObject);
+                }
+
+                objectHierarchy.Add(clrObject.Address, new List<ulong>());
+
+                foreach (var clrObjectRef in clrObject.EnumerateObjectReferences(true))
+                    objectHierarchy[clrObject.Address].Add(clrObjectRef.Address);
+            }
+
+            Log.Trace("Extracting object roots from all threads");
+            foreach (var clrRoot in rt.Threads.SelectMany(t => t.EnumerateStackObjects()))
+            {
+                var dumpRootObject = new DumpObjectRoot
+                {
+                    Address = clrRoot.Address,
+                    Name = clrRoot.Name,
+                    IsAsyncIoPinning = clrRoot.Kind == GCRootKind.AsyncPinning,
+                    IsFinalizerQueue = clrRoot.Kind == GCRootKind.Finalizer,
+                    IsInteriorPointer = clrRoot.IsInterior,
+                    IsLocalVar = clrRoot.Kind == GCRootKind.LocalVar,
+                    IsPossibleFalsePositive = clrRoot.IsPossibleFalsePositive,
+                    IsPinned = clrRoot.IsPinned,
+                    IsStaticVariable = clrRoot.Kind == GCRootKind.StaticVar,
+                    IsStrongHandle = clrRoot.Kind == GCRootKind.Strong,
+                    IsThreadStaticVariable = clrRoot.Kind == GCRootKind.ThreadStaticVar,
+                    IsStrongPinningHandle = clrRoot.Kind == GCRootKind.Pinning,
+                    IsWeakHandle = clrRoot.Kind == GCRootKind.Weak
+                };
+                var appDomainAddress = clrRoot.AppDomain?.Address;
+                if (appDomainAddress.HasValue && appDomainStore.ContainsKey(appDomainAddress.Value))
+                    dumpRootObject.AppDomain = appDomainStore[appDomainAddress.Value];
+
+                if (objectStore.ContainsKey(clrRoot.Object))
+                    dumpRootObject.RootedObject = objectStore[clrRoot.Object];
+
+                objectRootStore.Add(dumpRootObject.Address, dumpRootObject);
+            }
+        }
+
+        /// <summary>
+        ///     Setups the threads.
+        /// </summary>
+        /// <param name="rt">The rt.</param>
+        /// <param name="threadStore">The thread store.</param>
+        /// <param name="objectRootsStore">The object roots store.</param>
         private void SetupThreads(ClrRuntime rt,
             Dictionary<uint, DumpThread> threadStore, Dictionary<ulong, DumpObjectRoot> objectRootsStore)
         {
@@ -299,7 +399,7 @@ namespace Triage.Mortician
                     Log.Error(
                         $"Extracted a thread but there is already an entry with os id: {dumpThread.OsId}, you should investigate these manually");
             }
-                                    
+
             var debuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
             Log.Trace("Loading debugger extensions");
             debuggerProxy.Execute(".load sosex");
@@ -317,11 +417,13 @@ namespace Triage.Mortician
                     isUserMode = true;
                     continue;
                 }
+
                 if (Regex.IsMatch(line, "Kernel Mode Time"))
                 {
                     isUserMode = false;
                     isKernelMode = true;
                 }
+
                 var match = Regex.Match(line,
                     @"(?<index>\d+):(?<id>[a-zA-Z0-9]+)\s*(?<days>\d+) days (?<time>\d+:\d{2}:\d{2}.\d{3})");
                 if (!match.Success) continue;
@@ -337,6 +439,7 @@ namespace Triage.Mortician
                     dumpThread = new DumpThread {OsId = id};
                     threadStore.Add(dumpThread.OsId, dumpThread);
                 }
+
                 dumpThread.DebuggerIndex = index;
 
                 if (isUserMode)
@@ -373,69 +476,22 @@ namespace Triage.Mortician
             }
         }
 
-        private void SetupObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime rt,
-            Dictionary<ulong, DumpObject> objectStore, Dictionary<ulong, List<ulong>> objectHierarchy,
-            Dictionary<DumpTypeKey, DumpType> typeStore, Dictionary<ulong, DumpAppDomain> appDomainStore,
-            Dictionary<ulong, DumpObjectRoot> objectRootStore)
-        {
-            Log.Trace("Using registered object extractors to process objects on the heap");
-            var defaultExtractor = new DefaultObjectExtractor();
-            foreach (var clrObject in rt.Heap.EnumerateObjects()
-                .Where(o => !o.IsNull && !o.Type.IsFree))
-            {
-                var isExtracted = false;
-                foreach (var heapObjectExtractor in heapObjectExtractors)
-                {
-                    if (!heapObjectExtractor.CanExtract(clrObject, rt))
-                        continue;
-                    var extracted = heapObjectExtractor.Extract(clrObject, rt);
-                    var dumpType = typeStore[new DumpTypeKey(clrObject.Type.MethodTable, clrObject.Type.Name)];
-                    extracted.DumpType = dumpType;
-                    dumpType.ObjectsInternal.Add(extracted.Address, extracted);
-                    objectStore.Add(clrObject.Address, extracted);
-                    isExtracted = true;
-                    break;
-                }
-                if (!isExtracted)
-                {
-                    var newDumpObject = defaultExtractor.Extract(clrObject, rt);
-                    objectStore.Add(newDumpObject.Address, newDumpObject);
-                }
-                objectHierarchy.Add(clrObject.Address, new List<ulong>());
+        /// <summary>
+        ///     Gets or sets the composition container.
+        /// </summary>
+        /// <value>The composition container.</value>
+        public CompositionContainer CompositionContainer { get; set; }
 
-                foreach (var clrObjectRef in clrObject.EnumerateObjectReferences(true))
-                    objectHierarchy[clrObject.Address].Add(clrObjectRef.Address);
-            }
+        /// <summary>
+        ///     Gets or sets the data target.
+        /// </summary>
+        /// <value>The data target.</value>
+        public DataTarget DataTarget { get; set; }
 
-            Log.Trace("Extracting object roots from all threads");
-            foreach (var clrRoot in rt.Threads.SelectMany(t => t.EnumerateStackObjects()))
-            {
-                var dumpRootObject = new DumpObjectRoot
-                {
-                    Address = clrRoot.Address,
-                    Name = clrRoot.Name,
-                    IsAsyncIoPinning = clrRoot.Kind == GCRootKind.AsyncPinning,
-                    IsFinalizerQueue = clrRoot.Kind == GCRootKind.Finalizer,
-                    IsInteriorPointer = clrRoot.IsInterior,
-                    IsLocalVar = clrRoot.Kind == GCRootKind.LocalVar,
-                    IsPossibleFalsePositive = clrRoot.IsPossibleFalsePositive,
-                    IsPinned = clrRoot.IsPinned,
-                    IsStaticVariable = clrRoot.Kind == GCRootKind.StaticVar,
-                    IsStrongHandle = clrRoot.Kind == GCRootKind.Strong,
-                    IsThreadStaticVariable = clrRoot.Kind == GCRootKind.ThreadStaticVar,
-                    IsStrongPinningHandle = clrRoot.Kind == GCRootKind.Pinning,
-                    IsWeakHandle = clrRoot.Kind == GCRootKind.Weak,
-                    
-                };
-                var appDomainAddress = clrRoot.AppDomain?.Address;
-                if (appDomainAddress.HasValue && appDomainStore.ContainsKey(appDomainAddress.Value))
-                    dumpRootObject.AppDomain = appDomainStore[appDomainAddress.Value];
-
-                if (objectStore.ContainsKey(clrRoot.Object))
-                    dumpRootObject.RootedObject = objectStore[clrRoot.Object];
-
-                objectRootStore.Add(dumpRootObject.Address, dumpRootObject);
-            }
-        }
+        /// <summary>
+        ///     Gets or sets the location of the dump file
+        /// </summary>
+        /// <value>The dump file location.</value>
+        public FileInfo DumpFile { get; protected set; }
     }
 }

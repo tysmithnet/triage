@@ -1,10 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 12-17-2017
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="Engine.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
 using System.ComponentModel.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
+using Triage.Mortician.Core;
 
 namespace Triage.Mortician
 {
@@ -12,6 +24,7 @@ namespace Triage.Mortician
     ///     Represents the core execution component of the application. It is responsible for executing the analyzers
     ///     in concert with each other.
     /// </summary>
+    /// <seealso cref="IEngine" />
     [Export(typeof(IEngine))]
     public class Engine : IEngine
     {
@@ -19,36 +32,6 @@ namespace Triage.Mortician
         ///     The log
         /// </summary>
         protected ILog Log = LogManager.GetLogger(typeof(Engine));
-
-        /// <summary>
-        ///     Gets or sets the analyzers.
-        /// </summary>
-        /// <value>
-        ///     The analyzers.
-        /// </value>
-        [ImportMany]
-        protected internal IAnalyzer[] Analyzers { get; set; }
-        
-        /// <summary>
-        ///     Gets or sets the analysis observers.
-        /// </summary>
-        /// <value>
-        ///     The analysis observers.
-        /// </value>
-        [ImportMany]
-        protected internal IAnalysisObserver[] AnalysisObservers { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the event hub.
-        /// </summary>
-        /// <value>
-        ///     The event hub.
-        /// </value>
-        [Import]
-        protected internal IEventHub EventHub { get; set; }
-
-        [Import]
-        protected internal IAnalyzerTaskFactory AnalyzerTaskFactory { get; set; }
 
         /// <summary>
         ///     Processes the analyzers
@@ -81,7 +64,36 @@ namespace Triage.Mortician
             {
                 // we are expecting this
             }
+
             Log.Trace("Execution complete");
         }
+
+        /// <summary>
+        ///     Gets or sets the analysis observers.
+        /// </summary>
+        /// <value>The analysis observers.</value>
+        [ImportMany]
+        protected internal IAnalysisObserver[] AnalysisObservers { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the analyzers.
+        /// </summary>
+        /// <value>The analyzers.</value>
+        [ImportMany]
+        protected internal IAnalyzer[] Analyzers { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the analyzer task factory.
+        /// </summary>
+        /// <value>The analyzer task factory.</value>
+        [Import]
+        protected internal IAnalyzerTaskFactory AnalyzerTaskFactory { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the event hub.
+        /// </summary>
+        /// <value>The event hub.</value>
+        [Import]
+        protected internal IEventHub EventHub { get; set; }
     }
 }

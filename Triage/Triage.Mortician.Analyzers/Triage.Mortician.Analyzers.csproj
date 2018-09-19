@@ -166,6 +166,10 @@
     <Analyzer Include="..\packages\AWSSDK.S3.3.3.16\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Triage.Mortician.Core\Triage.Mortician.Core.csproj">
+      <Project>{2f433d34-bac1-4a64-aec9-46eb112946ea}</Project>
+      <Name>Triage.Mortician.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Triage.Mortician\Triage.Mortician.csproj">
       <Project>{8aa350bc-cf5f-4302-92ab-1997357049ba}</Project>
       <Name>Triage.Mortician</Name>

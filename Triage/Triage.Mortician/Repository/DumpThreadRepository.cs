@@ -1,6 +1,21 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 12-19-2017
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="DumpThreadRepository.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.Collections.Generic;
 using Common.Logging;
+using Triage.Mortician.Core;
 using Triage.Mortician.Domain;
 
 namespace Triage.Mortician.Repository
@@ -8,8 +23,20 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     Represents a repository that stores threads that were extracted from the memory dump
     /// </summary>
+    /// <seealso cref="IDumpThreadRepository" />
     public class DumpThreadRepository : IDumpThreadRepository
     {
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DumpThreadRepository" /> class.
+        /// </summary>
+        /// <param name="dumpThreads">The dump threads.</param>
+        /// <exception cref="System.ArgumentNullException">dumpThreads</exception>
+        /// <exception cref="ArgumentNullException">dumpThreads</exception>
+        protected internal DumpThreadRepository(Dictionary<uint, DumpThread> dumpThreads)
+        {
+            DumpThreads = dumpThreads ?? throw new ArgumentNullException(nameof(dumpThreads));
+        }
+
         /// <summary>
         ///     Gets or sets the dump threads.
         /// </summary>
@@ -24,20 +51,11 @@ namespace Triage.Mortician.Repository
         protected internal ILog Log = LogManager.GetLogger(typeof(DumpThreadRepository));
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="DumpThreadRepository" /> class.
-        /// </summary>
-        /// <param name="dumpThreads">The dump threads.</param>
-        /// <exception cref="ArgumentNullException">dumpThreads</exception>
-        protected internal DumpThreadRepository(Dictionary<uint, DumpThread> dumpThreads)
-        {
-            DumpThreads = dumpThreads ?? throw new ArgumentNullException(nameof(dumpThreads));
-        }
-
-        /// <summary>
         ///     Gets the thread with the provided id
         /// </summary>
         /// <param name="osId">The os identifier.</param>
         /// <returns>Get the thread with the operation system id provided</returns>
+        /// <exception cref="System.IndexOutOfRangeException"></exception>
         /// <exception cref="IndexOutOfRangeException">If the there isn't a thread registered with the specified id</exception>
         public DumpThread Get(uint osId)
         {

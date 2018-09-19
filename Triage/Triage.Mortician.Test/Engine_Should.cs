@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
+using Triage.Mortician.Core;
 using Xunit;
 
 namespace Triage.Mortician.Test

@@ -100,40 +100,61 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\BlockingObjectAdapter.cs" />
+    <Compile Include="Adapters\CcwDataAdapter.cs" />
+    <Compile Include="Adapters\ClrAppDomainAdapter.cs" />
+    <Compile Include="Adapters\ClrInfoAdapter.cs" />
+    <Compile Include="Adapters\ClrInstanceFieldAdapter.cs" />
+    <Compile Include="Adapters\ClrInterfaceAdapter.cs" />
+    <Compile Include="Adapters\ClrMethodAdapter.cs" />
+    <Compile Include="Adapters\ClrModuleAdapter.cs" />
+    <Compile Include="Adapters\ComInterfaceDataAdapter.cs" />
+    <Compile Include="Adapters\HandleAdapter.cs" />
+    <Compile Include="Adapters\HeapAdapter.cs" />
+    <Compile Include="Adapters\StackFrameAdapter.cs" />
     <Compile Include="AnalyzerTaskFactory.cs" />
+    <Compile Include="Adapters\ClrExceptionAdapter.cs" />
+    <Compile Include="Adapters\ClrObjectAdapter.cs" />
+    <Compile Include="Adapters\ClrRootAdapter.cs" />
+    <Compile Include="Adapters\ClrRuntimeAdapter.cs" />
+    <Compile Include="Adapters\ClrSegmentAdapter.cs" />
+    <Compile Include="ClrStackFrame.cs" />
+    <Compile Include="Adapters\ClrStaticFieldAdapter.cs" />
+    <Compile Include="Adapters\ClrThreadAdapter.cs" />
+    <Compile Include="Adapters\ClrThreadPoolAdapter.cs" />
+    <Compile Include="Adapters\ClrThreadStaticFieldAdapter.cs" />
+    <Compile Include="Adapters\ClrTypeAdapter.cs" />
+    <Compile Include="Adapters\ClrValueClassAdapter.cs" />
+    <Compile Include="ComInterfaceData.cs" />
     <Compile Include="ConfigOptions.cs" />
+    <Compile Include="Converter.cs" />
+    <Compile Include="Adapters\DacInfoAdapter.cs" />
+    <Compile Include="Adapters\DataReaderAdapter.cs" />
+    <Compile Include="Adapters\DataTargetAdapter.cs" />
     <Compile Include="DefaultOptions.cs" />
     <Compile Include="Domain\DebuggerProxy.cs" />
     <Compile Include="Domain\DefaultObjectExtractor.cs" />
-    <Compile Include="Domain\DumpAppDomain.cs" />
     <Compile Include="EventHub.cs" />
-    <Compile Include="IAnalysisObserver.cs" />
-    <Compile Include="IAnalyzerTaskFactory.cs" />
-    <Compile Include="IEngine.cs" />
-    <Compile Include="IEventHub.cs" />
-    <Compile Include="Message.cs" />
+    <Compile Include="Adapters\FileVersionInfoAdapter.cs" />
+    <Compile Include="Adapters\GcRootAdapter.cs" />
+    <Compile Include="Adapters\HotColdRegionsAdapter.cs" />
+    <Compile Include="IConverter.cs" />
+    <Compile Include="IlInfoAdapter.cs" />
+    <Compile Include="Adapters\ManagedWorkItemAdapter.cs" />
+    <Compile Include="Adapters\ModuleInfoAdapter.cs" />
+    <Compile Include="Adapters\NativeWorkItemAdapter.cs" />
+    <Compile Include="Adapters\ObjectSetAdapter.cs" />
+    <Compile Include="Adapters\PdbInfoAdapter.cs" />
+    <Compile Include="Adapters\PeFileAdapter.cs" />
+    <Compile Include="Adapters\RcwDataAdapter.cs" />
+    <Compile Include="Adapters\MemoryRegionAdapter.cs" />
     <Compile Include="Repository\DumpAppDomainRepository.cs" />
-    <Compile Include="Domain\DumpModule.cs" />
     <Compile Include="Repository\DumpModuleRepository.cs" />
-    <Compile Include="Domain\DumpObjectRoot.cs" />
-    <Compile Include="Domain\DumpStackFrame.cs" />
-    <Compile Include="Domain\DumpThread.cs" />
     <Compile Include="Repository\DumpThreadRepository.cs" />
-    <Compile Include="Domain\DumpType.cs" />
-    <Compile Include="Domain\DumpTypeKey.cs" />
     <Compile Include="Repository\DumpTypeRepository.cs" />
     <Compile Include="Engine.cs" />
-    <Compile Include="Domain\DumpObject.cs" />
     <Compile Include="Repository\DumpObjectRepository.cs" />
-    <Compile Include="IAnalyzer.cs" />
-    <Compile Include="IDumpObjectExtractor.cs" />
-    <Compile Include="Repository\IDumpAppDomainRepository.cs" />
-    <Compile Include="Repository\IDumpInformationRepository.cs" />
-    <Compile Include="Repository\IDumpModuleRepository.cs" />
-    <Compile Include="Repository\IDumpObjectRepository.cs" />
-    <Compile Include="Repository\IDumpThreadRepository.cs" />
-    <Compile Include="Repository\IDumpTypeRepository.cs" />
-    <Compile Include="Repository\ISettingsRepository.cs" />
+    <Compile Include="Adapters\RootPathAdapter.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Repository\SettingsRepository.cs" />
     <Compile Include="Repository\DumpInformationRepository.cs" />
@@ -142,6 +163,9 @@
     <Compile Include="CoreComponentFactory.cs" />
     <Compile Include="StringExtractor.cs" />
     <Compile Include="StringDumpObject.cs" />
+    <Compile Include="Adapters\SymbolLocatorAdapter.cs" />
+    <Compile Include="Adapters\SymbolProviderAdapter.cs" />
+    <Compile Include="Adapters\SymbolResolverAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -170,9 +194,14 @@
       <Project>{a82126ca-23aa-41f1-8586-a5938d44d0a7}</Project>
       <Name>Microsoft.Diagnostics.Runtime</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Triage.Mortician.Core\Triage.Mortician.Core.csproj">
+      <Project>{2f433d34-bac1-4a64-aec9-46eb112946ea}</Project>
+      <Name>Triage.Mortician.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\AWSSDK.S3.3.3.16\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

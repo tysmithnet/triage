@@ -1,16 +1,32 @@
-﻿using System.Collections.Generic;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.Analyzers
+// Author           : @tysmithnet
+// Created          : 12-17-2017
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="ThreadAnalyzer.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Triage.Mortician.Core;
 using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.Analyzers
 {
-    /// <inheritdoc />
     /// <summary>
     ///     Analyzer that will provide information on the threads in the memory dump
     /// </summary>
+    /// <seealso cref="IAnalyzer" />
+    /// <inheritdoc />
     /// <seealso cref="T:Triage.Mortician.IAnalyzer" />
     [Export(typeof(IAnalyzer))]
     public class ThreadAnalyzer : IAnalyzer
@@ -27,31 +43,34 @@ namespace Triage.Mortician.Analyzers
             new List<UniqueStackFrameRollupRecord>();
 
         /// <summary>
-        ///     Gets or sets the event hub.
+        ///     Performs the analysis
         /// </summary>
-        /// <value>
-        ///     The event hub.
-        /// </value>
-        [Import]
-        protected internal IEventHub EventHub { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the dump thread repository.
-        /// </summary>
-        /// <value>
-        ///     The dump thread repository.
-        /// </value>
-        [Import]
-        protected internal IDumpThreadRepository DumpThreadRepository { get; set; }
-
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A Task that when complete will signal the completion of the setup procedure</returns>
         /// <inheritdoc />
+        public Task Process(CancellationToken cancellationToken)
+        {
+            if (StackFrameResultsInternal.Any())
+                EventHub.Broadcast(new StackFrameBreakdownMessage
+                {
+                    Records = StackFrameResultsInternal
+                });
+
+            if (UniqueStackFrameResultsInternal.Any())
+                EventHub.Broadcast(new UniqueStacksMessage
+                {
+                    UniqueStackFrameRollupRecords = UniqueStackFrameResultsInternal
+                });
+
+            return Task.CompletedTask;
+        }
+
         /// <summary>
         ///     Performs any necessary setup prior to processing
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>
-        ///     A Task that when complete will signal the completion of the setup procedure
-        /// </returns>
+        /// <returns>A Task that when complete will signal the completion of the setup procedure</returns>
+        /// <inheritdoc />
         public Task Setup(CancellationToken cancellationToken)
         {
             var task1 = Task.Run(() =>
@@ -88,29 +107,18 @@ namespace Triage.Mortician.Analyzers
             return Task.WhenAll(task1, task2);
         }
 
-        /// <inheritdoc />
         /// <summary>
-        ///     Performs the analysis
+        ///     Gets or sets the dump thread repository.
         /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>
-        ///     A Task that when complete will signal the completion of the setup procedure
-        /// </returns>
-        public Task Process(CancellationToken cancellationToken)
-        {
-            if (StackFrameResultsInternal.Any())
-                EventHub.Broadcast(new StackFrameBreakdownMessage
-                {
-                    Records = StackFrameResultsInternal
-                });
+        /// <value>The dump thread repository.</value>
+        [Import]
+        protected internal IDumpThreadRepository DumpThreadRepository { get; set; }
 
-            if (UniqueStackFrameResultsInternal.Any())
-                EventHub.Broadcast(new UniqueStacksMessage
-                {
-                    UniqueStackFrameRollupRecords = UniqueStackFrameResultsInternal
-                });
-
-            return Task.CompletedTask;
-        }
+        /// <summary>
+        ///     Gets or sets the event hub.
+        /// </summary>
+        /// <value>The event hub.</value>
+        [Import]
+        protected internal IEventHub EventHub { get; set; }
     }
 }
