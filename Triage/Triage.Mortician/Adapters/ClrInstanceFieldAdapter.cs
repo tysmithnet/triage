@@ -1,5 +1,22 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 09-19-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-19-2018
+// ***********************************************************************
+// <copyright file="ClrInstanceFieldAdapter.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
+using System.ComponentModel.Composition;
+using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
+using ClrElementType = Triage.Mortician.Core.ClrMdAbstractions.ClrElementType;
 
 namespace Triage.Mortician.Adapters
 {
@@ -15,15 +32,17 @@ namespace Triage.Mortician.Adapters
         /// <param name="instanceField">The instance field.</param>
         /// <exception cref="ArgumentNullException">instanceField</exception>
         /// <inheritdoc />
-        public ClrInstanceFieldAdapter(Microsoft.Diagnostics.Runtime.ClrInstanceField instanceField)
+        public ClrInstanceFieldAdapter(ClrInstanceField instanceField)
         {
             InstanceField = instanceField ?? throw new ArgumentNullException(nameof(instanceField));
+            ElementType = Converter.Convert(instanceField.ElementType);
+            Type = Converter.Convert(instanceField.Type);
         }
 
         /// <summary>
         ///     The instance field
         /// </summary>
-        internal Microsoft.Diagnostics.Runtime.ClrInstanceField InstanceField;
+        internal ClrInstanceField InstanceField;
 
         /// <summary>
         ///     Returns the address of the value of this field.  Equivalent to GetFieldAddress(objRef, false).
@@ -32,10 +51,7 @@ namespace Triage.Mortician.Adapters
         /// <returns>The value of the field.</returns>
         /// <exception cref="NotImplementedException"></exception>
         /// <inheritdoc />
-        public ulong GetAddress(ulong objRef)
-        {
-            throw new NotImplementedException();
-        }
+        public ulong GetAddress(ulong objRef) => InstanceField.GetAddress(objRef);
 
         /// <summary>
         ///     Returns the address of the value of this field.  Equivalent to GetFieldAddress(objRef, false).
@@ -48,10 +64,7 @@ namespace Triage.Mortician.Adapters
         /// <returns>The value of the field.</returns>
         /// <exception cref="NotImplementedException"></exception>
         /// <inheritdoc />
-        public ulong GetAddress(ulong objRef, bool interior)
-        {
-            throw new NotImplementedException();
-        }
+        public ulong GetAddress(ulong objRef, bool interior) => InstanceField.GetAddress(objRef, interior);
 
         /// <summary>
         ///     Returns the value of this field.  Equivalent to GetFieldValue(objRef, false).
@@ -60,10 +73,7 @@ namespace Triage.Mortician.Adapters
         /// <returns>The value of the field.</returns>
         /// <exception cref="NotImplementedException"></exception>
         /// <inheritdoc />
-        public object GetValue(ulong objRef)
-        {
-            throw new NotImplementedException();
-        }
+        public object GetValue(ulong objRef) => InstanceField.GetValue(objRef);
 
         /// <summary>
         ///     Returns the value of this field, optionally specifying if this field is
@@ -77,10 +87,7 @@ namespace Triage.Mortician.Adapters
         /// <returns>The value of the field.</returns>
         /// <exception cref="NotImplementedException"></exception>
         /// <inheritdoc />
-        public object GetValue(ulong objRef, bool interior)
-        {
-            throw new NotImplementedException();
-        }
+        public object GetValue(ulong objRef, bool interior) => InstanceField.GetValue(objRef, interior);
 
         /// <summary>
         ///     Returns the value of this field, optionally specifying if this field is
@@ -98,10 +105,7 @@ namespace Triage.Mortician.Adapters
         /// <returns>The value of the field.</returns>
         /// <exception cref="NotImplementedException"></exception>
         /// <inheritdoc />
-        public object GetValue(ulong objRef, bool interior, bool convertStrings)
-        {
-            throw new NotImplementedException();
-        }
+        public object GetValue(ulong objRef, bool interior, bool convertStrings) => InstanceField.GetValue(objRef);
 
         /// <summary>
         ///     Returns the element type of this field.  Note that even when Type is null, this should still tell you
@@ -117,84 +121,84 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance has simple value; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool HasSimpleValue { get; }
+        public bool HasSimpleValue => InstanceField.HasSimpleValue;
 
         /// <summary>
         ///     Returns true if this field is internal.
         /// </summary>
         /// <value><c>true</c> if this instance is internal; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsInternal { get; }
+        public bool IsInternal => InstanceField.IsInternal;
 
         /// <summary>
         ///     Returns true if this field is an object reference, false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is object reference; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsObjectReference { get; }
+        public bool IsObjectReference => InstanceField.IsObjectReference;
 
         /// <summary>
         ///     Returns true if this field is a primitive (int, float, etc), false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is primitive; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPrimitive { get; }
+        public bool IsPrimitive => InstanceField.IsPrimitive;
 
         /// <summary>
         ///     Returns true if this field is private.
         /// </summary>
         /// <value><c>true</c> if this instance is private; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPrivate { get; }
+        public bool IsPrivate => InstanceField.IsPrivate;
 
         /// <summary>
         ///     Returns true if this field is protected.
         /// </summary>
         /// <value><c>true</c> if this instance is protected; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsProtected { get; }
+        public bool IsProtected => InstanceField.IsProtected;
 
         /// <summary>
         ///     Returns true if this field is public.
         /// </summary>
         /// <value><c>true</c> if this instance is public; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPublic { get; }
+        public bool IsPublic => InstanceField.IsPublic;
 
         /// <summary>
         ///     Returns true if this field is a ValueClass (struct), false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is value class; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsValueClass { get; }
+        public bool IsValueClass => InstanceField.IsValueClass;
 
         /// <summary>
         ///     The name of the field.
         /// </summary>
         /// <value>The name.</value>
         /// <inheritdoc />
-        public string Name { get; }
+        public string Name => InstanceField.Name;
 
         /// <summary>
         ///     If the field has a well defined offset from the base of the object, return it (otherwise -1).
         /// </summary>
         /// <value>The offset.</value>
         /// <inheritdoc />
-        public int Offset { get; }
+        public int Offset => InstanceField.Offset;
 
         /// <summary>
         ///     Gets the size of this field.
         /// </summary>
         /// <value>The size.</value>
         /// <inheritdoc />
-        public int Size { get; }
+        public int Size => InstanceField.Size;
 
         /// <summary>
         ///     Returns the type token of this field.
         /// </summary>
         /// <value>The token.</value>
         /// <inheritdoc />
-        public uint Token { get; }
+        public uint Token => InstanceField.Token;
 
         /// <summary>
         ///     The type of the field.  Note this property may return null on error.  There is a bug in several versions
@@ -203,5 +207,12 @@ namespace Triage.Mortician.Adapters
         /// <value>The type.</value>
         /// <inheritdoc />
         public IClrType Type { get; }
+
+        /// <summary>
+        ///     Gets or sets the converter.
+        /// </summary>
+        /// <value>The converter.</value>
+        [Import]
+        internal IConverter Converter { get; set; }
     }
 }

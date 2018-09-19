@@ -1,4 +1,20 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 09-19-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-19-2018
+// ***********************************************************************
+// <copyright file="ClrInterfaceAdapter.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
+using System.ComponentModel.Composition;
+using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
@@ -15,15 +31,16 @@ namespace Triage.Mortician.Adapters
         /// <param name="interface">The interface.</param>
         /// <exception cref="ArgumentNullException">interface</exception>
         /// <inheritdoc />
-        public ClrInterfaceAdapter(Microsoft.Diagnostics.Runtime.ClrInterface @interface)
+        public ClrInterfaceAdapter(ClrInterface @interface)
         {
             Interface = @interface ?? throw new ArgumentNullException(nameof(@interface));
+            BaseInterface = Converter.Convert(@interface.BaseInterface);
         }
 
         /// <summary>
         ///     The interface
         /// </summary>
-        internal Microsoft.Diagnostics.Runtime.ClrInterface Interface;
+        internal ClrInterface Interface;
 
         /// <summary>
         ///     The interface that this interface inherits from.
@@ -37,6 +54,13 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The name.</value>
         /// <inheritdoc />
-        public string Name { get; }
+        public string Name => Interface.Name;
+
+        /// <summary>
+        ///     Gets or sets the converter.
+        /// </summary>
+        /// <value>The converter.</value>
+        [Import]
+        internal IConverter Converter { get; set; }
     }
 }

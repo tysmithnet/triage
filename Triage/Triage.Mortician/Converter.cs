@@ -1,15 +1,40 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 09-18-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-19-2018
+// ***********************************************************************
+// <copyright file="Converter.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.ComponentModel.Composition;
+using Microsoft.Diagnostics.Runtime.Utilities;
 using Triage.Mortician.Adapters;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrMd = Microsoft.Diagnostics.Runtime;
 
 namespace Triage.Mortician
 {
+    /// <summary>
+    ///     Class Converter.
+    /// </summary>
+    /// <seealso cref="Triage.Mortician.IConverter" />
     [Export(typeof(IConverter))]
     internal class Converter : IConverter
     {
-        public  Architecture Convert(ClrMd.Architecture architecture)
+        /// <summary>
+        ///     Converts the specified architecture.
+        /// </summary>
+        /// <param name="architecture">The architecture.</param>
+        /// <returns>Architecture.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">architecture - The Architecture contract does not match CLRMd.</exception>
+        public Architecture Convert(ClrMd.Architecture architecture)
         {
             switch (architecture)
             {
@@ -27,7 +52,13 @@ namespace Triage.Mortician
             }
         }
 
-        public  GcSegmentType Convert(ClrMd.GCSegmentType segmentType)
+        /// <summary>
+        ///     Converts the specified segment type.
+        /// </summary>
+        /// <param name="segmentType">Type of the segment.</param>
+        /// <returns>GcSegmentType.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">segmentType - null</exception>
+        public GcSegmentType Convert(ClrMd.GCSegmentType segmentType)
         {
             switch (segmentType)
             {
@@ -42,77 +73,113 @@ namespace Triage.Mortician
             }
         }
 
-        public  IClrInstanceField Convert(ClrMd.ClrInstanceField instanceField)
-        {
-            return new ClrInstanceFieldAdapter(instanceField);
-        }
+        /// <summary>
+        ///     Converts the specified instance field.
+        /// </summary>
+        /// <param name="instanceField">The instance field.</param>
+        /// <returns>IClrInstanceField.</returns>
+        public IClrInstanceField Convert(ClrMd.ClrInstanceField instanceField) =>
+            new ClrInstanceFieldAdapter(instanceField);
 
-        public  IBlockingObject Convert(ClrMd.BlockingObject blockingObject)
-        {
-            return new BlockingObjectAdapter(blockingObject);
-        }
+        /// <summary>
+        ///     Converts the specified blocking object.
+        /// </summary>
+        /// <param name="blockingObject">The blocking object.</param>
+        /// <returns>IBlockingObject.</returns>
+        public IBlockingObject Convert(ClrMd.BlockingObject blockingObject) =>
+            new BlockingObjectAdapter(blockingObject);
 
-        public  IClrModule Convert(ClrMd.ClrModule module)
-        {
-            return new ClrModuleAdapter(module);
-        }
+        /// <summary>
+        ///     Converts the specified module.
+        /// </summary>
+        /// <param name="module">The module.</param>
+        /// <returns>IClrModule.</returns>
+        public IClrModule Convert(ClrMd.ClrModule module) => new ClrModuleAdapter(module);
 
-        public  IComInterfaceData Convert(ClrMd.ComInterfaceData interfaceData)
-        {
-            return new ComInterfaceData(interfaceData);
-        }
+        /// <summary>
+        ///     Converts the specified interface data.
+        /// </summary>
+        /// <param name="interfaceData">The interface data.</param>
+        /// <returns>IComInterfaceData.</returns>
+        public IComInterfaceData Convert(ClrMd.ComInterfaceData interfaceData) => new ComInterfaceData(interfaceData);
 
-        public  IClrInterface Convert(ClrMd.ClrInterface iface)
-        {
-            return new ClrInterfaceAdapter(iface);
-        }
+        /// <summary>
+        ///     Converts the specified iface.
+        /// </summary>
+        /// <param name="iface">The iface.</param>
+        /// <returns>IClrInterface.</returns>
+        public IClrInterface Convert(ClrMd.ClrInterface iface) => new ClrInterfaceAdapter(iface);
 
-        public  IClrInfo Convert(ClrMd.ClrInfo info)
-        {
-            return new ClrInfoAdapter(info);
-        }
+        /// <summary>
+        ///     Converts the specified information.
+        /// </summary>
+        /// <param name="info">The information.</param>
+        /// <returns>IClrInfo.</returns>
+        public IClrInfo Convert(ClrMd.ClrInfo info) => new ClrInfoAdapter(info);
 
-        public  IClrHeap Convert(ClrMd.ClrHeap heap)
-        {
-            return new HeapAdapter(heap);
-        }
+        /// <summary>
+        ///     Converts the specified heap.
+        /// </summary>
+        /// <param name="heap">The heap.</param>
+        /// <returns>IClrHeap.</returns>
+        public IClrHeap Convert(ClrMd.ClrHeap heap) => new HeapAdapter(heap);
 
-        public  IClrMemoryRegion Convert(ClrMd.ClrMemoryRegion memoryRegion)
-        {
-            return new MemoryRegionAdapter(memoryRegion);
-        }
+        /// <summary>
+        ///     Converts the specified memory region.
+        /// </summary>
+        /// <param name="memoryRegion">The memory region.</param>
+        /// <returns>IClrMemoryRegion.</returns>
+        public IClrMemoryRegion Convert(ClrMd.ClrMemoryRegion memoryRegion) => new MemoryRegionAdapter(memoryRegion);
 
-        public  IClrHandle Convert(ClrMd.ClrHandle handle)
-        {
-            return new HandleAdapter(handle);
-        }
+        /// <summary>
+        ///     Converts the specified handle.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        /// <returns>IClrHandle.</returns>
+        public IClrHandle Convert(ClrMd.ClrHandle handle) => new HandleAdapter(handle);
 
-        public  ICcwData Convert(ClrMd.CcwData data)
-        {
-            return new CcwDataAdapter(data);
-        }
+        /// <summary>
+        ///     Converts the specified data.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns>ICcwData.</returns>
+        public ICcwData Convert(ClrMd.CcwData data) => new CcwDataAdapter(data);
 
-        public  IClrAppDomain Convert(ClrMd.ClrAppDomain appDomain)
-        {
-            return new ClrAppDomainAdapter(appDomain);
-        }
+        /// <summary>
+        ///     Converts the specified application domain.
+        /// </summary>
+        /// <param name="appDomain">The application domain.</param>
+        /// <returns>IClrAppDomain.</returns>
+        public IClrAppDomain Convert(ClrMd.ClrAppDomain appDomain) => new ClrAppDomainAdapter(appDomain);
 
-        public  IILInfo Convert(ClrMd.ILInfo info)
-        {
-            return new IlInfoAdapter(info);
-        }
+        /// <summary>
+        ///     Converts the specified information.
+        /// </summary>
+        /// <param name="info">The information.</param>
+        /// <returns>IILInfo.</returns>
+        public IILInfo Convert(ClrMd.ILInfo info) => new IlInfoAdapter(info);
 
-        public  IClrMethod Convert(ClrMd.ClrMethod method)
-        {
-            return new ClrMethodAdapter(method);
-        }
+        /// <summary>
+        ///     Converts the specified method.
+        /// </summary>
+        /// <param name="method">The method.</param>
+        /// <returns>IClrMethod.</returns>
+        public IClrMethod Convert(ClrMd.ClrMethod method) => new ClrMethodAdapter(method);
 
-        public  IClrStackFrame Convert(ClrMd.ClrStackFrame frame)
-        {
-            return new StackFrameAdapter(frame);
-        }
+        /// <summary>
+        ///     Converts the specified frame.
+        /// </summary>
+        /// <param name="frame">The frame.</param>
+        /// <returns>IClrStackFrame.</returns>
+        public IClrStackFrame Convert(ClrMd.ClrStackFrame frame) => new StackFrameAdapter(frame);
 
-        public  BlockingReason Convert(ClrMd.BlockingReason blockingReason)
+        /// <summary>
+        ///     Converts the specified blocking reason.
+        /// </summary>
+        /// <param name="blockingReason">The blocking reason.</param>
+        /// <returns>BlockingReason.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">blockingReason - The BlockingReason contract does not match CLRMd.</exception>
+        public BlockingReason Convert(ClrMd.BlockingReason blockingReason)
         {
             switch (blockingReason)
             {
@@ -142,17 +209,25 @@ namespace Triage.Mortician
             }
         }
 
-        public  ILToNativeMap Convert(ClrMd.ILToNativeMap map)
+        /// <summary>
+        ///     Converts the specified map.
+        /// </summary>
+        /// <param name="map">The map.</param>
+        /// <returns>ILToNativeMap.</returns>
+        public ILToNativeMap Convert(ClrMd.ILToNativeMap map) => new ILToNativeMap
         {
-            return new ILToNativeMap
-            {
-                EndAddress = map.EndAddress,
-                ILOffset = map.ILOffset,
-                StartAddress = map.StartAddress
-            };
-        }
+            EndAddress = map.EndAddress,
+            ILOffset = map.ILOffset,
+            StartAddress = map.StartAddress
+        };
 
-        public  ClrElementType Convert(ClrMd.ClrElementType clrElementType)
+        /// <summary>
+        ///     Converts the specified color element type.
+        /// </summary>
+        /// <param name="clrElementType">Type of the color element.</param>
+        /// <returns>ClrElementType.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">clrElementType - null</exception>
+        public ClrElementType Convert(ClrMd.ClrElementType clrElementType)
         {
             switch (clrElementType)
             {
@@ -206,8 +281,14 @@ namespace Triage.Mortician
                     throw new ArgumentOutOfRangeException(nameof(clrElementType), clrElementType, null);
             }
         }
-        
-        public  ClrFlavor Convert(ClrMd.ClrFlavor flavor)
+
+        /// <summary>
+        ///     Converts the specified flavor.
+        /// </summary>
+        /// <param name="flavor">The flavor.</param>
+        /// <returns>ClrFlavor.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">flavor - null</exception>
+        public ClrFlavor Convert(ClrMd.ClrFlavor flavor)
         {
             switch (flavor)
             {
@@ -232,7 +313,13 @@ namespace Triage.Mortician
             }
         }
 
-        public  ClrMemoryRegionType Convert(ClrMd.ClrMemoryRegionType memoryRegionType)
+        /// <summary>
+        ///     Converts the specified memory region type.
+        /// </summary>
+        /// <param name="memoryRegionType">Type of the memory region.</param>
+        /// <returns>ClrMemoryRegionType.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">memoryRegionType - null</exception>
+        public ClrMemoryRegionType Convert(ClrMd.ClrMemoryRegionType memoryRegionType)
         {
             switch (memoryRegionType)
             {
@@ -271,7 +358,13 @@ namespace Triage.Mortician
             }
         }
 
-        public  ClrRootStackwalkPolicy Convert(ClrMd.ClrRootStackwalkPolicy policy)
+        /// <summary>
+        ///     Converts the specified policy.
+        /// </summary>
+        /// <param name="policy">The policy.</param>
+        /// <returns>ClrRootStackwalkPolicy.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">policy - null</exception>
+        public ClrRootStackwalkPolicy Convert(ClrMd.ClrRootStackwalkPolicy policy)
         {
             switch (policy)
             {
@@ -288,7 +381,13 @@ namespace Triage.Mortician
             }
         }
 
-        public  ClrStackFrameType Convert(ClrMd.ClrStackFrameType type)
+        /// <summary>
+        ///     Converts the specified type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>ClrStackFrameType.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">type - null</exception>
+        public ClrStackFrameType Convert(ClrMd.ClrStackFrameType type)
         {
             switch (type)
             {
@@ -303,7 +402,13 @@ namespace Triage.Mortician
             }
         }
 
-        public  GcMode Convert(ClrMd.GcMode mode)
+        /// <summary>
+        ///     Converts the specified mode.
+        /// </summary>
+        /// <param name="mode">The mode.</param>
+        /// <returns>GcMode.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">mode - null</exception>
+        public GcMode Convert(ClrMd.GcMode mode)
         {
             switch (mode)
             {
@@ -316,7 +421,13 @@ namespace Triage.Mortician
             }
         }
 
-        public  GcRootKind Convert(ClrMd.GCRootKind kind)
+        /// <summary>
+        ///     Converts the specified kind.
+        /// </summary>
+        /// <param name="kind">The kind.</param>
+        /// <returns>GcRootKind.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">kind - null</exception>
+        public GcRootKind Convert(ClrMd.GCRootKind kind)
         {
             switch (kind)
             {
@@ -341,7 +452,13 @@ namespace Triage.Mortician
             }
         }
 
-        public  MethodCompilationType Convert(ClrMd.MethodCompilationType compilationType)
+        /// <summary>
+        ///     Converts the specified compilation type.
+        /// </summary>
+        /// <param name="compilationType">Type of the compilation.</param>
+        /// <returns>MethodCompilationType.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">compilationType - null</exception>
+        public MethodCompilationType Convert(ClrMd.MethodCompilationType compilationType)
         {
             switch (compilationType)
             {
@@ -356,162 +473,238 @@ namespace Triage.Mortician
             }
         }
 
-        public  ISymbolResolver Convert(ClrMd.ISymbolResolver resolver)
-        {
-            return new SymbolResolverAdapter(resolver);
-        }
+        /// <summary>
+        ///     Converts the specified resolver.
+        /// </summary>
+        /// <param name="resolver">The resolver.</param>
+        /// <returns>ISymbolResolver.</returns>
+        public ISymbolResolver Convert(ClrMd.ISymbolResolver resolver) => new SymbolResolverAdapter(resolver);
 
-        public  ISymbolProvider Convert(ClrMd.ISymbolProvider provider)
-        {
-            return new SymbolProviderAdapter(provider);
-        }
+        /// <summary>
+        ///     Converts the specified provider.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <returns>ISymbolProvider.</returns>
+        public ISymbolProvider Convert(ClrMd.ISymbolProvider provider) => new SymbolProviderAdapter(provider);
 
-        public  ISymbolLocator Convert(ClrMd.Utilities.SymbolLocator locator)
-        {
-            return new SymbolLocatorAdapter(locator);
-        }
+        /// <summary>
+        ///     Converts the specified locator.
+        /// </summary>
+        /// <param name="locator">The locator.</param>
+        /// <returns>ISymbolLocator.</returns>
+        public ISymbolLocator Convert(SymbolLocator locator) => new SymbolLocatorAdapter(locator);
 
-        public  IRootPath Convert(ClrMd.RootPath path)
-        {
-            return new RootPathAdapter(path);
-        }
+        /// <summary>
+        ///     Converts the specified path.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <returns>IRootPath.</returns>
+        public IRootPath Convert(ClrMd.RootPath path) => new RootPathAdapter(path);
 
-        public  IRcwData Convert(ClrMd.RcwData data)
-        {
-            return new RcwDataAdapter(data);
-        }
+        /// <summary>
+        ///     Converts the specified data.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns>IRcwData.</returns>
+        public IRcwData Convert(ClrMd.RcwData data) => new RcwDataAdapter(data);
 
-        public  IPeFile Convert(ClrMd.Utilities.PEFile peFile)
-        {
-            return new PeFileAdapter(peFile);
-        }
+        /// <summary>
+        ///     Converts the specified pe file.
+        /// </summary>
+        /// <param name="peFile">The pe file.</param>
+        /// <returns>IPeFile.</returns>
+        public IPeFile Convert(PEFile peFile) => new PeFileAdapter(peFile);
 
-        public  IPdbInfo Convert(ClrMd.PdbInfo info)
-        {
-            return new PdbInfoAdapter(info);
-        }
+        /// <summary>
+        ///     Converts the specified information.
+        /// </summary>
+        /// <param name="info">The information.</param>
+        /// <returns>IPdbInfo.</returns>
+        public IPdbInfo Convert(ClrMd.PdbInfo info) => new PdbInfoAdapter(info);
 
-        public  IObjectSet Convert(ClrMd.ObjectSet objectSet)
-        {
-            return new ObjectSetAdapter(objectSet);
-        }
+        /// <summary>
+        ///     Converts the specified object set.
+        /// </summary>
+        /// <param name="objectSet">The object set.</param>
+        /// <returns>IObjectSet.</returns>
+        public IObjectSet Convert(ClrMd.ObjectSet objectSet) => new ObjectSetAdapter(objectSet);
 
-        public  INativeWorkItem Convert(ClrMd.NativeWorkItem nativeWorkItem)
-        {
-            return new NativeWorkItemAdapter(nativeWorkItem);
-        }
+        /// <summary>
+        ///     Converts the specified native work item.
+        /// </summary>
+        /// <param name="nativeWorkItem">The native work item.</param>
+        /// <returns>INativeWorkItem.</returns>
+        public INativeWorkItem Convert(ClrMd.NativeWorkItem nativeWorkItem) =>
+            new NativeWorkItemAdapter(nativeWorkItem);
 
-        public  IModuleInfo Convert(ClrMd.ModuleInfo moduleInfo)
-        {
-            return new ModuleInfoAdapter(moduleInfo);
-        }
+        /// <summary>
+        ///     Converts the specified module information.
+        /// </summary>
+        /// <param name="moduleInfo">The module information.</param>
+        /// <returns>IModuleInfo.</returns>
+        public IModuleInfo Convert(ClrMd.ModuleInfo moduleInfo) => new ModuleInfoAdapter(moduleInfo);
 
-        public  IManagedWorkItem Convert(ClrMd.ManagedWorkItem workItem)
-        {
-            return new ManagedWorkItemAdapter(workItem);
-        }
+        /// <summary>
+        ///     Converts the specified work item.
+        /// </summary>
+        /// <param name="workItem">The work item.</param>
+        /// <returns>IManagedWorkItem.</returns>
+        public IManagedWorkItem Convert(ClrMd.ManagedWorkItem workItem) => new ManagedWorkItemAdapter(workItem);
 
-        public  IHotColdRegions Convert(ClrMd.HotColdRegions hotColdRegions)
-        {
-            return new HotColdRegionsAdapter(hotColdRegions);
-        }
+        /// <summary>
+        ///     Converts the specified hot cold regions.
+        /// </summary>
+        /// <param name="hotColdRegions">The hot cold regions.</param>
+        /// <returns>IHotColdRegions.</returns>
+        public IHotColdRegions Convert(ClrMd.HotColdRegions hotColdRegions) =>
+            new HotColdRegionsAdapter(hotColdRegions);
 
-        public  IFileVersionInfo Convert(ClrMd.Utilities.FileVersionInfo fileVersionInfo)
-        {
-            return new FileVersionInfoAdapter(fileVersionInfo);
-        }
+        /// <summary>
+        ///     Converts the specified file version information.
+        /// </summary>
+        /// <param name="fileVersionInfo">The file version information.</param>
+        /// <returns>IFileVersionInfo.</returns>
+        public IFileVersionInfo Convert(FileVersionInfo fileVersionInfo) => new FileVersionInfoAdapter(fileVersionInfo);
 
-        public  IDataTarget Convert(ClrMd.DataTarget dataTarget)
-        {
-            return new DataTargetAdapter(dataTarget);
-        }
+        /// <summary>
+        ///     Converts the specified data target.
+        /// </summary>
+        /// <param name="dataTarget">The data target.</param>
+        /// <returns>IDataTarget.</returns>
+        public IDataTarget Convert(ClrMd.DataTarget dataTarget) => new DataTargetAdapter(dataTarget);
 
-        public  IDataReader Convert(ClrMd.IDataReader dataReader)
-        {
-            return new DataReaderAdapter(dataReader);
-        }
+        /// <summary>
+        ///     Converts the specified data reader.
+        /// </summary>
+        /// <param name="dataReader">The data reader.</param>
+        /// <returns>IDataReader.</returns>
+        public IDataReader Convert(ClrMd.IDataReader dataReader) => new DataReaderAdapter(dataReader);
 
-        public  IDacInfo Convert(ClrMd.DacInfo dacInfo)
-        {
-            return new DacInfoAdapter(dacInfo);
-        }
+        /// <summary>
+        ///     Converts the specified dac information.
+        /// </summary>
+        /// <param name="dacInfo">The dac information.</param>
+        /// <returns>IDacInfo.</returns>
+        public IDacInfo Convert(ClrMd.DacInfo dacInfo) => new DacInfoAdapter(dacInfo);
 
-        public  IClrValueClass Convert(ClrMd.ClrValueClass valueClass)
-        {
-            return new ClrValueClassAdapter(valueClass);
-        }
+        /// <summary>
+        ///     Converts the specified value class.
+        /// </summary>
+        /// <param name="valueClass">The value class.</param>
+        /// <returns>IClrValueClass.</returns>
+        public IClrValueClass Convert(ClrMd.ClrValueClass valueClass) => new ClrValueClassAdapter(valueClass);
 
-        public  IClrType Convert(ClrMd.ClrType type)
-        {
-            return new ClrTypeAdapter(type);
-        }
+        /// <summary>
+        ///     Converts the specified type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns>IClrType.</returns>
+        public IClrType Convert(ClrMd.ClrType type) => new ClrTypeAdapter(type);
 
-        public  IClrThreadStaticField Convert(ClrMd.ClrThreadStaticField field)
-        {
-            return new ClrThreadStaticFieldAdapter(field);
-        }
+        /// <summary>
+        ///     Converts the specified field.
+        /// </summary>
+        /// <param name="field">The field.</param>
+        /// <returns>IClrThreadStaticField.</returns>
+        public IClrThreadStaticField Convert(ClrMd.ClrThreadStaticField field) =>
+            new ClrThreadStaticFieldAdapter(field);
 
-        public  IClrThreadPool Convert(ClrMd.ClrThreadPool pool)
-        {
-            return new ClrThreadPoolAdapter(pool);
-        }
+        /// <summary>
+        ///     Converts the specified pool.
+        /// </summary>
+        /// <param name="pool">The pool.</param>
+        /// <returns>IClrThreadPool.</returns>
+        public IClrThreadPool Convert(ClrMd.ClrThreadPool pool) => new ClrThreadPoolAdapter(pool);
 
-        public  IClrThread Convert(ClrMd.ClrThread thread)
-        {
-            return new ClrThreadAdapter(thread);
-        }
+        /// <summary>
+        ///     Converts the specified thread.
+        /// </summary>
+        /// <param name="thread">The thread.</param>
+        /// <returns>IClrThread.</returns>
+        public IClrThread Convert(ClrMd.ClrThread thread) => new ClrThreadAdapter(thread);
 
-        public IClrStaticField Convert(ClrMd.ClrStaticField field)
-        {
-            return new ClrStaticFieldAdapter(field);
-        }
+        /// <summary>
+        ///     Converts the specified field.
+        /// </summary>
+        /// <param name="field">The field.</param>
+        /// <returns>IClrStaticField.</returns>
+        public IClrStaticField Convert(ClrMd.ClrStaticField field) => new ClrStaticFieldAdapter(field);
 
-        public  IClrSegment Convert(ClrMd.ClrSegment segment)
-        {
-            return new ClrSegmentAdapter(segment);
-        }
+        /// <summary>
+        ///     Converts the specified segment.
+        /// </summary>
+        /// <param name="segment">The segment.</param>
+        /// <returns>IClrSegment.</returns>
+        public IClrSegment Convert(ClrMd.ClrSegment segment) => new ClrSegmentAdapter(segment);
 
-        public  IClrRuntime Convert(ClrMd.ClrRuntime runtime)
-        {
-            return new ClrRuntimeAdapter(runtime);
-        }
+        /// <summary>
+        ///     Converts the specified runtime.
+        /// </summary>
+        /// <param name="runtime">The runtime.</param>
+        /// <returns>IClrRuntime.</returns>
+        public IClrRuntime Convert(ClrMd.ClrRuntime runtime) => new ClrRuntimeAdapter(runtime);
 
-        public  IClrRoot Convert(ClrMd.ClrRoot root)
-        {
-            return new ClrRootAdapter(root);
-        }
+        /// <summary>
+        ///     Converts the specified root.
+        /// </summary>
+        /// <param name="root">The root.</param>
+        /// <returns>IClrRoot.</returns>
+        public IClrRoot Convert(ClrMd.ClrRoot root) => new ClrRootAdapter(root);
 
-        public  IClrObject Convert(ClrMd.ClrObject o)
-        {
-            return new ClrObjectAdapter(o);
-        }
+        /// <summary>
+        ///     Converts the specified o.
+        /// </summary>
+        /// <param name="o">The o.</param>
+        /// <returns>IClrObject.</returns>
+        public IClrObject Convert(ClrMd.ClrObject o) => new ClrObjectAdapter(o);
 
-        public  IClrException Convert(ClrMd.ClrException exception)
-        {
-            return new ClrExceptionAdapter(exception);
-        }
+        /// <summary>
+        ///     Converts the specified exception.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <returns>IClrException.</returns>
+        public IClrException Convert(ClrMd.ClrException exception) => new ClrExceptionAdapter(exception);
 
-        public  VersionInfo Convert(ClrMd.VersionInfo versionInfo)
-        {
-            return new VersionInfo(versionInfo.Major, versionInfo.Minor, versionInfo.Revision, versionInfo.Patch);
-        }
+        /// <summary>
+        ///     Converts the specified version information.
+        /// </summary>
+        /// <param name="versionInfo">The version information.</param>
+        /// <returns>VersionInfo.</returns>
+        public VersionInfo Convert(ClrMd.VersionInfo versionInfo) => new VersionInfo(versionInfo.Major,
+            versionInfo.Minor, versionInfo.Revision, versionInfo.Patch);
 
-        public  GcRootProgressEvent Convert(ClrMd.GCRootProgressEvent rootProgressEvent)
+        /// <summary>
+        ///     Converts the specified root progress event.
+        /// </summary>
+        /// <param name="rootProgressEvent">The root progress event.</param>
+        /// <returns>GcRootProgressEvent.</returns>
+        public GcRootProgressEvent Convert(ClrMd.GCRootProgressEvent rootProgressEvent)
         {
             return (source, current, total) => rootProgressEvent((source as GcRootAdapter)?.Root, current, total);
         }
 
-        public  IGcRoot Convert(ClrMd.GCRoot gcRoot)
-        {
-            return new GcRootAdapter(gcRoot);
-        }
+        /// <summary>
+        ///     Converts the specified gc root.
+        /// </summary>
+        /// <param name="gcRoot">The gc root.</param>
+        /// <returns>IGcRoot.</returns>
+        public IGcRoot Convert(ClrMd.GCRoot gcRoot) => new GcRootAdapter(gcRoot);
 
-        public  VirtualQueryData Convert(ClrMd.VirtualQueryData data)
-        {
-            return new VirtualQueryData(data.BaseAddress, data.Size);
-        }
+        /// <summary>
+        ///     Converts the specified data.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns>VirtualQueryData.</returns>
+        public VirtualQueryData Convert(ClrMd.VirtualQueryData data) =>
+            new VirtualQueryData(data.BaseAddress, data.Size);
 
-        public  WorkItemKind Convert(ClrMd.WorkItemKind kind)
+        /// <summary>
+        ///     Converts the specified kind.
+        /// </summary>
+        /// <param name="kind">The kind.</param>
+        /// <returns>WorkItemKind.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">kind - null</exception>
+        public WorkItemKind Convert(ClrMd.WorkItemKind kind)
         {
             switch (kind)
             {
@@ -530,7 +723,13 @@ namespace Triage.Mortician
             }
         }
 
-        public  HandleType Convert(ClrMd.HandleType handleType)
+        /// <summary>
+        ///     Converts the specified handle type.
+        /// </summary>
+        /// <param name="handleType">Type of the handle.</param>
+        /// <returns>HandleType.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">handleType - null</exception>
+        public HandleType Convert(ClrMd.HandleType handleType)
         {
             switch (handleType)
             {
