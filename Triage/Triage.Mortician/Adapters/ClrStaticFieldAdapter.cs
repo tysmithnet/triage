@@ -8,82 +8,74 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public ClrStaticFieldAdapter(Microsoft.Diagnostics.Runtime.ClrStaticField staticField)
         {
-            _staticField = staticField ?? throw new ArgumentNullException(nameof(staticField));
+            StaticField = staticField ?? throw new ArgumentNullException(nameof(staticField));
+            ElementType = Converter.Convert(staticField.ElementType);
+            Type = Converter.Convert(staticField.Type);
         }
 
-        internal Microsoft.Diagnostics.Runtime.ClrStaticField _staticField;
-
-        /// <inheritdoc />
-        public ulong GetAddress(IClrAppDomain appDomain)
-        {
-            throw new NotImplementedException();
-        }
+        internal Microsoft.Diagnostics.Runtime.ClrStaticField StaticField;
 
         /// <inheritdoc />
-        public object GetDefaultValue()
-        {
-            throw new NotImplementedException();
-        }
+        public ulong GetAddress(IClrAppDomain appDomain) => StaticField.GetAddress((appDomain as ClrAppDomainAdapter)?.AppDomain);
+
 
         /// <inheritdoc />
-        public object GetValue(IClrAppDomain appDomain)
-        {
-            throw new NotImplementedException();
-        }
+        public object GetDefaultValue() => StaticField.GetDefaultValue();
+
 
         /// <inheritdoc />
-        public object GetValue(IClrAppDomain appDomain, bool convertStrings)
-        {
-            throw new NotImplementedException();
-        }
+        public object GetValue(IClrAppDomain appDomain) => StaticField.GetValue((appDomain as ClrAppDomainAdapter)?.AppDomain);
+
 
         /// <inheritdoc />
-        public bool IsInitialized(IClrAppDomain appDomain)
-        {
-            throw new NotImplementedException();
-        }
+        public object GetValue(IClrAppDomain appDomain, bool convertStrings) => StaticField.GetValue((appDomain as ClrAppDomainAdapter)?.AppDomain, convertStrings);
+
+
+        /// <inheritdoc />
+        public bool IsInitialized(IClrAppDomain appDomain) => StaticField.IsInitialized((appDomain as ClrAppDomainAdapter)?.AppDomain);
+
 
         /// <inheritdoc />
         public ClrElementType ElementType { get; }
 
         /// <inheritdoc />
-        public bool HasDefaultValue { get; }
+        public bool HasDefaultValue => StaticField.HasDefaultValue;
 
         /// <inheritdoc />
-        public bool HasSimpleValue { get; }
+        public bool HasSimpleValue => StaticField.HasSimpleValue;
 
         /// <inheritdoc />
-        public bool IsInternal { get; }
+        public bool IsInternal => StaticField.IsInternal;
 
         /// <inheritdoc />
-        public bool IsObjectReference { get; }
+        public bool IsObjectReference => StaticField.IsObjectReference;
 
         /// <inheritdoc />
-        public bool IsPrimitive { get; }
+        public bool IsPrimitive => StaticField.IsPrimitive;
 
         /// <inheritdoc />
-        public bool IsPrivate { get; }
+        public bool IsPrivate => StaticField.IsPrivate;
 
         /// <inheritdoc />
-        public bool IsProtected { get; }
+        public bool IsProtected => StaticField.IsProtected;
 
         /// <inheritdoc />
-        public bool IsPublic { get; }
+        public bool IsPublic => StaticField.IsPublic;
 
         /// <inheritdoc />
-        public bool IsValueClass { get; }
+        public bool IsValueClass => StaticField.IsValueClass;
 
         /// <inheritdoc />
-        public string Name { get; }
+        public string Name => StaticField.Name;
 
         /// <inheritdoc />
-        public int Offset { get; }
+        public int Offset => StaticField.Offset;
 
         /// <inheritdoc />
-        public int Size { get; }
+        public int Size => StaticField.Size;
 
         /// <inheritdoc />
-        public uint Token { get; }
+        public uint Token => StaticField.Token;
 
         /// <inheritdoc />
         public IClrType Type { get; }

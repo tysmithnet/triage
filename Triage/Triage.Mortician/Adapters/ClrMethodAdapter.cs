@@ -25,22 +25,13 @@ namespace Triage.Mortician.Adapters
         }
 
         /// <inheritdoc />
-        public IEnumerable<ulong> EnumerateMethodDescs()
-        {
-            return Method.EnumerateMethodDescs();
-        }
+        public IEnumerable<ulong> EnumerateMethodDescs() => Method.EnumerateMethodDescs();
 
         /// <inheritdoc />
-        public string GetFullSignature()
-        {
-            return Method.GetFullSignature();
-        }
+        public string GetFullSignature() => Method.GetFullSignature();
 
         /// <inheritdoc />
-        public int GetILOffset(ulong addr)
-        {
-            return Method.GetILOffset(addr);
-        }
+        public int GetILOffset(ulong addr) => Method.GetILOffset(addr);
 
         /// <inheritdoc />
         public MethodCompilationType CompilationType { get; }

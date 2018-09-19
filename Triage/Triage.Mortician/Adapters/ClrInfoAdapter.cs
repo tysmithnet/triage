@@ -11,31 +11,25 @@ namespace Triage.Mortician.Adapters
         public ClrInfoAdapter(Microsoft.Diagnostics.Runtime.ClrInfo info)
         {
             Info = info ?? throw new ArgumentNullException(nameof(info));
+            DacInfo = Converter.Convert(info.DacInfo);
+            Flavor = Converter.Convert(info.Flavor);
+            ModuleInfo = Converter.Convert(info.ModuleInfo);
+            Version = Converter.Convert(info.Version);
         }
 
         /// <inheritdoc />
-        public int CompareTo(object obj)
-        {
-            throw new NotImplementedException();
-        }
+        public int CompareTo(object obj) => Info.CompareTo(obj);
 
         /// <inheritdoc />
-        public IClrRuntime CreateRuntime()
-        {
-            throw new NotImplementedException();
-        }
+        public IClrRuntime CreateRuntime() => Converter.Convert(Info.CreateRuntime());
+
 
         /// <inheritdoc />
-        public IClrRuntime CreateRuntime(object clrDataProcess)
-        {
-            throw new NotImplementedException();
-        }
+        public IClrRuntime CreateRuntime(object clrDataProcess) => Converter.Convert(Info.CreateRuntime(clrDataProcess));
+
 
         /// <inheritdoc />
-        public IClrRuntime CreateRuntime(string dacFilename, bool ignoreMismatch = false)
-        {
-            throw new NotImplementedException();
-        }
+        public IClrRuntime CreateRuntime(string dacFilename, bool ignoreMismatch = false) => Converter.Convert(Info.CreateRuntime(dacFilename, ignoreMismatch));
 
         /// <inheritdoc />
         public IDacInfo DacInfo { get; }
@@ -44,7 +38,7 @@ namespace Triage.Mortician.Adapters
         public ClrFlavor Flavor { get; }
 
         /// <inheritdoc />
-        public string LocalMatchingDac { get; }
+        public string LocalMatchingDac => Info.LocalMatchingDac;
 
         /// <inheritdoc />
         public IModuleInfo ModuleInfo { get; }

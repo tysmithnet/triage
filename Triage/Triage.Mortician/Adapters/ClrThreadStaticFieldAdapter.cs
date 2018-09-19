@@ -8,67 +8,75 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public ClrThreadStaticFieldAdapter(Microsoft.Diagnostics.Runtime.ClrThreadStaticField threadStaticField)
         {
-            _threadStaticField = threadStaticField ?? throw new ArgumentNullException(nameof(threadStaticField));
+            ThreadStaticField = threadStaticField ?? throw new ArgumentNullException(nameof(threadStaticField));
+            ElementType = Converter.Convert(threadStaticField.ElementType);
+            Type = Converter.Convert(threadStaticField.Type);
         }
 
-        internal Microsoft.Diagnostics.Runtime.ClrThreadStaticField _threadStaticField;
+        internal Microsoft.Diagnostics.Runtime.ClrThreadStaticField ThreadStaticField;
 
         /// <inheritdoc />
         public ulong GetAddress(IClrAppDomain appDomain, IClrThread thread)
         {
-            throw new NotImplementedException();
+            var convertedAppDomain = (appDomain as ClrAppDomainAdapter)?.AppDomain;
+            var convertedThread = (thread as ClrThreadAdapter)?.Thread;
+            return ThreadStaticField.GetAddress(convertedAppDomain, convertedThread);
         }
 
         /// <inheritdoc />
         public object GetValue(IClrAppDomain appDomain, IClrThread thread)
         {
-            throw new NotImplementedException();
+            var convertedAppDomain = (appDomain as ClrAppDomainAdapter)?.AppDomain;
+            var convertedThread = (thread as ClrThreadAdapter)?.Thread;
+            return ThreadStaticField.GetValue(convertedAppDomain, convertedThread);
         }
 
         /// <inheritdoc />
         public object GetValue(IClrAppDomain appDomain, IClrThread thread, bool convertStrings)
         {
-            throw new NotImplementedException();
+            var convertedAppDomain = (appDomain as ClrAppDomainAdapter)?.AppDomain;
+            var convertedThread = (thread as ClrThreadAdapter)?.Thread;
+            return ThreadStaticField.GetValue(convertedAppDomain, convertedThread, convertStrings);
         }
 
         /// <inheritdoc />
         public ClrElementType ElementType { get; }
 
         /// <inheritdoc />
-        public bool HasSimpleValue { get; }
+        public bool HasSimpleValue => ThreadStaticField.HasSimpleValue;
 
         /// <inheritdoc />
-        public bool IsInternal { get; }
+        public bool IsInternal => ThreadStaticField.IsInternal;
 
         /// <inheritdoc />
-        public bool IsObjectReference { get; }
+        public bool IsObjectReference => ThreadStaticField.IsObjectReference;
 
         /// <inheritdoc />
-        public bool IsPrimitive { get; }
+        public bool IsPrimitive => ThreadStaticField.IsPrimitive;
 
         /// <inheritdoc />
-        public bool IsPrivate { get; }
+        public bool IsPrivate => ThreadStaticField.IsPrivate;
 
         /// <inheritdoc />
-        public bool IsProtected { get; }
+        public bool IsProtected => ThreadStaticField.IsProtected;
 
         /// <inheritdoc />
-        public bool IsPublic { get; }
+        public bool IsPublic => ThreadStaticField.IsPublic;
 
         /// <inheritdoc />
-        public bool IsValueClass { get; }
+        public bool IsValueClass => ThreadStaticField.IsValueClass;
 
         /// <inheritdoc />
-        public string Name { get; }
+        public string Name => ThreadStaticField.Name;
 
         /// <inheritdoc />
-        public int Offset { get; }
+        public int Offset => ThreadStaticField.Offset;
 
         /// <inheritdoc />
-        public int Size { get; }
+        public int Size => ThreadStaticField.Size;
 
         /// <inheritdoc />
-        public uint Token { get; }
+        public uint Token => ThreadStaticField.Token;
 
         /// <inheritdoc />
         public IClrType Type { get; }

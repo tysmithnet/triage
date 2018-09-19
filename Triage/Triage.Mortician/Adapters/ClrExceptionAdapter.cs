@@ -12,6 +12,9 @@ namespace Triage.Mortician.Adapters
         public ClrExceptionAdapter(ClrException exception)
         {
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
+            StackTrace = Exception.StackTrace.Select(Converter.Convert).ToList();
+            Type = Converter.Convert(Exception.Type);
+            Inner = Converter.Convert(Exception.Inner);
         }
 
         internal ClrException Exception;
@@ -23,15 +26,15 @@ namespace Triage.Mortician.Adapters
         public int HResult => Exception.HResult;
 
         /// <inheritdoc />
-        public IClrException Inner => Converter.Convert(Exception.Inner);
+        public IClrException Inner { get; } 
 
         /// <inheritdoc />
         public string Message => Exception.Message;
 
         /// <inheritdoc />
-        public IList<IClrStackFrame> StackTrace => Exception.StackTrace.Select(Converter.Convert).ToList();
+        public IList<IClrStackFrame> StackTrace { get; }
 
         /// <inheritdoc />
-        public IClrType Type => Converter.Convert(Exception.Type);
+        public IClrType Type { get; }
     }
 }

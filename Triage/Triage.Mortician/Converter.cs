@@ -25,6 +25,31 @@ namespace Triage.Mortician
             }
         }
 
+        public static IClrInstanceField Convert(ClrMd.ClrInstanceField instanceField)
+        {
+            return new ClrInstanceFieldAdapter(instanceField);
+        }
+
+        public static IBlockingObject Convert(ClrMd.BlockingObject blockingObject)
+        {
+            return new BlockingObjectAdapter(blockingObject);
+        }
+
+        public static IClrModule Convert(ClrMd.ClrModule module)
+        {
+            return new ClrModuleAdapter(module);
+        }
+
+        public static IComInterfaceData Convert(ClrMd.ComInterfaceData interfaceData)
+        {
+            return new ComInterfaceData(interfaceData);
+        }
+
+        public static IClrInterface Convert(ClrMd.ClrInterface iface)
+        {
+            return new ClrInterfaceAdapter(iface);
+        }
+
         public static IClrInfo Convert(ClrMd.ClrInfo info)
         {
             return new ClrInfoAdapter(info);

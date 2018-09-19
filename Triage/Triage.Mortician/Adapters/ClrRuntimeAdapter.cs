@@ -1,15 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
 {
     internal class ClrRuntimeAdapter : IClrRuntime
     {
-        
+        /// <inheritdoc />
+        public ClrRuntimeAdapter(ClrRuntime runtime)
+        {
+            Runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
+            AppDomains = runtime.AppDomains.Select(Converter.Convert).ToList();
+            ClrInfo = Converter.Convert(runtime.ClrInfo);
+            SharedDomain = Converter.Convert(runtime.SharedDomain);
+            SystemDomain = Converter.Convert(runtime.SystemDomain);
+            ThreadPool = Converter.Convert(runtime.ThreadPool);
+            Threads = runtime.Threads.Select(Converter.Convert).ToList();
+            Modules = runtime.Modules.Select(Converter.Convert).ToList();
+            Heap = Converter.Convert(runtime.Heap);
+            DataTarget = Converter.Convert(runtime.DataTarget);
+        }
 
-        internal Microsoft.Diagnostics.Runtime.ClrRuntime Runtime;
+        internal ClrRuntime Runtime;
 
         /// <inheritdoc />
         /// <inheritdoc />
@@ -76,7 +90,7 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public IClrThreadPool GetThreadPool()
         {
-            return Converter.Convert(Runtime.GetThreadPool());
+            return Converter.Convert(Runtime.ThreadPool);
         }
 
         /// <inheritdoc />
@@ -126,13 +140,5 @@ namespace Triage.Mortician.Adapters
 
         /// <inheritdoc />
         public IList<IClrThread> Threads { get; }
-
-        /// <inheritdoc />
-        public ClrRuntimeAdapter(Microsoft.Diagnostics.Runtime.ClrRuntime runtime)
-        {
-            Runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
-            AppDomains = runtime.AppDomains.Select(Converter.Convert).ToList();
-            ClrInfo = Converter.Convert(runtime.ClrInfo);
-        }
     }
 }

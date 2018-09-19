@@ -9,87 +9,83 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public ClrSegmentAdapter(Microsoft.Diagnostics.Runtime.ClrSegment segment)
         {
-            _segment = segment ?? throw new ArgumentNullException(nameof(segment));
+            Segment = segment ?? throw new ArgumentNullException(nameof(segment));
+            Heap = Converter.Convert(segment.Heap);
         }
 
-        internal Microsoft.Diagnostics.Runtime.ClrSegment _segment;
+        internal Microsoft.Diagnostics.Runtime.ClrSegment Segment;
 
         /// <inheritdoc />
-        public IEnumerable<ulong> EnumerateObjectAddresses()
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<ulong> EnumerateObjectAddresses() => Segment.EnumerateObjectAddresses();
 
         /// <inheritdoc />
         public ulong GetFirstObject(out IClrType type)
         {
-            throw new NotImplementedException();
+            var res = Segment.GetFirstObject(out var first);
+            type = first != null ? Converter.Convert(first) : null;
+            return res;
         }
 
         /// <inheritdoc />
-        public int GetGeneration(ulong obj)
-        {
-            throw new NotImplementedException();
-        }
+        public int GetGeneration(ulong obj) => Segment.GetGeneration(obj);
 
         /// <inheritdoc />
-        public ulong NextObject(ulong objRef)
-        {
-            throw new NotImplementedException();
-        }
+        public ulong NextObject(ulong objRef) => Segment.NextObject(objRef);
 
         /// <inheritdoc />
         public ulong NextObject(ulong objRef, out IClrType type)
         {
-            throw new NotImplementedException();
+            var res = Segment.NextObject(objRef, out var nextType);
+            type = nextType != null ? Converter.Convert(nextType) : null;
+            return res;
         }
 
         /// <inheritdoc />
-        public ulong CommittedEnd { get; }
+        public ulong CommittedEnd => Segment.CommittedEnd;
 
         /// <inheritdoc />
-        public ulong End { get; }
+        public ulong End => Segment.End;
 
         /// <inheritdoc />
-        public ulong FirstObject { get; }
+        public ulong FirstObject => Segment.FirstObject;
 
         /// <inheritdoc />
-        public ulong Gen0Length { get; }
+        public ulong Gen0Length => Segment.Gen0Length;
 
         /// <inheritdoc />
-        public ulong Gen0Start { get; }
+        public ulong Gen0Start => Segment.Gen0Start;
 
         /// <inheritdoc />
-        public ulong Gen1Length { get; }
+        public ulong Gen1Length => Segment.Gen1Length;
 
         /// <inheritdoc />
-        public ulong Gen1Start { get; }
+        public ulong Gen1Start => Segment.Gen1Start;
 
         /// <inheritdoc />
-        public ulong Gen2Length { get; }
+        public ulong Gen2Length => Segment.Gen2Length;
 
         /// <inheritdoc />
-        public ulong Gen2Start { get; }
+        public ulong Gen2Start => Segment.Gen2Start;
 
         /// <inheritdoc />
         public IClrHeap Heap { get; }
 
         /// <inheritdoc />
-        public bool IsEphemeral { get; }
+        public bool IsEphemeral => Segment.IsEphemeral;
 
         /// <inheritdoc />
-        public bool IsLarge { get; }
+        public bool IsLarge => Segment.IsLarge;
 
         /// <inheritdoc />
-        public ulong Length { get; }
+        public ulong Length => Segment.Length;
 
         /// <inheritdoc />
-        public int ProcessorAffinity { get; }
+        public int ProcessorAffinity => Segment.ProcessorAffinity;
 
         /// <inheritdoc />
-        public ulong ReservedEnd { get; }
+        public ulong ReservedEnd => Segment.ReservedEnd;
 
         /// <inheritdoc />
-        public ulong Start { get; }
+        public ulong Start => Segment.Start;
     }
 }

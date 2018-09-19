@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
@@ -9,51 +10,45 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public ClrThreadPoolAdapter(Microsoft.Diagnostics.Runtime.ClrThreadPool threadPool)
         {
-            _threadPool = threadPool ?? throw new ArgumentNullException(nameof(threadPool));
+            ThreadPool = threadPool ?? throw new ArgumentNullException(nameof(threadPool));
         }
 
-        internal Microsoft.Diagnostics.Runtime.ClrThreadPool _threadPool;
+        internal Microsoft.Diagnostics.Runtime.ClrThreadPool ThreadPool;
 
         /// <inheritdoc />
-        public IEnumerable<IManagedWorkItem> EnumerateManagedWorkItems()
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<IManagedWorkItem> EnumerateManagedWorkItems() => ThreadPool.EnumerateManagedWorkItems().Select(Converter.Convert);
 
         /// <inheritdoc />
-        public IEnumerable<INativeWorkItem> EnumerateNativeWorkItems()
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<INativeWorkItem> EnumerateNativeWorkItems() => ThreadPool.EnumerateNativeWorkItems().Select(Converter.Convert);
 
         /// <inheritdoc />
-        public int CpuUtilization { get; }
+        public int CpuUtilization => ThreadPool.CpuUtilization;
 
         /// <inheritdoc />
-        public int FreeCompletionPortCount { get; }
+        public int FreeCompletionPortCount => ThreadPool.FreeCompletionPortCount;
 
         /// <inheritdoc />
-        public int IdleThreads { get; }
+        public int IdleThreads => ThreadPool.IdleThreads;
 
         /// <inheritdoc />
-        public int MaxCompletionPorts { get; }
+        public int MaxCompletionPorts => ThreadPool.MaxCompletionPorts;
 
         /// <inheritdoc />
-        public int MaxFreeCompletionPorts { get; }
+        public int MaxFreeCompletionPorts => ThreadPool.MaxFreeCompletionPorts;
 
         /// <inheritdoc />
-        public int MaxThreads { get; }
+        public int MaxThreads => ThreadPool.MaxThreads;
 
         /// <inheritdoc />
-        public int MinCompletionPorts { get; }
+        public int MinCompletionPorts => ThreadPool.MinCompletionPorts;
 
         /// <inheritdoc />
-        public int MinThreads { get; }
+        public int MinThreads => ThreadPool.MinThreads;
 
         /// <inheritdoc />
-        public int RunningThreads { get; }
+        public int RunningThreads => ThreadPool.RunningThreads;
 
         /// <inheritdoc />
-        public int TotalThreads { get; }
+        public int TotalThreads => ThreadPool.TotalThreads;
     }
 }

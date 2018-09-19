@@ -18,13 +18,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
     ///     Interface IClrField
     /// </summary>
     public interface IClrField
-    {
-        /// <summary>
-        ///     Returns a string representation of this object.
-        /// </summary>
-        /// <returns>A string representation of this object.</returns>
-        string ToString();
-
+    { 
         /// <summary>
         ///     Returns the element type of this field.  Note that even when Type is null, this should still tell you
         ///     the element type of the field.

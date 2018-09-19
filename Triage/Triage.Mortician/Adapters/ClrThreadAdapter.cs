@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
@@ -9,34 +10,30 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public ClrThreadAdapter(Microsoft.Diagnostics.Runtime.ClrThread thread)
         {
-            _thread = thread ?? throw new ArgumentNullException(nameof(thread));
+            Thread = thread ?? throw new ArgumentNullException(nameof(thread));
+            BlockingObjects = thread.BlockingObjects.Select(Converter.Convert).ToList();
+            CurrentException = Converter.Convert(thread.CurrentException);
+            GcMode = Converter.Convert(thread.GcMode);
+            Runtime = Converter.Convert(thread.Runtime);
+            StackTrace = thread.StackTrace.Select(Converter.Convert).ToList();
         }
 
-        internal Microsoft.Diagnostics.Runtime.ClrThread _thread;
+        internal Microsoft.Diagnostics.Runtime.ClrThread Thread;
 
         /// <inheritdoc />
-        public IEnumerable<IClrRoot> EnumerateStackObjects()
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<IClrRoot> EnumerateStackObjects() => Thread.EnumerateStackObjects().Select(Converter.Convert);
 
         /// <inheritdoc />
-        public IEnumerable<IClrRoot> EnumerateStackObjects(bool includePossiblyDead)
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<IClrRoot> EnumerateStackObjects(bool includePossiblyDead) => Thread.EnumerateStackObjects(includePossiblyDead).Select(Converter.Convert);
 
         /// <inheritdoc />
-        public IEnumerable<IClrStackFrame> EnumerateStackTrace()
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<IClrStackFrame> EnumerateStackTrace() => Thread.EnumerateStackTrace().Select(Converter.Convert);
 
         /// <inheritdoc />
-        public ulong Address { get; }
+        public ulong Address => Thread.Address;
 
         /// <inheritdoc />
-        public ulong AppDomain { get; }
+        public ulong AppDomain => Thread.AppDomain;
 
         /// <inheritdoc />
         public IList<IBlockingObject> BlockingObjects { get; }
@@ -48,90 +45,90 @@ namespace Triage.Mortician.Adapters
         public GcMode GcMode { get; }
 
         /// <inheritdoc />
-        public bool IsAborted { get; }
+        public bool IsAborted => Thread.IsAborted;
 
         /// <inheritdoc />
-        public bool IsAbortRequested { get; }
+        public bool IsAbortRequested => Thread.IsAbortRequested;
 
         /// <inheritdoc />
-        public bool IsAlive { get; }
+        public bool IsAlive => Thread.IsAlive;
 
         /// <inheritdoc />
-        public bool IsBackground { get; }
+        public bool IsBackground => Thread.IsBackground;
 
         /// <inheritdoc />
-        public bool IsCoInitialized { get; }
+        public bool IsCoInitialized => Thread.IsCoInitialized;
 
         /// <inheritdoc />
-        public bool IsDebuggerHelper { get; }
+        public bool IsDebuggerHelper => Thread.IsDebuggerHelper;
 
         /// <inheritdoc />
-        public bool IsDebugSuspended { get; }
+        public bool IsDebugSuspended => Thread.IsDebugSuspended;
 
         /// <inheritdoc />
-        public bool IsFinalizer { get; }
+        public bool IsFinalizer => Thread.IsFinalizer;
 
         /// <inheritdoc />
-        public bool IsGC { get; }
+        public bool IsGC => Thread.IsGC;
 
         /// <inheritdoc />
-        public bool IsGCSuspendPending { get; }
+        public bool IsGCSuspendPending => Thread.IsGCSuspendPending;
 
         /// <inheritdoc />
-        public bool IsMTA { get; }
+        public bool IsMTA => Thread.IsMTA;
 
         /// <inheritdoc />
-        public bool IsShutdownHelper { get; }
+        public bool IsShutdownHelper => Thread.IsShutdownHelper;
 
         /// <inheritdoc />
-        public bool IsSTA { get; }
+        public bool IsSTA => Thread.IsSTA;
 
         /// <inheritdoc />
-        public bool IsSuspendingEE { get; }
+        public bool IsSuspendingEE => Thread.IsSuspendingEE;
 
         /// <inheritdoc />
-        public bool IsThreadpoolCompletionPort { get; }
+        public bool IsThreadpoolCompletionPort => Thread.IsThreadpoolCompletionPort;
 
         /// <inheritdoc />
-        public bool IsThreadpoolGate { get; }
+        public bool IsThreadpoolGate => Thread.IsThreadpoolGate;
 
         /// <inheritdoc />
-        public bool IsThreadpoolTimer { get; }
+        public bool IsThreadpoolTimer => Thread.IsThreadpoolTimer;
 
         /// <inheritdoc />
-        public bool IsThreadpoolWait { get; }
+        public bool IsThreadpoolWait => Thread.IsThreadpoolWait;
 
         /// <inheritdoc />
-        public bool IsThreadpoolWorker { get; }
+        public bool IsThreadpoolWorker => Thread.IsThreadpoolWorker;
 
         /// <inheritdoc />
-        public bool IsUnstarted { get; }
+        public bool IsUnstarted => Thread.IsUnstarted;
 
         /// <inheritdoc />
-        public bool IsUserSuspended { get; }
+        public bool IsUserSuspended => Thread.IsUserSuspended;
 
         /// <inheritdoc />
-        public uint LockCount { get; }
+        public uint LockCount => Thread.LockCount;
 
         /// <inheritdoc />
-        public int ManagedThreadId { get; }
+        public int ManagedThreadId => Thread.ManagedThreadId;
 
         /// <inheritdoc />
-        public uint OSThreadId { get; }
+        public uint OSThreadId => Thread.OSThreadId;
 
         /// <inheritdoc />
         public IClrRuntime Runtime { get; }
 
         /// <inheritdoc />
-        public ulong StackBase { get; }
+        public ulong StackBase => Thread.StackBase;
 
         /// <inheritdoc />
-        public ulong StackLimit { get; }
+        public ulong StackLimit => Thread.StackLimit;
 
         /// <inheritdoc />
         public IList<IClrStackFrame> StackTrace { get; }
 
         /// <inheritdoc />
-        public ulong Teb { get; }
+        public ulong Teb => Thread.Teb;
     }
 }

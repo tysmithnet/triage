@@ -16,25 +16,27 @@ namespace Triage.Mortician.Adapters
         public ClrAppDomainAdapter(ClrMd.ClrAppDomain appDomain)
         {
             AppDomain = appDomain ?? throw new ArgumentNullException(nameof(appDomain));
+            Modules = appDomain.Modules.Select(Converter.Convert).ToList();
+            Runtime = Converter.Convert(appDomain.Runtime);
         }
 
         /// <inheritdoc />
-        public ulong Address { get; }
+        public ulong Address => AppDomain.Address;
 
         /// <inheritdoc />
-        public string ApplicationBase { get; }
+        public string ApplicationBase => AppDomain.ApplicationBase;
 
         /// <inheritdoc />
-        public string ConfigurationFile { get; }
+        public string ConfigurationFile => AppDomain.ConfigurationFile;
 
         /// <inheritdoc />
-        public int Id { get; }
+        public int Id => AppDomain.Id;
 
         /// <inheritdoc />
         public IList<IClrModule> Modules { get; }
 
         /// <inheritdoc />
-        public string Name { get; }
+        public string Name => AppDomain.Name;
 
         /// <inheritdoc />
         public IClrRuntime Runtime { get; }

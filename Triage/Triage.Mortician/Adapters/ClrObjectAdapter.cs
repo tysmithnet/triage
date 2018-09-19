@@ -17,40 +17,28 @@ namespace Triage.Mortician.Adapters
         internal Microsoft.Diagnostics.Runtime.ClrObject Object;
 
         /// <inheritdoc />
-        public IEnumerable<IClrObject> EnumerateObjectReferences(bool carefully = false)
-        {
-            return Object.EnumerateObjectReferences(carefully).Select(Converter.Convert);
-        }
+        public IEnumerable<IClrObject> EnumerateObjectReferences(bool carefully = false) => Object.EnumerateObjectReferences(carefully).Select(Converter.Convert);
+
 
         /// <inheritdoc />
-        public bool Equals(IClrObject other)
-        {
-            return Object.Equals(other);
-        }
+        public bool Equals(IClrObject other) => Object.Equals((other as ClrObjectAdapter)?.Object);
+
 
         /// <inheritdoc />
-        public T GetField<T>(string fieldName) where T : struct
-        {
-            return Object.GetField<T>(fieldName);
-        }
+        public T GetField<T>(string fieldName) where T : struct => Object.GetField<T>(fieldName);
+
 
         /// <inheritdoc />
-        public IClrObject GetObjectField(string fieldName)
-        {
-            return Converter.Convert(Object.GetObjectField(fieldName));
-        }
+        public IClrObject GetObjectField(string fieldName) => Converter.Convert(Object.GetObjectField(fieldName));
+
 
         /// <inheritdoc />
-        public string GetStringField(string fieldName)
-        {
-            return Object.GetStringField(fieldName);
-        }
+        public string GetStringField(string fieldName) => Object.GetStringField(fieldName);
+
 
         /// <inheritdoc />
-        public IClrValueClass GetValueClassField(string fieldName)
-        {
-            return Converter.Convert(Object.GetValueClassField(fieldName));
-        }
+        public IClrValueClass GetValueClassField(string fieldName) => Converter.Convert(Object.GetValueClassField(fieldName));
+
 
         /// <inheritdoc />
         public ulong Address => Object.Address;
