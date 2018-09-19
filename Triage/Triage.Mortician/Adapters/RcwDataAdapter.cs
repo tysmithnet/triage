@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
@@ -9,33 +10,34 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public RcwDataAdapter(Microsoft.Diagnostics.Runtime.RcwData rcwData)
         {
-            _rcwData = rcwData ?? throw new ArgumentNullException(nameof(rcwData));
+            RcwData = rcwData ?? throw new ArgumentNullException(nameof(rcwData));
+            Interfaces = rcwData.Interfaces.Select(Converter.Convert).ToList();
         }
 
-        internal Microsoft.Diagnostics.Runtime.RcwData _rcwData;
+        internal Microsoft.Diagnostics.Runtime.RcwData RcwData;
 
         /// <inheritdoc />
-        public uint CreatorThread { get; }
+        public uint CreatorThread => RcwData.CreatorThread;
 
         /// <inheritdoc />
-        public bool Disconnected { get; }
+        public bool Disconnected => RcwData.Disconnected;
 
         /// <inheritdoc />
         public IList<IComInterfaceData> Interfaces { get; }
 
         /// <inheritdoc />
-        public ulong IUnknown { get; }
+        public ulong IUnknown => RcwData.IUnknown;
 
         /// <inheritdoc />
-        public ulong Object { get; }
+        public ulong Object => RcwData.Object;
 
         /// <inheritdoc />
-        public int RefCount { get; }
+        public int RefCount => RcwData.RefCount;
 
         /// <inheritdoc />
-        public ulong VTablePointer { get; }
+        public ulong VTablePointer => RcwData.VTablePointer;
 
         /// <inheritdoc />
-        public ulong WinRTObject { get; }
+        public ulong WinRTObject => RcwData.WinRTObject;
     }
 }

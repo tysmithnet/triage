@@ -23,12 +23,12 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     The path from Root to a given target object.
         /// </summary>
         /// <value>The path.</value>
-        IClrObject[] Path { get; set; }
+        IClrObject[] Path { get;  }
 
         /// <summary>
         ///     The location that roots the object.
         /// </summary>
         /// <value>The root.</value>
-        IClrRoot Root { get; set; }
+        IClrRoot Root { get;  }
     }
 }

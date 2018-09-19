@@ -100,10 +100,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\BlockingObjectAdapter.cs" />
     <Compile Include="Adapters\CcwDataAdapter.cs" />
     <Compile Include="Adapters\ClrAppDomainAdapter.cs" />
     <Compile Include="Adapters\ClrInfoAdapter.cs" />
+    <Compile Include="Adapters\ClrInstanceFieldAdapter.cs" />
+    <Compile Include="Adapters\ClrInterfaceAdapter.cs" />
     <Compile Include="Adapters\ClrMethodAdapter.cs" />
+    <Compile Include="Adapters\ClrModuleAdapter.cs" />
+    <Compile Include="Adapters\ComInterfaceDataAdapter.cs" />
     <Compile Include="Adapters\HandleAdapter.cs" />
     <Compile Include="Adapters\HeapAdapter.cs" />
     <Compile Include="Adapters\StackFrameAdapter.cs" />

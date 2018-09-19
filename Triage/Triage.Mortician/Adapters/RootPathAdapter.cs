@@ -1,4 +1,5 @@
-﻿using Triage.Mortician.Core.ClrMdAbstractions;
+﻿using System.Linq;
+using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
 {
@@ -7,15 +8,17 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public RootPathAdapter(Microsoft.Diagnostics.Runtime.RootPath rootPath)
         {
-            _rootPath = rootPath;
+            RootPath = rootPath;
+            Path = rootPath.Path.Select(Converter.Convert).ToArray();
+            Root = Converter.Convert(rootPath.Root);
         }
 
-        internal Microsoft.Diagnostics.Runtime.RootPath _rootPath;
+        internal Microsoft.Diagnostics.Runtime.RootPath RootPath;
 
         /// <inheritdoc />
-        public IClrObject[] Path { get; set; }
+        public IClrObject[] Path { get; }
 
         /// <inheritdoc />
-        public IClrRoot Root { get; set; }
+        public IClrRoot Root { get; }
     }
 }

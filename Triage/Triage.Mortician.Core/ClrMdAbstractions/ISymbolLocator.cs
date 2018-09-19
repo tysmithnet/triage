@@ -153,13 +153,13 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     all symbol files are downloaded to on your computer.
         /// </summary>
         /// <value>The symbol cache.</value>
-        string SymbolCache { get; set; }
+        string SymbolCache { get;  }
 
         /// <summary>
         ///     Gets or sets the SymbolPath this object uses to attempt to find PDBs and binaries.
         /// </summary>
         /// <value>The symbol path.</value>
-        string SymbolPath { get; set; }
+        string SymbolPath { get;  }
 
         /// <summary>
         ///     The timeout (in milliseconds) used when contacting each individual server.  This is not a total timeout for the
@@ -167,6 +167,6 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     symbol server operation.
         /// </summary>
         /// <value>The timeout.</value>
-        int Timeout { get; set; }
+        int Timeout { get;  }
     }
 }

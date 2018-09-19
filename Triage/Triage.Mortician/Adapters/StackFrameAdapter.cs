@@ -16,6 +16,9 @@ namespace Triage.Mortician.Adapters
         public StackFrameAdapter(ClrMd.ClrStackFrame frame)
         {
             Frame = frame ?? throw new ArgumentNullException(nameof(frame));
+            Thread = Converter.Convert(Frame.Thread);
+            Kind = Converter.Convert(Frame.Kind);
+            Method = Converter.Convert(Frame.Method);
         }
 
         /// <inheritdoc />
@@ -25,10 +28,10 @@ namespace Triage.Mortician.Adapters
         public ulong InstructionPointer => Frame.InstructionPointer;
 
         /// <inheritdoc />
-        public ClrStackFrameType Kind => Converter.Convert(Frame.Kind);
+        public ClrStackFrameType Kind { get; }
 
         /// <inheritdoc />
-        public IClrMethod Method => Converter.Convert(Frame.Method);
+        public IClrMethod Method { get; }
 
         /// <inheritdoc />
         public string ModuleName => Frame.ModuleName;
@@ -37,7 +40,7 @@ namespace Triage.Mortician.Adapters
         public ulong StackPointer => Frame.StackPointer;
 
         /// <inheritdoc />
-        public IClrThread Thread => Converter.Convert(Frame.Thread);
+        public IClrThread Thread { get; }
 
     }
 }

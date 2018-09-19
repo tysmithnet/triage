@@ -9,37 +9,27 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public PeFileAdapter(PEFile peFile)
         {
-            _peFile = peFile ?? throw new ArgumentNullException(nameof(peFile));
+            PeFile = peFile ?? throw new ArgumentNullException(nameof(peFile));
+            PdbInfo = Converter.Convert(peFile.PdbInfo);
         }
 
-        internal PEFile _peFile;
+        internal PEFile PeFile;
 
         /// <inheritdoc />
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+        public void Dispose() => PeFile.Dispose();
 
         /// <inheritdoc />
-        public IFileVersionInfo GetFileVersionInfo()
-        {
-            throw new NotImplementedException();
-        }
+        public IFileVersionInfo GetFileVersionInfo() => Converter.Convert(PeFile.GetFileVersionInfo());
 
         /// <inheritdoc />
-        public bool GetPdbSignature(out string pdbName, out Guid pdbGuid, out int pdbAge, bool first = false)
-        {
-            throw new NotImplementedException();
-        }
+        public bool GetPdbSignature(out string pdbName, out Guid pdbGuid, out int pdbAge, bool first = false) =>
+            PeFile.GetPdbSignature(out pdbName, out pdbGuid, out pdbAge, first);
 
         /// <inheritdoc />
-        public string GetSxSManfest()
-        {
-            throw new NotImplementedException();
-        }
+        public string GetSxSManfest() => PeFile.GetSxSManfest();
 
         /// <inheritdoc />
-        public bool Disposed { get; }
+        public bool Disposed => PeFile.Disposed;
 
         /// <inheritdoc />
         public IPdbInfo PdbInfo { get; }
