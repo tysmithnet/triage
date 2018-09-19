@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
@@ -9,28 +10,20 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public DataTargetAdapter(Microsoft.Diagnostics.Runtime.DataTarget dataTarget)
         {
-            _dataTarget = dataTarget ?? throw new ArgumentNullException(nameof(dataTarget));
+            DataTarget = dataTarget ?? throw new ArgumentNullException(nameof(dataTarget));
         }
 
-        internal Microsoft.Diagnostics.Runtime.DataTarget _dataTarget;
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
+        internal Microsoft.Diagnostics.Runtime.DataTarget DataTarget;
 
         /// <inheritdoc />
-        public IEnumerable<IModuleInfo> EnumerateModules()
-        {
-            throw new NotImplementedException();
-        }
+        public void Dispose() => DataTarget.Dispose();
 
         /// <inheritdoc />
-        public bool ReadProcessMemory(ulong address, byte[] buffer, int bytesRequested, out int bytesRead)
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<IModuleInfo> EnumerateModules() => DataTarget.EnumerateModules().Select(Converter.Convert);
+
+        /// <inheritdoc />
+        public bool ReadProcessMemory(ulong address, byte[] buffer, int bytesRequested, out int bytesRead) =>
+            DataTarget.ReadProcessMemory(address, buffer, bytesRequested, out bytesRead);
 
         /// <inheritdoc />
         public Architecture Architecture { get; }
@@ -42,10 +35,10 @@ namespace Triage.Mortician.Adapters
         public IDataReader DataReader { get; }
 
         /// <inheritdoc />
-        public bool IsMinidump { get; }
+        public bool IsMinidump => DataTarget.IsMinidump;
 
         /// <inheritdoc />
-        public uint PointerSize { get; }
+        public uint PointerSize => DataTarget.PointerSize;
 
         /// <inheritdoc />
         public ISymbolLocator SymbolLocator { get; set; }

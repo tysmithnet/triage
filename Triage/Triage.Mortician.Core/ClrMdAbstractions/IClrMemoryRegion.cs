@@ -40,7 +40,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     The start address of the memory region.
         /// </summary>
         /// <value>The address.</value>
-        ulong Address { get; set; }
+        ulong Address { get; }
 
         /// <summary>
         ///     The AppDomain pointer that corresponds to this heap.  You can obtain the
@@ -56,14 +56,14 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     HasGCHeapData is true.
         /// </summary>
         /// <value>The type of the gc segment.</value>
-        GcSegmentType GCSegmentType { get; set; }
+        GcSegmentType GcSegmentType { get; }
 
         /// <summary>
         ///     Returns the heap number associated with this data.  Returns -1 if no
         ///     GC heap is associated with this memory region.
         /// </summary>
         /// <value>The heap number.</value>
-        int HeapNumber { get; set; }
+        int HeapNumber { get; }
 
         /// <summary>
         ///     The Module pointer that corresponds to this heap.  You can obtain the
@@ -77,12 +77,12 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     The size of the memory region in bytes.
         /// </summary>
         /// <value>The size.</value>
-        ulong Size { get; set; }
+        ulong Size { get; }
 
         /// <summary>
         ///     The type of heap/memory that the region contains.
         /// </summary>
         /// <value>The type.</value>
-        ClrMemoryRegionType Type { get; set; }
+        ClrMemoryRegionType MemoryRegionType { get; }
     }
 }

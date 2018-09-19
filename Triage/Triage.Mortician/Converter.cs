@@ -25,6 +25,21 @@ namespace Triage.Mortician
             }
         }
 
+        public static GcSegmentType Convert(ClrMd.GCSegmentType segmentType)
+        {
+            switch (segmentType)
+            {
+                case ClrMd.GCSegmentType.Ephemeral:
+                    return GcSegmentType.Ephemeral;
+                case ClrMd.GCSegmentType.Regular:
+                    return GcSegmentType.Regular;
+                case ClrMd.GCSegmentType.LargeObject:
+                    return GcSegmentType.LargeObject;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(segmentType), segmentType, null);
+            }
+        }
+
         public static IClrInstanceField Convert(ClrMd.ClrInstanceField instanceField)
         {
             return new ClrInstanceFieldAdapter(instanceField);
@@ -481,7 +496,7 @@ namespace Triage.Mortician
 
         public static GcRootProgressEvent Convert(ClrMd.GCRootProgressEvent rootProgressEvent)
         {
-            return (source, current, total) => rootProgressEvent((source as GcRootAdapter)?._root, current, total);
+            return (source, current, total) => rootProgressEvent((source as GcRootAdapter)?.Root, current, total);
         }
 
         public static IGcRoot Convert(ClrMd.GCRoot gcRoot)

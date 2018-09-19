@@ -29,13 +29,13 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     The address of the handle itself.  That is, *ulong == Object.
         /// </summary>
         /// <value>The address.</value>
-        ulong Address { get; set; }
+        ulong Address { get; }
 
         /// <summary>
         ///     The AppDomain the handle resides in.
         /// </summary>
         /// <value>The application domain.</value>
-        IClrAppDomain AppDomain { get; set; }
+        IClrAppDomain AppDomain { get; }
 
         /// <summary>
         ///     Set only if the handle type is a DependentHandle.  Dependent handles add
@@ -45,19 +45,19 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     be 0 for any CLR prior to v4.5.
         /// </summary>
         /// <value>The dependent target.</value>
-        ulong DependentTarget { get; set; }
+        ulong DependentTarget { get; }
 
         /// <summary>
         ///     The type of the dependent target, if non 0.
         /// </summary>
         /// <value>The type of the dependent.</value>
-        IClrType DependentType { get; set; }
+        IClrType DependentType { get; }
 
         /// <summary>
         ///     Gets the type of handle.
         /// </summary>
         /// <value>The type of the handle.</value>
-        HandleType HandleType { get; set; }
+        HandleType HandleType { get; }
 
         /// <summary>
         ///     Whether or not the handle pins the object (doesn't allow the GC to
@@ -76,7 +76,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     The Object the handle roots.
         /// </summary>
         /// <value>The object.</value>
-        ulong Object { get; set; }
+        ulong Object { get; }
 
         /// <summary>
         ///     If this handle is a RefCount handle, this returns the reference count.
@@ -85,12 +85,12 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     to 1 in a v2 query since a strong RefCount handle is the common case.
         /// </summary>
         /// <value>The reference count.</value>
-        uint RefCount { get; set; }
+        uint RefCount { get; }
 
         /// <summary>
         ///     The the type of the Object.
         /// </summary>
         /// <value>The type.</value>
-        IClrType Type { get; set; }
+        IClrType Type { get; }
     }
 }

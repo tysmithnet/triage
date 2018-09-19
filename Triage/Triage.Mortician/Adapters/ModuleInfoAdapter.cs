@@ -8,37 +8,36 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public ModuleInfoAdapter(Microsoft.Diagnostics.Runtime.ModuleInfo moduleInfo)
         {
-            _moduleInfo = moduleInfo ?? throw new ArgumentNullException(nameof(moduleInfo));
+            ModuleInfo = moduleInfo ?? throw new ArgumentNullException(nameof(moduleInfo));
+            Pdb = Converter.Convert(moduleInfo.Pdb);
+            Version = Converter.Convert(moduleInfo.Version);
         }
 
-        internal Microsoft.Diagnostics.Runtime.ModuleInfo _moduleInfo;
+        internal Microsoft.Diagnostics.Runtime.ModuleInfo ModuleInfo;
 
         /// <inheritdoc />
-        public IPeFile GetPEFile()
-        {
-            throw new NotImplementedException();
-        }
+        public IPeFile GetPEFile() => Converter.Convert(ModuleInfo.GetPEFile());
 
         /// <inheritdoc />
-        public string FileName { get; set; }
+        public string FileName => ModuleInfo.FileName;
 
         /// <inheritdoc />
-        public uint FileSize { get; set; }
+        public uint FileSize => ModuleInfo.FileSize;
 
         /// <inheritdoc />
-        public ulong ImageBase { get; set; }
+        public ulong ImageBase => ModuleInfo.ImageBase;
 
         /// <inheritdoc />
-        public bool IsManaged { get; }
+        public bool IsManaged => ModuleInfo.IsManaged;
 
         /// <inheritdoc />
-        public bool IsRuntime { get; }
+        public bool IsRuntime => ModuleInfo.IsRuntime;
 
         /// <inheritdoc />
         public IPdbInfo Pdb { get; set; }
 
         /// <inheritdoc />
-        public uint TimeStamp { get; set; }
+        public uint TimeStamp => ModuleInfo.TimeStamp;
 
         /// <inheritdoc />
         public VersionInfo Version { get; set; }

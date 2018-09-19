@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
@@ -9,102 +10,64 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public DataReaderAdapter(Microsoft.Diagnostics.Runtime.IDataReader dataReader)
         {
-            _dataReader = dataReader ?? throw new ArgumentNullException(nameof(dataReader));
+            DataReader = dataReader ?? throw new ArgumentNullException(nameof(dataReader));
         }
 
-        internal Microsoft.Diagnostics.Runtime.IDataReader _dataReader;
+        internal Microsoft.Diagnostics.Runtime.IDataReader DataReader;
 
         /// <inheritdoc />
-        public void Close()
+        public void Close() => DataReader.Close();
+
+        /// <inheritdoc />
+        public IEnumerable<uint> EnumerateAllThreads() => DataReader.EnumerateAllThreads();
+
+        /// <inheritdoc />
+        public IList<IModuleInfo> EnumerateModules() => DataReader.EnumerateModules().Select(Converter.Convert).ToList();
+
+        /// <inheritdoc />
+        public void Flush() => DataReader.Flush();
+
+        /// <inheritdoc />
+        public Architecture GetArchitecture() => Converter.Convert(DataReader.GetArchitecture());
+
+        /// <inheritdoc />
+        public uint GetPointerSize() => DataReader.GetPointerSize();
+
+        /// <inheritdoc />
+        public bool GetThreadContext(uint threadID, uint contextFlags, uint contextSize, IntPtr context) =>
+            DataReader.GetThreadContext(threadID, contextFlags, contextSize, context);
+
+        /// <inheritdoc />
+        public bool GetThreadContext(uint threadID, uint contextFlags, uint contextSize, byte[] context) =>
+            DataReader.GetThreadContext(threadID, contextFlags, contextSize, context);
+
+        /// <inheritdoc />
+        public ulong GetThreadTeb(uint thread) => GetThreadTeb(thread);
+
+        /// <inheritdoc />
+        public void GetVersionInfo(ulong baseAddress, out VersionInfo version) => GetVersionInfo(baseAddress, out version);
+
+        /// <inheritdoc />
+        public uint ReadDwordUnsafe(ulong addr) => ReadDwordUnsafe(addr);
+
+        /// <inheritdoc />
+        public bool ReadMemory(ulong address, byte[] buffer, int bytesRequested, out int bytesRead) => DataReader.ReadMemory(address, buffer, bytesRequested, out bytesRead);
+
+        /// <inheritdoc />
+        public bool ReadMemory(ulong address, IntPtr buffer, int bytesRequested, out int bytesRead) => DataReader.ReadMemory(address, buffer, bytesRequested, out bytesRead);
+
+        /// <inheritdoc />
+        public ulong ReadPointerUnsafe(ulong addr) => DataReader.ReadPointerUnsafe(addr);
+
+        /// <inheritdoc />
+        public bool VirtualQuery(ulong addr, out VirtualQueryData virtualQuery)
         {
-            throw new NotImplementedException();
+            var res = DataReader.VirtualQuery(addr, out var outVar);
+            virtualQuery = Converter.Convert(outVar);
+            return res;
         }
 
         /// <inheritdoc />
-        public IEnumerable<uint> EnumerateAllThreads()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public IList<IModuleInfo> EnumerateModules()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void Flush()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public Architecture GetArchitecture()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public uint GetPointerSize()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public bool GetThreadContext(uint threadID, uint contextFlags, uint contextSize, IntPtr context)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public bool GetThreadContext(uint threadID, uint contextFlags, uint contextSize, byte[] context)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public ulong GetThreadTeb(uint thread)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void GetVersionInfo(ulong baseAddress, out VersionInfo version)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public uint ReadDwordUnsafe(ulong addr)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public bool ReadMemory(ulong address, byte[] buffer, int bytesRequested, out int bytesRead)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public bool ReadMemory(ulong address, IntPtr buffer, int bytesRequested, out int bytesRead)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public ulong ReadPointerUnsafe(ulong addr)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public bool VirtualQuery(ulong addr, out VirtualQueryData vq)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public bool IsMinidump { get; }
+        public bool IsMinidump => DataReader.IsMinidump;
     }
 }

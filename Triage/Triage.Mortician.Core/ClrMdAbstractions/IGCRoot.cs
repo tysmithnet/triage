@@ -56,7 +56,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         /// <param name="unique">Whether to only enumerate fully unique paths.</param>
         /// <param name="cancelToken">A cancellation token to stop enumeration.</param>
         /// <returns>A path from 'source' to 'target' if one exists, null if one does not.</returns>
-        IEnumerable<LinkedList<IClrObject>> EnumerateAllPaths(ulong source, ulong target, bool unique,
+        IEnumerable<IList<IClrObject>> EnumerateAllPaths(ulong source, ulong target, bool unique,
             CancellationToken cancelToken);
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         /// <param name="target">The object we are searching for.</param>
         /// <param name="cancelToken">A cancellation token to stop searching.</param>
         /// <returns>A path from 'source' to 'target' if one exists, null if one does not.</returns>
-        LinkedList<IClrObject> FindSinglePath(ulong source, ulong target, CancellationToken cancelToken);
+        IList<IClrObject> FindSinglePath(ulong source, ulong target, CancellationToken cancelToken);
 
         /// <summary>
         ///     Whether or not to allow GC root to search in parallel or not.  Note that GCRoot does not have to respect this
@@ -93,7 +93,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     is only used when we can ensure all relevant data is local memory and we do not need to touch the debuggee.
         /// </summary>
         /// <value><c>true</c> if [allow parallel search]; otherwise, <c>false</c>.</value>
-        bool AllowParallelSearch { get; set; }
+        bool AllowParallelSearch { get;}
 
         /// <summary>
         ///     Returns the heap that's associated with this GCRoot instance.
@@ -111,6 +111,6 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     The maximum number of tasks allowed to run in parallel, if GCRoot does a parallel search.
         /// </summary>
         /// <value>The maximum tasks allowed.</value>
-        int MaximumTasksAllowed { get; set; }
+        int MaximumTasksAllowed { get; }
     }
 }

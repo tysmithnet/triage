@@ -36,19 +36,19 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     The filename of the module on disk.
         /// </summary>
         /// <value>The name of the file.</value>
-        string FileName { get; set; }
+        string FileName { get;  }
 
         /// <summary>
         ///     The filesize of the image.
         /// </summary>
         /// <value>The size of the file.</value>
-        uint FileSize { get; set; }
+        uint FileSize { get;  }
 
         /// <summary>
         ///     The base address of the object.
         /// </summary>
         /// <value>The image base.</value>
-        ulong ImageBase { get; set; }
+        ulong ImageBase { get;  }
 
         /// <summary>
         ///     Whether the module is managed or not.
@@ -66,18 +66,18 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     The PDB associated with this module.
         /// </summary>
         /// <value>The PDB.</value>
-        IPdbInfo Pdb { get; set; }
+        IPdbInfo Pdb { get;  }
 
         /// <summary>
         ///     The build timestamp of the image.
         /// </summary>
         /// <value>The time stamp.</value>
-        uint TimeStamp { get; set; }
+        uint TimeStamp { get;  }
 
         /// <summary>
         ///     The version information for this file.
         /// </summary>
         /// <value>The version.</value>
-        VersionInfo Version { get; set; }
+        VersionInfo Version { get;  }
     }
 }

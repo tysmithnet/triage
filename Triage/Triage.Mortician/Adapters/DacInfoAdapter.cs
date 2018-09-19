@@ -8,25 +8,28 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public DacInfoAdapter(Microsoft.Diagnostics.Runtime.DacInfo dacInfo)
         {
-            _dacInfo = dacInfo ?? throw new ArgumentNullException(nameof(dacInfo));
+            DacInfo = dacInfo ?? throw new ArgumentNullException(nameof(dacInfo));
+            Pdb = Converter.Convert(dacInfo.Pdb);
+            TargetArchitecture = Converter.Convert(dacInfo.TargetArchitecture);
+            Version = Converter.Convert(dacInfo.Version);
         }
 
-        internal Microsoft.Diagnostics.Runtime.DacInfo _dacInfo;
+        internal Microsoft.Diagnostics.Runtime.DacInfo DacInfo;
 
         /// <inheritdoc />
-        public string FileName { get; set; }
+        public string FileName => DacInfo.FileName;
 
         /// <inheritdoc />
-        public uint FileSize { get; set; }
+        public uint FileSize => DacInfo.FileSize;
 
         /// <inheritdoc />
-        public ulong ImageBase { get; set; }
+        public ulong ImageBase => DacInfo.ImageBase;
 
         /// <inheritdoc />
-        public bool IsManaged { get; }
+        public bool IsManaged => DacInfo.IsManaged;
 
         /// <inheritdoc />
-        public bool IsRuntime { get; }
+        public bool IsRuntime => DacInfo.IsRuntime;
 
         /// <inheritdoc />
         public IPdbInfo Pdb { get; set; }
@@ -38,7 +41,7 @@ namespace Triage.Mortician.Adapters
         public Architecture TargetArchitecture { get; set; }
 
         /// <inheritdoc />
-        public uint TimeStamp { get; set; }
+        public uint TimeStamp => DacInfo.TimeStamp;
 
         /// <inheritdoc />
         public VersionInfo Version { get; set; }

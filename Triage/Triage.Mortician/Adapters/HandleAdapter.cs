@@ -11,16 +11,20 @@ namespace Triage.Mortician.Adapters
         public HandleAdapter(Microsoft.Diagnostics.Runtime.ClrHandle handle)
         {
             Handle = handle ?? throw new ArgumentNullException(nameof(handle));
+            AppDomain = Converter.Convert(handle.AppDomain);
+            DependentType = Converter.Convert(handle.DependentType);
+            HandleType = Converter.Convert(handle.HandleType);
+            Type = Converter.Convert(handle.Type);
         }
 
         /// <inheritdoc />
-        public ulong Address { get; set; }
+        public ulong Address => Handle.Address;
 
         /// <inheritdoc />
         public IClrAppDomain AppDomain { get; set; }
 
         /// <inheritdoc />
-        public ulong DependentTarget { get; set; }
+        public ulong DependentTarget => Handle.DependentTarget;
 
         /// <inheritdoc />
         public IClrType DependentType { get; set; }
@@ -29,16 +33,16 @@ namespace Triage.Mortician.Adapters
         public HandleType HandleType { get; set; }
 
         /// <inheritdoc />
-        public bool IsPinned { get; }
+        public bool IsPinned => Handle.IsPinned;
 
         /// <inheritdoc />
-        public bool IsStrong { get; }
+        public bool IsStrong => Handle.IsStrong;
 
         /// <inheritdoc />
-        public ulong Object { get; set; }
+        public ulong Object => Handle.Object;
 
         /// <inheritdoc />
-        public uint RefCount { get; set; }
+        public uint RefCount => Handle.RefCount;
 
         /// <inheritdoc />
         public IClrType Type { get; set; }

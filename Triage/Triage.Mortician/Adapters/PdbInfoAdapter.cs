@@ -8,18 +8,18 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public PdbInfoAdapter(Microsoft.Diagnostics.Runtime.PdbInfo pdbInfo)
         {
-            _pdbInfo = pdbInfo ?? throw new ArgumentNullException(nameof(pdbInfo));
+            PdbInfo = pdbInfo ?? throw new ArgumentNullException(nameof(pdbInfo));
         }
 
-        internal Microsoft.Diagnostics.Runtime.PdbInfo _pdbInfo;
+        internal Microsoft.Diagnostics.Runtime.PdbInfo PdbInfo;
 
         /// <inheritdoc />
-        public string FileName { get; set; }
+        public string FileName => PdbInfo.FileName;
 
         /// <inheritdoc />
-        public Guid Guid { get; set; }
+        public Guid Guid => PdbInfo.Guid;
 
         /// <inheritdoc />
-        public int Revision { get; set; }
+        public int Revision => PdbInfo.Revision;
     }
 }

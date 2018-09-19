@@ -9,15 +9,15 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public FileVersionInfoAdapter(FileVersionInfo fileVersionInfo)
         {
-            _fileVersionInfo = fileVersionInfo ?? throw new ArgumentNullException(nameof(fileVersionInfo));
+            FileVersionInfo = fileVersionInfo ?? throw new ArgumentNullException(nameof(fileVersionInfo));
         }
 
-        private FileVersionInfo _fileVersionInfo;
+        internal FileVersionInfo FileVersionInfo;
 
         /// <inheritdoc />
-        public string Comments { get; }
+        public string Comments => FileVersionInfo.Comments;
 
         /// <inheritdoc />
-        public string FileVersion { get; }
+        public string FileVersion => FileVersionInfo.FileVersion;
     }
 }

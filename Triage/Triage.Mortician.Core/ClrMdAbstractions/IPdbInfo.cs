@@ -44,18 +44,18 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     The filename of the pdb.
         /// </summary>
         /// <value>The name of the file.</value>
-        string FileName { get; set; }
+        string FileName { get;  }
 
         /// <summary>
         ///     The Guid of the PDB.
         /// </summary>
         /// <value>The unique identifier.</value>
-        Guid Guid { get; set; }
+        Guid Guid { get;  }
 
         /// <summary>
         ///     The pdb revision.
         /// </summary>
         /// <value>The revision.</value>
-        int Revision { get; set; }
+        int Revision { get;  }
     }
 }

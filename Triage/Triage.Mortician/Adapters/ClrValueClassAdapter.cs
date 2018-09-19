@@ -8,40 +8,29 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public ClrValueClassAdapter(Microsoft.Diagnostics.Runtime.ClrValueClass valueClass)
         {
-            _valueClass = valueClass;
+            ValueClass = valueClass;
+            Type = Converter.Convert(valueClass.Type);
         }
 
-        internal Microsoft.Diagnostics.Runtime.ClrValueClass _valueClass;
+        internal Microsoft.Diagnostics.Runtime.ClrValueClass ValueClass;
 
         /// <inheritdoc />
-        public T GetField<T>(string fieldName) where T : struct
-        {
-            throw new NotImplementedException();
-        }
+        public T GetField<T>(string fieldName) where T : struct => ValueClass.GetField<T>(fieldName);
 
         /// <inheritdoc />
-        public IClrObject GetObjectField(string fieldName)
-        {
-            throw new NotImplementedException();
-        }
+        public IClrObject GetObjectField(string fieldName) => Converter.Convert(ValueClass.GetObjectField(fieldName));
 
         /// <inheritdoc />
-        public string GetStringField(string fieldName)
-        {
-            throw new NotImplementedException();
-        }
+        public string GetStringField(string fieldName) => ValueClass.GetStringField(fieldName);
 
         /// <inheritdoc />
-        public IClrValueClass GetValueClassField(string fieldName)
-        {
-            throw new NotImplementedException();
-        }
+        public IClrValueClass GetValueClassField(string fieldName) => Converter.Convert(ValueClass.GetValueClassField(fieldName));
 
         /// <inheritdoc />
-        public ulong Address { get; }
+        public ulong Address => ValueClass.Address;
 
         /// <inheritdoc />
-        public string HexAddress { get; }
+        public string HexAddress => ValueClass.HexAddress;
 
         /// <inheritdoc />
         public IClrType Type { get; }

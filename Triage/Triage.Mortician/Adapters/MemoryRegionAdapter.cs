@@ -10,35 +10,35 @@ namespace Triage.Mortician.Adapters
         public MemoryRegionAdapter(ClrMemoryRegion memoryRegion)
         {
             MemoryRegion = memoryRegion ?? throw new ArgumentNullException(nameof(memoryRegion));
+            AppDomain = Converter.Convert(memoryRegion.AppDomain);
+            GcSegmentType = Converter.Convert(memoryRegion.GCSegmentType);
+            MemoryRegionType = Converter.Convert(memoryRegion.Type);
         }
 
         internal ClrMemoryRegion MemoryRegion { get; set; }
 
         /// <inheritdoc />
-        public string ToString(bool detailed)
-        {
-            throw new NotImplementedException();
-        }
+        public string ToString(bool detailed) => MemoryRegion.ToString(detailed);
 
         /// <inheritdoc />
-        public ulong Address { get; set; }
+        public ulong Address => MemoryRegion.Address;
 
         /// <inheritdoc />
         public IClrAppDomain AppDomain { get; }
 
         /// <inheritdoc />
-        public GcSegmentType GCSegmentType { get; set; }
+        public GcSegmentType GcSegmentType { get; set; }
 
         /// <inheritdoc />
-        public int HeapNumber { get; set; }
+        public int HeapNumber => MemoryRegion.HeapNumber;
 
         /// <inheritdoc />
-        public string Module { get; }
+        public string Module => MemoryRegion.Module;
 
         /// <inheritdoc />
-        public ulong Size { get; set; }
+        public ulong Size => MemoryRegion.Size;
 
         /// <inheritdoc />
-        public ClrMemoryRegionType Type { get; set; }
+        public ClrMemoryRegionType MemoryRegionType { get; set; }
     }
 }

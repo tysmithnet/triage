@@ -8,16 +8,17 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public NativeWorkItemAdapter(Microsoft.Diagnostics.Runtime.NativeWorkItem nativeWorkItem)
         {
-            _nativeWorkItem = nativeWorkItem ?? throw new ArgumentNullException(nameof(nativeWorkItem));
+            NativeWorkItem = nativeWorkItem ?? throw new ArgumentNullException(nameof(nativeWorkItem));
+            Kind = Converter.Convert(nativeWorkItem.Kind);
         }
 
-        internal Microsoft.Diagnostics.Runtime.NativeWorkItem _nativeWorkItem;
+        internal Microsoft.Diagnostics.Runtime.NativeWorkItem NativeWorkItem;
 
         /// <inheritdoc />
-        public ulong Callback { get; }
+        public ulong Callback => NativeWorkItem.Callback;
 
         /// <inheritdoc />
-        public ulong Data { get; }
+        public ulong Data => NativeWorkItem.Data;
 
         /// <inheritdoc />
         public WorkItemKind Kind { get; }

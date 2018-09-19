@@ -8,21 +8,21 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public HotColdRegionsAdapter(Microsoft.Diagnostics.Runtime.HotColdRegions hotColdRegions)
         {
-            _hotColdRegions = hotColdRegions ?? throw new ArgumentNullException(nameof(hotColdRegions));
+            HotColdRegions = hotColdRegions ?? throw new ArgumentNullException(nameof(hotColdRegions));
         }
 
-        internal Microsoft.Diagnostics.Runtime.HotColdRegions _hotColdRegions;
+        internal Microsoft.Diagnostics.Runtime.HotColdRegions HotColdRegions;
 
         /// <inheritdoc />
-        public uint ColdSize { get; }
+        public uint ColdSize => HotColdRegions.ColdSize;
 
         /// <inheritdoc />
-        public ulong ColdStart { get; }
+        public ulong ColdStart => HotColdRegions.ColdStart;
 
         /// <inheritdoc />
-        public uint HotSize { get; }
+        public uint HotSize => HotColdRegions.HotSize;
 
         /// <inheritdoc />
-        public ulong HotStart { get; }
+        public ulong HotStart => HotColdRegions.HotStart;
     }
 }

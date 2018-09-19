@@ -134,9 +134,9 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     Gets information about the given memory range.
         /// </summary>
         /// <param name="addr">An arbitrary address in the target process.</param>
-        /// <param name="vq">The base address and size of the allocation.</param>
+        /// <param name="virtualQuery">The base address and size of the allocation.</param>
         /// <returns>True if the address was found and vq was filled, false if the address is not valid memory.</returns>
-        bool VirtualQuery(ulong addr, out VirtualQueryData vq);
+        bool VirtualQuery(ulong addr, out VirtualQueryData virtualQuery);
 
         /// <summary>
         ///     Returns true if the data target is a minidump (or otherwise may not contain full heap data).

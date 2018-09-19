@@ -8,13 +8,14 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public ManagedWorkItemAdapter(Microsoft.Diagnostics.Runtime.ManagedWorkItem workItem)
         {
-            _workItem = workItem ?? throw new ArgumentNullException(nameof(workItem));
+            WorkItem = workItem ?? throw new ArgumentNullException(nameof(workItem));
+            Type = Converter.Convert(workItem.Type);
         }
 
-        internal Microsoft.Diagnostics.Runtime.ManagedWorkItem _workItem;
+        internal Microsoft.Diagnostics.Runtime.ManagedWorkItem WorkItem;
 
         /// <inheritdoc />
-        public ulong Object { get; }
+        public ulong Object => WorkItem.Object;
 
         /// <inheritdoc />
         public IClrType Type { get; }
