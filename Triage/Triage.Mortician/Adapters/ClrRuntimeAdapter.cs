@@ -1,95 +1,94 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
 {
     internal class ClrRuntimeAdapter : IClrRuntime
     {
+        
+
+        internal Microsoft.Diagnostics.Runtime.ClrRuntime Runtime;
+
         /// <inheritdoc />
-        public ClrRuntimeAdapter(Microsoft.Diagnostics.Runtime.ClrRuntime runtime)
-        {
-            _runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
-        }
-
-        internal Microsoft.Diagnostics.Runtime.ClrRuntime _runtime;
-
         /// <inheritdoc />
         public IEnumerable<ulong> EnumerateFinalizerQueueObjectAddresses()
         {
-            throw new NotImplementedException();
+            return Runtime.EnumerateFinalizerQueueObjectAddresses();
         }
 
         /// <inheritdoc />
         public IEnumerable<int> EnumerateGCThreads()
         {
-            throw new NotImplementedException();
+            return Runtime.EnumerateGCThreads();
         }
 
         /// <inheritdoc />
         public IEnumerable<IClrHandle> EnumerateHandles()
         {
-            throw new NotImplementedException();
+            return Runtime.EnumerateHandles().Select(Converter.Convert);
         }
 
         /// <inheritdoc />
         public IEnumerable<IClrMemoryRegion> EnumerateMemoryRegions()
         {
-            throw new NotImplementedException();
+            return Runtime.EnumerateMemoryRegions().Select(Converter.Convert);
         }
 
         /// <inheritdoc />
         public IEnumerable<IClrException> EnumerateSerializedExceptions()
         {
-            throw new NotImplementedException();
+            return Runtime.EnumerateSerializedExceptions().Select(Converter.Convert);
         }
 
         /// <inheritdoc />
         public void Flush()
         {
-            throw new NotImplementedException();
+            Runtime.Flush();
         }
 
         /// <inheritdoc />
         public ICcwData GetCcwDataByAddress(ulong addr)
         {
-            throw new NotImplementedException();
+            var ccwDataByAddress = Runtime.GetCcwDataByAddress(addr);
+            return Converter.Convert(ccwDataByAddress);
         }
 
         /// <inheritdoc />
         public IClrHeap GetHeap()
         {
-            throw new NotImplementedException();
+            return Converter.Convert(Runtime.Heap);
         }
 
         /// <inheritdoc />
         public IClrMethod GetMethodByAddress(ulong ip)
         {
-            throw new NotImplementedException();
+            return Converter.Convert(Runtime.GetMethodByAddress(ip));
         }
 
         /// <inheritdoc />
         public IClrMethod GetMethodByHandle(ulong methodHandle)
         {
-            throw new NotImplementedException();
+            return Converter.Convert(Runtime.GetMethodByHandle(methodHandle));
         }
 
         /// <inheritdoc />
         public IClrThreadPool GetThreadPool()
         {
-            throw new NotImplementedException();
+            return Converter.Convert(Runtime.GetThreadPool());
         }
 
         /// <inheritdoc />
         public bool ReadMemory(ulong address, byte[] buffer, int bytesRequested, out int bytesRead)
         {
-            throw new NotImplementedException();
+            return Runtime.ReadMemory(address, buffer, bytesRequested, out bytesRead);
         }
 
         /// <inheritdoc />
         public bool ReadPointer(ulong address, out ulong value)
         {
-            throw new NotImplementedException();
+            return Runtime.ReadPointer(address, out value);
         }
 
         /// <inheritdoc />
@@ -105,16 +104,16 @@ namespace Triage.Mortician.Adapters
         public IClrHeap Heap { get; }
 
         /// <inheritdoc />
-        public int HeapCount { get; }
+        public int HeapCount => Runtime.HeapCount;
 
         /// <inheritdoc />
         public IList<IClrModule> Modules { get; }
 
         /// <inheritdoc />
-        public int PointerSize { get; }
+        public int PointerSize => Runtime.PointerSize;
 
         /// <inheritdoc />
-        public bool ServerGC { get; }
+        public bool ServerGC => Runtime.ServerGC;
 
         /// <inheritdoc />
         public IClrAppDomain SharedDomain { get; }
@@ -127,5 +126,13 @@ namespace Triage.Mortician.Adapters
 
         /// <inheritdoc />
         public IList<IClrThread> Threads { get; }
+
+        /// <inheritdoc />
+        public ClrRuntimeAdapter(Microsoft.Diagnostics.Runtime.ClrRuntime runtime)
+        {
+            Runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
+            AppDomains = runtime.AppDomains.Select(Converter.Convert).ToList();
+            ClrInfo = Converter.Convert(runtime.ClrInfo);
+        }
     }
 }

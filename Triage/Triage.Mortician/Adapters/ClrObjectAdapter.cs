@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
@@ -9,70 +10,71 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public ClrObjectAdapter(Microsoft.Diagnostics.Runtime.ClrObject o)
         {
-            _object = o;
+            Object = o;
+            Type = Converter.Convert(o.Type);
         }
 
-        internal Microsoft.Diagnostics.Runtime.ClrObject _object;
+        internal Microsoft.Diagnostics.Runtime.ClrObject Object;
 
         /// <inheritdoc />
         public IEnumerable<IClrObject> EnumerateObjectReferences(bool carefully = false)
         {
-            throw new NotImplementedException();
+            return Object.EnumerateObjectReferences(carefully).Select(Converter.Convert);
         }
 
         /// <inheritdoc />
         public bool Equals(IClrObject other)
         {
-            throw new NotImplementedException();
+            return Object.Equals(other);
         }
 
         /// <inheritdoc />
         public T GetField<T>(string fieldName) where T : struct
         {
-            throw new NotImplementedException();
+            return Object.GetField<T>(fieldName);
         }
 
         /// <inheritdoc />
         public IClrObject GetObjectField(string fieldName)
         {
-            throw new NotImplementedException();
+            return Converter.Convert(Object.GetObjectField(fieldName));
         }
 
         /// <inheritdoc />
         public string GetStringField(string fieldName)
         {
-            throw new NotImplementedException();
+            return Object.GetStringField(fieldName);
         }
 
         /// <inheritdoc />
         public IClrValueClass GetValueClassField(string fieldName)
         {
-            throw new NotImplementedException();
+            return Converter.Convert(Object.GetValueClassField(fieldName));
         }
 
         /// <inheritdoc />
-        public ulong Address { get; }
+        public ulong Address => Object.Address;
 
         /// <inheritdoc />
-        public bool ContainsPointers { get; }
+        public bool ContainsPointers => Object.ContainsPointers;
 
         /// <inheritdoc />
-        public string HexAddress { get; }
+        public string HexAddress => Object.HexAddress;
 
         /// <inheritdoc />
-        public bool IsArray { get; }
+        public bool IsArray => Object.IsArray;
 
         /// <inheritdoc />
-        public bool IsBoxed { get; }
+        public bool IsBoxed => Object.IsBoxed;
 
         /// <inheritdoc />
-        public bool IsNull { get; }
+        public bool IsNull => Object.IsNull;
 
         /// <inheritdoc />
-        public int Length { get; }
+        public int Length => Object.Length;
 
         /// <inheritdoc />
-        public ulong Size { get; }
+        public ulong Size => Object.Size;
 
         /// <inheritdoc />
         public IClrType Type { get; }

@@ -68,13 +68,13 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     Returns the location in memory of the IL for this method.
         /// </summary>
         /// <value>The il.</value>
-        IILInfo IL { get; }
+        IILInfo IlInfo { get; }
 
         /// <summary>
         ///     Returns the IL to native offset mapping.
         /// </summary>
         /// <value>The il offset map.</value>
-        ILToNativeMap[] ILOffsetMap { get; }
+        ILToNativeMap[] IlOffsetMap { get; }
 
         /// <summary>
         ///     Returns if this method is abstract.

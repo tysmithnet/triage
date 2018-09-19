@@ -56,7 +56,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     HasGCHeapData is true.
         /// </summary>
         /// <value>The type of the gc segment.</value>
-        GCSegmentType GCSegmentType { get; set; }
+        GcSegmentType GCSegmentType { get; set; }
 
         /// <summary>
         ///     Returns the heap number associated with this data.  Returns -1 if no

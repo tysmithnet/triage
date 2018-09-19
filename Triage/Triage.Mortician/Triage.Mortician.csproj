@@ -100,6 +100,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\CcwDataAdapter.cs" />
+    <Compile Include="Adapters\ClrAppDomainAdapter.cs" />
+    <Compile Include="Adapters\ClrInfoAdapter.cs" />
+    <Compile Include="Adapters\ClrMethodAdapter.cs" />
+    <Compile Include="Adapters\HandleAdapter.cs" />
+    <Compile Include="Adapters\HeapAdapter.cs" />
+    <Compile Include="Adapters\StackFrameAdapter.cs" />
     <Compile Include="AnalyzerTaskFactory.cs" />
     <Compile Include="Adapters\ClrExceptionAdapter.cs" />
     <Compile Include="Adapters\ClrObjectAdapter.cs" />
@@ -134,6 +141,7 @@
     <Compile Include="Adapters\PdbInfoAdapter.cs" />
     <Compile Include="Adapters\PeFileAdapter.cs" />
     <Compile Include="Adapters\RcwDataAdapter.cs" />
+    <Compile Include="Adapters\MemoryRegionAdapter.cs" />
     <Compile Include="Repository\DumpAppDomainRepository.cs" />
     <Compile Include="Repository\DumpModuleRepository.cs" />
     <Compile Include="Repository\DumpThreadRepository.cs" />

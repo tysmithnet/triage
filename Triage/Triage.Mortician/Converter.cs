@@ -25,6 +25,51 @@ namespace Triage.Mortician
             }
         }
 
+        public static IClrInfo Convert(ClrMd.ClrInfo info)
+        {
+            return new ClrInfoAdapter(info);
+        }
+
+        public static IClrHeap Convert(ClrMd.ClrHeap heap)
+        {
+            return new HeapAdapter(heap);
+        }
+
+        public static IClrMemoryRegion Convert(ClrMd.ClrMemoryRegion memoryRegion)
+        {
+            return new MemoryRegionAdapter(memoryRegion);
+        }
+
+        public static IClrHandle Convert(ClrMd.ClrHandle handle)
+        {
+            return new HandleAdapter(handle);
+        }
+
+        public static ICcwData Convert(ClrMd.CcwData data)
+        {
+            return new CcwDataAdapter(data);
+        }
+
+        public static IClrAppDomain Convert(ClrMd.ClrAppDomain appDomain)
+        {
+            return new ClrAppDomainAdapter(appDomain);
+        }
+
+        public static IILInfo Convert(ClrMd.ILInfo info)
+        {
+            return new IlInfoAdapter(info);
+        }
+
+        public static IClrMethod Convert(ClrMd.ClrMethod method)
+        {
+            return new ClrMethodAdapter(method);
+        }
+
+        public static IClrStackFrame Convert(ClrMd.ClrStackFrame frame)
+        {
+            return new StackFrameAdapter(frame);
+        }
+
         public static BlockingReason Convert(ClrMd.BlockingReason blockingReason)
         {
             switch (blockingReason)

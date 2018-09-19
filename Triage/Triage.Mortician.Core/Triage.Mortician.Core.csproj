@@ -50,7 +50,6 @@
     <Compile Include="ClrMdAbstractions\ClrStackFrameType.cs" />
     <Compile Include="ClrMdAbstractions\GcRootKind.cs" />
     <Compile Include="ClrMdAbstractions\GCRootProgressEvent.cs" />
-    <Compile Include="ClrMdAbstractions\GCSegmentType1.cs" />
     <Compile Include="ClrMdAbstractions\HandleType.cs" />
     <Compile Include="ClrMdAbstractions\IDataReader.cs" />
     <Compile Include="ClrMdAbstractions\ISymbolProvider.cs" />

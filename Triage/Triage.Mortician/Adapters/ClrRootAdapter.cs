@@ -8,34 +8,39 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public ClrRootAdapter(Microsoft.Diagnostics.Runtime.ClrRoot root)
         {
-            _root = root ?? throw new ArgumentNullException(nameof(root));
+            Root = root ?? throw new ArgumentNullException(nameof(root));
+            AppDomain = Converter.Convert(root.AppDomain);
+            Kind = Converter.Convert(root.Kind);
+            StackFrame = Converter.Convert(root.StackFrame);
+            Thread = Converter.Convert(root.Thread);
+            Type = Converter.Convert(root.Type);
         }
 
-        internal Microsoft.Diagnostics.Runtime.ClrRoot _root;
+        internal Microsoft.Diagnostics.Runtime.ClrRoot Root;
 
         /// <inheritdoc />
-        public ulong Address { get; }
+        public ulong Address => Root.Address;
 
         /// <inheritdoc />
         public IClrAppDomain AppDomain { get; }
 
         /// <inheritdoc />
-        public bool IsInterior { get; }
+        public bool IsInterior => Root.IsInterior;
 
         /// <inheritdoc />
-        public bool IsPinned { get; }
+        public bool IsPinned => Root.IsPinned;
 
         /// <inheritdoc />
-        public bool IsPossibleFalsePositive { get; }
+        public bool IsPossibleFalsePositive => Root.IsPossibleFalsePositive;
 
         /// <inheritdoc />
         public GcRootKind Kind { get; }
 
         /// <inheritdoc />
-        public string Name { get; }
+        public string Name => Root.Name;
 
         /// <inheritdoc />
-        public ulong Object { get; }
+        public ulong Object => Root.Object;
 
         /// <inheritdoc />
         public IClrStackFrame StackFrame { get; }

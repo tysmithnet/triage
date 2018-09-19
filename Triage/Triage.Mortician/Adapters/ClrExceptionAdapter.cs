@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
@@ -7,29 +9,29 @@ namespace Triage.Mortician.Adapters
     internal class ClrExceptionAdapter : IClrException
     {
         /// <inheritdoc />
-        public ClrExceptionAdapter(Microsoft.Diagnostics.Runtime.ClrException exception)
+        public ClrExceptionAdapter(ClrException exception)
         {
-            _exception = exception ?? throw new ArgumentNullException(nameof(exception));
+            Exception = exception ?? throw new ArgumentNullException(nameof(exception));
         }
 
-        internal Microsoft.Diagnostics.Runtime.ClrException _exception;
+        internal ClrException Exception;
 
         /// <inheritdoc />
-        public ulong Address { get; }
+        public ulong Address => Exception.Address;
 
         /// <inheritdoc />
-        public int HResult { get; }
+        public int HResult => Exception.HResult;
 
         /// <inheritdoc />
-        public IClrException Inner { get; }
+        public IClrException Inner => Converter.Convert(Exception.Inner);
 
         /// <inheritdoc />
-        public string Message { get; }
+        public string Message => Exception.Message;
 
         /// <inheritdoc />
-        public IList<IClrStackFrame> StackTrace { get; }
+        public IList<IClrStackFrame> StackTrace => Exception.StackTrace.Select(Converter.Convert).ToList();
 
         /// <inheritdoc />
-        public IClrType Type { get; }
+        public IClrType Type => Converter.Convert(Exception.Type);
     }
 }
