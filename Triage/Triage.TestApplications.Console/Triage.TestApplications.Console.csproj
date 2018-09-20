@@ -61,7 +61,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Triage.Mortician.Test\DumpHelper.cs">
+    <Compile Include="..\Triage.Mortician.IntegrationTest\DumpHelper.cs">
       <Link>DumpHelper.cs</Link>
     </Compile>
     <Compile Include="Program.cs" />

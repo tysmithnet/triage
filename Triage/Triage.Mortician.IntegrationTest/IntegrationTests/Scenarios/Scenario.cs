@@ -6,7 +6,7 @@ using System.Threading;
 using Microsoft.CSharp;
 using Microsoft.Diagnostics.Runtime;
 
-namespace Triage.Mortician.Test.IntegrationTests.Scenarios
+namespace Triage.Mortician.IntegrationTest.IntegrationTests.Scenarios
 {
     public abstract partial class Scenario
     {

@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace Triage.Mortician.Test.IntegrationTests.Scenarios
+namespace Triage.Mortician.IntegrationTest.IntegrationTests.Scenarios
 {
     public partial class Scenario
     {

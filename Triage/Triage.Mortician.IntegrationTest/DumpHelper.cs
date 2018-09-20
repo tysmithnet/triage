@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace Triage.Mortician.Test
+namespace Triage.Mortician.IntegrationTest
 {
     public static class DumpHelper
     {

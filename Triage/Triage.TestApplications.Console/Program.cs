@@ -1,4 +1,4 @@
-﻿using Triage.Mortician.Test;
+﻿using Triage.Mortician.IntegrationTest;
 using static System.Console;
 
 namespace Triage.TestApplications.Console
