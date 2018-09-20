@@ -103,6 +103,7 @@
   <ItemGroup>
     <Compile Include="AnalyzerTaskFactory_Should.cs" />
     <Compile Include="Builders\AnalyzerBuilder.cs" />
+    <Compile Include="ClrObjectBuilder.cs" />
     <Compile Include="Engine_Should.cs" />
     <Compile Include="EventHub_Should.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

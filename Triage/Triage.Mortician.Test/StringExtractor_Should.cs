@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Moq;
-using Triage.Mortician.Core.ClrMdAbstractions;
+using FluentAssertions;
 using Xunit;
 
 namespace Triage.Mortician.Test
@@ -16,15 +15,18 @@ namespace Triage.Mortician.Test
         {
             // arrange
             var extractor = new StringExtractor();
-            var objects = new[]
-            {
-                stringMock.Object,
-                objectMock.Object
-            };
+            var stringBuilder = new ClrObjectBuilder();
+            stringBuilder.WithType("System.String");
+            var s = stringBuilder.Build();
+
+            var builder = new ClrObjectBuilder();
+            builder.WithType("System.Object");
+            var o = builder.Build();
 
             // act
-
             // assert
+            extractor.CanExtract(s, null).Should().BeTrue();
+            extractor.CanExtract(o, null).Should().BeFalse();
         }
     }
 }
