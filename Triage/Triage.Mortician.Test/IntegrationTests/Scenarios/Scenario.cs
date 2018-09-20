@@ -2,6 +2,7 @@
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using Microsoft.CSharp;
 using Microsoft.Diagnostics.Runtime;
 
@@ -43,13 +44,14 @@ namespace Triage.Mortician.Test.IntegrationTests.Scenarios
             var proc = Process.GetCurrentProcess();
             var is32 = proc.Is32BitProcess();
             var dumpFile = is32 ? X86ScenarioDumpFile : X64ScenarioDumpFile;
-            var exe = is32 ? X64ExeLocation : X86ExeLocation;
+            var exe = is32 ? X86ExeLocation : X64ExeLocation;
             if (!File.Exists(dumpFile))
             {
                 var testproc = Process.Start(exe);
                 testproc?.WaitForExit();
+                Thread.Sleep(TimeSpan.FromSeconds(5));
             }
-
+            
             if (!File.Exists(dumpFile))
             {
                 throw new System.ApplicationException($"Scenario dump file, {dumpFile}, doesn't exist and could not be created. Check the configuration paths and permissions.");

@@ -4,7 +4,10 @@ namespace Triage.Mortician.Test.IntegrationTests.Scenarios
 {
     public partial class Scenario
     {
-        public class HelloWorld : Scenario
+        public static readonly _HelloWorld HelloWorld = new _HelloWorld();
+
+        // ReSharper disable once InconsistentNaming
+        public class _HelloWorld : Scenario
         {
             /// <inheritdoc />
             public override bool IsLibrary { get; } = false;
