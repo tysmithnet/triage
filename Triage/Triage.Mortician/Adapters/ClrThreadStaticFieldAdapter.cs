@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrElementType = Triage.Mortician.Core.ClrMdAbstractions.ClrElementType;
@@ -32,16 +31,12 @@ namespace Triage.Mortician.Adapters
         /// <param name="threadStaticField">The thread static field.</param>
         /// <exception cref="ArgumentNullException">threadStaticField</exception>
         /// <inheritdoc />
-        public ClrThreadStaticFieldAdapter(IConverter converter, ClrThreadStaticField threadStaticField) : base(converter)
+        public ClrThreadStaticFieldAdapter(IConverter converter, ClrThreadStaticField threadStaticField) :
+            base(converter)
         {
             ThreadStaticField = threadStaticField ?? throw new ArgumentNullException(nameof(threadStaticField));
-           
         }
-        public override void Setup()
-        {
- ElementType = Converter.Convert(ThreadStaticField.ElementType);
-            Type = Converter.Convert(ThreadStaticField.Type);
-        }
+
         /// <summary>
         ///     The thread static field
         /// </summary>
@@ -91,6 +86,12 @@ namespace Triage.Mortician.Adapters
             var convertedAppDomain = (appDomain as ClrAppDomainAdapter)?.AppDomain;
             var convertedThread = (thread as ClrThreadAdapter)?.Thread;
             return ThreadStaticField.GetValue(convertedAppDomain, convertedThread, convertStrings);
+        }
+
+        public override void Setup()
+        {
+            ElementType = Converter.Convert(ThreadStaticField.ElementType);
+            Type = Converter.Convert(ThreadStaticField.Type);
         }
 
         /// <summary>

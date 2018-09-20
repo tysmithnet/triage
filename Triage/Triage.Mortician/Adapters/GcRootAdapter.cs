@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using Microsoft.Diagnostics.Runtime;
@@ -37,17 +36,8 @@ namespace Triage.Mortician.Adapters
         public GcRootAdapter(IConverter converter, GCRoot root) : base(converter)
         {
             Root = root ?? throw new ArgumentNullException(nameof(root));
-           
         }
-        public override void Setup()
-        {
-            Heap = Converter.Convert(Root.Heap);
-            Root.ProgressUpdate += (source, current, total) =>
-            {
-                var convertedSource = Converter.Convert(source);
-                ProgressUpdate?.Invoke(convertedSource, current, total);
-            };
-        }
+
         /// <summary>
         ///     Since GCRoot can be long running, this event will provide periodic updates to how many objects the algorithm
         ///     has processed.  Note that in the case where we search all objects and do not find a path, it's unlikely that
@@ -129,6 +119,16 @@ namespace Triage.Mortician.Adapters
         public IList<IClrObject> FindSinglePath(ulong source, ulong target, CancellationToken cancelToken) =>
             Root.FindSinglePath(source, target, cancelToken).Select(Converter.Convert).ToList();
 
+        public override void Setup()
+        {
+            Heap = Converter.Convert(Root.Heap);
+            Root.ProgressUpdate += (source, current, total) =>
+            {
+                var convertedSource = Converter.Convert(source);
+                ProgressUpdate?.Invoke(convertedSource, current, total);
+            };
+        }
+
         /// <summary>
         ///     Whether or not to allow GC root to search in parallel or not.  Note that GCRoot does not have to respect this
         ///     flag.  Parallel searching of roots will only happen if a copy of the stack and heap were built using BuildCache,
@@ -159,6 +159,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The maximum tasks allowed.</value>
         /// <inheritdoc />
         public int MaximumTasksAllowed => Root.MaximumTasksAllowed;
-        
     }
 }

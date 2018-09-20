@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
@@ -37,15 +36,8 @@ namespace Triage.Mortician.Adapters
         public ClrModuleAdapter(IConverter converter, ClrModule module) : base(converter)
         {
             Module = module ?? throw new ArgumentNullException(nameof(module));
-            
         }
-        public override void Setup()
-        {
-AppDomains = Module.AppDomains.Select(Converter.Convert).ToList();
-            DebuggingMode = Module.DebuggingMode;
-            PdbInfo = Converter.Convert(Module.Pdb);
-            Runtime = Converter.Convert(Module.Runtime);
-        }
+
         /// <summary>
         ///     The module
         /// </summary>
@@ -70,6 +62,14 @@ AppDomains = Module.AppDomains.Select(Converter.Convert).ToList();
         /// <exception cref="NotImplementedException"></exception>
         /// <inheritdoc />
         public IClrType GetTypeByName(string name) => Converter.Convert(Module.GetTypeByName(name));
+
+        public override void Setup()
+        {
+            AppDomains = Module.AppDomains.Select(Converter.Convert).ToList();
+            DebuggingMode = Module.DebuggingMode;
+            PdbInfo = Converter.Convert(Module.Pdb);
+            Runtime = Converter.Convert(Module.Runtime);
+        }
 
         /// <summary>
         ///     Returns a list of all AppDomains this module is loaded into.  Please note that unlike
@@ -184,6 +184,5 @@ AppDomains = Module.AppDomains.Select(Converter.Convert).ToList();
         /// <value>The size.</value>
         /// <inheritdoc />
         public ulong Size => Module.Size;
-        
     }
 }

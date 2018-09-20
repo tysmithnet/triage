@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrMd = Microsoft.Diagnostics.Runtime;
 
@@ -34,18 +33,19 @@ namespace Triage.Mortician.Adapters
         public StackFrameAdapter(IConverter converter, ClrMd.ClrStackFrame frame) : base(converter)
         {
             Frame = frame ?? throw new ArgumentNullException(nameof(frame));
-         
         }
-        public override void Setup()
-        {
-   Thread = Converter.Convert(Frame.Thread);
-            Kind = Converter.Convert(Frame.Kind);
-            Method = Converter.Convert(Frame.Method);
-        }
+
         /// <summary>
         ///     The frame
         /// </summary>
         internal ClrMd.ClrStackFrame Frame;
+
+        public override void Setup()
+        {
+            Thread = Converter.Convert(Frame.Thread);
+            Kind = Converter.Convert(Frame.Kind);
+            Method = Converter.Convert(Frame.Method);
+        }
 
         /// <summary>
         ///     The string to display in a stack trace.  Similar to !clrstack output.
@@ -97,6 +97,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The thread.</value>
         /// <inheritdoc />
         public IClrThread Thread { get; internal set; }
-        
     }
 }

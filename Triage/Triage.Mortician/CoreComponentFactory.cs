@@ -27,8 +27,6 @@ using Newtonsoft.Json;
 using Triage.Mortician.Core;
 using Triage.Mortician.Domain;
 using Triage.Mortician.Repository;
-using ClrStackFrameType = Microsoft.Diagnostics.Runtime.ClrStackFrameType;
-using GCRootKind = Microsoft.Diagnostics.Runtime.GCRootKind;
 
 namespace Triage.Mortician
 {
@@ -37,7 +35,6 @@ namespace Triage.Mortician
     /// </summary>
     internal class CoreComponentFactory
     {
-        internal IConverter Converter { get; set; }
         /// <summary>
         ///     Initializes a new instance of the <see cref="CoreComponentFactory" /> class.
         /// </summary>
@@ -70,26 +67,11 @@ namespace Triage.Mortician
                     $"Unable to open crash dump: {e.Message}, Does the dump file exist and do you have the x64 folder of the Windows Debugging Kit in your path?");
             }
         }
-        
+
         /// <summary>
         ///     The log
         /// </summary>
         public ILog Log = LogManager.GetLogger(typeof(CoreComponentFactory));
-
-        private IEnumerable<ISettings> GetSettings(string settingsPath = null)
-        {
-            string settingsText;
-            if (settingsPath != null)
-            {
-                settingsText = File.ReadAllText(settingsPath);
-            }
-            else
-            {
-                settingsText = File.ReadAllText("settings.json");
-            }
-            SettingsJsonConverter converter = new SettingsJsonConverter();
-            return JsonConvert.DeserializeObject<IEnumerable<ISettings>>(settingsText, converter);
-        }
 
         /// <summary>
         ///     Registers the repositories.
@@ -159,10 +141,7 @@ namespace Triage.Mortician
             CompositionContainer.ComposeExportedValue<IDumpModuleRepository>(moduleRepo);
             CompositionContainer.ComposeExportedValue<IDumpTypeRepository>(typeRepo);
             var settingsToAdd = settings ?? GetSettings(options.SettingsFile);
-            foreach (var setting in settingsToAdd)
-            {
-                CompositionContainer.ComposeExportedValue(setting);
-            }
+            foreach (var setting in settingsToAdd) CompositionContainer.ComposeExportedValue(setting);
         }
 
         /// <summary>
@@ -199,6 +178,17 @@ namespace Triage.Mortician
                     child.AddReferencer(parent);
                 }
             });
+        }
+
+        private IEnumerable<ISettings> GetSettings(string settingsPath = null)
+        {
+            string settingsText;
+            if (settingsPath != null)
+                settingsText = File.ReadAllText(settingsPath);
+            else
+                settingsText = File.ReadAllText("settings.json");
+            var converter = new SettingsJsonConverter();
+            return JsonConvert.DeserializeObject<IEnumerable<ISettings>>(settingsText, converter);
         }
 
         /// <summary>
@@ -512,5 +502,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <value>The dump file location.</value>
         public FileInfo DumpFile { get; protected set; }
+
+        internal IConverter Converter { get; set; }
     }
 }

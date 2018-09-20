@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -40,10 +39,7 @@ namespace Triage.Mortician.Adapters
         {
             DataTarget = dataTarget ?? throw new ArgumentNullException(nameof(dataTarget));
         }
-        public override void Setup()
-        {
 
-        }
         /// <summary>
         ///     The data target
         /// </summary>
@@ -79,6 +75,10 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public bool ReadProcessMemory(ulong address, byte[] buffer, int bytesRequested, out int bytesRead) =>
             DataTarget.ReadProcessMemory(address, buffer, bytesRequested, out bytesRead);
+
+        public override void Setup()
+        {
+        }
 
         /// <summary>
         ///     Returns the architecture of the target process or crash dump.
@@ -131,6 +131,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The symbol provider.</value>
         /// <inheritdoc />
         public ISymbolProvider SymbolProvider { get; set; }
-        
     }
 }

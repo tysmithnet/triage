@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using Microsoft.Diagnostics.Runtime;
@@ -38,15 +37,8 @@ namespace Triage.Mortician.Adapters
         public HeapAdapter(IConverter converter, ClrHeap heap) : base(converter)
         {
             Heap = heap ?? throw new ArgumentNullException(nameof(heap));
-            
         }
-        public override void Setup()
-        {
-Runtime = Converter.Convert(Heap.Runtime);
-            Free = Converter.Convert(Heap.Free);
-            Segments = Heap.Segments.Select(Converter.Convert).ToList();
-            StackwalkPolicy = Converter.Convert(Heap.StackwalkPolicy);
-        }
+
         /// <summary>
         ///     The heap
         /// </summary>
@@ -291,6 +283,14 @@ Runtime = Converter.Convert(Heap.Runtime);
         /// <returns>True if we successfully read the value, false if addr is not mapped into the process space.</returns>
         /// <inheritdoc />
         public bool ReadPointer(ulong addr, out ulong value) => Heap.ReadPointer(addr, out value);
+
+        public override void Setup()
+        {
+            Runtime = Converter.Convert(Heap.Runtime);
+            Free = Converter.Convert(Heap.Free);
+            Segments = Heap.Segments.Select(Converter.Convert).ToList();
+            StackwalkPolicy = Converter.Convert(Heap.StackwalkPolicy);
+        }
 
         /// <summary>
         ///     Attempts to retrieve the MethodTable and component MethodTable from the given object.

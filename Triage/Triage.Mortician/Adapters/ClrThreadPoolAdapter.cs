@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -37,10 +36,7 @@ namespace Triage.Mortician.Adapters
         {
             ThreadPool = threadPool ?? throw new ArgumentNullException(nameof(threadPool));
         }
-        public override void Setup()
-        {
 
-        }
         /// <summary>
         ///     The thread pool
         /// </summary>
@@ -61,6 +57,10 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public IEnumerable<INativeWorkItem> EnumerateNativeWorkItems() =>
             ThreadPool.EnumerateNativeWorkItems().Select(Converter.Convert);
+
+        public override void Setup()
+        {
+        }
 
         /// <summary>
         ///     Returns the CPU utilization of the threadpool (as a percentage out of 100).

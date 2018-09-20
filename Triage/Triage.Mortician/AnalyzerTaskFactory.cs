@@ -76,6 +76,6 @@ namespace Triage.Mortician
         ///     Gets the log.
         /// </summary>
         /// <value>The log.</value>
-        private ILog Log { get; set; } = LogManager.GetLogger<AnalyzerTaskFactory>();
+        private ILog Log { get; } = LogManager.GetLogger<AnalyzerTaskFactory>();
     }
 }

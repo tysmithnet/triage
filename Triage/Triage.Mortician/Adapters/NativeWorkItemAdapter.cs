@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using WorkItemKind = Triage.Mortician.Core.ClrMdAbstractions.WorkItemKind;
@@ -35,16 +34,17 @@ namespace Triage.Mortician.Adapters
         public NativeWorkItemAdapter(IConverter converter, NativeWorkItem nativeWorkItem) : base(converter)
         {
             NativeWorkItem = nativeWorkItem ?? throw new ArgumentNullException(nameof(nativeWorkItem));
-           
         }
-        public override void Setup()
-        {
- Kind = Converter.Convert(NativeWorkItem.Kind);
-        }
+
         /// <summary>
         ///     The native work item
         /// </summary>
         internal NativeWorkItem NativeWorkItem;
+
+        public override void Setup()
+        {
+            Kind = Converter.Convert(NativeWorkItem.Kind);
+        }
 
         /// <summary>
         ///     Returns the callback's address.
@@ -66,6 +66,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The kind.</value>
         /// <inheritdoc />
         public WorkItemKind Kind { get; internal set; }
-        
     }
 }

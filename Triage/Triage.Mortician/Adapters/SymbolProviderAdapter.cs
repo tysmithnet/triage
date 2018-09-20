@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
@@ -30,14 +29,12 @@ namespace Triage.Mortician.Adapters
         /// <param name="provider">The provider.</param>
         /// <exception cref="ArgumentNullException">provider</exception>
         /// <inheritdoc />
-        public SymbolProviderAdapter(IConverter converter, Microsoft.Diagnostics.Runtime.ISymbolProvider provider) : base(converter)
+        public SymbolProviderAdapter(IConverter converter, Microsoft.Diagnostics.Runtime.ISymbolProvider provider) :
+            base(converter)
         {
             Provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
-        public override void Setup()
-        {
 
-        }
         /// <summary>
         ///     The provider
         /// </summary>
@@ -53,6 +50,9 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public ISymbolResolver GetSymbolResolver(string pdbName, Guid guid, int age) =>
             Converter.Convert(Provider.GetSymbolResolver(pdbName, guid, age));
-        
+
+        public override void Setup()
+        {
+        }
     }
 }

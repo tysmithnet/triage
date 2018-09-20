@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -36,18 +35,19 @@ namespace Triage.Mortician.Adapters
         public ClrExceptionAdapter(IConverter converter, ClrException exception) : base(converter)
         {
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
-            
         }
+
+        /// <summary>
+        ///     The exception
+        /// </summary>
+        internal ClrException Exception;
+
         public override void Setup()
         {
             StackTrace = Exception.StackTrace.Select(Converter.Convert).ToList();
             Type = Converter.Convert(Exception.Type);
             Inner = Converter.Convert(Exception.Inner);
         }
-        /// <summary>
-        ///     The exception
-        /// </summary>
-        internal ClrException Exception;
 
         /// <summary>
         ///     Returns the address of the exception object.

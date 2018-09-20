@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrMd = Microsoft.Diagnostics.Runtime;
@@ -36,16 +35,8 @@ namespace Triage.Mortician.Adapters
         public ClrMethodAdapter(IConverter converter, ClrMd.ClrMethod method) : base(converter)
         {
             Method = method ?? throw new ArgumentNullException(nameof(method));
-            
         }
-        public override void Setup()
-        {
-CompilationType = Converter.Convert(Method.CompilationType);
-            HotColdInfo = Converter.Convert(Method.HotColdInfo);
-            IlInfo = Converter.Convert(Method.IL);
-            IlOffsetMap = Method.ILOffsetMap?.Select(Converter.Convert).ToArray();
-            Type = Converter.Convert(Method.Type);
-        }
+
         /// <summary>
         ///     Enumerates all method descs for this method in the process.  MethodDescs
         ///     are unique to an Method/AppDomain pair, so when there are multiple domains
@@ -73,6 +64,15 @@ CompilationType = Converter.Convert(Method.CompilationType);
         /// <returns>The IL offset of the given address.</returns>
         /// <inheritdoc />
         public int GetILOffset(ulong addr) => Method.GetILOffset(addr);
+
+        public override void Setup()
+        {
+            CompilationType = Converter.Convert(Method.CompilationType);
+            HotColdInfo = Converter.Convert(Method.HotColdInfo);
+            IlInfo = Converter.Convert(Method.IL);
+            IlOffsetMap = Method.ILOffsetMap?.Select(Converter.Convert).ToArray();
+            Type = Converter.Convert(Method.Type);
+        }
 
         /// <summary>
         ///     Returns the way this method was compiled.
@@ -237,7 +237,6 @@ CompilationType = Converter.Convert(Method.CompilationType);
         /// <value>The type.</value>
         /// <inheritdoc />
         public IClrType Type { get; internal set; }
-        
 
         /// <summary>
         ///     Gets or sets the method.

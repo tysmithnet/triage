@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using HandleType = Triage.Mortician.Core.ClrMdAbstractions.HandleType;
@@ -35,19 +34,20 @@ namespace Triage.Mortician.Adapters
         public HandleAdapter(IConverter converter, ClrHandle handle) : base(converter)
         {
             Handle = handle ?? throw new ArgumentNullException(nameof(handle));
-           
         }
-        public override void Setup()
-        {
- AppDomain = Converter.Convert(Handle.AppDomain);
-            DependentType = Converter.Convert(Handle.DependentType);
-            HandleType = Converter.Convert(Handle.HandleType);
-            Type = Converter.Convert(Handle.Type);
-        }
+
         /// <summary>
         ///     The handle
         /// </summary>
         internal ClrHandle Handle;
+
+        public override void Setup()
+        {
+            AppDomain = Converter.Convert(Handle.AppDomain);
+            DependentType = Converter.Convert(Handle.DependentType);
+            HandleType = Converter.Convert(Handle.HandleType);
+            Type = Converter.Convert(Handle.Type);
+        }
 
         /// <summary>
         ///     The address of the handle itself.  That is, *ulong == Object.
@@ -126,6 +126,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The type.</value>
         /// <inheritdoc />
         public IClrType Type { get; set; }
-        
     }
 }

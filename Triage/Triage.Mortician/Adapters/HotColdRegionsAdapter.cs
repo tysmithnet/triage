@@ -34,14 +34,15 @@ namespace Triage.Mortician.Adapters
         {
             HotColdRegions = hotColdRegions ?? throw new ArgumentNullException(nameof(hotColdRegions));
         }
-        public override void Setup()
-        {
 
-        }
         /// <summary>
         ///     The hot cold regions
         /// </summary>
         internal HotColdRegions HotColdRegions;
+
+        public override void Setup()
+        {
+        }
 
         /// <summary>
         ///     Returns the size of the cold region.

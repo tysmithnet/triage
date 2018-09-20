@@ -34,10 +34,7 @@ namespace Triage.Mortician.Adapters
         {
             Resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
         }
-        public override void Setup()
-        {
 
-        }
         /// <summary>
         ///     The resolver
         /// </summary>
@@ -51,5 +48,9 @@ namespace Triage.Mortician.Adapters
         /// <exception cref="NotImplementedException"></exception>
         /// <inheritdoc />
         public string GetSymbolNameByRVA(uint rva) => Resolver.GetSymbolNameByRVA(rva);
+
+        public override void Setup()
+        {
+        }
     }
 }

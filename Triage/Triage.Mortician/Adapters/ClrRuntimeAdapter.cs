@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -36,20 +35,8 @@ namespace Triage.Mortician.Adapters
         public ClrRuntimeAdapter(IConverter converter, ClrRuntime runtime) : base(converter)
         {
             Runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
-            
         }
-        public override void Setup()
-        {
-AppDomains = Runtime.AppDomains.Select(Converter.Convert).ToList();
-            ClrInfo = Converter.Convert(Runtime.ClrInfo);
-            SharedDomain = Converter.Convert(Runtime.SharedDomain);
-            SystemDomain = Converter.Convert(Runtime.SystemDomain);
-            ThreadPool = Converter.Convert(Runtime.ThreadPool);
-            Threads = Runtime.Threads.Select(Converter.Convert).ToList();
-            Modules = Runtime.Modules.Select(Converter.Convert).ToList();
-            Heap = Converter.Convert(Runtime.Heap);
-            DataTarget = Converter.Convert(Runtime.DataTarget);
-        }
+
         /// <summary>
         ///     The runtime
         /// </summary>
@@ -183,6 +170,19 @@ AppDomains = Runtime.AppDomains.Select(Converter.Convert).ToList();
         /// <inheritdoc />
         public bool ReadPointer(ulong address, out ulong value) => Runtime.ReadPointer(address, out value);
 
+        public override void Setup()
+        {
+            AppDomains = Runtime.AppDomains.Select(Converter.Convert).ToList();
+            ClrInfo = Converter.Convert(Runtime.ClrInfo);
+            SharedDomain = Converter.Convert(Runtime.SharedDomain);
+            SystemDomain = Converter.Convert(Runtime.SystemDomain);
+            ThreadPool = Converter.Convert(Runtime.ThreadPool);
+            Threads = Runtime.Threads.Select(Converter.Convert).ToList();
+            Modules = Runtime.Modules.Select(Converter.Convert).ToList();
+            Heap = Converter.Convert(Runtime.Heap);
+            DataTarget = Converter.Convert(Runtime.DataTarget);
+        }
+
         /// <summary>
         ///     Enumerates the list of appdomains in the process.  Note the System appdomain and Shared
         ///     AppDomain are omitted.
@@ -269,6 +269,5 @@ AppDomains = Runtime.AppDomains.Select(Converter.Convert).ToList();
         /// <value>The threads.</value>
         /// <inheritdoc />
         public IList<IClrThread> Threads { get; internal set; }
-        
     }
 }

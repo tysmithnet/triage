@@ -13,11 +13,8 @@
 // ***********************************************************************
 
 using System.ComponentModel.Composition;
-using System.Linq;
-using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core;
 using Triage.Mortician.Core.ClrMdAbstractions;
-using Triage.Mortician.Domain;
 
 namespace Triage.Mortician
 {
@@ -37,10 +34,7 @@ namespace Triage.Mortician
         /// <param name="clrRuntime">The clr runtime being used</param>
         /// <returns><c>true</c> if this instance can extract from the object; otherwise, <c>false</c>.</returns>
         /// <inheritdoc />
-        public bool CanExtract(IClrObject clrObject, IClrRuntime clrRuntime)
-        {
-            return clrObject.Type?.Name == "System.String";
-        }
+        public bool CanExtract(IClrObject clrObject, IClrRuntime clrRuntime) => clrObject.Type?.Name == "System.String";
 
         /// <summary>
         ///     Extracts data from the provided object

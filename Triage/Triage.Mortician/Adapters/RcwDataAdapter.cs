@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -36,16 +35,17 @@ namespace Triage.Mortician.Adapters
         public RcwDataAdapter(IConverter converter, RcwData rcwData) : base(converter)
         {
             RcwData = rcwData ?? throw new ArgumentNullException(nameof(rcwData));
-           
         }
-        public override void Setup()
-        {
- Interfaces = RcwData.Interfaces.Select(Converter.Convert).ToList();
-        }
+
         /// <summary>
         ///     The RCW data
         /// </summary>
         internal RcwData RcwData;
+
+        public override void Setup()
+        {
+            Interfaces = RcwData.Interfaces.Select(Converter.Convert).ToList();
+        }
 
         /// <summary>
         ///     Returns the thread which created this RCW.
@@ -103,6 +103,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The win rt object.</value>
         /// <inheritdoc />
         public ulong WinRTObject => RcwData.WinRTObject;
-        
     }
 }

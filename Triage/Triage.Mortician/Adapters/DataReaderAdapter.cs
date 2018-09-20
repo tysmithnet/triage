@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -32,14 +31,12 @@ namespace Triage.Mortician.Adapters
         /// <param name="dataReader">The data reader.</param>
         /// <exception cref="ArgumentNullException">dataReader</exception>
         /// <inheritdoc />
-        public DataReaderAdapter(IConverter converter, Microsoft.Diagnostics.Runtime.IDataReader dataReader) : base(converter)
+        public DataReaderAdapter(IConverter converter, Microsoft.Diagnostics.Runtime.IDataReader dataReader) :
+            base(converter)
         {
             DataReader = dataReader ?? throw new ArgumentNullException(nameof(dataReader));
         }
-        public override void Setup()
-        {
 
-        }
         /// <summary>
         ///     The data reader
         /// </summary>
@@ -173,6 +170,10 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public ulong ReadPointerUnsafe(ulong addr) => DataReader.ReadPointerUnsafe(addr);
 
+        public override void Setup()
+        {
+        }
+
         /// <summary>
         ///     Gets information about the given memory range.
         /// </summary>
@@ -193,6 +194,5 @@ namespace Triage.Mortician.Adapters
         /// <value><c>true</c> if this instance is minidump; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
         public bool IsMinidump => DataReader.IsMinidump;
-        
     }
 }

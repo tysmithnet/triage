@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -34,16 +33,17 @@ namespace Triage.Mortician.Adapters
         public ManagedWorkItemAdapter(IConverter converter, ManagedWorkItem workItem) : base(converter)
         {
             WorkItem = workItem ?? throw new ArgumentNullException(nameof(workItem));
-            
         }
-        public override void Setup()
-        {
-Type = Converter.Convert(WorkItem.Type);
-        }
+
         /// <summary>
         ///     The work item
         /// </summary>
         internal ManagedWorkItem WorkItem;
+
+        public override void Setup()
+        {
+            Type = Converter.Convert(WorkItem.Type);
+        }
 
         /// <summary>
         ///     The object address of this entry.
@@ -58,6 +58,5 @@ Type = Converter.Convert(WorkItem.Type);
         /// <value>The type.</value>
         /// <inheritdoc />
         public IClrType Type { get; internal set; }
-
     }
 }

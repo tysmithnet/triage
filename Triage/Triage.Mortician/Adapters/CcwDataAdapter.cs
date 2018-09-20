@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -42,6 +41,12 @@ namespace Triage.Mortician.Adapters
         ///     The CCW data
         /// </summary>
         internal CcwData CcwData;
+
+        /// <inheritdoc />
+        public override void Setup()
+        {
+            Interfaces = CcwData.Interfaces.Select(Converter.Convert).ToList();
+        }
 
         /// <summary>
         ///     Returns the CLR handle associated with this CCW.
@@ -77,12 +82,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The reference count.</value>
         /// <inheritdoc />
         public int RefCount => CcwData.RefCount;
-
-        /// <inheritdoc />
-        public override void Setup()
-        {
-            Interfaces = CcwData.Interfaces.Select(Converter.Convert).ToList();
-
-        }
     }
 }

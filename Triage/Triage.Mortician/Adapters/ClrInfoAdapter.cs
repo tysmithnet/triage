@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrFlavor = Triage.Mortician.Core.ClrMdAbstractions.ClrFlavor;
@@ -36,14 +35,6 @@ namespace Triage.Mortician.Adapters
         public ClrInfoAdapter(IConverter converter, ClrInfo info) : base(converter)
         {
             Info = info ?? throw new ArgumentNullException(nameof(info));
-            
-        }
-        public override void Setup()
-        {
-            DacInfo = Converter.Convert(Info.DacInfo);
-            Flavor = Converter.Convert(Info.Flavor);
-            ModuleInfo = Converter.Convert(Info.ModuleInfo);
-            Version = Converter.Convert(Info.Version);
         }
 
         /// <summary>
@@ -84,6 +75,14 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public IClrRuntime CreateRuntime(string dacFilename, bool ignoreMismatch = false) =>
             Converter.Convert(Info.CreateRuntime(dacFilename, ignoreMismatch));
+
+        public override void Setup()
+        {
+            DacInfo = Converter.Convert(Info.DacInfo);
+            Flavor = Converter.Convert(Info.Flavor);
+            ModuleInfo = Converter.Convert(Info.ModuleInfo);
+            Version = Converter.Convert(Info.Version);
+        }
 
         /// <summary>
         ///     Returns module information about the Dac needed create a ClrRuntime instance for this runtime.

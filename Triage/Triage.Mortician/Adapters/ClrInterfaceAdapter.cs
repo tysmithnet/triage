@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -34,16 +33,17 @@ namespace Triage.Mortician.Adapters
         public ClrInterfaceAdapter(IConverter converter, ClrInterface @interface) : base(converter)
         {
             Interface = @interface ?? throw new ArgumentNullException(nameof(@interface));
-            
         }
-        public override void Setup()
-        {
-            BaseInterface = Converter.Convert(Interface.BaseInterface);
-        }
+
         /// <summary>
         ///     The interface
         /// </summary>
         internal ClrInterface Interface;
+
+        public override void Setup()
+        {
+            BaseInterface = Converter.Convert(Interface.BaseInterface);
+        }
 
         /// <summary>
         ///     The interface that this interface inherits from.
@@ -58,6 +58,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The name.</value>
         /// <inheritdoc />
         public string Name => Interface.Name;
-        
     }
 }

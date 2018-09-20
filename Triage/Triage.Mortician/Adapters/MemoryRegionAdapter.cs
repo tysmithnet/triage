@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrMemoryRegionType = Triage.Mortician.Core.ClrMdAbstractions.ClrMemoryRegionType;
@@ -34,14 +33,15 @@ namespace Triage.Mortician.Adapters
         public MemoryRegionAdapter(IConverter converter, ClrMemoryRegion memoryRegion) : base(converter)
         {
             MemoryRegion = memoryRegion ?? throw new ArgumentNullException(nameof(memoryRegion));
-           
         }
+
         public override void Setup()
         {
- AppDomain = Converter.Convert(MemoryRegion.AppDomain);
+            AppDomain = Converter.Convert(MemoryRegion.AppDomain);
             GcSegmentType = Converter.Convert(MemoryRegion.GCSegmentType);
             MemoryRegionType = Converter.Convert(MemoryRegion.Type);
         }
+
         /// <summary>
         ///     Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
@@ -108,7 +108,7 @@ namespace Triage.Mortician.Adapters
         /// <value>The size.</value>
         /// <inheritdoc />
         public ulong Size => MemoryRegion.Size;
-        
+
         /// <summary>
         ///     Gets or sets the memory region.
         /// </summary>

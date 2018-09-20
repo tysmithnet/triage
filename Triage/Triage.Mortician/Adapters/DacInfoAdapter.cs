@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using Architecture = Triage.Mortician.Core.ClrMdAbstractions.Architecture;
@@ -36,18 +35,19 @@ namespace Triage.Mortician.Adapters
         public DacInfoAdapter(IConverter converter, DacInfo dacInfo) : base(converter)
         {
             DacInfo = dacInfo ?? throw new ArgumentNullException(nameof(dacInfo));
-           
         }
-        public override void Setup()
-        {
- Pdb = Converter.Convert(DacInfo.Pdb);
-            TargetArchitecture = Converter.Convert(DacInfo.TargetArchitecture);
-            Version = Converter.Convert(DacInfo.Version);
-        }
+
         /// <summary>
         ///     The dac information
         /// </summary>
         internal DacInfo DacInfo;
+
+        public override void Setup()
+        {
+            Pdb = Converter.Convert(DacInfo.Pdb);
+            TargetArchitecture = Converter.Convert(DacInfo.TargetArchitecture);
+            Version = Converter.Convert(DacInfo.Version);
+        }
 
         /// <summary>
         ///     The filename of the module on disk.

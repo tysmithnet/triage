@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrElementType = Triage.Mortician.Core.ClrMdAbstractions.ClrElementType;
@@ -35,13 +34,8 @@ namespace Triage.Mortician.Adapters
         public ClrInstanceFieldAdapter(IConverter converter, ClrInstanceField instanceField) : base(converter)
         {
             InstanceField = instanceField ?? throw new ArgumentNullException(nameof(instanceField));
-            
         }
-        public override void Setup()
-        {
-            ElementType = Converter.Convert(InstanceField.ElementType);
-            Type = Converter.Convert(InstanceField.Type);
-        }
+
         /// <summary>
         ///     The instance field
         /// </summary>
@@ -109,6 +103,12 @@ namespace Triage.Mortician.Adapters
         /// <exception cref="NotImplementedException"></exception>
         /// <inheritdoc />
         public object GetValue(ulong objRef, bool interior, bool convertStrings) => InstanceField.GetValue(objRef);
+
+        public override void Setup()
+        {
+            ElementType = Converter.Convert(InstanceField.ElementType);
+            Type = Converter.Convert(InstanceField.Type);
+        }
 
         /// <summary>
         ///     Returns the element type of this field.  Note that even when Type is null, this should still tell you

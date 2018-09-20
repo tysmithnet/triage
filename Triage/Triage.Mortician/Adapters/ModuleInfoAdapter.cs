@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using VersionInfo = Triage.Mortician.Core.ClrMdAbstractions.VersionInfo;
@@ -35,13 +34,8 @@ namespace Triage.Mortician.Adapters
         public ModuleInfoAdapter(IConverter converter, ModuleInfo moduleInfo) : base(converter)
         {
             ModuleInfo = moduleInfo ?? throw new ArgumentNullException(nameof(moduleInfo));
-          
         }
-        public override void Setup()
-        {
-  Pdb = Converter.Convert(ModuleInfo.Pdb);
-            Version = Converter.Convert(ModuleInfo.Version);
-        }
+
         /// <summary>
         ///     The module information
         /// </summary>
@@ -54,6 +48,12 @@ namespace Triage.Mortician.Adapters
         /// <returns>IPEFile.</returns>
         /// <inheritdoc />
         public IPeFile GetPEFile() => Converter.Convert(ModuleInfo.GetPEFile());
+
+        public override void Setup()
+        {
+            Pdb = Converter.Convert(ModuleInfo.Pdb);
+            Version = Converter.Convert(ModuleInfo.Version);
+        }
 
         /// <summary>
         ///     The filename of the module on disk.
@@ -110,6 +110,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The version.</value>
         /// <inheritdoc />
         public VersionInfo Version { get; set; }
-        
     }
 }

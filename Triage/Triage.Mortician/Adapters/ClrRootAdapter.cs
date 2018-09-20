@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -34,20 +33,21 @@ namespace Triage.Mortician.Adapters
         public ClrRootAdapter(IConverter converter, ClrRoot root) : base(converter)
         {
             Root = root ?? throw new ArgumentNullException(nameof(root));
-            
         }
+
+        /// <summary>
+        ///     The root
+        /// </summary>
+        internal ClrRoot Root;
+
         public override void Setup()
         {
-AppDomain = Converter.Convert(Root.AppDomain);
+            AppDomain = Converter.Convert(Root.AppDomain);
             Kind = Converter.Convert(Root.Kind);
             StackFrame = Converter.Convert(Root.StackFrame);
             Thread = Converter.Convert(Root.Thread);
             Type = Converter.Convert(Root.Type);
         }
-        /// <summary>
-        ///     The root
-        /// </summary>
-        internal ClrRoot Root;
 
         /// <summary>
         ///     The address of the root in the target process.
@@ -129,6 +129,5 @@ AppDomain = Converter.Convert(Root.AppDomain);
         /// <value>The type.</value>
         /// <inheritdoc />
         public IClrType Type { get; internal set; }
-        
     }
 }

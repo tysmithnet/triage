@@ -12,7 +12,6 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -32,12 +31,8 @@ namespace Triage.Mortician.Adapters
         public ClrValueClassAdapter(IConverter converter, ClrValueClass valueClass) : base(converter)
         {
             ValueClass = valueClass;
-           
         }
-        public override void Setup()
-        {
- Type = Converter.Convert(ValueClass.Type);
-        }
+
         /// <summary>
         ///     The value class
         /// </summary>
@@ -84,6 +79,11 @@ namespace Triage.Mortician.Adapters
         public IClrValueClass GetValueClassField(string fieldName) =>
             Converter.Convert(ValueClass.GetValueClassField(fieldName));
 
+        public override void Setup()
+        {
+            Type = Converter.Convert(ValueClass.Type);
+        }
+
         /// <summary>
         ///     The address of the object.
         /// </summary>
@@ -104,6 +104,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The type.</value>
         /// <inheritdoc />
         public IClrType Type { get; internal set; }
-        
     }
 }

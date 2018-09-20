@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -37,21 +36,8 @@ namespace Triage.Mortician.Adapters
         public ClrTypeAdapter(IConverter converter, ClrType type) : base(converter)
         {
             ClrType = type ?? throw new ArgumentNullException(nameof(type));
-            
         }
-        public override void Setup()
-        {
-            BaseType = Converter.Convert(ClrType.BaseType);
-            ComponentType = Converter.Convert(ClrType.ComponentType);
-            ElementType = Converter.Convert(ClrType.ElementType);
-            Fields = ClrType.Fields?.Select(Converter.Convert).ToList();
-            Heap = Converter.Convert(ClrType.Heap);
-            Interfaces = ClrType.Interfaces?.Select(Converter.Convert).ToList();
-            Methods = ClrType.Methods?.Select(Converter.Convert).ToList();
-            StaticFields = ClrType.StaticFields?.Select(Converter.Convert).ToList();
-            ThreadStaticFields = ClrType.ThreadStaticFields?.Select(Converter.Convert).ToList();
-            Module = Converter.Convert(ClrType.Module);
-        }
+
         /// <summary>
         ///     The color type
         /// </summary>
@@ -263,6 +249,20 @@ namespace Triage.Mortician.Adapters
         /// <param name="obj">The object to check.</param>
         /// <returns>True if this is an RCW.</returns>
         public bool IsRCW(ulong obj) => ClrType.IsRCW(obj);
+
+        public override void Setup()
+        {
+            BaseType = Converter.Convert(ClrType.BaseType);
+            ComponentType = Converter.Convert(ClrType.ComponentType);
+            ElementType = Converter.Convert(ClrType.ElementType);
+            Fields = ClrType.Fields?.Select(Converter.Convert).ToList();
+            Heap = Converter.Convert(ClrType.Heap);
+            Interfaces = ClrType.Interfaces?.Select(Converter.Convert).ToList();
+            Methods = ClrType.Methods?.Select(Converter.Convert).ToList();
+            StaticFields = ClrType.StaticFields?.Select(Converter.Convert).ToList();
+            ThreadStaticFields = ClrType.ThreadStaticFields?.Select(Converter.Convert).ToList();
+            Module = Converter.Convert(ClrType.Module);
+        }
 
         /// <summary>
         ///     Attempts to get the integer value for a given enum entry.  Note you should only call this function if
@@ -533,6 +533,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The thread static fields.</value>
         /// <inheritdoc />
         public IList<IClrThreadStaticField> ThreadStaticFields { get; internal set; }
-        
     }
 }

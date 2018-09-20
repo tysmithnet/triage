@@ -12,7 +12,6 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -33,17 +32,18 @@ namespace Triage.Mortician.Adapters
         public RootPathAdapter(IConverter converter, RootPath rootPath) : base(converter)
         {
             RootPath = rootPath;
-           
         }
-        public override void Setup()
-        {
- Path = RootPath.Path.Select(Converter.Convert).ToArray();
-            Root = Converter.Convert(RootPath.Root);
-        }
+
         /// <summary>
         ///     The root path
         /// </summary>
         internal RootPath RootPath;
+
+        public override void Setup()
+        {
+            Path = RootPath.Path.Select(Converter.Convert).ToArray();
+            Root = Converter.Convert(RootPath.Root);
+        }
 
         /// <summary>
         ///     The path from Root to a given target object.
@@ -58,6 +58,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The root.</value>
         /// <inheritdoc />
         public IClrRoot Root { get; internal set; }
-        
     }
 }

@@ -4,8 +4,6 @@ namespace Triage.Mortician.Adapters
 {
     internal abstract class BaseAdapter
     {
-        internal IConverter Converter { get; set; }
-
         /// <inheritdoc />
         protected BaseAdapter(IConverter converter)
         {
@@ -13,5 +11,6 @@ namespace Triage.Mortician.Adapters
         }
 
         public abstract void Setup();
+        internal IConverter Converter { get; set; }
     }
 }

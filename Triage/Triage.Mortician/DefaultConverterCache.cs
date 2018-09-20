@@ -1,14 +1,20 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.Runtime.CompilerServices;
-using Triage.Mortician.Adapters;
 
 namespace Triage.Mortician
 {
     [Export(typeof(IConverterCache))]
     internal class DefaultConverterCache : IConverterCache
     {
-        private ConditionalWeakTable<object, object> WeakMap { get; set; }= new ConditionalWeakTable<object, object>();
+        /// <inheritdoc />
+        public bool Contains(object instance)
+        {
+            lock (WeakMap)
+            {
+                return WeakMap.TryGetValue(instance, out var throwAway);
+            }
+        }
 
         /// <inheritdoc />
         public T GetOrAdd<T>(object instance, Func<T> factoryMethod, Action setupFunction = null)
@@ -22,23 +28,14 @@ namespace Triage.Mortician
                 {
                     return (T) value;
                 }
-                else
-                {
-                    var created = factoryMethod();
-                    WeakMap.Add(instance, created);
-                    setupFunction?.Invoke();
-                    return created;
-                }
+
+                var created = factoryMethod();
+                WeakMap.Add(instance, created);
+                setupFunction?.Invoke();
+                return created;
             }
         }
 
-        /// <inheritdoc />
-        public bool Contains(object instance)
-        {
-            lock (WeakMap)
-            {
-                return WeakMap.TryGetValue(instance, out var throwAway);
-            }
-        }
+        private ConditionalWeakTable<object, object> WeakMap { get; } = new ConditionalWeakTable<object, object>();
     }
 }

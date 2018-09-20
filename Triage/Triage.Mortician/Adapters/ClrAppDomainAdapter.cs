@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrMd = Microsoft.Diagnostics.Runtime;
@@ -36,13 +35,19 @@ namespace Triage.Mortician.Adapters
         public ClrAppDomainAdapter(IConverter converter, ClrMd.ClrAppDomain appDomain) : base(converter)
         {
             AppDomain = appDomain ?? throw new ArgumentNullException(nameof(appDomain));
-            
         }
 
         /// <summary>
         ///     The application domain
         /// </summary>
         internal ClrMd.ClrAppDomain AppDomain;
+
+        /// <inheritdoc />
+        public override void Setup()
+        {
+            Modules = AppDomain.Modules.Select(Converter.Convert).ToList();
+            Runtime = Converter.Convert(AppDomain.Runtime);
+        }
 
         /// <summary>
         ///     Address of the AppDomain.
@@ -94,12 +99,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The runtime.</value>
         /// <inheritdoc />
         public IClrRuntime Runtime { get; internal set; }
-
-        /// <inheritdoc />
-        public override void Setup()
-        {
-            Modules = AppDomain.Modules.Select(Converter.Convert).ToList();
-            Runtime = Converter.Convert(AppDomain.Runtime);
-        }
     }
 }

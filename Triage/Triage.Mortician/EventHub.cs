@@ -46,10 +46,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <typeparam name="TMessage">The type of the message.</typeparam>
         /// <returns>IObservable&lt;TMessage&gt;.</returns>
-        public IObservable<TMessage> Get<TMessage>() where TMessage : Message
-        {
-            return Subject.OfType<TMessage>();
-        }
+        public IObservable<TMessage> Get<TMessage>() where TMessage : Message => Subject.OfType<TMessage>();
 
         /// <summary>
         ///     Indicate to observers that there are no more events coming

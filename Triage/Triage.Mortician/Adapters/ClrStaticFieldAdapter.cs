@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrElementType = Triage.Mortician.Core.ClrMdAbstractions.ClrElementType;
@@ -36,13 +35,8 @@ namespace Triage.Mortician.Adapters
         public ClrStaticFieldAdapter(IConverter converter, ClrStaticField staticField) : base(converter)
         {
             StaticField = staticField ?? throw new ArgumentNullException(nameof(staticField));
-            
         }
-        public override void Setup()
-        {
-ElementType = Converter.Convert(StaticField.ElementType);
-            Type = Converter.Convert(StaticField.Type);
-        }
+
         /// <summary>
         ///     The static field
         /// </summary>
@@ -100,6 +94,12 @@ ElementType = Converter.Convert(StaticField.ElementType);
         /// <inheritdoc />
         public bool IsInitialized(IClrAppDomain appDomain) =>
             StaticField.IsInitialized((appDomain as ClrAppDomainAdapter)?.AppDomain);
+
+        public override void Setup()
+        {
+            ElementType = Converter.Convert(StaticField.ElementType);
+            Type = Converter.Convert(StaticField.Type);
+        }
 
         /// <summary>
         ///     Returns the element type of this field.  Note that even when Type is null, this should still tell you

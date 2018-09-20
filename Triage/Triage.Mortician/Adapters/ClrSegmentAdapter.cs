@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -35,12 +34,8 @@ namespace Triage.Mortician.Adapters
         public ClrSegmentAdapter(IConverter converter, ClrSegment segment) : base(converter)
         {
             Segment = segment ?? throw new ArgumentNullException(nameof(segment));
-            
         }
-        public override void Setup()
-        {
-Heap = Converter.Convert(Segment.Heap);
-        }
+
         /// <summary>
         ///     The segment
         /// </summary>
@@ -99,6 +94,11 @@ Heap = Converter.Convert(Segment.Heap);
             var res = Segment.NextObject(objRef, out var nextType);
             type = nextType != null ? Converter.Convert(nextType) : null;
             return res;
+        }
+
+        public override void Setup()
+        {
+            Heap = Converter.Convert(Segment.Heap);
         }
 
         /// <summary>

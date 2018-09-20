@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -37,16 +36,8 @@ namespace Triage.Mortician.Adapters
         public ClrThreadAdapter(IConverter converter, ClrThread thread) : base(converter)
         {
             Thread = thread ?? throw new ArgumentNullException(nameof(thread));
-           
         }
-        public override void Setup()
-        {
- BlockingObjects = Thread.BlockingObjects.Select(Converter.Convert).ToList();
-            CurrentException = Converter.Convert(Thread.CurrentException);
-            GcMode = Converter.Convert(Thread.GcMode);
-            Runtime = Converter.Convert(Thread.Runtime);
-            StackTrace = Thread.StackTrace.Select(Converter.Convert).ToList();
-        }
+
         /// <summary>
         ///     The thread
         /// </summary>
@@ -84,6 +75,15 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public IEnumerable<IClrStackFrame> EnumerateStackTrace() =>
             Thread.EnumerateStackTrace().Select(Converter.Convert);
+
+        public override void Setup()
+        {
+            BlockingObjects = Thread.BlockingObjects.Select(Converter.Convert).ToList();
+            CurrentException = Converter.Convert(Thread.CurrentException);
+            GcMode = Converter.Convert(Thread.GcMode);
+            Runtime = Converter.Convert(Thread.Runtime);
+            StackTrace = Thread.StackTrace.Select(Converter.Convert).ToList();
+        }
 
         /// <summary>
         ///     The address of the underlying datastructure which makes up the Thread object.  This

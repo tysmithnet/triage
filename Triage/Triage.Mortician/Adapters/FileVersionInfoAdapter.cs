@@ -34,14 +34,15 @@ namespace Triage.Mortician.Adapters
         {
             FileVersionInfo = fileVersionInfo ?? throw new ArgumentNullException(nameof(fileVersionInfo));
         }
-        public override void Setup()
-        {
 
-        }
         /// <summary>
         ///     The file version information
         /// </summary>
         internal FileVersionInfo FileVersionInfo;
+
+        public override void Setup()
+        {
+        }
 
         /// <summary>
         ///     Comments to supplement the file version

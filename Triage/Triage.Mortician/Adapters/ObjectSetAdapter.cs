@@ -34,10 +34,7 @@ namespace Triage.Mortician.Adapters
         {
             ObjectSet = objectSet ?? throw new ArgumentNullException(nameof(objectSet));
         }
-        public override void Setup()
-        {
 
-        }
         /// <summary>
         ///     The object set
         /// </summary>
@@ -75,6 +72,10 @@ namespace Triage.Mortician.Adapters
         /// <returns>True if the object was removed, returns false if the object was not in the set.</returns>
         /// <inheritdoc />
         public bool Remove(ulong obj) => ObjectSet.Remove(obj);
+
+        public override void Setup()
+        {
+        }
 
         /// <summary>
         ///     Returns the count of objects in this set.

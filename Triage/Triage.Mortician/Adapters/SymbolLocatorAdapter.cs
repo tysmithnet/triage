@@ -35,10 +35,7 @@ namespace Triage.Mortician.Adapters
         {
             Locator = locator ?? throw new ArgumentNullException(nameof(locator));
         }
-        public override void Setup()
-        {
 
-        }
         /// <summary>
         ///     The locator
         /// </summary>
@@ -194,6 +191,10 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public Task<string> FindPdbAsync(string pdbName, Guid pdbIndexGuid, int pdbIndexAge) =>
             Locator.FindPdbAsync(pdbName, pdbIndexGuid, pdbIndexAge);
+
+        public override void Setup()
+        {
+        }
 
         /// <summary>
         ///     Gets or sets the local symbol file cache.  This is the location that

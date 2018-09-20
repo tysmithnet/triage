@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -32,13 +31,12 @@ namespace Triage.Mortician
             IEnumerable<ISettings> existingValue, bool hasExistingValue,
             JsonSerializer serializer)
         {
-            var rootObject = JObject.ReadFrom(reader) as JObject;
+            var rootObject = JToken.ReadFrom(reader) as JObject;
             if (rootObject == null)
-            {
-                throw new SerializationException("Settings file must contain a single object, which property names of the settings types");
-            }
-            List<ISettings> settings = new List<ISettings>();
-            foreach(var prop in rootObject)
+                throw new SerializationException(
+                    "Settings file must contain a single object, which property names of the settings types");
+            var settings = new List<ISettings>();
+            foreach (var prop in rootObject)
             {
                 var className = prop.Key;
                 var settingsType = Type.GetType(className);
@@ -46,7 +44,7 @@ namespace Triage.Mortician
                     continue;
                 try
                 {
-                    var restored = (ISettings)JsonConvert.DeserializeObject(prop.Value.ToString(), settingsType);
+                    var restored = (ISettings) JsonConvert.DeserializeObject(prop.Value.ToString(), settingsType);
                     settings.Add(restored);
                 }
                 catch (Exception e)

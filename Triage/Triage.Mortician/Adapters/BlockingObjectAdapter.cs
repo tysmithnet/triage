@@ -35,13 +35,22 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public BlockingObjectAdapter(IConverter converter, BlockingObject blockingObject) : base(converter)
         {
-            BlockingObject = blockingObject ?? throw new ArgumentNullException(nameof(blockingObject));   
+            BlockingObject = blockingObject ?? throw new ArgumentNullException(nameof(blockingObject));
         }
 
         /// <summary>
         ///     The blocking object
         /// </summary>
         internal BlockingObject BlockingObject;
+
+        /// <inheritdoc />
+        public override void Setup()
+        {
+            Owner = Converter.Convert(BlockingObject.Owner);
+            Owners = BlockingObject.Owners.Select(Converter.Convert).ToList();
+            Reason = Converter.Convert(BlockingObject.Reason);
+            Waiters = BlockingObject.Waiters.Select(Converter.Convert).ToList();
+        }
 
         /// <summary>
         ///     Returns true if this lock has only one owner.  Returns false if this lock
@@ -100,14 +109,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The waiters.</value>
         /// <inheritdoc />
         public IList<IClrThread> Waiters { get; internal set; }
-
-        /// <inheritdoc />
-        public override void Setup()
-        {
-            Owner = Converter.Convert(BlockingObject.Owner);
-            Owners = BlockingObject.Owners.Select(Converter.Convert).ToList();
-            Reason = Converter.Convert(BlockingObject.Reason);
-            Waiters = BlockingObject.Waiters.Select(Converter.Convert).ToList();
-        }
     }
 }

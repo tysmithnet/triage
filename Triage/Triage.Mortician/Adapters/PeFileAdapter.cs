@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime.Utilities;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -36,10 +35,7 @@ namespace Triage.Mortician.Adapters
             PeFile = peFile ?? throw new ArgumentNullException(nameof(peFile));
             PdbInfo = Converter.Convert(peFile.PdbInfo);
         }
-        public override void Setup()
-        {
 
-        }
         /// <summary>
         ///     The pe file
         /// </summary>
@@ -83,6 +79,10 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public string GetSxSManfest() => PeFile.GetSxSManfest();
 
+        public override void Setup()
+        {
+        }
+
         /// <summary>
         ///     Whether this object has been disposed.
         /// </summary>
@@ -96,6 +96,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The PDB information.</value>
         /// <inheritdoc />
         public IPdbInfo PdbInfo { get; internal set; }
-        
     }
 }

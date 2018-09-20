@@ -152,7 +152,9 @@ namespace Triage.Mortician
         /// <returns>IClrHeap.</returns>
         public IClrHeap Convert(ClrMd.ClrHeap heap)
         {
-            return Cache.GetOrAdd<IClrHeap>(heap, () => new HeapAdapter(this, heap));
+            if (heap == null) return null;
+            var item = new HeapAdapter(this, heap);
+            return Cache.GetOrAdd<IClrHeap>(heap, () => item, () => item.Setup());
         }
 
         /// <summary>
