@@ -40,7 +40,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="configOptions">The the configuration command line options</param>
         /// <returns>Program status code</returns>
-        private static int ConfigExecution(ConfigOptions configOptions)
+        internal static int ConfigExecution(ConfigOptions configOptions)
         {
             if (configOptions.ShouldList)
                 try
@@ -86,11 +86,11 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="options">The options.</param>
         /// <returns>Program status code</returns>
-        private static int DefaultExecution(DefaultOptions options)
+        internal static int DefaultExecution(DefaultOptions options)
         {
             var blacklistedAssemblies = Settings.SettingsInstance.BlacklistedAssemblies;
             var blacklistedTypes = Settings.SettingsInstance.BlacklistedTypes;
-            var executionLocation = Assembly.GetEntryAssembly().Location;
+            var executionLocation = typeof(Program).Assembly.Location;
             var morticianAssemblyFiles =
                 Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation),
                     "Triage.Mortician.*.dll"); // todo: not ideal to require assembly name
@@ -130,7 +130,7 @@ namespace Triage.Mortician
         ///     Entry point to the application
         /// </summary>
         /// <param name="args">The arguments.</param>
-        private static void Main(string[] args)
+        internal static void Main(string[] args)
         {
             Log.Trace($"Starting mortician at {DateTime.UtcNow.ToString()} UTC");
             WarnIfNoDebuggingKitOnPath();
@@ -149,7 +149,7 @@ namespace Triage.Mortician
         ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64
         ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\winext
         /// </summary>
-        private static void WarnIfNoDebuggingKitOnPath()
+        internal static void WarnIfNoDebuggingKitOnPath()
         {
             var path = Environment.GetEnvironmentVariable("PATH") ?? "";
             if (!Regex.IsMatch(path, @"[Dd]ebuggers[/\\]x64"))

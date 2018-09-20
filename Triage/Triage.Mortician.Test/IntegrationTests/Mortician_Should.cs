@@ -14,10 +14,7 @@ namespace Triage.Mortician.Test.IntegrationTests
         [Fact]
         public void Not_Fail_When_Loading_Dump()
         {
-            using (var dt = Scenario.HelloWorld.GetDataTarget())
-            {
-                dt.Should().NotBeNull();
-            }
+            var dumpFile = Scenario.HelloWorld.GetDumpFile();
         }
     }
 }

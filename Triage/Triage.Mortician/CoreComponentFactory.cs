@@ -69,7 +69,7 @@ namespace Triage.Mortician
                     $"Unable to open crash dump: {e.Message}, Does the dump file exist and do you have the x64 folder of the Windows Debugging Kit in your path?");
             }
         }
-
+        
         /// <summary>
         ///     The log
         /// </summary>
@@ -89,6 +89,7 @@ namespace Triage.Mortician
             try
             {
                 Log.Trace($"Attempting to create the CLRMd runtime");
+                // todo: handle multiple clrs? does anyone still do that?
                 runtime = DataTarget.ClrVersions.Single().CreateRuntime();
             }
             catch (Exception)
