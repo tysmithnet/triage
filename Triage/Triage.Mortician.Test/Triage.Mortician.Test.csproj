@@ -107,6 +107,7 @@
     <Compile Include="EventHub_Should.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sanity_Should.cs" />
+    <Compile Include="StringExtractor_Should.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

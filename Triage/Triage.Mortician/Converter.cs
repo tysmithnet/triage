@@ -13,6 +13,7 @@
 // ***********************************************************************
 
 using System;
+using System.Collections.Concurrent;
 using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime.Utilities;
 using Triage.Mortician.Adapters;
@@ -28,6 +29,9 @@ namespace Triage.Mortician
     [Export(typeof(IConverter))]
     internal class Converter : IConverter
     {
+        [Import]
+        internal IConverterCache Cache { get; set; }
+
         /// <summary>
         ///     Converts the specified architecture.
         /// </summary>

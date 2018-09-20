@@ -155,6 +155,7 @@
     <Compile Include="Adapters\DacInfoAdapter.cs" />
     <Compile Include="Adapters\DataReaderAdapter.cs" />
     <Compile Include="Adapters\DataTargetAdapter.cs" />
+    <Compile Include="DefaultConverterCache.cs" />
     <Compile Include="DefaultOptions.cs" />
     <Compile Include="Domain\DebuggerProxy.cs" />
     <Compile Include="Domain\DefaultObjectExtractor.cs" />
@@ -164,6 +165,7 @@
     <Compile Include="Adapters\GcRootAdapter.cs" />
     <Compile Include="Adapters\HotColdRegionsAdapter.cs" />
     <Compile Include="IConverter.cs" />
+    <Compile Include="IConverterCache.cs" />
     <Compile Include="IlInfoAdapter.cs" />
     <Compile Include="Adapters\ManagedWorkItemAdapter.cs" />
     <Compile Include="Adapters\ModuleInfoAdapter.cs" />
