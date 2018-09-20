@@ -52,8 +52,7 @@ namespace Triage.Mortician
         public DumpObject Extract(IClrObject clrObject, IClrRuntime clrRuntime)
         {
             var value = (string) clrObject.Type.GetValue(clrObject.Address);
-            var preview = new string(value.Take(100).ToArray());
-            var heapObject = new StringDumpObject(clrObject.Address, "System.String", clrObject.Size, preview,
+            var heapObject = new StringDumpObject(clrObject.Address, "System.String", clrObject.Size, value,
                 clrRuntime.Heap.GetGeneration(clrObject.Address));
 
             return heapObject;
