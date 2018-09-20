@@ -7,11 +7,14 @@ namespace Triage.Mortician
     [Export(typeof(IConverterCache))]
     internal class DefaultConverterCache : IConverterCache
     {
-        private ConditionalWeakTable<object, object> WeakMap = new ConditionalWeakTable<object, object>();
+        private ConditionalWeakTable<object, object> WeakMap { get; set; }= new ConditionalWeakTable<object, object>();
 
         /// <inheritdoc />
         public T GetOrAdd<T>(object instance, Func<T> factoryMethod)
         {
+            if (instance == null)
+                return default(T);
+
             lock (WeakMap)
             {
                 if (WeakMap.TryGetValue(instance, out var value))
