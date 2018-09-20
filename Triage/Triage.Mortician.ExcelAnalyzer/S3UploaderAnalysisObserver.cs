@@ -63,7 +63,8 @@ namespace Triage.Mortician.ExcelAnalyzer
         {
             return EventHub.Get<ExcelReportComplete>().ForEachAsync(message =>
             {
-                var shouldUpload = SettingsRepository.GetBool(UploadExcelToS3, true);
+                // todo: fix
+                var shouldUpload = false; // SettingsRepository.GetBool(UploadExcelToS3, true);
                 if (!shouldUpload)
                 {
                     Log.Trace($"Skipping upload excel report to s3. Is the setting {UploadExcelToS3} set to true?");
@@ -76,8 +77,8 @@ namespace Triage.Mortician.ExcelAnalyzer
                 BasicAWSCredentials creds;
                 try
                 {
-                    var accessKey = SettingsRepository.Get("aws-access-key-id");
-                    var secretKey = SettingsRepository.Get("aws-secret-key");
+                    var accessKey = ""; // SettingsRepository.Get("aws-access-key-id");
+                    var secretKey = ""; // SettingsRepository.Get("aws-secret-key");
                     creds = new BasicAWSCredentials(accessKey, secretKey);
                 }
                 catch (Exception e)
@@ -92,7 +93,7 @@ namespace Triage.Mortician.ExcelAnalyzer
                     var putReportRequest = new PutObjectRequest
                     {
                         // todo: this sould be a setting
-                        BucketName = SettingsRepository.Get(ExcelBucketId),
+                        BucketName = "", // SettingsRepository.Get(ExcelBucketId),
                         Key = message.ReportFile,
                         InputStream = fs
                     };
@@ -133,11 +134,5 @@ namespace Triage.Mortician.ExcelAnalyzer
         [Import]
         internal IEventHub EventHub { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the settings repository.
-        /// </summary>
-        /// <value>The settings repository.</value>
-        [Import]
-        internal ISettingsRepository SettingsRepository { get; set; }
     }
 }

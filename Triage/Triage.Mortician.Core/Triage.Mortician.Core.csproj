@@ -138,7 +138,6 @@
     <Compile Include="ClrMdAbstractions\IRcwData.cs" />
     <Compile Include="ClrMdAbstractions\IRootPath.cs" />
     <Compile Include="ISettings.cs" />
-    <Compile Include="ISettingsRepository.cs" />
     <Compile Include="ClrMdAbstractions\ISymbolLocator.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

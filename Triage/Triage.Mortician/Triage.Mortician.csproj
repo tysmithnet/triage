@@ -150,7 +150,6 @@
     <Compile Include="Adapters\ClrTypeAdapter.cs" />
     <Compile Include="Adapters\ClrValueClassAdapter.cs" />
     <Compile Include="ComInterfaceData.cs" />
-    <Compile Include="ConfigOptions.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="Adapters\DacInfoAdapter.cs" />
     <Compile Include="Adapters\DataReaderAdapter.cs" />
@@ -183,7 +182,6 @@
     <Compile Include="Repository\DumpObjectRepository.cs" />
     <Compile Include="Adapters\RootPathAdapter.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="Repository\SettingsRepository.cs" />
     <Compile Include="Repository\DumpInformationRepository.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

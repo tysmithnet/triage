@@ -106,7 +106,6 @@ namespace Triage.Mortician
                 Log.Warn("CLRMd reports that the heap is unwalkable, results might vary");
 
             var dumpInformationRepository = new DumpInformationRepository(DataTarget, runtime, DumpFile);
-            var settingsRepository = new SettingsRepository(Settings.GetSettings());
             var eventHub = new EventHub();
             /*
              * IMPORTANT
@@ -139,9 +138,9 @@ namespace Triage.Mortician
 
             CompositionContainer.ComposeExportedValue<IEventHub>(eventHub);
             CompositionContainer.ComposeExportedValue<IDumpInformationRepository>(dumpInformationRepository);
-            CompositionContainer.ComposeExportedValue<ISettingsRepository>(settingsRepository);
             CompositionContainer.ComposeExportedValue<IDumpObjectRepository>(dumpRepo);
             CompositionContainer.ComposeExportedValue<IDumpThreadRepository>(threadRepo);
+            // todo: register settings instances recovered from the settings process
             CompositionContainer.ComposeExportedValue<IDumpAppDomainRepository>(appDomainRepo);
             CompositionContainer.ComposeExportedValue<IDumpModuleRepository>(moduleRepo);
             CompositionContainer.ComposeExportedValue<IDumpTypeRepository>(typeRepo);
