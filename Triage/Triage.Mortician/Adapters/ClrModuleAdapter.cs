@@ -26,7 +26,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrModuleAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrModule" />
-    internal class ClrModuleAdapter : IClrModule
+    internal class ClrModuleAdapter : BaseAdapter, IClrModule
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrModuleAdapter" /> class.
@@ -34,7 +34,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="module">The module.</param>
         /// <exception cref="ArgumentNullException">module</exception>
         /// <inheritdoc />
-        public ClrModuleAdapter(ClrModule module)
+        public ClrModuleAdapter(IConverter converter, ClrModule module) : base(converter)
         {
             Module = module ?? throw new ArgumentNullException(nameof(module));
             AppDomains = module.AppDomains.Select(Converter.Convert).ToList();

@@ -25,7 +25,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrInfoAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrInfo" />
-    internal class ClrInfoAdapter : IClrInfo
+    internal class ClrInfoAdapter : BaseAdapter, IClrInfo
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrInfoAdapter" /> class.
@@ -33,7 +33,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="info">The information.</param>
         /// <exception cref="ArgumentNullException">info</exception>
         /// <inheritdoc />
-        public ClrInfoAdapter(ClrInfo info)
+        public ClrInfoAdapter(IConverter converter, ClrInfo info) : base(converter)
         {
             Info = info ?? throw new ArgumentNullException(nameof(info));
             DacInfo = Converter.Convert(info.DacInfo);
@@ -116,12 +116,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The version.</value>
         /// <inheritdoc />
         public VersionInfo Version { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

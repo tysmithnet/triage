@@ -23,7 +23,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrRootAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrRoot" />
-    internal class ClrRootAdapter : IClrRoot
+    internal class ClrRootAdapter : BaseAdapter, IClrRoot
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrRootAdapter" /> class.
@@ -31,7 +31,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="root">The root.</param>
         /// <exception cref="ArgumentNullException">root</exception>
         /// <inheritdoc />
-        public ClrRootAdapter(ClrRoot root)
+        public ClrRootAdapter(IConverter converter, ClrRoot root) : base(converter)
         {
             Root = root ?? throw new ArgumentNullException(nameof(root));
             AppDomain = Converter.Convert(root.AppDomain);

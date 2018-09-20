@@ -124,6 +124,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\BaseAdapter.cs" />
     <Compile Include="Adapters\BlockingObjectAdapter.cs" />
     <Compile Include="Adapters\CcwDataAdapter.cs" />
     <Compile Include="Adapters\ClrAppDomainAdapter.cs" />

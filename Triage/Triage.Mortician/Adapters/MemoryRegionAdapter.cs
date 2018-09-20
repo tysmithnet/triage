@@ -24,14 +24,14 @@ namespace Triage.Mortician.Adapters
     ///     Class MemoryRegionAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrMemoryRegion" />
-    internal class MemoryRegionAdapter : IClrMemoryRegion
+    internal class MemoryRegionAdapter : BaseAdapter, IClrMemoryRegion
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="MemoryRegionAdapter" /> class.
         /// </summary>
         /// <param name="memoryRegion">The memory region.</param>
         /// <exception cref="ArgumentNullException">memoryRegion</exception>
-        public MemoryRegionAdapter(ClrMemoryRegion memoryRegion)
+        public MemoryRegionAdapter(IConverter converter, ClrMemoryRegion memoryRegion) : base(converter)
         {
             MemoryRegion = memoryRegion ?? throw new ArgumentNullException(nameof(memoryRegion));
             AppDomain = Converter.Convert(memoryRegion.AppDomain);

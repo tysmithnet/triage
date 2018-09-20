@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
@@ -48,7 +47,9 @@ namespace Triage.Mortician
             var executionLocation = typeof(Program).Assembly.Location;
             var morticianAssemblyFiles =
                 Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation),
-                    "Triage.Mortician.*.dll"); // todo: not ideal to require assembly name
+                        "Triage.Mortician.*.*")
+                    .Where(f => Regex.IsMatch(f, "(dll|exe)$",
+                        RegexOptions.IgnoreCase)); // todo: not ideal to require assembly name
             var toLoad =
                 morticianAssemblyFiles.Except(AppDomain.CurrentDomain.GetAssemblies().Select(x => x.Location))
                     .Select(x => new FileInfo(x)).Where(x => !blacklistedAssemblies.Contains(x.Name));

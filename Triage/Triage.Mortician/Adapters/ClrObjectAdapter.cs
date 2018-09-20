@@ -24,14 +24,14 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrObjectAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrObject" />
-    internal class ClrObjectAdapter : IClrObject
+    internal class ClrObjectAdapter : BaseAdapter, IClrObject
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrObjectAdapter" /> class.
         /// </summary>
         /// <param name="o">The o.</param>
         /// <inheritdoc />
-        public ClrObjectAdapter(ClrObject o)
+        public ClrObjectAdapter(IConverter converter, ClrObject o) : base(converter)
         {
             Object = o;
             Type = Converter.Convert(o.Type);

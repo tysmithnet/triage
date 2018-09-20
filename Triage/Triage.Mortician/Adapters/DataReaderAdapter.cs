@@ -24,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class DataReaderAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IDataReader" />
-    internal class DataReaderAdapter : IDataReader
+    internal class DataReaderAdapter : BaseAdapter, IDataReader
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="DataReaderAdapter" /> class.
@@ -32,7 +32,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="dataReader">The data reader.</param>
         /// <exception cref="ArgumentNullException">dataReader</exception>
         /// <inheritdoc />
-        public DataReaderAdapter(Microsoft.Diagnostics.Runtime.IDataReader dataReader)
+        public DataReaderAdapter(IConverter converter, Microsoft.Diagnostics.Runtime.IDataReader dataReader) : base(converter)
         {
             DataReader = dataReader ?? throw new ArgumentNullException(nameof(dataReader));
         }

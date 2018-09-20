@@ -37,7 +37,6 @@ namespace Triage.Mortician
     /// </summary>
     internal class CoreComponentFactory
     {
-        [Import]
         internal IConverter Converter { get; set; }
         /// <summary>
         ///     Initializes a new instance of the <see cref="CoreComponentFactory" /> class.
@@ -58,6 +57,7 @@ namespace Triage.Mortician
         {
             CompositionContainer =
                 compositionContainer ?? throw new ArgumentNullException(nameof(compositionContainer));
+            Converter = compositionContainer.GetExportedValue<IConverter>();
             DumpFile = dumpFile ?? throw new ArgumentNullException(nameof(dumpFile));
             try
             {
@@ -95,7 +95,7 @@ namespace Triage.Mortician
         ///     Registers the repositories.
         /// </summary>
         // todo: this is too big
-        public void RegisterRepositories(DefaultOptions options)
+        public void RegisterRepositories(DefaultOptions options, IEnumerable<ISettings> settings = null)
         {
             // todo: check symbols
             var heapObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
@@ -141,7 +141,6 @@ namespace Triage.Mortician
             SetupObjects(heapObjectExtractors, runtime, objectStore, objectHierarchy, typeStore, appDomainStore,
                 objectRootsStore);
             EstablishObjectRelationships(objectHierarchy, objectStore);
-            objectHierarchy = null;
             GC.Collect();
             SetupThreads(runtime, threadStore, objectRootsStore);
 
@@ -159,9 +158,10 @@ namespace Triage.Mortician
             CompositionContainer.ComposeExportedValue<IDumpAppDomainRepository>(appDomainRepo);
             CompositionContainer.ComposeExportedValue<IDumpModuleRepository>(moduleRepo);
             CompositionContainer.ComposeExportedValue<IDumpTypeRepository>(typeRepo);
-            foreach (var settings in GetSettings(options.SettingsFile))
+            var settingsToAdd = settings ?? GetSettings(options.SettingsFile);
+            foreach (var setting in settingsToAdd)
             {
-                CompositionContainer.ComposeExportedValue(settings);
+                CompositionContainer.ComposeExportedValue(setting);
             }
         }
 

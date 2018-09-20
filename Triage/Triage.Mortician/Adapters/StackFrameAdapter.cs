@@ -23,7 +23,7 @@ namespace Triage.Mortician.Adapters
     ///     Class StackFrameAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrStackFrame" />
-    internal class StackFrameAdapter : IClrStackFrame
+    internal class StackFrameAdapter : BaseAdapter, IClrStackFrame
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="StackFrameAdapter" /> class.
@@ -31,7 +31,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="frame">The frame.</param>
         /// <exception cref="ArgumentNullException">frame</exception>
         /// <inheritdoc />
-        public StackFrameAdapter(ClrMd.ClrStackFrame frame)
+        public StackFrameAdapter(IConverter converter, ClrMd.ClrStackFrame frame) : base(converter)
         {
             Frame = frame ?? throw new ArgumentNullException(nameof(frame));
             Thread = Converter.Convert(Frame.Thread);

@@ -8,7 +8,17 @@ namespace Triage.Mortician.IntegrationTest.IntegrationTests
         [Fact]
         public void Not_Fail_When_Loading_Dump()
         {
+            // arrange
             var dumpFile = Scenario.HelloWorld.GetDumpFile();
+            var options = new DefaultOptions
+            {
+                DumpFile = dumpFile.FullName
+            };
+
+            // act
+            Program.DefaultExecution(options);
+
+            // assert
         }
     }
 }

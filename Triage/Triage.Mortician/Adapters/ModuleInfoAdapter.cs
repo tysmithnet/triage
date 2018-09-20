@@ -24,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ModuleInfoAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IModuleInfo" />
-    internal class ModuleInfoAdapter : IModuleInfo
+    internal class ModuleInfoAdapter : BaseAdapter, IModuleInfo
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ModuleInfoAdapter" /> class.
@@ -32,7 +32,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="moduleInfo">The module information.</param>
         /// <exception cref="ArgumentNullException">moduleInfo</exception>
         /// <inheritdoc />
-        public ModuleInfoAdapter(ModuleInfo moduleInfo)
+        public ModuleInfoAdapter(IConverter converter, ModuleInfo moduleInfo) : base(converter)
         {
             ModuleInfo = moduleInfo ?? throw new ArgumentNullException(nameof(moduleInfo));
             Pdb = Converter.Convert(moduleInfo.Pdb);

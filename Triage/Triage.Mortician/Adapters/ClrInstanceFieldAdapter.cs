@@ -24,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrInstanceFieldAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrInstanceField" />
-    internal class ClrInstanceFieldAdapter : IClrInstanceField
+    internal class ClrInstanceFieldAdapter : BaseAdapter, IClrInstanceField
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrInstanceFieldAdapter" /> class.
@@ -32,7 +32,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="instanceField">The instance field.</param>
         /// <exception cref="ArgumentNullException">instanceField</exception>
         /// <inheritdoc />
-        public ClrInstanceFieldAdapter(ClrInstanceField instanceField)
+        public ClrInstanceFieldAdapter(IConverter converter, ClrInstanceField instanceField) : base(converter)
         {
             InstanceField = instanceField ?? throw new ArgumentNullException(nameof(instanceField));
             ElementType = Converter.Convert(instanceField.ElementType);
@@ -207,12 +207,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The type.</value>
         /// <inheritdoc />
         public IClrType Type { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

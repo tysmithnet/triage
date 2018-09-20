@@ -23,7 +23,7 @@ namespace Triage.Mortician.Adapters
     ///     Class PeFileAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IPeFile" />
-    internal class PeFileAdapter : IPeFile
+    internal class PeFileAdapter : BaseAdapter, IPeFile
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="PeFileAdapter" /> class.
@@ -31,7 +31,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="peFile">The pe file.</param>
         /// <exception cref="ArgumentNullException">peFile</exception>
         /// <inheritdoc />
-        public PeFileAdapter(PEFile peFile)
+        public PeFileAdapter(IConverter converter, PEFile peFile) : base(converter)
         {
             PeFile = peFile ?? throw new ArgumentNullException(nameof(peFile));
             PdbInfo = Converter.Convert(peFile.PdbInfo);

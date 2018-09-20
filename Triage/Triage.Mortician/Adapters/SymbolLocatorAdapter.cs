@@ -23,7 +23,7 @@ namespace Triage.Mortician.Adapters
     ///     Class SymbolLocatorAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.ISymbolLocator" />
-    internal class SymbolLocatorAdapter : ISymbolLocator
+    internal class SymbolLocatorAdapter : BaseAdapter, ISymbolLocator
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="SymbolLocatorAdapter" /> class.
@@ -31,7 +31,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="locator">The locator.</param>
         /// <exception cref="ArgumentNullException">locator</exception>
         /// <inheritdoc />
-        public SymbolLocatorAdapter(SymbolLocator locator)
+        public SymbolLocatorAdapter(IConverter converter, SymbolLocator locator) : base(converter)
         {
             Locator = locator ?? throw new ArgumentNullException(nameof(locator));
         }

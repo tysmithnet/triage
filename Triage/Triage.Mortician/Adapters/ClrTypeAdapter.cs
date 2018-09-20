@@ -26,7 +26,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrTypeAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrType" />
-    internal class ClrTypeAdapter : IClrType
+    internal class ClrTypeAdapter : BaseAdapter, IClrType
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrTypeAdapter" /> class.
@@ -34,7 +34,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="type">The type.</param>
         /// <exception cref="ArgumentNullException">type</exception>
         /// <inheritdoc />
-        public ClrTypeAdapter(ClrType type)
+        public ClrTypeAdapter(IConverter converter, ClrType type) : base(converter)
         {
             ClrType = type ?? throw new ArgumentNullException(nameof(type));
             BaseType = Converter.Convert(type.BaseType);

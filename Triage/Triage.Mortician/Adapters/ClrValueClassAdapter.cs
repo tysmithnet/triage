@@ -22,14 +22,14 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrValueClassAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrValueClass" />
-    internal class ClrValueClassAdapter : IClrValueClass
+    internal class ClrValueClassAdapter : BaseAdapter, IClrValueClass
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrValueClassAdapter" /> class.
         /// </summary>
         /// <param name="valueClass">The value class.</param>
         /// <inheritdoc />
-        public ClrValueClassAdapter(ClrValueClass valueClass)
+        public ClrValueClassAdapter(IConverter converter, ClrValueClass valueClass) : base(converter)
         {
             ValueClass = valueClass;
             Type = Converter.Convert(valueClass.Type);

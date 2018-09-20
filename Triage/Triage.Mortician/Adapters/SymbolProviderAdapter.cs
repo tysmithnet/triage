@@ -22,7 +22,7 @@ namespace Triage.Mortician.Adapters
     ///     Class SymbolProviderAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.ISymbolProvider" />
-    internal class SymbolProviderAdapter : ISymbolProvider
+    internal class SymbolProviderAdapter : BaseAdapter, ISymbolProvider
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="SymbolProviderAdapter" /> class.
@@ -30,7 +30,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="provider">The provider.</param>
         /// <exception cref="ArgumentNullException">provider</exception>
         /// <inheritdoc />
-        public SymbolProviderAdapter(Microsoft.Diagnostics.Runtime.ISymbolProvider provider)
+        public SymbolProviderAdapter(IConverter converter, Microsoft.Diagnostics.Runtime.ISymbolProvider provider) : base(converter)
         {
             Provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }

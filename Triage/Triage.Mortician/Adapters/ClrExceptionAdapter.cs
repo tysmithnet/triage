@@ -25,7 +25,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrExceptionAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrException" />
-    internal class ClrExceptionAdapter : IClrException
+    internal class ClrExceptionAdapter : BaseAdapter, IClrException
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrExceptionAdapter" /> class.
@@ -33,7 +33,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="exception">The exception.</param>
         /// <exception cref="ArgumentNullException">exception</exception>
         /// <inheritdoc />
-        public ClrExceptionAdapter(ClrException exception)
+        public ClrExceptionAdapter(IConverter converter, ClrException exception) : base(converter)
         {
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
             StackTrace = Exception.StackTrace.Select(Converter.Convert).ToList();
@@ -90,12 +90,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The type.</value>
         /// <inheritdoc />
         public IClrType Type { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

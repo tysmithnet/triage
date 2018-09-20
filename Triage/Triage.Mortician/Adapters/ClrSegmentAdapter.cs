@@ -24,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrSegmentAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrSegment" />
-    internal class ClrSegmentAdapter : IClrSegment
+    internal class ClrSegmentAdapter : BaseAdapter, IClrSegment
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrSegmentAdapter" /> class.
@@ -32,7 +32,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="segment">The segment.</param>
         /// <exception cref="ArgumentNullException">segment</exception>
         /// <inheritdoc />
-        public ClrSegmentAdapter(ClrSegment segment)
+        public ClrSegmentAdapter(IConverter converter, ClrSegment segment) : base(converter)
         {
             Segment = segment ?? throw new ArgumentNullException(nameof(segment));
             Heap = Converter.Convert(segment.Heap);

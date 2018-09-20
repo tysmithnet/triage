@@ -22,7 +22,7 @@ namespace Triage.Mortician.Adapters
     ///     Class SymbolResolverAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.ISymbolResolver" />
-    internal class SymbolResolverAdapter : ISymbolResolver
+    internal class SymbolResolverAdapter : BaseAdapter, ISymbolResolver
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="SymbolResolverAdapter" /> class.
@@ -30,7 +30,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="resolver">The resolver.</param>
         /// <exception cref="ArgumentNullException">resolver</exception>
         /// <inheritdoc />
-        public SymbolResolverAdapter(ClrMd.ISymbolResolver resolver)
+        public SymbolResolverAdapter(IConverter converter, ClrMd.ISymbolResolver resolver) : base(converter)
         {
             Resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
         }

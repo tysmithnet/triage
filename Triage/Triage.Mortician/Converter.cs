@@ -28,6 +28,9 @@ namespace Triage.Mortician
     [Export(typeof(IConverter))]
     internal class Converter : IConverter
     {
+        [Import]
+        internal IConverterCache Cache { get; set; } = new DefaultConverterCache();
+
         /// <summary>
         ///     Converts the specified architecture.
         /// </summary>
@@ -79,7 +82,7 @@ namespace Triage.Mortician
         /// <param name="instanceField">The instance field.</param>
         /// <returns>IClrInstanceField.</returns>
         public IClrInstanceField Convert(ClrMd.ClrInstanceField instanceField) =>
-            Cache.GetOrAdd<IClrInstanceField>(instanceField, () => new ClrInstanceFieldAdapter(instanceField));
+            Cache.GetOrAdd<IClrInstanceField>(instanceField, () => new ClrInstanceFieldAdapter(this, instanceField));
 
         /// <summary>
         ///     Converts the specified blocking object.
@@ -87,7 +90,7 @@ namespace Triage.Mortician
         /// <param name="blockingObject">The blocking object.</param>
         /// <returns>IBlockingObject.</returns>
         public IBlockingObject Convert(ClrMd.BlockingObject blockingObject) =>
-            Cache.GetOrAdd<IBlockingObject>(blockingObject, () => new BlockingObjectAdapter(blockingObject));
+            Cache.GetOrAdd<IBlockingObject>(blockingObject, () => new BlockingObjectAdapter(this, blockingObject));
 
         /// <summary>
         ///     Converts the specified module.
@@ -95,7 +98,7 @@ namespace Triage.Mortician
         /// <param name="module">The module.</param>
         /// <returns>IClrModule.</returns>
         public IClrModule Convert(ClrMd.ClrModule module) =>
-            Cache.GetOrAdd<IClrModule>(module, () => new ClrModuleAdapter(module));
+            Cache.GetOrAdd<IClrModule>(module, () => new ClrModuleAdapter(this, module));
 
         /// <summary>
         ///     Converts the specified interface data.
@@ -103,7 +106,7 @@ namespace Triage.Mortician
         /// <param name="interfaceData">The interface data.</param>
         /// <returns>IComInterfaceData.</returns>
         public IComInterfaceData Convert(ClrMd.ComInterfaceData interfaceData) =>
-            Cache.GetOrAdd<IComInterfaceData>(interfaceData, () => new ComInterfaceData(interfaceData));
+            Cache.GetOrAdd<IComInterfaceData>(interfaceData, () => new ComInterfaceDataAdapter(this, interfaceData));
 
         /// <summary>
         ///     Converts the specified iface.
@@ -111,21 +114,21 @@ namespace Triage.Mortician
         /// <param name="iface">The iface.</param>
         /// <returns>IClrInterface.</returns>
         public IClrInterface Convert(ClrMd.ClrInterface iface) =>
-            Cache.GetOrAdd<IClrInterface>(iface, () => new ClrInterfaceAdapter(iface));
+            Cache.GetOrAdd<IClrInterface>(iface, () => new ClrInterfaceAdapter(this, iface));
 
         /// <summary>
         ///     Converts the specified information.
         /// </summary>
         /// <param name="info">The information.</param>
         /// <returns>IClrInfo.</returns>
-        public IClrInfo Convert(ClrMd.ClrInfo info) => Cache.GetOrAdd<IClrInfo>(info, () => new ClrInfoAdapter(info));
+        public IClrInfo Convert(ClrMd.ClrInfo info) => Cache.GetOrAdd<IClrInfo>(info, () => new ClrInfoAdapter(this, info));
 
         /// <summary>
         ///     Converts the specified heap.
         /// </summary>
         /// <param name="heap">The heap.</param>
         /// <returns>IClrHeap.</returns>
-        public IClrHeap Convert(ClrMd.ClrHeap heap) => Cache.GetOrAdd<IClrHeap>(heap, () => new HeapAdapter(heap));
+        public IClrHeap Convert(ClrMd.ClrHeap heap) => Cache.GetOrAdd<IClrHeap>(heap, () => new HeapAdapter(this, heap));
 
         /// <summary>
         ///     Converts the specified memory region.
@@ -133,7 +136,7 @@ namespace Triage.Mortician
         /// <param name="memoryRegion">The memory region.</param>
         /// <returns>IClrMemoryRegion.</returns>
         public IClrMemoryRegion Convert(ClrMd.ClrMemoryRegion memoryRegion) =>
-            Cache.GetOrAdd<IClrMemoryRegion>(memoryRegion, () => new MemoryRegionAdapter(memoryRegion));
+            Cache.GetOrAdd<IClrMemoryRegion>(memoryRegion, () => new MemoryRegionAdapter(this, memoryRegion));
 
         /// <summary>
         ///     Converts the specified handle.
@@ -141,14 +144,14 @@ namespace Triage.Mortician
         /// <param name="handle">The handle.</param>
         /// <returns>IClrHandle.</returns>
         public IClrHandle Convert(ClrMd.ClrHandle handle) =>
-            Cache.GetOrAdd<IClrHandle>(handle, () => new HandleAdapter(handle));
+            Cache.GetOrAdd<IClrHandle>(handle, () => new HandleAdapter(this, handle));
 
         /// <summary>
         ///     Converts the specified data.
         /// </summary>
         /// <param name="data">The data.</param>
         /// <returns>ICcwData.</returns>
-        public ICcwData Convert(ClrMd.CcwData data) => Cache.GetOrAdd<ICcwData>(data, () => new CcwDataAdapter(data));
+        public ICcwData Convert(ClrMd.CcwData data) => Cache.GetOrAdd<ICcwData>(data, () => new CcwDataAdapter(this, data));
 
         /// <summary>
         ///     Converts the specified application domain.
@@ -156,14 +159,14 @@ namespace Triage.Mortician
         /// <param name="appDomain">The application domain.</param>
         /// <returns>IClrAppDomain.</returns>
         public IClrAppDomain Convert(ClrMd.ClrAppDomain appDomain) =>
-            Cache.GetOrAdd<IClrAppDomain>(appDomain, () => new ClrAppDomainAdapter(appDomain));
+            Cache.GetOrAdd<IClrAppDomain>(appDomain, () => new ClrAppDomainAdapter(this, appDomain));
 
         /// <summary>
         ///     Converts the specified information.
         /// </summary>
         /// <param name="info">The information.</param>
         /// <returns>IILInfo.</returns>
-        public IILInfo Convert(ClrMd.ILInfo info) => Cache.GetOrAdd<IILInfo>(info, () => new IlInfoAdapter(info));
+        public IILInfo Convert(ClrMd.ILInfo info) => Cache.GetOrAdd<IILInfo>(info, () => new IlInfoAdapter(this, info));
 
         /// <summary>
         ///     Converts the specified method.
@@ -171,7 +174,7 @@ namespace Triage.Mortician
         /// <param name="method">The method.</param>
         /// <returns>IClrMethod.</returns>
         public IClrMethod Convert(ClrMd.ClrMethod method) =>
-            Cache.GetOrAdd<IClrMethod>(method, () => new ClrMethodAdapter(method));
+            Cache.GetOrAdd<IClrMethod>(method, () => new ClrMethodAdapter(this, method));
 
         /// <summary>
         ///     Converts the specified frame.
@@ -179,7 +182,7 @@ namespace Triage.Mortician
         /// <param name="frame">The frame.</param>
         /// <returns>IClrStackFrame.</returns>
         public IClrStackFrame Convert(ClrMd.ClrStackFrame frame) =>
-            Cache.GetOrAdd<IClrStackFrame>(frame, () => new StackFrameAdapter(frame));
+            Cache.GetOrAdd<IClrStackFrame>(frame, () => new StackFrameAdapter(this, frame));
 
         /// <summary>
         ///     Converts the specified blocking reason.
@@ -487,7 +490,7 @@ namespace Triage.Mortician
         /// <param name="resolver">The resolver.</param>
         /// <returns>ISymbolResolver.</returns>
         public ISymbolResolver Convert(ClrMd.ISymbolResolver resolver) =>
-            Cache.GetOrAdd<ISymbolResolver>(resolver, () => new SymbolResolverAdapter(resolver));
+            Cache.GetOrAdd<ISymbolResolver>(resolver, () => new SymbolResolverAdapter(this, resolver));
 
         /// <summary>
         ///     Converts the specified provider.
@@ -495,7 +498,7 @@ namespace Triage.Mortician
         /// <param name="provider">The provider.</param>
         /// <returns>ISymbolProvider.</returns>
         public ISymbolProvider Convert(ClrMd.ISymbolProvider provider) =>
-            Cache.GetOrAdd<ISymbolProvider>(provider, () => new SymbolProviderAdapter(provider));
+            Cache.GetOrAdd<ISymbolProvider>(provider, () => new SymbolProviderAdapter(this, provider));
 
         /// <summary>
         ///     Converts the specified locator.
@@ -503,7 +506,7 @@ namespace Triage.Mortician
         /// <param name="locator">The locator.</param>
         /// <returns>ISymbolLocator.</returns>
         public ISymbolLocator Convert(SymbolLocator locator) =>
-            Cache.GetOrAdd<ISymbolLocator>(locator, () => new SymbolLocatorAdapter(locator));
+            Cache.GetOrAdd<ISymbolLocator>(locator, () => new SymbolLocatorAdapter(this, locator));
 
         /// <summary>
         ///     Converts the specified path.
@@ -511,28 +514,28 @@ namespace Triage.Mortician
         /// <param name="path">The path.</param>
         /// <returns>IRootPath.</returns>
         public IRootPath Convert(ClrMd.RootPath path) =>
-            Cache.GetOrAdd<IRootPath>(path, () => new RootPathAdapter(path));
+            Cache.GetOrAdd<IRootPath>(path, () => new RootPathAdapter(this, path));
 
         /// <summary>
         ///     Converts the specified data.
         /// </summary>
         /// <param name="data">The data.</param>
         /// <returns>IRcwData.</returns>
-        public IRcwData Convert(ClrMd.RcwData data) => Cache.GetOrAdd<IRcwData>(data, () => new RcwDataAdapter(data));
+        public IRcwData Convert(ClrMd.RcwData data) => Cache.GetOrAdd<IRcwData>(data, () => new RcwDataAdapter(this, data));
 
         /// <summary>
         ///     Converts the specified pe file.
         /// </summary>
         /// <param name="peFile">The pe file.</param>
         /// <returns>IPeFile.</returns>
-        public IPeFile Convert(PEFile peFile) => Cache.GetOrAdd<IPeFile>(peFile, () => new PeFileAdapter(peFile));
+        public IPeFile Convert(PEFile peFile) => Cache.GetOrAdd<IPeFile>(peFile, () => new PeFileAdapter(this, peFile));
 
         /// <summary>
         ///     Converts the specified information.
         /// </summary>
         /// <param name="info">The information.</param>
         /// <returns>IPdbInfo.</returns>
-        public IPdbInfo Convert(ClrMd.PdbInfo info) => Cache.GetOrAdd<IPdbInfo>(info, () => new PdbInfoAdapter(info));
+        public IPdbInfo Convert(ClrMd.PdbInfo info) => Cache.GetOrAdd<IPdbInfo>(info, () => new PdbInfoAdapter(this, info));
 
         /// <summary>
         ///     Converts the specified object set.
@@ -540,7 +543,7 @@ namespace Triage.Mortician
         /// <param name="objectSet">The object set.</param>
         /// <returns>IObjectSet.</returns>
         public IObjectSet Convert(ClrMd.ObjectSet objectSet) =>
-            Cache.GetOrAdd<IObjectSet>(objectSet, () => new ObjectSetAdapter(objectSet));
+            Cache.GetOrAdd<IObjectSet>(objectSet, () => new ObjectSetAdapter(this, objectSet));
 
         /// <summary>
         ///     Converts the specified native work item.
@@ -548,7 +551,7 @@ namespace Triage.Mortician
         /// <param name="nativeWorkItem">The native work item.</param>
         /// <returns>INativeWorkItem.</returns>
         public INativeWorkItem Convert(ClrMd.NativeWorkItem nativeWorkItem) =>
-            Cache.GetOrAdd<INativeWorkItem>(nativeWorkItem, () => new NativeWorkItemAdapter(nativeWorkItem));
+            Cache.GetOrAdd<INativeWorkItem>(nativeWorkItem, () => new NativeWorkItemAdapter(this, nativeWorkItem));
 
         /// <summary>
         ///     Converts the specified module information.
@@ -556,7 +559,7 @@ namespace Triage.Mortician
         /// <param name="moduleInfo">The module information.</param>
         /// <returns>IModuleInfo.</returns>
         public IModuleInfo Convert(ClrMd.ModuleInfo moduleInfo) =>
-            Cache.GetOrAdd<IModuleInfo>(moduleInfo, () => new ModuleInfoAdapter(moduleInfo));
+            Cache.GetOrAdd<IModuleInfo>(moduleInfo, () => new ModuleInfoAdapter(this, moduleInfo));
 
         /// <summary>
         ///     Converts the specified work item.
@@ -564,7 +567,7 @@ namespace Triage.Mortician
         /// <param name="workItem">The work item.</param>
         /// <returns>IManagedWorkItem.</returns>
         public IManagedWorkItem Convert(ClrMd.ManagedWorkItem workItem) =>
-            Cache.GetOrAdd<IManagedWorkItem>(workItem, () => new ManagedWorkItemAdapter(workItem));
+            Cache.GetOrAdd<IManagedWorkItem>(workItem, () => new ManagedWorkItemAdapter(this, workItem));
 
         /// <summary>
         ///     Converts the specified hot cold regions.
@@ -572,7 +575,7 @@ namespace Triage.Mortician
         /// <param name="hotColdRegions">The hot cold regions.</param>
         /// <returns>IHotColdRegions.</returns>
         public IHotColdRegions Convert(ClrMd.HotColdRegions hotColdRegions) =>
-            Cache.GetOrAdd<IHotColdRegions>(hotColdRegions, () => new HotColdRegionsAdapter(hotColdRegions));
+            Cache.GetOrAdd<IHotColdRegions>(hotColdRegions, () => new HotColdRegionsAdapter(this, hotColdRegions));
 
         /// <summary>
         ///     Converts the specified file version information.
@@ -580,7 +583,7 @@ namespace Triage.Mortician
         /// <param name="fileVersionInfo">The file version information.</param>
         /// <returns>IFileVersionInfo.</returns>
         public IFileVersionInfo Convert(FileVersionInfo fileVersionInfo) =>
-            Cache.GetOrAdd<IFileVersionInfo>(fileVersionInfo, () => new FileVersionInfoAdapter(fileVersionInfo));
+            Cache.GetOrAdd<IFileVersionInfo>(fileVersionInfo, () => new FileVersionInfoAdapter(this, fileVersionInfo));
 
         /// <summary>
         ///     Converts the specified data target.
@@ -588,7 +591,7 @@ namespace Triage.Mortician
         /// <param name="dataTarget">The data target.</param>
         /// <returns>IDataTarget.</returns>
         public IDataTarget Convert(ClrMd.DataTarget dataTarget) =>
-            Cache.GetOrAdd<IDataTarget>(dataTarget, () => new DataTargetAdapter(dataTarget));
+            Cache.GetOrAdd<IDataTarget>(dataTarget, () => new DataTargetAdapter(this, dataTarget));
 
         /// <summary>
         ///     Converts the specified data reader.
@@ -596,7 +599,7 @@ namespace Triage.Mortician
         /// <param name="dataReader">The data reader.</param>
         /// <returns>IDataReader.</returns>
         public IDataReader Convert(ClrMd.IDataReader dataReader) =>
-            Cache.GetOrAdd<IDataReader>(dataReader, () => new DataReaderAdapter(dataReader));
+            Cache.GetOrAdd<IDataReader>(dataReader, () => new DataReaderAdapter(this, dataReader));
 
         /// <summary>
         ///     Converts the specified dac information.
@@ -604,7 +607,7 @@ namespace Triage.Mortician
         /// <param name="dacInfo">The dac information.</param>
         /// <returns>IDacInfo.</returns>
         public IDacInfo Convert(ClrMd.DacInfo dacInfo) =>
-            Cache.GetOrAdd<IDacInfo>(dacInfo, () => new DacInfoAdapter(dacInfo));
+            Cache.GetOrAdd<IDacInfo>(dacInfo, () => new DacInfoAdapter(this, dacInfo));
 
         /// <summary>
         ///     Converts the specified value class.
@@ -612,14 +615,14 @@ namespace Triage.Mortician
         /// <param name="valueClass">The value class.</param>
         /// <returns>IClrValueClass.</returns>
         public IClrValueClass Convert(ClrMd.ClrValueClass valueClass) =>
-            Cache.GetOrAdd<IClrValueClass>(valueClass, () => new ClrValueClassAdapter(valueClass));
+            Cache.GetOrAdd<IClrValueClass>(valueClass, () => new ClrValueClassAdapter(this, valueClass));
 
         /// <summary>
         ///     Converts the specified type.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>IClrType.</returns>
-        public IClrType Convert(ClrMd.ClrType type) => Cache.GetOrAdd<IClrType>(type, () => new ClrTypeAdapter(type));
+        public IClrType Convert(ClrMd.ClrType type) => Cache.GetOrAdd<IClrType>(type, () => new ClrTypeAdapter(this, type));
 
         /// <summary>
         ///     Converts the specified field.
@@ -627,7 +630,7 @@ namespace Triage.Mortician
         /// <param name="field">The field.</param>
         /// <returns>IClrThreadStaticField.</returns>
         public IClrThreadStaticField Convert(ClrMd.ClrThreadStaticField field) =>
-            Cache.GetOrAdd<IClrThreadStaticField>(field, () => new ClrThreadStaticFieldAdapter(field));
+            Cache.GetOrAdd<IClrThreadStaticField>(field, () => new ClrThreadStaticFieldAdapter(this, field));
 
         /// <summary>
         ///     Converts the specified pool.
@@ -635,7 +638,7 @@ namespace Triage.Mortician
         /// <param name="pool">The pool.</param>
         /// <returns>IClrThreadPool.</returns>
         public IClrThreadPool Convert(ClrMd.ClrThreadPool pool) =>
-            Cache.GetOrAdd<IClrThreadPool>(pool, () => new ClrThreadPoolAdapter(pool));
+            Cache.GetOrAdd<IClrThreadPool>(pool, () => new ClrThreadPoolAdapter(this, pool));
 
         /// <summary>
         ///     Converts the specified thread.
@@ -643,7 +646,7 @@ namespace Triage.Mortician
         /// <param name="thread">The thread.</param>
         /// <returns>IClrThread.</returns>
         public IClrThread Convert(ClrMd.ClrThread thread) =>
-            Cache.GetOrAdd<IClrThread>(thread, () => new ClrThreadAdapter(thread));
+            Cache.GetOrAdd<IClrThread>(thread, () => new ClrThreadAdapter(this, thread));
 
         /// <summary>
         ///     Converts the specified field.
@@ -651,7 +654,7 @@ namespace Triage.Mortician
         /// <param name="field">The field.</param>
         /// <returns>IClrStaticField.</returns>
         public IClrStaticField Convert(ClrMd.ClrStaticField field) =>
-            Cache.GetOrAdd<IClrStaticField>(field, () => new ClrStaticFieldAdapter(field));
+            Cache.GetOrAdd<IClrStaticField>(field, () => new ClrStaticFieldAdapter(this, field));
 
         /// <summary>
         ///     Converts the specified segment.
@@ -659,7 +662,7 @@ namespace Triage.Mortician
         /// <param name="segment">The segment.</param>
         /// <returns>IClrSegment.</returns>
         public IClrSegment Convert(ClrMd.ClrSegment segment) =>
-            Cache.GetOrAdd<IClrSegment>(segment, () => new ClrSegmentAdapter(segment));
+            Cache.GetOrAdd<IClrSegment>(segment, () => new ClrSegmentAdapter(this, segment));
 
         /// <summary>
         ///     Converts the specified runtime.
@@ -667,21 +670,21 @@ namespace Triage.Mortician
         /// <param name="runtime">The runtime.</param>
         /// <returns>IClrRuntime.</returns>
         public IClrRuntime Convert(ClrMd.ClrRuntime runtime) =>
-            Cache.GetOrAdd<IClrRuntime>(runtime, () => new ClrRuntimeAdapter(runtime));
+            Cache.GetOrAdd<IClrRuntime>(runtime, () => new ClrRuntimeAdapter(this, runtime));
 
         /// <summary>
         ///     Converts the specified root.
         /// </summary>
         /// <param name="root">The root.</param>
         /// <returns>IClrRoot.</returns>
-        public IClrRoot Convert(ClrMd.ClrRoot root) => Cache.GetOrAdd<IClrRoot>(root, () => new ClrRootAdapter(root));
+        public IClrRoot Convert(ClrMd.ClrRoot root) => Cache.GetOrAdd<IClrRoot>(root, () => new ClrRootAdapter(this, root));
 
         /// <summary>
         ///     Converts the specified o.
         /// </summary>
         /// <param name="o">The o.</param>
         /// <returns>IClrObject.</returns>
-        public IClrObject Convert(ClrMd.ClrObject o) => Cache.GetOrAdd<IClrObject>(o, () => new ClrObjectAdapter(o));
+        public IClrObject Convert(ClrMd.ClrObject o) => Cache.GetOrAdd<IClrObject>(o, () => new ClrObjectAdapter(this, o));
 
         /// <summary>
         ///     Converts the specified exception.
@@ -689,7 +692,7 @@ namespace Triage.Mortician
         /// <param name="exception">The exception.</param>
         /// <returns>IClrException.</returns>
         public IClrException Convert(ClrMd.ClrException exception) =>
-            Cache.GetOrAdd<IClrException>(exception, () => new ClrExceptionAdapter(exception));
+            Cache.GetOrAdd<IClrException>(exception, () => new ClrExceptionAdapter(this, exception));
 
         /// <summary>
         ///     Converts the specified version information.
@@ -714,7 +717,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="gcRoot">The gc root.</param>
         /// <returns>IGcRoot.</returns>
-        public IGcRoot Convert(ClrMd.GCRoot gcRoot) => Cache.GetOrAdd<IGcRoot>(gcRoot, () => new GcRootAdapter(gcRoot));
+        public IGcRoot Convert(ClrMd.GCRoot gcRoot) => Cache.GetOrAdd<IGcRoot>(gcRoot, () => new GcRootAdapter(this, gcRoot));
 
         /// <summary>
         ///     Converts the specified data.
@@ -780,7 +783,6 @@ namespace Triage.Mortician
             }
         }
 
-        [Import]
-        internal IConverterCache Cache { get; set; }
+
     }
 }

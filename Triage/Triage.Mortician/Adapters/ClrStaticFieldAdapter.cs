@@ -24,15 +24,16 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrStaticFieldAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrStaticField" />
-    internal class ClrStaticFieldAdapter : IClrStaticField
+    internal class ClrStaticFieldAdapter : BaseAdapter, IClrStaticField
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrStaticFieldAdapter" /> class.
         /// </summary>
+        /// <param name="converter">Converter to use</param>
         /// <param name="staticField">The static field.</param>
         /// <exception cref="ArgumentNullException">staticField</exception>
         /// <inheritdoc />
-        public ClrStaticFieldAdapter(ClrStaticField staticField)
+        public ClrStaticFieldAdapter(IConverter converter, ClrStaticField staticField) : base(converter)
         {
             StaticField = staticField ?? throw new ArgumentNullException(nameof(staticField));
             ElementType = Converter.Convert(staticField.ElementType);
@@ -204,12 +205,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The type.</value>
         /// <inheritdoc />
         public IClrType Type { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

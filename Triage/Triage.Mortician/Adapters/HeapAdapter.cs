@@ -27,7 +27,7 @@ namespace Triage.Mortician.Adapters
     ///     Class HeapAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrHeap" />
-    internal class HeapAdapter : IClrHeap
+    internal class HeapAdapter : BaseAdapter, IClrHeap
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="HeapAdapter" /> class.
@@ -35,7 +35,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="heap">The heap.</param>
         /// <exception cref="ArgumentNullException">heap</exception>
         /// <inheritdoc />
-        public HeapAdapter(ClrHeap heap)
+        public HeapAdapter(IConverter converter, ClrHeap heap) : base(converter)
         {
             Heap = heap ?? throw new ArgumentNullException(nameof(heap));
             Runtime = Converter.Convert(heap.Runtime);

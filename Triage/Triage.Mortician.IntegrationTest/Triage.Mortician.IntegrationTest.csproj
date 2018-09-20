@@ -92,6 +92,10 @@
       <Project>{A82126CA-23AA-41F1-8586-A5938D44D0A7}</Project>
       <Name>Microsoft.Diagnostics.Runtime</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Triage.Mortician\Triage.Mortician.csproj">
+      <Project>{8AA350BC-CF5F-4302-92AB-1997357049BA}</Project>
+      <Name>Triage.Mortician</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

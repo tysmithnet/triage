@@ -25,7 +25,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrAppDomainAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrAppDomain" />
-    internal class ClrAppDomainAdapter : IClrAppDomain
+    internal class ClrAppDomainAdapter : BaseAdapter, IClrAppDomain
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrAppDomainAdapter" /> class.
@@ -33,7 +33,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="appDomain">The application domain.</param>
         /// <exception cref="ArgumentNullException">appDomain</exception>
         /// <inheritdoc />
-        public ClrAppDomainAdapter(ClrMd.ClrAppDomain appDomain)
+        public ClrAppDomainAdapter(IConverter converter, ClrMd.ClrAppDomain appDomain) : base(converter)
         {
             AppDomain = appDomain ?? throw new ArgumentNullException(nameof(appDomain));
             Modules = appDomain.Modules.Select(Converter.Convert).ToList();
@@ -95,12 +95,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The runtime.</value>
         /// <inheritdoc />
         public IClrRuntime Runtime { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

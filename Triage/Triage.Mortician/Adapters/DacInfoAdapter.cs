@@ -25,7 +25,7 @@ namespace Triage.Mortician.Adapters
     ///     Class DacInfoAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IDacInfo" />
-    internal class DacInfoAdapter : IDacInfo
+    internal class DacInfoAdapter : BaseAdapter, IDacInfo
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="DacInfoAdapter" /> class.
@@ -33,7 +33,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="dacInfo">The dac information.</param>
         /// <exception cref="ArgumentNullException">dacInfo</exception>
         /// <inheritdoc />
-        public DacInfoAdapter(DacInfo dacInfo)
+        public DacInfoAdapter(IConverter converter, DacInfo dacInfo) : base(converter)
         {
             DacInfo = dacInfo ?? throw new ArgumentNullException(nameof(dacInfo));
             Pdb = Converter.Convert(dacInfo.Pdb);

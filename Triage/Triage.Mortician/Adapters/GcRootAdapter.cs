@@ -26,7 +26,7 @@ namespace Triage.Mortician.Adapters
     ///     Class GcRootAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IGcRoot" />
-    internal class GcRootAdapter : IGcRoot
+    internal class GcRootAdapter : BaseAdapter, IGcRoot
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="GcRootAdapter" /> class.
@@ -34,7 +34,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="root">The root.</param>
         /// <exception cref="ArgumentNullException">root</exception>
         /// <inheritdoc />
-        public GcRootAdapter(GCRoot root)
+        public GcRootAdapter(IConverter converter, GCRoot root) : base(converter)
         {
             Root = root ?? throw new ArgumentNullException(nameof(root));
             Heap = Converter.Convert(root.Heap);

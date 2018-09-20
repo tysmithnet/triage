@@ -25,7 +25,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrMethodAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrMethod" />
-    internal class ClrMethodAdapter : IClrMethod
+    internal class ClrMethodAdapter : BaseAdapter, IClrMethod
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrMethodAdapter" /> class.
@@ -33,7 +33,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="method">The method.</param>
         /// <exception cref="ArgumentNullException">method</exception>
         /// <inheritdoc />
-        public ClrMethodAdapter(ClrMd.ClrMethod method)
+        public ClrMethodAdapter(IConverter converter, ClrMd.ClrMethod method) : base(converter)
         {
             Method = method ?? throw new ArgumentNullException(nameof(method));
             CompilationType = Converter.Convert(Method.CompilationType);

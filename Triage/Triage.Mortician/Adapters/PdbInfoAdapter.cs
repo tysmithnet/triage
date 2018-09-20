@@ -22,7 +22,7 @@ namespace Triage.Mortician.Adapters
     ///     Class PdbInfoAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IPdbInfo" />
-    internal class PdbInfoAdapter : IPdbInfo
+    internal class PdbInfoAdapter : BaseAdapter, IPdbInfo
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="PdbInfoAdapter" /> class.
@@ -30,7 +30,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="pdbInfo">The PDB information.</param>
         /// <exception cref="ArgumentNullException">pdbInfo</exception>
         /// <inheritdoc />
-        public PdbInfoAdapter(PdbInfo pdbInfo)
+        public PdbInfoAdapter(IConverter converter, PdbInfo pdbInfo) : base(converter)
         {
             PdbInfo = pdbInfo ?? throw new ArgumentNullException(nameof(pdbInfo));
         }

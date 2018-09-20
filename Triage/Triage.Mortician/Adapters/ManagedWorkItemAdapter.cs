@@ -23,7 +23,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ManagedWorkItemAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IManagedWorkItem" />
-    internal class ManagedWorkItemAdapter : IManagedWorkItem
+    internal class ManagedWorkItemAdapter : BaseAdapter, IManagedWorkItem
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ManagedWorkItemAdapter" /> class.
@@ -31,7 +31,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="workItem">The work item.</param>
         /// <exception cref="ArgumentNullException">workItem</exception>
         /// <inheritdoc />
-        public ManagedWorkItemAdapter(ManagedWorkItem workItem)
+        public ManagedWorkItemAdapter(IConverter converter, ManagedWorkItem workItem) : base(converter)
         {
             WorkItem = workItem ?? throw new ArgumentNullException(nameof(workItem));
             Type = Converter.Convert(workItem.Type);

@@ -24,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class HandleAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrHandle" />
-    internal class HandleAdapter : IClrHandle
+    internal class HandleAdapter : BaseAdapter, IClrHandle
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="HandleAdapter" /> class.
@@ -32,7 +32,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="handle">The handle.</param>
         /// <exception cref="ArgumentNullException">handle</exception>
         /// <inheritdoc />
-        public HandleAdapter(ClrHandle handle)
+        public HandleAdapter(IConverter converter, ClrHandle handle) : base(converter)
         {
             Handle = handle ?? throw new ArgumentNullException(nameof(handle));
             AppDomain = Converter.Convert(handle.AppDomain);

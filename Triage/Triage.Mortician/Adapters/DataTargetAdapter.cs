@@ -28,7 +28,7 @@ namespace Triage.Mortician.Adapters
     ///     Class DataTargetAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IDataTarget" />
-    internal class DataTargetAdapter : IDataTarget
+    internal class DataTargetAdapter : BaseAdapter, IDataTarget
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="DataTargetAdapter" /> class.
@@ -36,7 +36,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="dataTarget">The data target.</param>
         /// <exception cref="ArgumentNullException">dataTarget</exception>
         /// <inheritdoc />
-        public DataTargetAdapter(DataTarget dataTarget)
+        public DataTargetAdapter(IConverter converter, DataTarget dataTarget) : base(converter)
         {
             DataTarget = dataTarget ?? throw new ArgumentNullException(nameof(dataTarget));
         }

@@ -24,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class NativeWorkItemAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.INativeWorkItem" />
-    internal class NativeWorkItemAdapter : INativeWorkItem
+    internal class NativeWorkItemAdapter : BaseAdapter, INativeWorkItem
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="NativeWorkItemAdapter" /> class.
@@ -32,7 +32,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="nativeWorkItem">The native work item.</param>
         /// <exception cref="ArgumentNullException">nativeWorkItem</exception>
         /// <inheritdoc />
-        public NativeWorkItemAdapter(NativeWorkItem nativeWorkItem)
+        public NativeWorkItemAdapter(IConverter converter, NativeWorkItem nativeWorkItem) : base(converter)
         {
             NativeWorkItem = nativeWorkItem ?? throw new ArgumentNullException(nameof(nativeWorkItem));
             Kind = Converter.Convert(nativeWorkItem.Kind);

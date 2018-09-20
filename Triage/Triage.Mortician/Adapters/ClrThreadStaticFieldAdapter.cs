@@ -24,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrThreadStaticFieldAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrThreadStaticField" />
-    internal class ClrThreadStaticFieldAdapter : IClrThreadStaticField
+    internal class ClrThreadStaticFieldAdapter : BaseAdapter, IClrThreadStaticField
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrThreadStaticFieldAdapter" /> class.
@@ -32,7 +32,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="threadStaticField">The thread static field.</param>
         /// <exception cref="ArgumentNullException">threadStaticField</exception>
         /// <inheritdoc />
-        public ClrThreadStaticFieldAdapter(ClrThreadStaticField threadStaticField)
+        public ClrThreadStaticFieldAdapter(IConverter converter, ClrThreadStaticField threadStaticField) : base(converter)
         {
             ThreadStaticField = threadStaticField ?? throw new ArgumentNullException(nameof(threadStaticField));
             ElementType = Converter.Convert(threadStaticField.ElementType);

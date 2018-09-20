@@ -22,7 +22,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ComInterfaceDataAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IComInterfaceData" />
-    internal class ComInterfaceDataAdapter : IComInterfaceData
+    internal class ComInterfaceDataAdapter : BaseAdapter, IComInterfaceData
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ComInterfaceDataAdapter" /> class.
@@ -30,7 +30,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="data">The data.</param>
         /// <exception cref="ArgumentNullException">data</exception>
         /// <inheritdoc />
-        public ComInterfaceDataAdapter(Microsoft.Diagnostics.Runtime.ComInterfaceData data)
+        public ComInterfaceDataAdapter(IConverter converter, Microsoft.Diagnostics.Runtime.ComInterfaceData data) : base(converter)
         {
             Data = data ?? throw new ArgumentNullException(nameof(data));
             Type = Converter.Convert(data.Type);

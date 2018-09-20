@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using BlockingReason = Triage.Mortician.Core.ClrMdAbstractions.BlockingReason;
@@ -24,7 +25,7 @@ namespace Triage.Mortician.Adapters
     ///     Class BlockingObjectAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IBlockingObject" />
-    internal class BlockingObjectAdapter : IBlockingObject
+    internal class BlockingObjectAdapter : BaseAdapter, IBlockingObject
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="BlockingObjectAdapter" /> class.
@@ -32,9 +33,13 @@ namespace Triage.Mortician.Adapters
         /// <param name="blockingObject">The blocking object.</param>
         /// <exception cref="ArgumentNullException">blockingObject</exception>
         /// <inheritdoc />
-        public BlockingObjectAdapter(BlockingObject blockingObject)
+        public BlockingObjectAdapter(IConverter converter, BlockingObject blockingObject) : base(converter)
         {
             BlockingObject = blockingObject ?? throw new ArgumentNullException(nameof(blockingObject));
+            Owner = converter.Convert(blockingObject.Owner);
+            Owners = blockingObject.Owners.Select(converter.Convert).ToList();
+            Reason = converter.Convert(blockingObject.Reason);
+            Waiters = blockingObject.Waiters.Select(converter.Convert).ToList();
         }
 
         /// <summary>
@@ -48,14 +53,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance has single owner; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool HasSingleOwner { get; }
+        public bool HasSingleOwner => BlockingObject.HasSingleOwner;
 
         /// <summary>
         ///     The object associated with the lock.
         /// </summary>
         /// <value>The object.</value>
         /// <inheritdoc />
-        public ulong Object { get; }
+        public ulong Object => BlockingObject.Object;
 
         /// <summary>
         ///     The thread which currently owns the lock.  This is only valid if Taken is true and
@@ -84,14 +89,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The recursion count.</value>
         /// <inheritdoc />
-        public int RecursionCount { get; }
+        public int RecursionCount => BlockingObject.RecursionCount;
 
         /// <summary>
         ///     Whether or not the object is currently locked.
         /// </summary>
         /// <value><c>true</c> if taken; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool Taken { get; }
+        public bool Taken => BlockingObject.Taken;
 
         /// <summary>
         ///     Returns the list of threads waiting on this object.

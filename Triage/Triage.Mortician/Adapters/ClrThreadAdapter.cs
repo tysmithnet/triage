@@ -26,7 +26,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrThreadAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrThread" />
-    internal class ClrThreadAdapter : IClrThread
+    internal class ClrThreadAdapter : BaseAdapter, IClrThread
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrThreadAdapter" /> class.
@@ -34,7 +34,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="thread">The thread.</param>
         /// <exception cref="ArgumentNullException">thread</exception>
         /// <inheritdoc />
-        public ClrThreadAdapter(ClrThread thread)
+        public ClrThreadAdapter(IConverter converter, ClrThread thread) : base(converter)
         {
             Thread = thread ?? throw new ArgumentNullException(nameof(thread));
             BlockingObjects = thread.BlockingObjects.Select(Converter.Convert).ToList();

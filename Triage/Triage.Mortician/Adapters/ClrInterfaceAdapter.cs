@@ -23,7 +23,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrInterfaceAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrInterface" />
-    internal class ClrInterfaceAdapter : IClrInterface
+    internal class ClrInterfaceAdapter : BaseAdapter, IClrInterface
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrInterfaceAdapter" /> class.
@@ -31,7 +31,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="interface">The interface.</param>
         /// <exception cref="ArgumentNullException">interface</exception>
         /// <inheritdoc />
-        public ClrInterfaceAdapter(ClrInterface @interface)
+        public ClrInterfaceAdapter(IConverter converter, ClrInterface @interface) : base(converter)
         {
             Interface = @interface ?? throw new ArgumentNullException(nameof(@interface));
             BaseInterface = Converter.Convert(@interface.BaseInterface);

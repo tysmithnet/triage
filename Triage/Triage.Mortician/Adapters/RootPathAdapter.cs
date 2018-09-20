@@ -23,14 +23,14 @@ namespace Triage.Mortician.Adapters
     ///     Class RootPathAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IRootPath" />
-    internal class RootPathAdapter : IRootPath
+    internal class RootPathAdapter : BaseAdapter, IRootPath
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="RootPathAdapter" /> class.
         /// </summary>
         /// <param name="rootPath">The root path.</param>
         /// <inheritdoc />
-        public RootPathAdapter(RootPath rootPath)
+        public RootPathAdapter(IConverter converter, RootPath rootPath) : base(converter)
         {
             RootPath = rootPath;
             Path = rootPath.Path.Select(Converter.Convert).ToArray();

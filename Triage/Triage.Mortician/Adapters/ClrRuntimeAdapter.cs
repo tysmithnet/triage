@@ -25,7 +25,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrRuntimeAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrRuntime" />
-    internal class ClrRuntimeAdapter : IClrRuntime
+    internal class ClrRuntimeAdapter : BaseAdapter, IClrRuntime
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrRuntimeAdapter" /> class.
@@ -33,7 +33,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="runtime">The runtime.</param>
         /// <exception cref="ArgumentNullException">runtime</exception>
         /// <inheritdoc />
-        public ClrRuntimeAdapter(ClrRuntime runtime)
+        public ClrRuntimeAdapter(IConverter converter, ClrRuntime runtime) : base(converter)
         {
             Runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
             AppDomains = runtime.AppDomains.Select(Converter.Convert).ToList();

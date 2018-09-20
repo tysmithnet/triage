@@ -1,31 +1,32 @@
 ﻿using System;
+using Triage.Mortician.Adapters;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician
 {
-    internal class IlInfoAdapter : IILInfo
+    internal class IlInfoAdapter : BaseAdapter, IILInfo
     {
         /// <inheritdoc />
-        public IlInfoAdapter(Microsoft.Diagnostics.Runtime.ILInfo info)
+        public IlInfoAdapter(IConverter converter, Microsoft.Diagnostics.Runtime.ILInfo info) : base(converter)
         {
-            _info = info ?? throw new ArgumentNullException(nameof(info));
+            Info = info ?? throw new ArgumentNullException(nameof(info));
         }
 
-        internal Microsoft.Diagnostics.Runtime.ILInfo _info;
+        internal Microsoft.Diagnostics.Runtime.ILInfo Info;
 
         /// <inheritdoc />
-        public ulong Address { get; }
+        public ulong Address => Info.Address;
 
         /// <inheritdoc />
-        public uint Flags { get; }
+        public uint Flags => Info.Flags;
 
         /// <inheritdoc />
-        public int Length { get; }
+        public int Length => Info.Length;
 
         /// <inheritdoc />
-        public uint LocalVarSignatureToken { get; }
+        public uint LocalVarSignatureToken => Info.LocalVarSignatureToken;
 
         /// <inheritdoc />
-        public int MaxStack { get; }
+        public int MaxStack => Info.MaxStack;
     }
 }
