@@ -42,8 +42,9 @@ namespace Triage.Mortician
         /// <returns>Program status code</returns>
         internal static int DefaultExecution(DefaultOptions options)
         {
-            var blacklistedAssemblies = Settings.SettingsInstance.BlacklistedAssemblies;
-            var blacklistedTypes = Settings.SettingsInstance.BlacklistedTypes;
+            // todo: fix
+            var blacklistedAssemblies = options.BlackListedAssemblies;
+            var blacklistedTypes = options.BlackListedTypes;
             var executionLocation = typeof(Program).Assembly.Location;
             var morticianAssemblyFiles =
                 Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation),
@@ -76,7 +77,6 @@ namespace Triage.Mortician
 
             var engine = compositionContainer.GetExportedValue<IEngine>();
             engine.Process().Wait();
-
             return 0;
         }
 

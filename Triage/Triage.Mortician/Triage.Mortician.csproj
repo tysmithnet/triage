@@ -181,7 +181,6 @@
     <Compile Include="Engine.cs" />
     <Compile Include="Repository\DumpObjectRepository.cs" />
     <Compile Include="Adapters\RootPathAdapter.cs" />
-    <Compile Include="Settings.cs" />
     <Compile Include="Repository\DumpInformationRepository.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
