@@ -92,6 +92,14 @@
       <Project>{A82126CA-23AA-41F1-8586-A5938D44D0A7}</Project>
       <Name>Microsoft.Diagnostics.Runtime</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Triage.Mortician.Analyzers\Triage.Mortician.Analyzers.csproj">
+      <Project>{0fd5bd27-a0cb-4253-add0-1386ef6026bb}</Project>
+      <Name>Triage.Mortician.Analyzers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Triage.Mortician.Core\Triage.Mortician.Core.csproj">
+      <Project>{2f433d34-bac1-4a64-aec9-46eb112946ea}</Project>
+      <Name>Triage.Mortician.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Triage.Mortician\Triage.Mortician.csproj">
       <Project>{8AA350BC-CF5F-4302-92AB-1997357049BA}</Project>
       <Name>Triage.Mortician</Name>
