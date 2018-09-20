@@ -55,12 +55,6 @@ namespace Triage.Mortician.Adapters
         /// <value>The name.</value>
         /// <inheritdoc />
         public string Name => Interface.Name;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        
     }
 }

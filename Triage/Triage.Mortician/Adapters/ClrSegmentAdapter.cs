@@ -219,12 +219,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The start.</value>
         /// <inheritdoc />
         public ulong Start => Segment.Start;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

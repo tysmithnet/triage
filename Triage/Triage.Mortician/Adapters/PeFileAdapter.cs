@@ -93,12 +93,6 @@ namespace Triage.Mortician.Adapters
         /// <value>The PDB information.</value>
         /// <inheritdoc />
         public IPdbInfo PdbInfo { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        
     }
 }

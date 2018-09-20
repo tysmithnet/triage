@@ -55,12 +55,6 @@ namespace Triage.Mortician.Adapters
         /// <value>The root.</value>
         /// <inheritdoc />
         public IClrRoot Root { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        
     }
 }

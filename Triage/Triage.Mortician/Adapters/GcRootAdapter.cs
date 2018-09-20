@@ -156,12 +156,6 @@ namespace Triage.Mortician.Adapters
         /// <value>The maximum tasks allowed.</value>
         /// <inheritdoc />
         public int MaximumTasksAllowed => Root.MaximumTasksAllowed;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        
     }
 }

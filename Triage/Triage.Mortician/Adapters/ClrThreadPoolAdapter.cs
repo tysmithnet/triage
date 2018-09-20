@@ -128,12 +128,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The total threads.</value>
         /// <inheritdoc />
         public int TotalThreads => ThreadPool.TotalThreads;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

@@ -56,11 +56,5 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public IClrType Type { get; }
 
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

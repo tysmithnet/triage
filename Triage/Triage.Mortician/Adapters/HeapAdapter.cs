@@ -382,12 +382,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The total size of the heap.</value>
         /// <inheritdoc />
         public ulong TotalHeapSize => Heap.TotalHeapSize;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

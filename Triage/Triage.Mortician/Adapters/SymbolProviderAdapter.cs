@@ -50,12 +50,6 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public ISymbolResolver GetSymbolResolver(string pdbName, Guid guid, int age) =>
             Converter.Convert(Provider.GetSymbolResolver(pdbName, guid, age));
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        
     }
 }

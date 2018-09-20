@@ -100,12 +100,6 @@ namespace Triage.Mortician.Adapters
         /// <value>The win rt object.</value>
         /// <inheritdoc />
         public ulong WinRTObject => RcwData.WinRTObject;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        
     }
 }

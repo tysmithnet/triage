@@ -181,12 +181,6 @@ namespace Triage.Mortician.Adapters
         /// <value>The size.</value>
         /// <inheritdoc />
         public ulong Size => Module.Size;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        
     }
 }

@@ -105,14 +105,7 @@ namespace Triage.Mortician.Adapters
         /// <value>The size.</value>
         /// <inheritdoc />
         public ulong Size => MemoryRegion.Size;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
-
+        
         /// <summary>
         ///     Gets or sets the memory region.
         /// </summary>

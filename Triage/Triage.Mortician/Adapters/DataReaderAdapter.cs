@@ -190,12 +190,6 @@ namespace Triage.Mortician.Adapters
         /// <value><c>true</c> if this instance is minidump; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
         public bool IsMinidump => DataReader.IsMinidump;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        
     }
 }
