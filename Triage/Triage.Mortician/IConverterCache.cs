@@ -5,7 +5,7 @@ namespace Triage.Mortician
 {
     internal interface IConverterCache
     {
-        T GetOrAdd<T>(object instance, Func<T> factoryMethod) where T : BaseAdapter;
+        T GetOrAdd<T>(object instance, Func<T> factoryMethod, Action setupFunction = null);
         bool Contains(object instance);
     }
 }

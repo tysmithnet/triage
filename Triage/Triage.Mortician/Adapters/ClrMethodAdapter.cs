@@ -43,7 +43,7 @@ namespace Triage.Mortician.Adapters
 CompilationType = Converter.Convert(Method.CompilationType);
             HotColdInfo = Converter.Convert(Method.HotColdInfo);
             IlInfo = Converter.Convert(Method.IL);
-            IlOffsetMap = Method.ILOffsetMap.Select(Converter.Convert).ToArray();
+            IlOffsetMap = Method.ILOffsetMap?.Select(Converter.Convert).ToArray();
             Type = Converter.Convert(Method.Type);
         }
         /// <summary>

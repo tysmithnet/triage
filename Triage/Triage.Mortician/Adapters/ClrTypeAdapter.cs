@@ -44,12 +44,12 @@ namespace Triage.Mortician.Adapters
             BaseType = Converter.Convert(ClrType.BaseType);
             ComponentType = Converter.Convert(ClrType.ComponentType);
             ElementType = Converter.Convert(ClrType.ElementType);
-            Fields = ClrType.Fields.Select(Converter.Convert).ToList();
+            Fields = ClrType.Fields?.Select(Converter.Convert).ToList();
             Heap = Converter.Convert(ClrType.Heap);
-            Interfaces = ClrType.Interfaces.Select(Converter.Convert).ToList();
-            Methods = ClrType.Methods.Select(Converter.Convert).ToList();
-            StaticFields = ClrType.StaticFields.Select(Converter.Convert).ToList();
-            ThreadStaticFields = ClrType.ThreadStaticFields.Select(Converter.Convert).ToList();
+            Interfaces = ClrType.Interfaces?.Select(Converter.Convert).ToList();
+            Methods = ClrType.Methods?.Select(Converter.Convert).ToList();
+            StaticFields = ClrType.StaticFields?.Select(Converter.Convert).ToList();
+            ThreadStaticFields = ClrType.ThreadStaticFields?.Select(Converter.Convert).ToList();
             Module = Converter.Convert(ClrType.Module);
         }
         /// <summary>

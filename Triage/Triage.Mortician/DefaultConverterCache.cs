@@ -11,7 +11,7 @@ namespace Triage.Mortician
         private ConditionalWeakTable<object, object> WeakMap { get; set; }= new ConditionalWeakTable<object, object>();
 
         /// <inheritdoc />
-        public T GetOrAdd<T>(object instance, Func<T> factoryMethod) where T : BaseAdapter
+        public T GetOrAdd<T>(object instance, Func<T> factoryMethod, Action setupFunction = null)
         {
             if (instance == null)
                 return default(T);
@@ -26,7 +26,7 @@ namespace Triage.Mortician
                 {
                     var created = factoryMethod();
                     WeakMap.Add(instance, created);
-                    created.Setup();
+                    setupFunction?.Invoke();
                     return created;
                 }
             }

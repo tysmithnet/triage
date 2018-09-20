@@ -28,9 +28,6 @@ namespace Triage.Mortician
     [Export(typeof(IConverter))]
     internal class Converter : IConverter
     {
-        [Import]
-        internal IConverterCache Cache { get; set; } = new DefaultConverterCache();
-
         /// <summary>
         ///     Converts the specified architecture.
         /// </summary>
@@ -81,108 +78,166 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="instanceField">The instance field.</param>
         /// <returns>IClrInstanceField.</returns>
-        public IClrInstanceField Convert(ClrMd.ClrInstanceField instanceField) =>
-            Cache.GetOrAdd<IClrInstanceField>(instanceField, () => new ClrInstanceFieldAdapter(this, instanceField));
+        public IClrInstanceField Convert(ClrMd.ClrInstanceField instanceField)
+        {
+            if (instanceField == null) return null;
+            var item = new ClrInstanceFieldAdapter(this, instanceField);
+            return Cache.GetOrAdd<IClrInstanceField>(instanceField, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified blocking object.
         /// </summary>
         /// <param name="blockingObject">The blocking object.</param>
         /// <returns>IBlockingObject.</returns>
-        public IBlockingObject Convert(ClrMd.BlockingObject blockingObject) =>
-            Cache.GetOrAdd<IBlockingObject>(blockingObject, () => new BlockingObjectAdapter(this, blockingObject));
+        public IBlockingObject Convert(ClrMd.BlockingObject blockingObject)
+        {
+            if (blockingObject == null) return null;
+            var item = new BlockingObjectAdapter(this, blockingObject);
+            return Cache.GetOrAdd<IBlockingObject>(blockingObject, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified module.
         /// </summary>
         /// <param name="module">The module.</param>
         /// <returns>IClrModule.</returns>
-        public IClrModule Convert(ClrMd.ClrModule module) =>
-            Cache.GetOrAdd<IClrModule>(module, () => new ClrModuleAdapter(this, module));
+        public IClrModule Convert(ClrMd.ClrModule module)
+        {
+            if (module == null) return null;
+            var item = new ClrModuleAdapter(this, module);
+            return Cache.GetOrAdd<IClrModule>(module, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified interface data.
         /// </summary>
         /// <param name="interfaceData">The interface data.</param>
         /// <returns>IComInterfaceData.</returns>
-        public IComInterfaceData Convert(ClrMd.ComInterfaceData interfaceData) =>
-            Cache.GetOrAdd<IComInterfaceData>(interfaceData, () => new ComInterfaceDataAdapter(this, interfaceData));
+        public IComInterfaceData Convert(ClrMd.ComInterfaceData interfaceData)
+        {
+            if (interfaceData == null) return null;
+            var item = new ComInterfaceDataAdapter(this, interfaceData);
+            return Cache.GetOrAdd<IComInterfaceData>(interfaceData, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified iface.
         /// </summary>
         /// <param name="iface">The iface.</param>
         /// <returns>IClrInterface.</returns>
-        public IClrInterface Convert(ClrMd.ClrInterface iface) =>
-            Cache.GetOrAdd<IClrInterface>(iface, () => new ClrInterfaceAdapter(this, iface));
+        public IClrInterface Convert(ClrMd.ClrInterface iface)
+        {
+            if (iface == null) return null;
+            var item = new ClrInterfaceAdapter(this, iface);
+            return Cache.GetOrAdd<IClrInterface>(iface, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified information.
         /// </summary>
         /// <param name="info">The information.</param>
         /// <returns>IClrInfo.</returns>
-        public IClrInfo Convert(ClrMd.ClrInfo info) => Cache.GetOrAdd<IClrInfo>(info, () => new ClrInfoAdapter(this, info));
+        public IClrInfo Convert(ClrMd.ClrInfo info)
+        {
+            if (info == null) return null;
+            var item = new ClrInfoAdapter(this, info);
+            return Cache.GetOrAdd<IClrInfo>(info, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified heap.
         /// </summary>
         /// <param name="heap">The heap.</param>
         /// <returns>IClrHeap.</returns>
-        public IClrHeap Convert(ClrMd.ClrHeap heap) => Cache.GetOrAdd<IClrHeap>(heap, () => new HeapAdapter(this, heap));
+        public IClrHeap Convert(ClrMd.ClrHeap heap)
+        {
+            return Cache.GetOrAdd<IClrHeap>(heap, () => new HeapAdapter(this, heap));
+        }
 
         /// <summary>
         ///     Converts the specified memory region.
         /// </summary>
         /// <param name="memoryRegion">The memory region.</param>
         /// <returns>IClrMemoryRegion.</returns>
-        public IClrMemoryRegion Convert(ClrMd.ClrMemoryRegion memoryRegion) =>
-            Cache.GetOrAdd<IClrMemoryRegion>(memoryRegion, () => new MemoryRegionAdapter(this, memoryRegion));
+        public IClrMemoryRegion Convert(ClrMd.ClrMemoryRegion memoryRegion)
+        {
+            if (memoryRegion == null) return null;
+            var item = new MemoryRegionAdapter(this, memoryRegion);
+            return Cache.GetOrAdd<IClrMemoryRegion>(memoryRegion, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified handle.
         /// </summary>
         /// <param name="handle">The handle.</param>
         /// <returns>IClrHandle.</returns>
-        public IClrHandle Convert(ClrMd.ClrHandle handle) =>
-            Cache.GetOrAdd<IClrHandle>(handle, () => new HandleAdapter(this, handle));
+        public IClrHandle Convert(ClrMd.ClrHandle handle)
+        {
+            if (handle == null) return null;
+            var item = new HandleAdapter(this, handle);
+            return Cache.GetOrAdd<IClrHandle>(handle, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified data.
         /// </summary>
         /// <param name="data">The data.</param>
         /// <returns>ICcwData.</returns>
-        public ICcwData Convert(ClrMd.CcwData data) => Cache.GetOrAdd<ICcwData>(data, () => new CcwDataAdapter(this, data));
+        public ICcwData Convert(ClrMd.CcwData data)
+        {
+            if (data == null) return null;
+            var item = new CcwDataAdapter(this, data);
+            return Cache.GetOrAdd<ICcwData>(data, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified application domain.
         /// </summary>
         /// <param name="appDomain">The application domain.</param>
         /// <returns>IClrAppDomain.</returns>
-        public IClrAppDomain Convert(ClrMd.ClrAppDomain appDomain) =>
-            Cache.GetOrAdd<IClrAppDomain>(appDomain, () => new ClrAppDomainAdapter(this, appDomain));
+        public IClrAppDomain Convert(ClrMd.ClrAppDomain appDomain)
+        {
+            if (appDomain == null) return null;
+            var item = new ClrAppDomainAdapter(this, appDomain);
+            return Cache.GetOrAdd<IClrAppDomain>(appDomain, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified information.
         /// </summary>
         /// <param name="info">The information.</param>
         /// <returns>IILInfo.</returns>
-        public IILInfo Convert(ClrMd.ILInfo info) => Cache.GetOrAdd<IILInfo>(info, () => new IlInfoAdapter(this, info));
+        public IILInfo Convert(ClrMd.ILInfo info)
+        {
+            if (info == null) return null;
+            var item = new IlInfoAdapter(this, info);
+            return Cache.GetOrAdd<IILInfo>(info, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified method.
         /// </summary>
         /// <param name="method">The method.</param>
         /// <returns>IClrMethod.</returns>
-        public IClrMethod Convert(ClrMd.ClrMethod method) =>
-            Cache.GetOrAdd<IClrMethod>(method, () => new ClrMethodAdapter(this, method));
+        public IClrMethod Convert(ClrMd.ClrMethod method)
+        {
+            if (method == null) return null;
+            var item = new ClrMethodAdapter(this, method);
+            return Cache.GetOrAdd<IClrMethod>(method, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified frame.
         /// </summary>
         /// <param name="frame">The frame.</param>
         /// <returns>IClrStackFrame.</returns>
-        public IClrStackFrame Convert(ClrMd.ClrStackFrame frame) =>
-            Cache.GetOrAdd<IClrStackFrame>(frame, () => new StackFrameAdapter(this, frame));
+        public IClrStackFrame Convert(ClrMd.ClrStackFrame frame)
+        {
+            if (frame == null) return null;
+            var item = new StackFrameAdapter(this, frame);
+            return Cache.GetOrAdd<IClrStackFrame>(frame, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified blocking reason.
@@ -225,12 +280,15 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="map">The map.</param>
         /// <returns>ILToNativeMap.</returns>
-        public ILToNativeMap Convert(ClrMd.ILToNativeMap map) => Cache.GetOrAdd(map, () => new ILToNativeMap
+        public ILToNativeMap Convert(ClrMd.ILToNativeMap map)
         {
-            EndAddress = map.EndAddress,
-            ILOffset = map.ILOffset,
-            StartAddress = map.StartAddress
-        });
+            return Cache.GetOrAdd(map, () => new ILToNativeMap
+            {
+                EndAddress = map.EndAddress,
+                ILOffset = map.ILOffset,
+                StartAddress = map.StartAddress
+            });
+        }
 
         /// <summary>
         ///     Converts the specified color element type.
@@ -489,210 +547,322 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="resolver">The resolver.</param>
         /// <returns>ISymbolResolver.</returns>
-        public ISymbolResolver Convert(ClrMd.ISymbolResolver resolver) =>
-            Cache.GetOrAdd<ISymbolResolver>(resolver, () => new SymbolResolverAdapter(this, resolver));
+        public ISymbolResolver Convert(ClrMd.ISymbolResolver resolver)
+        {
+            if (resolver == null) return null;
+            var item = new SymbolResolverAdapter(this, resolver);
+            return Cache.GetOrAdd<ISymbolResolver>(resolver, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified provider.
         /// </summary>
         /// <param name="provider">The provider.</param>
         /// <returns>ISymbolProvider.</returns>
-        public ISymbolProvider Convert(ClrMd.ISymbolProvider provider) =>
-            Cache.GetOrAdd<ISymbolProvider>(provider, () => new SymbolProviderAdapter(this, provider));
+        public ISymbolProvider Convert(ClrMd.ISymbolProvider provider)
+        {
+            if (provider == null) return null;
+            var item = new SymbolProviderAdapter(this, provider);
+            return Cache.GetOrAdd<ISymbolProvider>(provider, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified locator.
         /// </summary>
         /// <param name="locator">The locator.</param>
         /// <returns>ISymbolLocator.</returns>
-        public ISymbolLocator Convert(SymbolLocator locator) =>
-            Cache.GetOrAdd<ISymbolLocator>(locator, () => new SymbolLocatorAdapter(this, locator));
+        public ISymbolLocator Convert(SymbolLocator locator)
+        {
+            if (locator == null) return null;
+            var item = new SymbolLocatorAdapter(this, locator);
+            return Cache.GetOrAdd<ISymbolLocator>(locator, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified path.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns>IRootPath.</returns>
-        public IRootPath Convert(ClrMd.RootPath path) =>
-            Cache.GetOrAdd<IRootPath>(path, () => new RootPathAdapter(this, path));
+        public IRootPath Convert(ClrMd.RootPath path)
+        {
+            var item = new RootPathAdapter(this, path);
+            return Cache.GetOrAdd<IRootPath>(path, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified data.
         /// </summary>
         /// <param name="data">The data.</param>
         /// <returns>IRcwData.</returns>
-        public IRcwData Convert(ClrMd.RcwData data) => Cache.GetOrAdd<IRcwData>(data, () => new RcwDataAdapter(this, data));
+        public IRcwData Convert(ClrMd.RcwData data)
+        {
+            if (data == null) return null;
+            var item = new RcwDataAdapter(this, data);
+            return Cache.GetOrAdd<IRcwData>(data, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified pe file.
         /// </summary>
         /// <param name="peFile">The pe file.</param>
         /// <returns>IPeFile.</returns>
-        public IPeFile Convert(PEFile peFile) => Cache.GetOrAdd<IPeFile>(peFile, () => new PeFileAdapter(this, peFile));
+        public IPeFile Convert(PEFile peFile)
+        {
+            if (peFile == null) return null;
+            var item = new PeFileAdapter(this, peFile);
+            return Cache.GetOrAdd<IPeFile>(peFile, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified information.
         /// </summary>
         /// <param name="info">The information.</param>
         /// <returns>IPdbInfo.</returns>
-        public IPdbInfo Convert(ClrMd.PdbInfo info) => Cache.GetOrAdd<IPdbInfo>(info, () => new PdbInfoAdapter(this, info));
+        public IPdbInfo Convert(ClrMd.PdbInfo info)
+        {
+            if (info == null) return null;
+            var item = new PdbInfoAdapter(this, info);
+            return Cache.GetOrAdd<IPdbInfo>(info, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified object set.
         /// </summary>
         /// <param name="objectSet">The object set.</param>
         /// <returns>IObjectSet.</returns>
-        public IObjectSet Convert(ClrMd.ObjectSet objectSet) =>
-            Cache.GetOrAdd<IObjectSet>(objectSet, () => new ObjectSetAdapter(this, objectSet));
+        public IObjectSet Convert(ClrMd.ObjectSet objectSet)
+        {
+            if (objectSet == null) return null;
+            var item = new ObjectSetAdapter(this, objectSet);
+            return Cache.GetOrAdd<IObjectSet>(objectSet, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified native work item.
         /// </summary>
         /// <param name="nativeWorkItem">The native work item.</param>
         /// <returns>INativeWorkItem.</returns>
-        public INativeWorkItem Convert(ClrMd.NativeWorkItem nativeWorkItem) =>
-            Cache.GetOrAdd<INativeWorkItem>(nativeWorkItem, () => new NativeWorkItemAdapter(this, nativeWorkItem));
+        public INativeWorkItem Convert(ClrMd.NativeWorkItem nativeWorkItem)
+        {
+            if (nativeWorkItem == null) return null;
+            var item = new NativeWorkItemAdapter(this, nativeWorkItem);
+            return Cache.GetOrAdd<INativeWorkItem>(nativeWorkItem, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified module information.
         /// </summary>
         /// <param name="moduleInfo">The module information.</param>
         /// <returns>IModuleInfo.</returns>
-        public IModuleInfo Convert(ClrMd.ModuleInfo moduleInfo) =>
-            Cache.GetOrAdd<IModuleInfo>(moduleInfo, () => new ModuleInfoAdapter(this, moduleInfo));
+        public IModuleInfo Convert(ClrMd.ModuleInfo moduleInfo)
+        {
+            if (moduleInfo == null) return null;
+            var item = new ModuleInfoAdapter(this, moduleInfo);
+            return Cache.GetOrAdd<IModuleInfo>(moduleInfo, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified work item.
         /// </summary>
         /// <param name="workItem">The work item.</param>
         /// <returns>IManagedWorkItem.</returns>
-        public IManagedWorkItem Convert(ClrMd.ManagedWorkItem workItem) =>
-            Cache.GetOrAdd<IManagedWorkItem>(workItem, () => new ManagedWorkItemAdapter(this, workItem));
+        public IManagedWorkItem Convert(ClrMd.ManagedWorkItem workItem)
+        {
+            if (workItem == null) return null;
+            var item = new ManagedWorkItemAdapter(this, workItem);
+            return Cache.GetOrAdd<IManagedWorkItem>(workItem, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified hot cold regions.
         /// </summary>
         /// <param name="hotColdRegions">The hot cold regions.</param>
         /// <returns>IHotColdRegions.</returns>
-        public IHotColdRegions Convert(ClrMd.HotColdRegions hotColdRegions) =>
-            Cache.GetOrAdd<IHotColdRegions>(hotColdRegions, () => new HotColdRegionsAdapter(this, hotColdRegions));
+        public IHotColdRegions Convert(ClrMd.HotColdRegions hotColdRegions)
+        {
+            if (hotColdRegions == null) return null;
+            var item = new HotColdRegionsAdapter(this, hotColdRegions);
+            return Cache.GetOrAdd<IHotColdRegions>(hotColdRegions, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified file version information.
         /// </summary>
         /// <param name="fileVersionInfo">The file version information.</param>
         /// <returns>IFileVersionInfo.</returns>
-        public IFileVersionInfo Convert(FileVersionInfo fileVersionInfo) =>
-            Cache.GetOrAdd<IFileVersionInfo>(fileVersionInfo, () => new FileVersionInfoAdapter(this, fileVersionInfo));
+        public IFileVersionInfo Convert(FileVersionInfo fileVersionInfo)
+        {
+            if (fileVersionInfo == null) return null;
+            var item = new FileVersionInfoAdapter(this, fileVersionInfo);
+            return Cache.GetOrAdd<IFileVersionInfo>(fileVersionInfo, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified data target.
         /// </summary>
         /// <param name="dataTarget">The data target.</param>
         /// <returns>IDataTarget.</returns>
-        public IDataTarget Convert(ClrMd.DataTarget dataTarget) =>
-            Cache.GetOrAdd<IDataTarget>(dataTarget, () => new DataTargetAdapter(this, dataTarget));
+        public IDataTarget Convert(ClrMd.DataTarget dataTarget)
+        {
+            if (dataTarget == null) return null;
+            var item = new DataTargetAdapter(this, dataTarget);
+            return Cache.GetOrAdd<IDataTarget>(dataTarget, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified data reader.
         /// </summary>
         /// <param name="dataReader">The data reader.</param>
         /// <returns>IDataReader.</returns>
-        public IDataReader Convert(ClrMd.IDataReader dataReader) =>
-            Cache.GetOrAdd<IDataReader>(dataReader, () => new DataReaderAdapter(this, dataReader));
+        public IDataReader Convert(ClrMd.IDataReader dataReader)
+        {
+            if (dataReader == null) return null;
+            var item = new DataReaderAdapter(this, dataReader);
+            return Cache.GetOrAdd<IDataReader>(dataReader, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified dac information.
         /// </summary>
         /// <param name="dacInfo">The dac information.</param>
         /// <returns>IDacInfo.</returns>
-        public IDacInfo Convert(ClrMd.DacInfo dacInfo) =>
-            Cache.GetOrAdd<IDacInfo>(dacInfo, () => new DacInfoAdapter(this, dacInfo));
+        public IDacInfo Convert(ClrMd.DacInfo dacInfo)
+        {
+            if (dacInfo == null) return null;
+            var item = new DacInfoAdapter(this, dacInfo);
+            return Cache.GetOrAdd<IDacInfo>(dacInfo, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified value class.
         /// </summary>
         /// <param name="valueClass">The value class.</param>
         /// <returns>IClrValueClass.</returns>
-        public IClrValueClass Convert(ClrMd.ClrValueClass valueClass) =>
-            Cache.GetOrAdd<IClrValueClass>(valueClass, () => new ClrValueClassAdapter(this, valueClass));
+        public IClrValueClass Convert(ClrMd.ClrValueClass valueClass)
+        {
+            var item = new ClrValueClassAdapter(this, valueClass);
+            return Cache.GetOrAdd<IClrValueClass>(valueClass, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified type.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>IClrType.</returns>
-        public IClrType Convert(ClrMd.ClrType type) => Cache.GetOrAdd<IClrType>(type, () => new ClrTypeAdapter(this, type));
+        public IClrType Convert(ClrMd.ClrType type)
+        {
+            if (type == null) return null;
+            var item = new ClrTypeAdapter(this, type);
+            return Cache.GetOrAdd<IClrType>(type, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified field.
         /// </summary>
         /// <param name="field">The field.</param>
         /// <returns>IClrThreadStaticField.</returns>
-        public IClrThreadStaticField Convert(ClrMd.ClrThreadStaticField field) =>
-            Cache.GetOrAdd<IClrThreadStaticField>(field, () => new ClrThreadStaticFieldAdapter(this, field));
+        public IClrThreadStaticField Convert(ClrMd.ClrThreadStaticField field)
+        {
+            if (field == null) return null;
+            var item = new ClrThreadStaticFieldAdapter(this, field);
+            return Cache.GetOrAdd<IClrThreadStaticField>(field, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified pool.
         /// </summary>
         /// <param name="pool">The pool.</param>
         /// <returns>IClrThreadPool.</returns>
-        public IClrThreadPool Convert(ClrMd.ClrThreadPool pool) =>
-            Cache.GetOrAdd<IClrThreadPool>(pool, () => new ClrThreadPoolAdapter(this, pool));
+        public IClrThreadPool Convert(ClrMd.ClrThreadPool pool)
+        {
+            if (pool == null) return null;
+            var item = new ClrThreadPoolAdapter(this, pool);
+            return Cache.GetOrAdd<IClrThreadPool>(pool, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified thread.
         /// </summary>
         /// <param name="thread">The thread.</param>
         /// <returns>IClrThread.</returns>
-        public IClrThread Convert(ClrMd.ClrThread thread) =>
-            Cache.GetOrAdd<IClrThread>(thread, () => new ClrThreadAdapter(this, thread));
+        public IClrThread Convert(ClrMd.ClrThread thread)
+        {
+            if (thread == null) return null;
+            var item = new ClrThreadAdapter(this, thread);
+            return Cache.GetOrAdd<IClrThread>(thread, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified field.
         /// </summary>
         /// <param name="field">The field.</param>
         /// <returns>IClrStaticField.</returns>
-        public IClrStaticField Convert(ClrMd.ClrStaticField field) =>
-            Cache.GetOrAdd<IClrStaticField>(field, () => new ClrStaticFieldAdapter(this, field));
+        public IClrStaticField Convert(ClrMd.ClrStaticField field)
+        {
+            if (field == null) return null;
+            var item = new ClrStaticFieldAdapter(this, field);
+            return Cache.GetOrAdd<IClrStaticField>(field, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified segment.
         /// </summary>
         /// <param name="segment">The segment.</param>
         /// <returns>IClrSegment.</returns>
-        public IClrSegment Convert(ClrMd.ClrSegment segment) =>
-            Cache.GetOrAdd<IClrSegment>(segment, () => new ClrSegmentAdapter(this, segment));
+        public IClrSegment Convert(ClrMd.ClrSegment segment)
+        {
+            if (segment == null) return null;
+            var item = new ClrSegmentAdapter(this, segment);
+            return Cache.GetOrAdd<IClrSegment>(segment, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified runtime.
         /// </summary>
         /// <param name="runtime">The runtime.</param>
         /// <returns>IClrRuntime.</returns>
-        public IClrRuntime Convert(ClrMd.ClrRuntime runtime) =>
-            Cache.GetOrAdd<IClrRuntime>(runtime, () => new ClrRuntimeAdapter(this, runtime));
+        public IClrRuntime Convert(ClrMd.ClrRuntime runtime)
+        {
+            if (runtime == null) return null;
+            var item = new ClrRuntimeAdapter(this, runtime);
+            return Cache.GetOrAdd<IClrRuntime>(runtime, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified root.
         /// </summary>
         /// <param name="root">The root.</param>
         /// <returns>IClrRoot.</returns>
-        public IClrRoot Convert(ClrMd.ClrRoot root) => Cache.GetOrAdd<IClrRoot>(root, () => new ClrRootAdapter(this, root));
+        public IClrRoot Convert(ClrMd.ClrRoot root)
+        {
+            if (root == null) return null;
+            var item = new ClrRootAdapter(this, root);
+            return Cache.GetOrAdd<IClrRoot>(root, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified o.
         /// </summary>
         /// <param name="o">The o.</param>
         /// <returns>IClrObject.</returns>
-        public IClrObject Convert(ClrMd.ClrObject o) => Cache.GetOrAdd<IClrObject>(o, () => new ClrObjectAdapter(this, o));
+        public IClrObject Convert(ClrMd.ClrObject o)
+        {
+            if (o == null) return null;
+            var item = new ClrObjectAdapter(this, o);
+            return Cache.GetOrAdd<IClrObject>(o, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified exception.
         /// </summary>
         /// <param name="exception">The exception.</param>
         /// <returns>IClrException.</returns>
-        public IClrException Convert(ClrMd.ClrException exception) =>
-            Cache.GetOrAdd<IClrException>(exception, () => new ClrExceptionAdapter(this, exception));
+        public IClrException Convert(ClrMd.ClrException exception)
+        {
+            if (exception == null) return null;
+            var item = new ClrExceptionAdapter(this, exception);
+            return Cache.GetOrAdd<IClrException>(exception, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified version information.
@@ -717,15 +887,22 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="gcRoot">The gc root.</param>
         /// <returns>IGcRoot.</returns>
-        public IGcRoot Convert(ClrMd.GCRoot gcRoot) => Cache.GetOrAdd<IGcRoot>(gcRoot, () => new GcRootAdapter(this, gcRoot));
+        public IGcRoot Convert(ClrMd.GCRoot gcRoot)
+        {
+            if (gcRoot == null) return null;
+            var item = new GcRootAdapter(this, gcRoot);
+            return Cache.GetOrAdd<IGcRoot>(gcRoot, () => item, () => item.Setup());
+        }
 
         /// <summary>
         ///     Converts the specified data.
         /// </summary>
         /// <param name="data">The data.</param>
         /// <returns>VirtualQueryData.</returns>
-        public VirtualQueryData Convert(ClrMd.VirtualQueryData data) =>
-            Cache.GetOrAdd(data, () => new VirtualQueryData(data.BaseAddress, data.Size));
+        public VirtualQueryData Convert(ClrMd.VirtualQueryData data)
+        {
+            return Cache.GetOrAdd(data, () => new VirtualQueryData(data.BaseAddress, data.Size));
+        }
 
         /// <summary>
         ///     Converts the specified kind.
@@ -783,6 +960,7 @@ namespace Triage.Mortician
             }
         }
 
-
+        [Import]
+        internal IConverterCache Cache { get; set; } = new DefaultConverterCache();
     }
 }
