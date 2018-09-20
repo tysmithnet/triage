@@ -1,5 +1,6 @@
 ﻿using System.Configuration;
 
+// ReSharper disable once CheckNamespace
 namespace Triage.Mortician.IntegrationTest.IntegrationTests.Scenarios
 {
     public partial class Scenario
@@ -11,9 +12,6 @@ namespace Triage.Mortician.IntegrationTest.IntegrationTests.Scenarios
         {
             /// <inheritdoc />
             public override bool IsLibrary { get; } = false;
-
-            /// <inheritdoc />
-            public override string[] SourceFiles { get; }
 
             /// <inheritdoc />
             public override string X64ExeLocation { get; } = ConfigurationManager.AppSettings["HelloWorld.exe_x64"];

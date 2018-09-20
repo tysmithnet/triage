@@ -50,5 +50,8 @@ namespace Triage.Mortician
         /// <value>The dump file.</value>
         [Option('d', "dumpfile", HelpText = "The dump file to operate on", SetName = "LocalFile")]
         public string DumpFile { get; set; }
+
+        [Option('s', "settings", HelpText = "Settings for Mortician and its plugins")]
+        public string SettingsFile { get; set; }
     }
 }

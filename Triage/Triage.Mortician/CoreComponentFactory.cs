@@ -23,6 +23,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Common.Logging;
 using Microsoft.Diagnostics.Runtime;
+using Newtonsoft.Json;
 using Triage.Mortician.Core;
 using Triage.Mortician.Domain;
 using Triage.Mortician.Repository;
@@ -75,11 +76,26 @@ namespace Triage.Mortician
         /// </summary>
         public ILog Log = LogManager.GetLogger(typeof(CoreComponentFactory));
 
+        private IEnumerable<ISettings> GetSettings(string settingsPath = null)
+        {
+            string settingsText;
+            if (settingsPath != null)
+            {
+                settingsText = File.ReadAllText(settingsPath);
+            }
+            else
+            {
+                settingsText = File.ReadAllText("settings.json");
+            }
+            SettingsJsonConverter converter = new SettingsJsonConverter();
+            return JsonConvert.DeserializeObject<IEnumerable<ISettings>>(settingsText, converter);
+        }
+
         /// <summary>
         ///     Registers the repositories.
         /// </summary>
         // todo: this is too big
-        public void RegisterRepositories()
+        public void RegisterRepositories(DefaultOptions options)
         {
             // todo: check symbols
             var heapObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
@@ -140,10 +156,13 @@ namespace Triage.Mortician
             CompositionContainer.ComposeExportedValue<IDumpInformationRepository>(dumpInformationRepository);
             CompositionContainer.ComposeExportedValue<IDumpObjectRepository>(dumpRepo);
             CompositionContainer.ComposeExportedValue<IDumpThreadRepository>(threadRepo);
-            // todo: register settings instances recovered from the settings process
             CompositionContainer.ComposeExportedValue<IDumpAppDomainRepository>(appDomainRepo);
             CompositionContainer.ComposeExportedValue<IDumpModuleRepository>(moduleRepo);
             CompositionContainer.ComposeExportedValue<IDumpTypeRepository>(typeRepo);
+            foreach (var settings in GetSettings(options.SettingsFile))
+            {
+                CompositionContainer.ComposeExportedValue(settings);
+            }
         }
 
         /// <summary>

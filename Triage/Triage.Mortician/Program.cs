@@ -73,7 +73,7 @@ namespace Triage.Mortician
             var compositionContainer = new CompositionContainer(aggregateCatalog);
             // todo: allow for export/import manipulation
             var repositoryFactory = new CoreComponentFactory(compositionContainer, new FileInfo(options.DumpFile));
-            repositoryFactory.RegisterRepositories();
+            repositoryFactory.RegisterRepositories(options);
 
             var engine = compositionContainer.GetExportedValue<IEngine>();
             engine.Process().Wait();
