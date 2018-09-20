@@ -35,7 +35,10 @@ namespace Triage.Mortician.Adapters
         {
             Locator = locator ?? throw new ArgumentNullException(nameof(locator));
         }
+        public override void Setup()
+        {
 
+        }
         /// <summary>
         ///     The locator
         /// </summary>

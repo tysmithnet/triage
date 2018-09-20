@@ -36,8 +36,7 @@ namespace Triage.Mortician.Adapters
         public ClrAppDomainAdapter(IConverter converter, ClrMd.ClrAppDomain appDomain) : base(converter)
         {
             AppDomain = appDomain ?? throw new ArgumentNullException(nameof(appDomain));
-            Modules = appDomain.Modules.Select(Converter.Convert).ToList();
-            Runtime = Converter.Convert(appDomain.Runtime);
+            
         }
 
         /// <summary>
@@ -80,7 +79,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The modules.</value>
         /// <inheritdoc />
-        public IList<IClrModule> Modules { get; }
+        public IList<IClrModule> Modules { get; internal set; }
 
         /// <summary>
         ///     The name of the AppDomain, as specified when the domain was created.
@@ -94,6 +93,13 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The runtime.</value>
         /// <inheritdoc />
-        public IClrRuntime Runtime { get; }
+        public IClrRuntime Runtime { get; internal set; }
+
+        /// <inheritdoc />
+        public override void Setup()
+        {
+            Modules = AppDomain.Modules.Select(Converter.Convert).ToList();
+            Runtime = Converter.Convert(AppDomain.Runtime);
+        }
     }
 }

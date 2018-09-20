@@ -36,7 +36,10 @@ namespace Triage.Mortician.Adapters
         {
             DataReader = dataReader ?? throw new ArgumentNullException(nameof(dataReader));
         }
+        public override void Setup()
+        {
 
+        }
         /// <summary>
         ///     The data reader
         /// </summary>

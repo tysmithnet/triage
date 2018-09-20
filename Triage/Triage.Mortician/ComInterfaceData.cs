@@ -14,9 +14,9 @@ namespace Triage.Mortician
         internal Microsoft.Diagnostics.Runtime.ComInterfaceData _comInterfaceData;
 
         /// <inheritdoc />
-        public ulong InterfacePointer { get; }
+        public ulong InterfacePointer { get; internal set; }
 
         /// <inheritdoc />
-        public IClrType Type { get; }
+        public IClrType Type { get; internal set; }
     }
 }

@@ -36,9 +36,12 @@ namespace Triage.Mortician.Adapters
         public RcwDataAdapter(IConverter converter, RcwData rcwData) : base(converter)
         {
             RcwData = rcwData ?? throw new ArgumentNullException(nameof(rcwData));
-            Interfaces = rcwData.Interfaces.Select(Converter.Convert).ToList();
+           
         }
-
+        public override void Setup()
+        {
+ Interfaces = RcwData.Interfaces.Select(Converter.Convert).ToList();
+        }
         /// <summary>
         ///     The RCW data
         /// </summary>
@@ -63,7 +66,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The interfaces.</value>
         /// <inheritdoc />
-        public IList<IComInterfaceData> Interfaces { get; }
+        public IList<IComInterfaceData> Interfaces { get; internal set; }
 
         /// <summary>
         ///     Returns the pointer to the IUnknown representing this CCW.

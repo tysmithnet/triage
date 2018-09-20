@@ -32,9 +32,12 @@ namespace Triage.Mortician.Adapters
         public ClrValueClassAdapter(IConverter converter, ClrValueClass valueClass) : base(converter)
         {
             ValueClass = valueClass;
-            Type = Converter.Convert(valueClass.Type);
+           
         }
-
+        public override void Setup()
+        {
+ Type = Converter.Convert(ValueClass.Type);
+        }
         /// <summary>
         ///     The value class
         /// </summary>
@@ -100,7 +103,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type.</value>
         /// <inheritdoc />
-        public IClrType Type { get; }
+        public IClrType Type { get; internal set; }
         
     }
 }

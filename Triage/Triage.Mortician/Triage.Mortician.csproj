@@ -166,7 +166,7 @@
     <Compile Include="Adapters\HotColdRegionsAdapter.cs" />
     <Compile Include="IConverter.cs" />
     <Compile Include="IConverterCache.cs" />
-    <Compile Include="IlInfoAdapter.cs" />
+    <Compile Include="Adapters\IlInfoAdapter.cs" />
     <Compile Include="Adapters\ManagedWorkItemAdapter.cs" />
     <Compile Include="Adapters\ModuleInfoAdapter.cs" />
     <Compile Include="Adapters\NativeWorkItemAdapter.cs" />

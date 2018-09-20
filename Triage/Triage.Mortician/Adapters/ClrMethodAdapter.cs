@@ -36,13 +36,16 @@ namespace Triage.Mortician.Adapters
         public ClrMethodAdapter(IConverter converter, ClrMd.ClrMethod method) : base(converter)
         {
             Method = method ?? throw new ArgumentNullException(nameof(method));
-            CompilationType = Converter.Convert(Method.CompilationType);
+            
+        }
+        public override void Setup()
+        {
+CompilationType = Converter.Convert(Method.CompilationType);
             HotColdInfo = Converter.Convert(Method.HotColdInfo);
             IlInfo = Converter.Convert(Method.IL);
             IlOffsetMap = Method.ILOffsetMap.Select(Converter.Convert).ToArray();
             Type = Converter.Convert(Method.Type);
         }
-
         /// <summary>
         ///     Enumerates all method descs for this method in the process.  MethodDescs
         ///     are unique to an Method/AppDomain pair, so when there are multiple domains
@@ -76,7 +79,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type of the compilation.</value>
         /// <inheritdoc />
-        public MethodCompilationType CompilationType { get; }
+        public MethodCompilationType CompilationType { get; internal set; }
 
         /// <summary>
         ///     Returns the location of the GCInfo for this method.
@@ -90,21 +93,21 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The hot cold information.</value>
         /// <inheritdoc />
-        public IHotColdRegions HotColdInfo { get; }
+        public IHotColdRegions HotColdInfo { get; internal set; }
 
         /// <summary>
         ///     Returns the location in memory of the IL for this method.
         /// </summary>
         /// <value>The il.</value>
         /// <inheritdoc />
-        public IILInfo IlInfo { get; }
+        public IILInfo IlInfo { get; internal set; }
 
         /// <summary>
         ///     Returns the IL to native offset mapping.
         /// </summary>
         /// <value>The il offset map.</value>
         /// <inheritdoc />
-        public ILToNativeMap[] IlOffsetMap { get; }
+        public ILToNativeMap[] IlOffsetMap { get; internal set; }
 
         /// <summary>
         ///     Returns if this method is abstract.
@@ -233,7 +236,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type.</value>
         /// <inheritdoc />
-        public IClrType Type { get; }
+        public IClrType Type { get; internal set; }
         
 
         /// <summary>

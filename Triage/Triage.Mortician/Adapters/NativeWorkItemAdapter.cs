@@ -35,9 +35,12 @@ namespace Triage.Mortician.Adapters
         public NativeWorkItemAdapter(IConverter converter, NativeWorkItem nativeWorkItem) : base(converter)
         {
             NativeWorkItem = nativeWorkItem ?? throw new ArgumentNullException(nameof(nativeWorkItem));
-            Kind = Converter.Convert(nativeWorkItem.Kind);
+           
         }
-
+        public override void Setup()
+        {
+ Kind = Converter.Convert(NativeWorkItem.Kind);
+        }
         /// <summary>
         ///     The native work item
         /// </summary>
@@ -62,7 +65,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The kind.</value>
         /// <inheritdoc />
-        public WorkItemKind Kind { get; }
+        public WorkItemKind Kind { get; internal set; }
         
     }
 }

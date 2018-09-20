@@ -35,11 +35,7 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public BlockingObjectAdapter(IConverter converter, BlockingObject blockingObject) : base(converter)
         {
-            BlockingObject = blockingObject ?? throw new ArgumentNullException(nameof(blockingObject));
-            Owner = converter.Convert(blockingObject.Owner);
-            Owners = blockingObject.Owners.Select(converter.Convert).ToList();
-            Reason = converter.Convert(blockingObject.Reason);
-            Waiters = blockingObject.Waiters.Select(converter.Convert).ToList();
+            BlockingObject = blockingObject ?? throw new ArgumentNullException(nameof(blockingObject));   
         }
 
         /// <summary>
@@ -68,21 +64,21 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The owner.</value>
         /// <inheritdoc />
-        public IClrThread Owner { get; }
+        public IClrThread Owner { get; internal set; }
 
         /// <summary>
         ///     Returns the list of owners for this object.
         /// </summary>
         /// <value>The owners.</value>
         /// <inheritdoc />
-        public IList<IClrThread> Owners { get; }
+        public IList<IClrThread> Owners { get; internal set; }
 
         /// <summary>
         ///     The reason why it's blocking.
         /// </summary>
         /// <value>The reason.</value>
         /// <inheritdoc />
-        public BlockingReason Reason { get; }
+        public BlockingReason Reason { get; internal set; }
 
         /// <summary>
         ///     The recursion count of the lock (only valid if Locked is true).
@@ -103,6 +99,15 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The waiters.</value>
         /// <inheritdoc />
-        public IList<IClrThread> Waiters { get; }
+        public IList<IClrThread> Waiters { get; internal set; }
+
+        /// <inheritdoc />
+        public override void Setup()
+        {
+            Owner = Converter.Convert(BlockingObject.Owner);
+            Owners = BlockingObject.Owners.Select(Converter.Convert).ToList();
+            Reason = Converter.Convert(BlockingObject.Reason);
+            Waiters = BlockingObject.Waiters.Select(Converter.Convert).ToList();
+        }
     }
 }

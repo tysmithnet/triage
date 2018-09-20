@@ -34,11 +34,14 @@ namespace Triage.Mortician.Adapters
         public MemoryRegionAdapter(IConverter converter, ClrMemoryRegion memoryRegion) : base(converter)
         {
             MemoryRegion = memoryRegion ?? throw new ArgumentNullException(nameof(memoryRegion));
-            AppDomain = Converter.Convert(memoryRegion.AppDomain);
-            GcSegmentType = Converter.Convert(memoryRegion.GCSegmentType);
-            MemoryRegionType = Converter.Convert(memoryRegion.Type);
+           
         }
-
+        public override void Setup()
+        {
+ AppDomain = Converter.Convert(MemoryRegion.AppDomain);
+            GcSegmentType = Converter.Convert(MemoryRegion.GCSegmentType);
+            MemoryRegionType = Converter.Convert(MemoryRegion.Type);
+        }
         /// <summary>
         ///     Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
@@ -65,7 +68,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The application domain.</value>
         /// <inheritdoc />
-        public IClrAppDomain AppDomain { get; }
+        public IClrAppDomain AppDomain { get; internal set; }
 
         /// <summary>
         ///     Returns the gc segment type associated with this data.  Only callable if

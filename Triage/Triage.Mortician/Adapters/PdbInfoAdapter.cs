@@ -34,7 +34,10 @@ namespace Triage.Mortician.Adapters
         {
             PdbInfo = pdbInfo ?? throw new ArgumentNullException(nameof(pdbInfo));
         }
+        public override void Setup()
+        {
 
+        }
         /// <summary>
         ///     The PDB information
         /// </summary>

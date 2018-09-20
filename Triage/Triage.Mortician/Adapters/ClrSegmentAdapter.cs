@@ -35,9 +35,12 @@ namespace Triage.Mortician.Adapters
         public ClrSegmentAdapter(IConverter converter, ClrSegment segment) : base(converter)
         {
             Segment = segment ?? throw new ArgumentNullException(nameof(segment));
-            Heap = Converter.Convert(segment.Heap);
+            
         }
-
+        public override void Setup()
+        {
+Heap = Converter.Convert(Segment.Heap);
+        }
         /// <summary>
         ///     The segment
         /// </summary>
@@ -170,7 +173,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The heap.</value>
         /// <inheritdoc />
-        public IClrHeap Heap { get; }
+        public IClrHeap Heap { get; internal set; }
 
         /// <summary>
         ///     Returns true if this segment is the ephemeral segment (meaning it contains gen0 and gen1

@@ -34,9 +34,12 @@ namespace Triage.Mortician.Adapters
         public ClrInterfaceAdapter(IConverter converter, ClrInterface @interface) : base(converter)
         {
             Interface = @interface ?? throw new ArgumentNullException(nameof(@interface));
-            BaseInterface = Converter.Convert(@interface.BaseInterface);
+            
         }
-
+        public override void Setup()
+        {
+            BaseInterface = Converter.Convert(Interface.BaseInterface);
+        }
         /// <summary>
         ///     The interface
         /// </summary>
@@ -47,7 +50,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The base interface.</value>
         /// <inheritdoc />
-        public IClrInterface BaseInterface { get; }
+        public IClrInterface BaseInterface { get; internal set; }
 
         /// <summary>
         ///     The typename of the interface.

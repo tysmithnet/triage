@@ -35,12 +35,15 @@ namespace Triage.Mortician.Adapters
         public HandleAdapter(IConverter converter, ClrHandle handle) : base(converter)
         {
             Handle = handle ?? throw new ArgumentNullException(nameof(handle));
-            AppDomain = Converter.Convert(handle.AppDomain);
-            DependentType = Converter.Convert(handle.DependentType);
-            HandleType = Converter.Convert(handle.HandleType);
-            Type = Converter.Convert(handle.Type);
+           
         }
-
+        public override void Setup()
+        {
+ AppDomain = Converter.Convert(Handle.AppDomain);
+            DependentType = Converter.Convert(Handle.DependentType);
+            HandleType = Converter.Convert(Handle.HandleType);
+            Type = Converter.Convert(Handle.Type);
+        }
         /// <summary>
         ///     The handle
         /// </summary>

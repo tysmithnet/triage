@@ -33,10 +33,13 @@ namespace Triage.Mortician.Adapters
         public RootPathAdapter(IConverter converter, RootPath rootPath) : base(converter)
         {
             RootPath = rootPath;
-            Path = rootPath.Path.Select(Converter.Convert).ToArray();
-            Root = Converter.Convert(rootPath.Root);
+           
         }
-
+        public override void Setup()
+        {
+ Path = RootPath.Path.Select(Converter.Convert).ToArray();
+            Root = Converter.Convert(RootPath.Root);
+        }
         /// <summary>
         ///     The root path
         /// </summary>
@@ -47,14 +50,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The path.</value>
         /// <inheritdoc />
-        public IClrObject[] Path { get; }
+        public IClrObject[] Path { get; internal set; }
 
         /// <summary>
         ///     The location that roots the object.
         /// </summary>
         /// <value>The root.</value>
         /// <inheritdoc />
-        public IClrRoot Root { get; }
+        public IClrRoot Root { get; internal set; }
         
     }
 }

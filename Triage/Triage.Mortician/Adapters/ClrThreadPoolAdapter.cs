@@ -37,7 +37,10 @@ namespace Triage.Mortician.Adapters
         {
             ThreadPool = threadPool ?? throw new ArgumentNullException(nameof(threadPool));
         }
+        public override void Setup()
+        {
 
+        }
         /// <summary>
         ///     The thread pool
         /// </summary>

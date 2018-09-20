@@ -34,7 +34,10 @@ namespace Triage.Mortician.Adapters
         {
             ObjectSet = objectSet ?? throw new ArgumentNullException(nameof(objectSet));
         }
+        public override void Setup()
+        {
 
+        }
         /// <summary>
         ///     The object set
         /// </summary>

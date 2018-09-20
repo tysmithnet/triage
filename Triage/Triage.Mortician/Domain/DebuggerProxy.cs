@@ -119,7 +119,7 @@ namespace Triage.Mortician.Domain
         ///     The log
         /// </summary>
         /// <value>The log.</value>
-        private ILog Log { get; } = LogManager.GetLogger(typeof(DebuggerProxy));
+        private ILog Log { get; set; } = LogManager.GetLogger(typeof(DebuggerProxy));
 
         #region IDisposable Support
 

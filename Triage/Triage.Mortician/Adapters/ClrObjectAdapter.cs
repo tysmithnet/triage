@@ -34,9 +34,12 @@ namespace Triage.Mortician.Adapters
         public ClrObjectAdapter(IConverter converter, ClrObject o) : base(converter)
         {
             Object = o;
-            Type = Converter.Convert(o.Type);
+            
         }
-
+        public override void Setup()
+        {
+Type = Converter.Convert(Object.Type);
+        }
         /// <summary>
         ///     The object
         /// </summary>
@@ -165,7 +168,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type.</value>
         /// <inheritdoc />
-        public IClrType Type { get; }
+        public IClrType Type { get; internal set; }
         
     }
 }

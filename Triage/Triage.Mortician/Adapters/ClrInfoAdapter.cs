@@ -36,10 +36,14 @@ namespace Triage.Mortician.Adapters
         public ClrInfoAdapter(IConverter converter, ClrInfo info) : base(converter)
         {
             Info = info ?? throw new ArgumentNullException(nameof(info));
-            DacInfo = Converter.Convert(info.DacInfo);
-            Flavor = Converter.Convert(info.Flavor);
-            ModuleInfo = Converter.Convert(info.ModuleInfo);
-            Version = Converter.Convert(info.Version);
+            
+        }
+        public override void Setup()
+        {
+            DacInfo = Converter.Convert(Info.DacInfo);
+            Flavor = Converter.Convert(Info.Flavor);
+            ModuleInfo = Converter.Convert(Info.ModuleInfo);
+            Version = Converter.Convert(Info.Version);
         }
 
         /// <summary>
@@ -86,14 +90,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The dac information.</value>
         /// <inheritdoc />
-        public IDacInfo DacInfo { get; }
+        public IDacInfo DacInfo { get; internal set; }
 
         /// <summary>
         ///     The type of CLR this module represents.
         /// </summary>
         /// <value>The flavor.</value>
         /// <inheritdoc />
-        public ClrFlavor Flavor { get; }
+        public ClrFlavor Flavor { get; internal set; }
 
         /// <summary>
         ///     Returns the location of the local dac on your machine which matches this version of Clr, or null
@@ -108,13 +112,13 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The module information.</value>
         /// <inheritdoc />
-        public IModuleInfo ModuleInfo { get; }
+        public IModuleInfo ModuleInfo { get; internal set; }
 
         /// <summary>
         ///     The version number of this runtime.
         /// </summary>
         /// <value>The version.</value>
         /// <inheritdoc />
-        public VersionInfo Version { get; }
+        public VersionInfo Version { get; internal set; }
     }
 }

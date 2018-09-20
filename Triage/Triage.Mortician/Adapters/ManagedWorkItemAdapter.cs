@@ -34,9 +34,12 @@ namespace Triage.Mortician.Adapters
         public ManagedWorkItemAdapter(IConverter converter, ManagedWorkItem workItem) : base(converter)
         {
             WorkItem = workItem ?? throw new ArgumentNullException(nameof(workItem));
-            Type = Converter.Convert(workItem.Type);
+            
         }
-
+        public override void Setup()
+        {
+Type = Converter.Convert(WorkItem.Type);
+        }
         /// <summary>
         ///     The work item
         /// </summary>
@@ -54,7 +57,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type.</value>
         /// <inheritdoc />
-        public IClrType Type { get; }
+        public IClrType Type { get; internal set; }
 
     }
 }

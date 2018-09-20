@@ -35,10 +35,13 @@ namespace Triage.Mortician.Adapters
         public ModuleInfoAdapter(IConverter converter, ModuleInfo moduleInfo) : base(converter)
         {
             ModuleInfo = moduleInfo ?? throw new ArgumentNullException(nameof(moduleInfo));
-            Pdb = Converter.Convert(moduleInfo.Pdb);
-            Version = Converter.Convert(moduleInfo.Version);
+          
         }
-
+        public override void Setup()
+        {
+  Pdb = Converter.Convert(ModuleInfo.Pdb);
+            Version = Converter.Convert(ModuleInfo.Version);
+        }
         /// <summary>
         ///     The module information
         /// </summary>

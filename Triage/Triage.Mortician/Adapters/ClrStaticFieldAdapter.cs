@@ -36,10 +36,13 @@ namespace Triage.Mortician.Adapters
         public ClrStaticFieldAdapter(IConverter converter, ClrStaticField staticField) : base(converter)
         {
             StaticField = staticField ?? throw new ArgumentNullException(nameof(staticField));
-            ElementType = Converter.Convert(staticField.ElementType);
-            Type = Converter.Convert(staticField.Type);
+            
         }
-
+        public override void Setup()
+        {
+ElementType = Converter.Convert(StaticField.ElementType);
+            Type = Converter.Convert(StaticField.Type);
+        }
         /// <summary>
         ///     The static field
         /// </summary>
@@ -104,7 +107,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type of the element.</value>
         /// <inheritdoc />
-        public ClrElementType ElementType { get; }
+        public ClrElementType ElementType { get; internal set; }
 
         /// <summary>
         ///     Gets a value indicating whether this instance has default value.
@@ -204,6 +207,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type.</value>
         /// <inheritdoc />
-        public IClrType Type { get; }
+        public IClrType Type { get; internal set; }
     }
 }

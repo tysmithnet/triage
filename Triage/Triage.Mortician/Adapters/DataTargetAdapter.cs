@@ -40,7 +40,10 @@ namespace Triage.Mortician.Adapters
         {
             DataTarget = dataTarget ?? throw new ArgumentNullException(nameof(dataTarget));
         }
+        public override void Setup()
+        {
 
+        }
         /// <summary>
         ///     The data target
         /// </summary>
@@ -82,21 +85,21 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The architecture.</value>
         /// <inheritdoc />
-        public Architecture Architecture { get; }
+        public Architecture Architecture { get; internal set; }
 
         /// <summary>
         ///     Returns the list of Clr versions loaded into the process.
         /// </summary>
         /// <value>The color versions.</value>
         /// <inheritdoc />
-        public IList<IClrInfo> ClrVersions { get; }
+        public IList<IClrInfo> ClrVersions { get; internal set; }
 
         /// <summary>
         ///     The data reader for this instance.
         /// </summary>
         /// <value>The data reader.</value>
         /// <inheritdoc />
-        public IDataReader DataReader { get; }
+        public IDataReader DataReader { get; internal set; }
 
         /// <summary>
         ///     Returns true if the target process is a minidump, or otherwise might have limited memory.  If IsMinidump

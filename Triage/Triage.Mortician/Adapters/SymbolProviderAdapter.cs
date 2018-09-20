@@ -34,7 +34,10 @@ namespace Triage.Mortician.Adapters
         {
             Provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
+        public override void Setup()
+        {
 
+        }
         /// <summary>
         ///     The provider
         /// </summary>

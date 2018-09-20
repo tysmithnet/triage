@@ -36,11 +36,14 @@ namespace Triage.Mortician.Adapters
         public DacInfoAdapter(IConverter converter, DacInfo dacInfo) : base(converter)
         {
             DacInfo = dacInfo ?? throw new ArgumentNullException(nameof(dacInfo));
-            Pdb = Converter.Convert(dacInfo.Pdb);
-            TargetArchitecture = Converter.Convert(dacInfo.TargetArchitecture);
-            Version = Converter.Convert(dacInfo.Version);
+           
         }
-
+        public override void Setup()
+        {
+ Pdb = Converter.Convert(DacInfo.Pdb);
+            TargetArchitecture = Converter.Convert(DacInfo.TargetArchitecture);
+            Version = Converter.Convert(DacInfo.Version);
+        }
         /// <summary>
         ///     The dac information
         /// </summary>

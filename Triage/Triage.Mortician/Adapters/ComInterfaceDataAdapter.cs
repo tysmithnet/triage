@@ -33,9 +33,12 @@ namespace Triage.Mortician.Adapters
         public ComInterfaceDataAdapter(IConverter converter, Microsoft.Diagnostics.Runtime.ComInterfaceData data) : base(converter)
         {
             Data = data ?? throw new ArgumentNullException(nameof(data));
-            Type = Converter.Convert(data.Type);
+            
         }
-
+        public override void Setup()
+        {
+Type = Converter.Convert(Data.Type);
+        }
         /// <summary>
         ///     The data
         /// </summary>
@@ -53,6 +56,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type.</value>
         /// <inheritdoc />
-        public IClrType Type { get; }
+        public IClrType Type { get; internal set; }
     }
 }

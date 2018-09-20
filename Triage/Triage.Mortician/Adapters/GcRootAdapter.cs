@@ -37,14 +37,17 @@ namespace Triage.Mortician.Adapters
         public GcRootAdapter(IConverter converter, GCRoot root) : base(converter)
         {
             Root = root ?? throw new ArgumentNullException(nameof(root));
-            Heap = Converter.Convert(root.Heap);
-            root.ProgressUpdate += (source, current, total) =>
+           
+        }
+        public override void Setup()
+        {
+            Heap = Converter.Convert(Root.Heap);
+            Root.ProgressUpdate += (source, current, total) =>
             {
                 var convertedSource = Converter.Convert(source);
                 ProgressUpdate?.Invoke(convertedSource, current, total);
             };
         }
-
         /// <summary>
         ///     Since GCRoot can be long running, this event will provide periodic updates to how many objects the algorithm
         ///     has processed.  Note that in the case where we search all objects and do not find a path, it's unlikely that
@@ -141,7 +144,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The heap.</value>
         /// <inheritdoc />
-        public IClrHeap Heap { get; }
+        public IClrHeap Heap { get; internal set; }
 
         /// <summary>
         ///     Returns true if all relevant heap and root data is locally cached in this process for fast GCRoot processing.

@@ -35,10 +35,13 @@ namespace Triage.Mortician.Adapters
         public ClrInstanceFieldAdapter(IConverter converter, ClrInstanceField instanceField) : base(converter)
         {
             InstanceField = instanceField ?? throw new ArgumentNullException(nameof(instanceField));
-            ElementType = Converter.Convert(instanceField.ElementType);
-            Type = Converter.Convert(instanceField.Type);
+            
         }
-
+        public override void Setup()
+        {
+            ElementType = Converter.Convert(InstanceField.ElementType);
+            Type = Converter.Convert(InstanceField.Type);
+        }
         /// <summary>
         ///     The instance field
         /// </summary>
@@ -113,7 +116,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type of the element.</value>
         /// <inheritdoc />
-        public ClrElementType ElementType { get; }
+        public ClrElementType ElementType { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field has a simple value (meaning you may call "GetFieldValue" in one of the subtypes
@@ -206,6 +209,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type.</value>
         /// <inheritdoc />
-        public IClrType Type { get; }
+        public IClrType Type { get; internal set; }
     }
 }

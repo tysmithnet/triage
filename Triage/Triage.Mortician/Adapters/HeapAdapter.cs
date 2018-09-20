@@ -38,12 +38,15 @@ namespace Triage.Mortician.Adapters
         public HeapAdapter(IConverter converter, ClrHeap heap) : base(converter)
         {
             Heap = heap ?? throw new ArgumentNullException(nameof(heap));
-            Runtime = Converter.Convert(heap.Runtime);
-            Free = Converter.Convert(heap.Free);
-            Segments = heap.Segments.Select(Converter.Convert).ToList();
-            StackwalkPolicy = Converter.Convert(heap.StackwalkPolicy);
+            
         }
-
+        public override void Setup()
+        {
+Runtime = Converter.Convert(Heap.Runtime);
+            Free = Converter.Convert(Heap.Free);
+            Segments = Heap.Segments.Select(Converter.Convert).ToList();
+            StackwalkPolicy = Converter.Convert(Heap.StackwalkPolicy);
+        }
         /// <summary>
         ///     The heap
         /// </summary>
@@ -327,7 +330,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The free.</value>
         /// <inheritdoc />
-        public IClrType Free { get; }
+        public IClrType Free { get; internal set; }
 
         /// <summary>
         ///     Returns whether this version of CLR has component MethodTables.  Component MethodTables were removed from
@@ -357,7 +360,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The runtime.</value>
         /// <inheritdoc />
-        public IClrRuntime Runtime { get; }
+        public IClrRuntime Runtime { get; internal set; }
 
         /// <summary>
         ///     A heap is has a list of contiguous memory regions called segments.  This list is returned in order of
@@ -365,7 +368,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The segments.</value>
         /// <inheritdoc />
-        public IList<IClrSegment> Segments { get; }
+        public IList<IClrSegment> Segments { get; internal set; }
 
         /// <summary>
         ///     Sets the stackwalk policy for enumerating roots.  See ClrRootStackwalkPolicy for more information.

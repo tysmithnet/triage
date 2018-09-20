@@ -2,7 +2,7 @@
 using Triage.Mortician.Adapters;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Adapters
 {
     internal class IlInfoAdapter : BaseAdapter, IILInfo
     {
@@ -28,5 +28,11 @@ namespace Triage.Mortician
 
         /// <inheritdoc />
         public int MaxStack => Info.MaxStack;
+
+        /// <inheritdoc />
+        public override void Setup()
+        {
+            
+        }
     }
 }

@@ -14,24 +14,24 @@ namespace Triage.Mortician
         internal Microsoft.Diagnostics.Runtime.ClrStackFrame _stackFrame;
 
         /// <inheritdoc />
-        public string DisplayString { get; }
+        public string DisplayString { get; internal set; }
 
         /// <inheritdoc />
-        public ulong InstructionPointer { get; }
+        public ulong InstructionPointer { get; internal set; }
 
         /// <inheritdoc />
-        public ClrStackFrameType Kind { get; }
+        public ClrStackFrameType Kind { get; internal set; }
 
         /// <inheritdoc />
-        public IClrMethod Method { get; }
+        public IClrMethod Method { get; internal set; }
 
         /// <inheritdoc />
-        public string ModuleName { get; }
+        public string ModuleName { get; internal set; }
 
         /// <inheritdoc />
-        public ulong StackPointer { get; }
+        public ulong StackPointer { get; internal set; }
 
         /// <inheritdoc />
-        public IClrThread Thread { get; }
+        public IClrThread Thread { get; internal set; }
     }
 }

@@ -35,10 +35,13 @@ namespace Triage.Mortician.Adapters
         public ClrThreadStaticFieldAdapter(IConverter converter, ClrThreadStaticField threadStaticField) : base(converter)
         {
             ThreadStaticField = threadStaticField ?? throw new ArgumentNullException(nameof(threadStaticField));
-            ElementType = Converter.Convert(threadStaticField.ElementType);
-            Type = Converter.Convert(threadStaticField.Type);
+           
         }
-
+        public override void Setup()
+        {
+ ElementType = Converter.Convert(ThreadStaticField.ElementType);
+            Type = Converter.Convert(ThreadStaticField.Type);
+        }
         /// <summary>
         ///     The thread static field
         /// </summary>
@@ -96,7 +99,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type of the element.</value>
         /// <inheritdoc />
-        public ClrElementType ElementType { get; }
+        public ClrElementType ElementType { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field has a simple value (meaning you may call "GetFieldValue" in one of the subtypes
@@ -189,6 +192,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type.</value>
         /// <inheritdoc />
-        public IClrType Type { get; }
+        public IClrType Type { get; internal set; }
     }
 }

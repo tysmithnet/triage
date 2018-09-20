@@ -36,7 +36,10 @@ namespace Triage.Mortician.Adapters
             PeFile = peFile ?? throw new ArgumentNullException(nameof(peFile));
             PdbInfo = Converter.Convert(peFile.PdbInfo);
         }
+        public override void Setup()
+        {
 
+        }
         /// <summary>
         ///     The pe file
         /// </summary>
@@ -92,7 +95,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The PDB information.</value>
         /// <inheritdoc />
-        public IPdbInfo PdbInfo { get; }
+        public IPdbInfo PdbInfo { get; internal set; }
         
     }
 }

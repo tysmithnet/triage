@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.Runtime.CompilerServices;
+using Triage.Mortician.Adapters;
 
 namespace Triage.Mortician
 {
@@ -10,7 +11,7 @@ namespace Triage.Mortician
         private ConditionalWeakTable<object, object> WeakMap { get; set; }= new ConditionalWeakTable<object, object>();
 
         /// <inheritdoc />
-        public T GetOrAdd<T>(object instance, Func<T> factoryMethod)
+        public T GetOrAdd<T>(object instance, Func<T> factoryMethod) where T : BaseAdapter
         {
             if (instance == null)
                 return default(T);
@@ -25,6 +26,7 @@ namespace Triage.Mortician
                 {
                     var created = factoryMethod();
                     WeakMap.Add(instance, created);
+                    created.Setup();
                     return created;
                 }
             }
