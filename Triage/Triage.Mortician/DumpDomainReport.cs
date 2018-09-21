@@ -1,4 +1,18 @@
-﻿using System.Collections.Generic;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 09-20-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-20-2018
+// ***********************************************************************
+// <copyright file="DumpDomainReport.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System.Collections.Generic;
 
 namespace Triage.Mortician
 {
@@ -13,6 +27,12 @@ namespace Triage.Mortician
         /// </summary>
         /// <value>The application domains.</value>
         public IEnumerable<DumpDomainAppDomain> AppDomains => AppDomainsInternal;
+
+        /// <summary>
+        ///     Gets the default domain.
+        /// </summary>
+        /// <value>The default domain.</value>
+        public DumpDomainAppDomain DefaultDomain { get; internal set; }
 
         /// <summary>
         ///     Gets the shared domain.
@@ -30,6 +50,6 @@ namespace Triage.Mortician
         ///     Gets or sets the application domains internal.
         /// </summary>
         /// <value>The application domains internal.</value>
-        internal IList<DumpDomainAppDomain> AppDomainsInternal { get; set; }
+        internal IList<DumpDomainAppDomain> AppDomainsInternal { get; set; } = new List<DumpDomainAppDomain>();
     }
 }

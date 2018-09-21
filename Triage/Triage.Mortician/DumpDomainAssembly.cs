@@ -41,6 +41,6 @@ namespace Triage.Mortician
         ///     Gets or sets the modules internal.
         /// </summary>
         /// <value>The modules internal.</value>
-        internal IList<DumpDomainModule> ModulesInternal { get; set; }
+        internal IList<DumpDomainModule> ModulesInternal { get; set; } = new List<DumpDomainModule>();
     }
 }

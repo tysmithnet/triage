@@ -1,4 +1,20 @@
-﻿namespace Triage.Mortician
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 09-20-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-21-2018
+// ***********************************************************************
+// <copyright file="DumpDomainAppDomain.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System.Collections.Generic;
+
+namespace Triage.Mortician
 {
     /// <summary>
     ///     Class DumpDomainAppDomain. This class cannot be inherited.
@@ -6,10 +22,21 @@
     public sealed class DumpDomainAppDomain
     {
         /// <summary>
+        ///     The assemblies internal
+        /// </summary>
+        internal IList<DumpDomainAssembly> AssembliesInternal = new List<DumpDomainAssembly>();
+
+        /// <summary>
         ///     Gets the address.
         /// </summary>
         /// <value>The address.</value>
         public ulong Address { get; internal set; }
+
+        /// <summary>
+        ///     Gets the assemblies.
+        /// </summary>
+        /// <value>The assemblies.</value>
+        public IEnumerable<DumpDomainAssembly> Assemblies => AssembliesInternal;
 
         /// <summary>
         ///     Gets the high frequency heap.
@@ -34,6 +61,12 @@
         /// </summary>
         /// <value>The name.</value>
         public string Name { get; internal set; }
+
+        /// <summary>
+        ///     Gets the security descriptor.
+        /// </summary>
+        /// <value>The security descriptor.</value>
+        public ulong SecurityDescriptor { get; internal set; }
 
         /// <summary>
         ///     Gets the stage.
