@@ -157,7 +157,5 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The objects.</value>
         public IEnumerable<DumpObject> Objects { get; protected internal set; }
-
-        // todo: add methods
     }
 }

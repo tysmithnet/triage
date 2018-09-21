@@ -24,7 +24,6 @@ namespace Triage.Mortician.Core
     [DebuggerDisplay("{FullTypeName} : {Size} : {Address}")]
     public class DumpObject
     {
-        // todo: constructor args are already unwieldy, refactor to factory
         /// <summary>
         ///     Initializes a new instance of the <see cref="DumpObject" /> class.
         /// </summary>
