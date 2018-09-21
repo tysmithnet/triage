@@ -1,35 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 09-20-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-20-2018
+// ***********************************************************************
+// <copyright file="EeStackOutputProcessor.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 
 namespace Triage.Mortician
 {
+    /// <summary>
+    ///     Class EeStackOutputProcessor.
+    /// </summary>
+    /// <seealso cref="Triage.Mortician.IEeStackOutputProcessor" />
     public class EeStackOutputProcessor : IEeStackOutputProcessor
     {
+        /// <summary>
+        ///     Processes the output.
+        /// </summary>
+        /// <param name="eeStackOutput">The ee stack output.</param>
+        /// <returns>EeStackReport.</returns>
         public EeStackReport ProcessOutput(string eeStackOutput)
         {
-            var lines = eeStackOutput.Split(new string[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+            var lines = eeStackOutput.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
             return null;
         }
-    }
-
-    public sealed class EeStackFrame
-    {
-        public string Callee { get; internal set; }
-        public string Caller { get; internal set; }
-        public ulong ChildStackPointer { get; internal set; }
-        public ulong ReturnAddress { get; internal set; }
-    }
-
-    public sealed class EeStackThread
-    {
-        public IEnumerable<EeStackFrame> StackFrames => StackFramesInternal;
-        internal IList<EeStackFrame> StackFramesInternal { get; set; } = new List<EeStackFrame>();
-    }
-
-    public sealed class EeStackReport
-    {
-        public IEnumerable<EeStackThread> Threads => ThreadsInternal;
-        internal IList<EeStackThread> ThreadsInternal { get; set; } = new List<EeStackThread>();
     }
 }

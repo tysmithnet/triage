@@ -1,7 +1,6 @@
 ﻿namespace Triage.Mortician
 {
-    public interface IEeStackOutputProcessor
+    public interface IEeStackOutputProcessor : IStandardReportOutputProcessor<EeStackReport>
     {
-        EeStackReport ProcessOutput(string eeStackOutput);
     }
 }
