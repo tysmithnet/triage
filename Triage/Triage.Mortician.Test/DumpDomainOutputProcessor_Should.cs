@@ -27,7 +27,18 @@ namespace Triage.Mortician.Test
             report.SystemDomain.StubHeap.Should().Be(0x00007ffc206d0b68);
             report.SystemDomain.Stage.Should().Be(AppDomainStage.Open);
             report.SystemDomain.Name.Should().Be("None");
+        }
 
+        [Fact]
+        public void Correctly_Identify_The_Shared_Domain()
+        {
+            // arrange
+            var processor = new DumpDomainOutputProcessor();
+
+            // act
+            var report = processor.ProcessOutput(HELLO_WORLD);
+
+            // assert
             report.SharedDomain.Address.Should().Be(0x00007ffc206cff00);
             report.SharedDomain.LowFrequencyHeap.Should().Be(0x00007ffc206d0a48);
             report.SharedDomain.HighFrequencyHeap.Should().Be(0x00007ffc206d0ad8);
@@ -41,6 +52,39 @@ namespace Triage.Mortician.Test
             report.SharedDomain.Assemblies.First().Modules.Should().HaveCount(1);
             report.SharedDomain.Assemblies.First().Modules.First().Address.Should().Be(0x00007ffc072b1000);
             report.SharedDomain.Assemblies.First().Modules.First().Location.Should().Be(@"C:\WINDOWS\Microsoft.Net\assembly\GAC_64\mscorlib\v4.0_4.0.0.0__b77a5c561934e089\mscorlib.dll");
+        }
+
+        [Fact]
+        public void Correctly_Identify_The_Default_Domain()
+        {
+            // arrange
+            var processor = new DumpDomainOutputProcessor();
+
+            // act
+            var report = processor.ProcessOutput(HELLO_WORLD);
+
+            // assert
+            report.DefaultDomain.Address.Should().Be(0x0000014c4303a470);
+            report.DefaultDomain.LowFrequencyHeap.Should().Be(0x0000014c4303ac68);
+            report.DefaultDomain.HighFrequencyHeap.Should().Be(0x0000014c4303acf8);
+            report.DefaultDomain.StubHeap.Should().Be(0x0000014c4303ad88);
+            report.DefaultDomain.SecurityDescriptor.Should().Be(0x0000014c43024490);
+            report.DefaultDomain.Stage.Should().Be(AppDomainStage.Open);
+            report.DefaultDomain.Name.Should().Be("Triage.TestApplications.Console.exe");
+
+            report.DefaultDomain.Assemblies.ElementAt(0).Address.Should().Be(0x0000014c430a0ba0);
+            report.DefaultDomain.Assemblies.ElementAt(0).Location.Should().Be(@"C:\WINDOWS\Microsoft.Net\assembly\GAC_64\mscorlib\v4.0_4.0.0.0__b77a5c561934e089\mscorlib.dll");
+            report.DefaultDomain.Assemblies.ElementAt(0).ClassLoader.Should().Be(0x0000014c430a0cc0);
+            report.DefaultDomain.Assemblies.ElementAt(0).SecurityDescriptor.Should().Be(0x0000014c43033050);
+            report.DefaultDomain.Assemblies.ElementAt(0).Modules.First().Address.Should().Be(0x00007ffc072b1000);
+            report.DefaultDomain.Assemblies.ElementAt(0).Modules.First().Location.Should().Be(@"C:\WINDOWS\Microsoft.Net\assembly\GAC_64\mscorlib\v4.0_4.0.0.0__b77a5c561934e089\mscorlib.dll");
+
+            report.DefaultDomain.Assemblies.ElementAt(1).Address.Should().Be(0x0000014c430ae9a0);
+            report.DefaultDomain.Assemblies.ElementAt(1).Location.Should().Be(@"C:\projects\triage\Triage\Triage.TestApplications.Console\bin\Debug\Triage.TestApplications.Console.exe");
+            report.DefaultDomain.Assemblies.ElementAt(1).ClassLoader.Should().Be(0x0000014c430aeac0);
+            report.DefaultDomain.Assemblies.ElementAt(1).SecurityDescriptor.Should().Be(0x0000014c43033320);
+            report.DefaultDomain.Assemblies.ElementAt(1).Modules.First().Address.Should().Be(0x00007ffbc0684118);
+            report.DefaultDomain.Assemblies.ElementAt(1).Modules.First().Location.Should().Be(@"C:\projects\triage\Triage\Triage.TestApplications.Console\bin\Debug\Triage.TestApplications.Console.exe");
         }
 
         #region Sample !dumpdomain output

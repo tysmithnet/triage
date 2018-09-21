@@ -206,7 +206,17 @@ namespace Triage.Mortician
         private void SetupAppDomains(Dictionary<ulong, DumpAppDomain> appDomainStore)
         {
             var dumpdomainResults = DebuggerProxy.Execute("!dumpdomain"); // todo: need an abstraction over "reports"
-
+            var processor = new DumpDomainOutputProcessor();
+            var results = processor.ProcessOutput(dumpdomainResults);
+            foreach (var current in results.AppDomains)
+            {
+                if(!appDomainStore.ContainsKey(current.Address))
+                    appDomainStore.Add(current.Address, new DumpAppDomain
+                    {
+                        Address = current.Address,
+                        Name = current.Name
+                    });
+            }
         }
 
         /// <summary>
@@ -237,20 +247,9 @@ namespace Triage.Mortician
 
                 foreach (var clrAppDomain in clrModule.AppDomains)
                 {
-                    if (!appDomainStore.ContainsKey(clrAppDomain.Address))
-                    {
-                        var newDumpAppDomain = new DumpAppDomain
-                        {
-                            Address = clrAppDomain.Address,
-                            Name = clrAppDomain.Name,
-                            ApplicationBase = clrAppDomain.ApplicationBase,
-                            ConfigFile = clrAppDomain.ConfigurationFile
-                        };
-
-                        appDomainStore.Add(newDumpAppDomain.Address, newDumpAppDomain);
-                    }
-
                     var dumpAppDomain = appDomainStore[clrAppDomain.Address];
+                    dumpAppDomain.ApplicationBase = clrAppDomain.ApplicationBase;
+                    dumpAppDomain.ConfigFile = clrAppDomain.ConfigurationFile;
                     dumpModule.AppDomainsInternal.Add(appDomainStore[clrAppDomain.Address]);
                     dumpAppDomain.LoadedModulesInternal.Add(dumpModule);
                 }

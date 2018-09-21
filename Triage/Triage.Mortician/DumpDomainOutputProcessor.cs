@@ -62,7 +62,7 @@ namespace Triage.Mortician
         /// <summary>
         ///     The name regex
         /// </summary>
-        internal Regex NameRegex = new Regex(@"^Name:\s*(?<name>\w+)\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
+        internal Regex NameRegex = new Regex(@"^Name:\s*\[?(?<name>[^*<>""|?\]\[]+)\]?\s*$$", RegexOptions.Compiled | RegexOptions.Multiline);
 
         /// <summary>
         ///     The non standard domain
@@ -148,7 +148,7 @@ namespace Triage.Mortician
                     ? AppDomainStage.All.FirstOrDefault(s => stageMatch.Value.Contains(s.SosString)) ??
                       AppDomainStage.Unknown
                     : AppDomainStage.Unknown;
-                var name = nameMatch.Groups["name"].Success ? nameMatch.Groups["name"].Value : null;
+                var name = nameMatch.Groups["name"].Success ? nameMatch.Groups["name"].Value.Trim() : null;
                 var appDomain = new DumpDomainAppDomain
                 {
                     Index = (uint) i,
