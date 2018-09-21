@@ -39,5 +39,10 @@ namespace Triage.Mortician.Repository
         ///     The types extracted from the memory dump
         /// </summary>
         protected internal Dictionary<DumpTypeKey, DumpType> Types;
+
+        public IEnumerable<DumpType> Get()
+        {
+            return Types.Values;
+        }
     }
 }
