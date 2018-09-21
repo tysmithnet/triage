@@ -205,7 +205,8 @@ namespace Triage.Mortician
 
         private void SetupAppDomains(Dictionary<ulong, DumpAppDomain> appDomainStore)
         {
-            var dumpdomainResults = DebuggerProxy.Execute("!dumpdomain");
+            var dumpdomainResults = DebuggerProxy.Execute("!dumpdomain"); // todo: need an abstraction over "reports"
+
         }
 
         /// <summary>
