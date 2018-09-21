@@ -54,6 +54,8 @@ namespace Triage.Mortician.IntegrationTest
                 var ex = Marshal.GetExceptionForHR(hr);
                 throw ex;
             }
+            
+            CloseHandle(hFile);
         }
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]

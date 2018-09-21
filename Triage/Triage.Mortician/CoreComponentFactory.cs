@@ -65,8 +65,10 @@ namespace Triage.Mortician
             catch (Exception e)
             {
                 // todo: should check this ahead of time
-                Log.Fatal(
-                    $"Unable to open crash dump: {e.Message}, Does the dump file exist and do you have the x64 folder of the Windows Debugging Kit in your path?");
+                string message =
+                    $"Unable to open crash dump: {e.Message}, Does the dump file exist and do you have the x64 folder of the Windows Debugging Kit in your path?";
+                Log.Fatal(message);
+                throw new ApplicationException(message, e);
             }
             DebuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
             // todo: this is ugly
