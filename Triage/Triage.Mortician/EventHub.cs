@@ -14,7 +14,6 @@
 
 using System;
 using System.ComponentModel.Composition;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Triage.Mortician.Core;

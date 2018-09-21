@@ -30,10 +30,7 @@ namespace Triage.Mortician.Domain
         /// <param name="clrObject">The object to try to get values from</param>
         /// <param name="clrRuntime">The clr runtime being used</param>
         /// <returns><c>true</c> if this instance can extract from the object; otherwise, <c>false</c>.</returns>
-        public bool CanExtract(IClrObject clrObject, IClrRuntime clrRuntime)
-        {
-            return true;
-        }
+        public bool CanExtract(IClrObject clrObject, IClrRuntime clrRuntime) => true;
 
         /// <summary>
         ///     Extracts data from the provided object

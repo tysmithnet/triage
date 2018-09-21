@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using Triage.Mortician.Core;
-using Triage.Mortician.Domain;
 
 namespace Triage.Mortician.Repository
 {

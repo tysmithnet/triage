@@ -24,10 +24,7 @@ namespace Triage.Mortician
 
             lock (WeakMap)
             {
-                if (WeakMap.TryGetValue(instance, out var value))
-                {
-                    return (T) value;
-                }
+                if (WeakMap.TryGetValue(instance, out var value)) return (T) value;
 
                 var created = factoryMethod();
                 WeakMap.Add(instance, created);

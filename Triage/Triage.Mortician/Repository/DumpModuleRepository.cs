@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using Triage.Mortician.Core;
-using Triage.Mortician.Domain;
 
 namespace Triage.Mortician.Repository
 {
@@ -48,18 +47,12 @@ namespace Triage.Mortician.Repository
         /// <param name="assemblyId">The assembly identifier.</param>
         /// <param name="moduleName">Name of the module.</param>
         /// <returns>DumpModule.</returns>
-        public DumpModule Get(ulong assemblyId, string moduleName)
-        {
-            return DumpModules[(assemblyId, moduleName)];
-        }
+        public DumpModule Get(ulong assemblyId, string moduleName) => DumpModules[(assemblyId, moduleName)];
 
         /// <summary>
         ///     Gets this instance.
         /// </summary>
         /// <returns>IEnumerable&lt;DumpModule&gt;.</returns>
-        public IEnumerable<DumpModule> Get()
-        {
-            return DumpModules.Values;
-        }
+        public IEnumerable<DumpModule> Get() => DumpModules.Values;
     }
 }

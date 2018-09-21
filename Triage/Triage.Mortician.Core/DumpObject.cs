@@ -75,10 +75,7 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <returns>A short description of this object</returns>
         /// <remarks>The return value is intended to be shown on a single line</remarks>
-        protected virtual string ToShortDescription()
-        {
-            return $"{FullTypeName} : {Size} : {Address:x8} ({Address})";
-        }
+        protected virtual string ToShortDescription() => $"{FullTypeName} : {Size} : {Address:x8} ({Address})";
 
         /// <summary>
         ///     Gets the address of this object

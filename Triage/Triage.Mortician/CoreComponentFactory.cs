@@ -35,8 +35,6 @@ namespace Triage.Mortician
     /// </summary>
     internal class CoreComponentFactory
     {
-        public DebuggerProxy DebuggerProxy { get; internal set; }
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="CoreComponentFactory" /> class.
         /// </summary>
@@ -65,11 +63,12 @@ namespace Triage.Mortician
             catch (Exception e)
             {
                 // todo: should check this ahead of time
-                string message =
+                var message =
                     $"Unable to open crash dump: {e.Message}, Does the dump file exist and do you have the x64 folder of the Windows Debugging Kit in your path?";
                 Log.Fatal(message);
                 throw new ApplicationException(message, e);
             }
+
             DebuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
             // todo: this is ugly
             var reloadResult = DebuggerProxy.Execute(@".sympath srv*https://msdl.microsoft.com/download/symbols");
@@ -157,11 +156,6 @@ namespace Triage.Mortician
             foreach (var setting in settingsToAdd) CompositionContainer.ComposeExportedValue(setting);
         }
 
-        private void SetupAppDomains(Dictionary<ulong, DumpAppDomain> appDomainStore)
-        {
-            var dumpdomainResults = DebuggerProxy.Execute("!dumpdomain");
-        }
-
         /// <summary>
         ///     Establishes the object relationships.
         /// </summary>
@@ -207,6 +201,11 @@ namespace Triage.Mortician
                 settingsText = File.ReadAllText("settings.json");
             var converter = new SettingsJsonConverter();
             return JsonConvert.DeserializeObject<IEnumerable<ISettings>>(settingsText, converter);
+        }
+
+        private void SetupAppDomains(Dictionary<ulong, DumpAppDomain> appDomainStore)
+        {
+            var dumpdomainResults = DebuggerProxy.Execute("!dumpdomain");
         }
 
         /// <summary>
@@ -512,6 +511,8 @@ namespace Triage.Mortician
         /// </summary>
         /// <value>The data target.</value>
         public DataTarget DataTarget { get; set; }
+
+        public DebuggerProxy DebuggerProxy { get; internal set; }
 
         /// <summary>
         ///     Gets or sets the location of the dump file

@@ -39,7 +39,8 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="options">The options.</param>
         /// <returns>Program status code</returns>
-        internal static int DefaultExecution(DefaultOptions options, Func<CompositionContainer, CompositionContainer> dependencyInjectionTransformer = null)
+        internal static int DefaultExecution(DefaultOptions options,
+            Func<CompositionContainer, CompositionContainer> dependencyInjectionTransformer = null)
         {
             // todo: fix
             var blacklistedAssemblies = options.BlackListedAssemblies;

@@ -66,6 +66,12 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         int HeapNumber { get; }
 
         /// <summary>
+        ///     The type of heap/memory that the region contains.
+        /// </summary>
+        /// <value>The type.</value>
+        ClrMemoryRegionType MemoryRegionType { get; }
+
+        /// <summary>
         ///     The Module pointer that corresponds to this heap.  You can obtain the
         ///     filename of the module with this property.
         ///     Note:  HasModuleData must be true or this property will be null.
@@ -78,11 +84,5 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         /// </summary>
         /// <value>The size.</value>
         ulong Size { get; }
-
-        /// <summary>
-        ///     The type of heap/memory that the region contains.
-        /// </summary>
-        /// <value>The type.</value>
-        ClrMemoryRegionType MemoryRegionType { get; }
     }
 }

@@ -44,7 +44,6 @@ namespace Triage.Mortician.Core
 
         internal DumpModule()
         {
-
         }
 
         /// <summary>

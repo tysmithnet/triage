@@ -16,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using Common.Logging;
 using Triage.Mortician.Core;
-using Triage.Mortician.Domain;
 
 namespace Triage.Mortician.Repository
 {
@@ -76,9 +75,6 @@ namespace Triage.Mortician.Repository
         ///     Get all dump objects extracted from the heap
         /// </summary>
         /// <returns>All dump objects extracted from the heap</returns>
-        public IEnumerable<DumpObject> Get()
-        {
-            return Objects.Values;
-        }
+        public IEnumerable<DumpObject> Get() => Objects.Values;
     }
 }
