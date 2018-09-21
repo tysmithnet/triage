@@ -3,7 +3,7 @@
 // ReSharper disable once CheckNamespace
 namespace Triage.Mortician.IntegrationTest.IntegrationTests.Scenarios
 {
-    public partial class Scenario
+    public class Scenario
     {
         public static readonly HelloWorldScenario HelloWorld = new HelloWorldScenario();
 

@@ -40,10 +40,10 @@ namespace Triage.Mortician.IntegrationTest.Scenarios
                 Thread.Sleep(TimeSpan.FromSeconds(5));
             }
 
-            var tries = 1;
+            var tries = 0;
             try
             {
-                for (; tries <= 3; tries++)
+                for (; tries < 3; tries++)
                     if (!File.Exists(dumpFile))
                         Thread.Sleep((int) (1000 * Math.Pow(2, tries)));
             }
