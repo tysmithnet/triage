@@ -110,7 +110,7 @@ namespace Triage.Mortician
             // todo: break up
             var returnVal = new DumpDomainReport();
             var domainTextChunks = output.Split(new[] {"--------------------------------------"},
-                StringSplitOptions.RemoveEmptyEntries);
+                StringSplitOptions.RemoveEmptyEntries).Where(c => NameRegex.IsMatch(c)).ToArray();
             for (var i = 0; i < domainTextChunks.Length; i++)
             {
                 var chunk = domainTextChunks[i];

@@ -14,13 +14,11 @@ namespace Triage.Mortician.IntegrationTest
         internal class TestAnalyzer : IAnalyzer
         {
             public int AppDomainCount { get; set; }
-            public bool PersonExists { get; set; }
 
             /// <inheritdoc />
             public Task Process(CancellationToken cancellationToken)
             {
                 AppDomainCount = AppDomainRepo.Get().Count();
-                PersonExists = TypeRepo.Get().Any(type => type.Name == "Triage.TestApplications.Console.Person");
                 return Task.CompletedTask;
             }
 
@@ -69,7 +67,6 @@ namespace Triage.Mortician.IntegrationTest
             // assert
             result.Should().Be(0);
             analyzer.AppDomainCount.Should().Be(3);
-            analyzer.PersonExists.Should().BeTrue();
         }
     }
 }

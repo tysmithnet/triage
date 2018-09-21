@@ -89,7 +89,8 @@ namespace Triage.Mortician.Test
 
         #region Sample !dumpdomain output
 
-        public const string HELLO_WORLD = @"--------------------------------------
+        public const string HELLO_WORLD = @"PDB symbol for clr.dll not loaded
+--------------------------------------
 System Domain:      00007ffc206d04d0
 LowFrequencyHeap:   00007ffc206d0a48
 HighFrequencyHeap:  00007ffc206d0ad8
@@ -151,8 +152,6 @@ ClassLoader:        0000014c430bead0
 SecurityDescriptor: 0000014c430c1850
   Module Name
 00007ffbccea1000            C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Xml\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.dll";
-
-
         #endregion
     }
 }
