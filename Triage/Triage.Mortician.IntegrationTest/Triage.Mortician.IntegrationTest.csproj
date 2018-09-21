@@ -76,7 +76,7 @@
     <Compile Include="DumpHelper.cs" />
     <Compile Include="AppDomain_Extraction_Should.cs" />
     <Compile Include="Helpers.cs" />
-    <Compile Include="Mortician_Should.cs" />
+    <Compile Include="HelloWorld_Should.cs" />
     <Compile Include="Scenarios\HelloWorld.cs" />
     <Compile Include="Scenarios\Scenario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
