@@ -11,7 +11,7 @@ namespace Triage.Mortician.Test
     public class DumpDomainOutputProcessor_Should
     {
         [Fact]
-        public void Correctly_Identify_The_Number_Of_Domains()
+        public void Correctly_Identify_The_System_Domain()
         {
             // arrange
             var processor = new DumpDomainOutputProcessor();
