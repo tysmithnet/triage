@@ -1,6 +1,20 @@
-﻿using System.Collections.Generic;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 09-21-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-21-2018
+// ***********************************************************************
+// <copyright file="EeStackThread.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
 
-namespace Triage.Mortician
+using System.Collections.Generic;
+
+namespace Triage.Mortician.Reports
 {
     /// <summary>
     ///     Class EeStackThread. This class cannot be inherited.

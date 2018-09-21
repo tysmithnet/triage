@@ -14,7 +14,7 @@
 
 using System.Collections.Generic;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Reports
 {
     /// <summary>
     ///     Class DumpDomainAppDomain. This class cannot be inherited.

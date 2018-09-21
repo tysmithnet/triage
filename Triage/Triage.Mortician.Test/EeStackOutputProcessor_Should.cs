@@ -1,32 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using FluentAssertions;
+using Triage.Mortician.Reports;
 using Xunit;
 
 namespace Triage.Mortician.Test
 {
     public class EeStackOutputProcessor_Should
     {
-        [Fact]
-        public void Account_For_Frames_With_No_Callee()
-        {
-            // arrange
-            var processor = new EeStackOutputProcessor();
-
-            // act
-            var report = processor.ProcessOutput(HELLO_WORLD);
-
-            // assert
-            report.ThreadsInternal.Count.Should().Be(2);
-            report.ThreadsInternal[0].StackFramesInternal.First(x => x.Caller == "clr!CallDescrWorkerInternal+0x83")
-                .Callee.Should().BeNull();
-        }
-
-        #region Sample !eestack output
-
         private const string HELLO_WORLD = @"---------------------------------------------
 Thread   0
 Current frame: ntdll!NtGetContextThread+0x14
@@ -169,7 +149,19 @@ Child-SP         RetAddr          Caller, Callee
 000000056efffb50 00007ffc33121461 ntdll!RtlUserThreadStart+0x21, calling ntdll!guard_dispatch_icall_nop
 ";
 
+        [Fact]
+        public void Account_For_Frames_With_No_Callee()
+        {
+            // arrange
+            var processor = new EeStackOutputProcessor();
 
-        #endregion
+            // act
+            var report = processor.ProcessOutput(HELLO_WORLD);
+
+            // assert
+            report.ThreadsInternal.Count.Should().Be(2);
+            report.ThreadsInternal[0].StackFramesInternal.First(x => x.Caller == "clr!CallDescrWorkerInternal+0x83")
+                .Callee.Should().BeNull();
+        }
     }
 }

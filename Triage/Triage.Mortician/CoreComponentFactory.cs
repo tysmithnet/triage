@@ -4,7 +4,7 @@
 // Created          : 12-12-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-21-2018
 // ***********************************************************************
 // <copyright file="CoreComponentFactory.cs" company="">
 //     Copyright ©  2017
@@ -26,6 +26,7 @@ using Microsoft.Diagnostics.Runtime;
 using Newtonsoft.Json;
 using Triage.Mortician.Core;
 using Triage.Mortician.Domain;
+using Triage.Mortician.Reports;
 using Triage.Mortician.Repository;
 
 namespace Triage.Mortician
@@ -40,15 +41,16 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="compositionContainer">The composition container.</param>
         /// <param name="dumpFile">Dump file to analzye</param>
-        /// <exception cref="System.ArgumentNullException">
-        ///     compositionContainer
-        ///     or
-        ///     dumpFile
-        /// </exception>
         /// <exception cref="ArgumentNullException">
         ///     compositionContainer
         ///     or
         ///     dataTarget
+        /// </exception>
+        /// <exception cref="ApplicationException"></exception>
+        /// <exception cref="System.ArgumentNullException">
+        ///     compositionContainer
+        ///     or
+        ///     dumpFile
         /// </exception>
         public CoreComponentFactory(CompositionContainer compositionContainer, FileInfo dumpFile)
         {
@@ -87,6 +89,8 @@ namespace Triage.Mortician
         /// <summary>
         ///     Registers the repositories.
         /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="settings">The settings.</param>
         // todo: this is too big
         public void RegisterRepositories(DefaultOptions options, IEnumerable<ISettings> settings = null)
         {
@@ -192,6 +196,11 @@ namespace Triage.Mortician
             });
         }
 
+        /// <summary>
+        ///     Gets the settings.
+        /// </summary>
+        /// <param name="settingsPath">The settings path.</param>
+        /// <returns>IEnumerable&lt;ISettings&gt;.</returns>
         private IEnumerable<ISettings> GetSettings(string settingsPath = null)
         {
             string settingsText;
@@ -203,20 +212,22 @@ namespace Triage.Mortician
             return JsonConvert.DeserializeObject<IEnumerable<ISettings>>(settingsText, converter);
         }
 
+        /// <summary>
+        ///     Setups the application domains.
+        /// </summary>
+        /// <param name="appDomainStore">The application domain store.</param>
         private void SetupAppDomains(Dictionary<ulong, DumpAppDomain> appDomainStore)
         {
             var dumpdomainResults = DebuggerProxy.Execute("!dumpdomain"); // todo: need an abstraction over "reports"
             var processor = new DumpDomainOutputProcessor();
             var results = processor.ProcessOutput(dumpdomainResults);
             foreach (var current in results.AppDomains)
-            {
-                if(!appDomainStore.ContainsKey(current.Address))
+                if (!appDomainStore.ContainsKey(current.Address))
                     appDomainStore.Add(current.Address, new DumpAppDomain
                     {
                         Address = current.Address,
                         Name = current.Name
                     });
-            }
         }
 
         /// <summary>
@@ -512,6 +523,10 @@ namespace Triage.Mortician
         /// <value>The data target.</value>
         public DataTarget DataTarget { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the debugger proxy.
+        /// </summary>
+        /// <value>The debugger proxy.</value>
         public DebuggerProxy DebuggerProxy { get; internal set; }
 
         /// <summary>
@@ -520,6 +535,10 @@ namespace Triage.Mortician
         /// <value>The dump file location.</value>
         public FileInfo DumpFile { get; protected set; }
 
+        /// <summary>
+        ///     Gets or sets the converter.
+        /// </summary>
+        /// <value>The converter.</value>
         internal IConverter Converter { get; set; }
     }
 }

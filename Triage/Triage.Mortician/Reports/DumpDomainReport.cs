@@ -14,12 +14,12 @@
 
 using System.Collections.Generic;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Reports
 {
     /// <summary>
     ///     Class DumpDomainReport. This class cannot be inherited.
     /// </summary>
-    /// <seealso cref="Triage.Mortician.IReport" />
+    /// <seealso cref="IReport" />
     public sealed class DumpDomainReport : IReport
     {
         /// <summary>

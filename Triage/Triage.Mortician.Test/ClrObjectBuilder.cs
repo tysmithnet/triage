@@ -5,9 +5,6 @@ namespace Triage.Mortician.Test
 {
     public class ClrObjectBuilder
     {
-        private Mock<IClrObject> Mock { get; } = new Mock<IClrObject>();
-        private Mock<IClrType> TypeMock { get; } = new Mock<IClrType>();
-
         public ClrObjectBuilder()
         {
             Mock.SetupAllProperties();
@@ -15,17 +12,7 @@ namespace Triage.Mortician.Test
             Mock.Setup(o => o.Type).Returns(TypeMock.Object);
         }
 
-        public ClrObjectBuilder WithType(string typeName)
-        {
-            TypeMock.Setup(type => type.Name).Returns(typeName);
-            return this;
-        }
-
-        public ClrObjectBuilder WithSize(ulong size)
-        {
-            Mock.Setup(o => o.Size).Returns(size);
-            return this;
-        }
+        public IClrObject Build() => Mock.Object;
 
         public ClrObjectBuilder WithAddress(ulong address)
         {
@@ -41,9 +28,19 @@ namespace Triage.Mortician.Test
             return this;
         }
 
-        public IClrObject Build()
+        public ClrObjectBuilder WithSize(ulong size)
         {
-            return Mock.Object;
+            Mock.Setup(o => o.Size).Returns(size);
+            return this;
         }
+
+        public ClrObjectBuilder WithType(string typeName)
+        {
+            TypeMock.Setup(type => type.Name).Returns(typeName);
+            return this;
+        }
+
+        private Mock<IClrObject> Mock { get; } = new Mock<IClrObject>();
+        private Mock<IClrType> TypeMock { get; } = new Mock<IClrType>();
     }
 }

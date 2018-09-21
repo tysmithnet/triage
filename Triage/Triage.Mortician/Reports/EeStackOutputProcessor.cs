@@ -14,12 +14,12 @@
 
 using System;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Reports
 {
     /// <summary>
     ///     Class EeStackOutputProcessor.
     /// </summary>
-    /// <seealso cref="Triage.Mortician.IEeStackOutputProcessor" />
+    /// <seealso cref="IEeStackOutputProcessor" />
     public class EeStackOutputProcessor : IEeStackOutputProcessor
     {
         /// <summary>

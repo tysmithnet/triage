@@ -16,18 +16,20 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Reports
 {
     /// <summary>
     ///     Class DumpDomainOutputProcessor.
     /// </summary>
-    /// <seealso cref="Triage.Mortician.IDumpDomainOutputProcessor" />
+    /// <seealso cref="Triage.Mortician.Reports.IDumpDomainOutputProcessor" />
+    /// <seealso cref="IDumpDomainOutputProcessor" />
     public class DumpDomainOutputProcessor : IDumpDomainOutputProcessor
     {
         /// <summary>
         ///     The assembly start regex
         /// </summary>
-        internal Regex AssemblyStartRegex = new Regex(@"^Assembly:\s*(?<addr>[a-fA-F0-9]+)\s*\[?(?<loc>[^*<>""|?\]\[]+)\]?\s*$",
+        internal Regex AssemblyStartRegex = new Regex(
+            @"^Assembly:\s*(?<addr>[a-fA-F0-9]+)\s*\[?(?<loc>[^*<>""|?\]\[]+)\]?\s*$",
             RegexOptions.Compiled | RegexOptions.Multiline);
 
         /// <summary>
@@ -40,29 +42,34 @@ namespace Triage.Mortician
         ///     The high frequency heap regex
         /// </summary>
         internal Regex HighFrequencyHeapRegex =
-            new Regex(@"^HighFrequencyHeap:\s*(?<addr>[a-fA-F0-9]+)\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
+            new Regex(@"^HighFrequencyHeap:\s*(?<addr>[a-fA-F0-9]+)\s*$",
+                RegexOptions.Compiled | RegexOptions.Multiline);
 
         /// <summary>
         ///     The low frequency heap regex
         /// </summary>
         internal Regex LowFrequencyHeapRegex =
-            new Regex(@"^LowFrequencyHeap:\s*(?<addr>[a-fA-F0-9]+)\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
+            new Regex(@"^LowFrequencyHeap:\s*(?<addr>[a-fA-F0-9]+)\s*$",
+                RegexOptions.Compiled | RegexOptions.Multiline);
 
         /// <summary>
         ///     The module line regex
         /// </summary>
         internal Regex ModuleLineRegex =
-            new Regex(@"^(?<addr>[a-fA-F0-9]{8,16})\s*\[?(?<loc>[^*<>""|?\]\[]+)\]?\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
+            new Regex(@"^(?<addr>[a-fA-F0-9]{8,16})\s*\[?(?<loc>[^*<>""|?\]\[]+)\]?\s*$",
+                RegexOptions.Compiled | RegexOptions.Multiline);
 
         /// <summary>
         ///     The module start regex
         /// </summary>
-        internal Regex ModuleStartRegex = new Regex(@"^Module Name\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
+        internal Regex ModuleStartRegex =
+            new Regex(@"^Module Name\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
 
         /// <summary>
         ///     The name regex
         /// </summary>
-        internal Regex NameRegex = new Regex(@"^Name:\s*\[?(?<name>[^*<>""|?\]\[]+)\]?\s*$$", RegexOptions.Compiled | RegexOptions.Multiline);
+        internal Regex NameRegex = new Regex(@"^Name:\s*\[?(?<name>[^*<>""|?\]\[]+)\]?\s*$$",
+            RegexOptions.Compiled | RegexOptions.Multiline);
 
         /// <summary>
         ///     The non standard domain
@@ -74,7 +81,8 @@ namespace Triage.Mortician
         ///     The security descriptor regex
         /// </summary>
         internal Regex SecurityDescriptorRegex =
-            new Regex(@"^SecurityDescriptor:\s*(?<addr>[a-fA-F0-9]+)\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
+            new Regex(@"^SecurityDescriptor:\s*(?<addr>[a-fA-F0-9]+)\s*$",
+                RegexOptions.Compiled | RegexOptions.Multiline);
 
         /// <summary>
         ///     The shared domain regex
@@ -85,12 +93,14 @@ namespace Triage.Mortician
         /// <summary>
         ///     The stage regex
         /// </summary>
-        internal Regex StageRegex = new Regex(@"^Stage:\s*(?<stage>\w+)\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
+        internal Regex StageRegex =
+            new Regex(@"^Stage:\s*(?<stage>\w+)\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
 
         /// <summary>
         ///     The stub heap regex
         /// </summary>
-        internal Regex StubHeapRegex = new Regex(@"^StubHeap:\s*(?<addr>[a-fA-F0-9]+)\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
+        internal Regex StubHeapRegex = new Regex(@"^StubHeap:\s*(?<addr>[a-fA-F0-9]+)\s*$",
+            RegexOptions.Compiled | RegexOptions.Multiline);
 
         /// <summary>
         ///     The system domain regex
@@ -137,9 +147,13 @@ namespace Triage.Mortician
                     ? Convert.ToUInt64(nonStandardDomainMatch.Groups["addr"].Value, 16)
                     : 0;
                 var lowFrequencyHeap =
-                    lowFrequencyHeapMatch.Success ? Convert.ToUInt64(lowFrequencyHeapMatch.Groups["addr"].Value, 16) : 0;
+                    lowFrequencyHeapMatch.Success
+                        ? Convert.ToUInt64(lowFrequencyHeapMatch.Groups["addr"].Value, 16)
+                        : 0;
                 var highFrequencyHeap =
-                    highFrequencyHeapMatch.Success ? Convert.ToUInt64(highFrequencyHeapMatch.Groups["addr"].Value, 16) : 0;
+                    highFrequencyHeapMatch.Success
+                        ? Convert.ToUInt64(highFrequencyHeapMatch.Groups["addr"].Value, 16)
+                        : 0;
                 var securityDescriptor = securityDescriptorMatch.Success
                     ? Convert.ToUInt64(securityDescriptorMatch.Groups["addr"].Value, 16)
                     : 0;
@@ -175,7 +189,8 @@ namespace Triage.Mortician
                     appDomain.Address = nonStandardDomain;
                 }
 
-                var assemblyChunks = Regex.Split(body, @"^\s*$", RegexOptions.Multiline).Where(x => !string.IsNullOrWhiteSpace(x));
+                var assemblyChunks = Regex.Split(body, @"^\s*$", RegexOptions.Multiline)
+                    .Where(x => !string.IsNullOrWhiteSpace(x));
                 foreach (var assemblyChunk in assemblyChunks)
                 {
                     var assemblyStartLineMatch = AssemblyStartRegex.Match(assemblyChunk);
@@ -213,6 +228,7 @@ namespace Triage.Mortician
                             : null;
                         newAssembly.ModulesInternal.Add(newModule);
                     }
+
                     appDomain.AssembliesInternal.Add(newAssembly);
                 }
 
