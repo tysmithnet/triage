@@ -11,7 +11,9 @@ namespace Triage.TestApplications.Console
         public static void Main(string[] args)
         {
             WriteLine("hello world");
-            DumpHelper.CreateDump(Combine(ConfigurationManager.AppSettings[IntPtr.Size == 4 ? "DumpLocationX86" : "DumpLocationX64"], "helloworld.dmp"));
+            DumpHelper.CreateDump(Combine(
+                ConfigurationManager.AppSettings[IntPtr.Size == 4 ? "DumpLocationX86" : "DumpLocationX64"],
+                "helloworld.dmp"));
         }
     }
 }
