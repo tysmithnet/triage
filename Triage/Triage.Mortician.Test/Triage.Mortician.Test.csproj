@@ -106,6 +106,8 @@
     <Compile Include="ClrHeapBuilder.cs" />
     <Compile Include="ClrObjectBuilder.cs" />
     <Compile Include="ClrRuntimeBuilder.cs" />
+    <Compile Include="DumpDomainOutputProcessor_Should.cs" />
+    <Compile Include="EeStackOutputProcessor_Should.cs" />
     <Compile Include="Engine_Should.cs" />
     <Compile Include="EventHub_Should.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

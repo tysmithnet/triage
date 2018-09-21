@@ -24,7 +24,6 @@ namespace Triage.Mortician.Core
     [DebuggerDisplay("{FullTypeName} : {Size} : {Address}")]
     public class DumpObject
     {
-        // todo: constructor args are already unwieldy, refactor to factory
         /// <summary>
         ///     Initializes a new instance of the <see cref="DumpObject" /> class.
         /// </summary>
@@ -75,10 +74,7 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <returns>A short description of this object</returns>
         /// <remarks>The return value is intended to be shown on a single line</remarks>
-        protected virtual string ToShortDescription()
-        {
-            return $"{FullTypeName} : {Size} : {Address:x8} ({Address})";
-        }
+        protected virtual string ToShortDescription() => $"{FullTypeName} : {Size} : {Address:x8} ({Address})";
 
         /// <summary>
         ///     Gets the address of this object

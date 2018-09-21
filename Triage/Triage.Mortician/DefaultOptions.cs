@@ -4,7 +4,7 @@
 // Created          : 12-17-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-19-2018
+// Last Modified On : 09-20-2018
 // ***********************************************************************
 // <copyright file="DefaultOptions.cs" company="">
 //     Copyright ©  2017
@@ -51,6 +51,10 @@ namespace Triage.Mortician
         [Option('d', "dumpfile", HelpText = "The dump file to operate on", SetName = "LocalFile")]
         public string DumpFile { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the settings file.
+        /// </summary>
+        /// <value>The settings file.</value>
         [Option('s', "settings", HelpText = "Settings for Mortician and its plugins")]
         public string SettingsFile { get; set; }
     }

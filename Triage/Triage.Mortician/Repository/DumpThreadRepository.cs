@@ -16,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using Common.Logging;
 using Triage.Mortician.Core;
-using Triage.Mortician.Domain;
 
 namespace Triage.Mortician.Repository
 {
@@ -69,9 +68,6 @@ namespace Triage.Mortician.Repository
         ///     Gets all the threads extracted from the memory dump
         /// </summary>
         /// <returns>All the threads extracted from the memory dump</returns>
-        public IEnumerable<DumpThread> Get()
-        {
-            return DumpThreads.Values;
-        }
+        public IEnumerable<DumpThread> Get() => DumpThreads.Values;
     }
 }

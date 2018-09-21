@@ -4,7 +4,7 @@
 // Created          : 09-18-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-19-2018
+// Last Modified On : 09-20-2018
 // ***********************************************************************
 // <copyright file="NativeWorkItemAdapter.cs" company="">
 //     Copyright ©  2017
@@ -22,12 +22,14 @@ namespace Triage.Mortician.Adapters
     /// <summary>
     ///     Class NativeWorkItemAdapter.
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Adapters.BaseAdapter" />
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.INativeWorkItem" />
     internal class NativeWorkItemAdapter : BaseAdapter, INativeWorkItem
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="NativeWorkItemAdapter" /> class.
         /// </summary>
+        /// <param name="converter">The converter.</param>
         /// <param name="nativeWorkItem">The native work item.</param>
         /// <exception cref="ArgumentNullException">nativeWorkItem</exception>
         /// <inheritdoc />
@@ -41,6 +43,9 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         internal NativeWorkItem NativeWorkItem;
 
+        /// <summary>
+        ///     Setups this instance.
+        /// </summary>
         public override void Setup()
         {
             Kind = Converter.Convert(NativeWorkItem.Kind);

@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using Triage.Mortician.Core;
-using Triage.Mortician.Domain;
 
 namespace Triage.Mortician.Repository
 {
@@ -47,18 +46,12 @@ namespace Triage.Mortician.Repository
         /// </summary>
         /// <param name="address">The address.</param>
         /// <returns>DumpAppDomain.</returns>
-        public DumpAppDomain Get(ulong address)
-        {
-            return AppDomains[address];
-        }
+        public DumpAppDomain Get(ulong address) => AppDomains[address];
 
         /// <summary>
         ///     Gets all the extracted appd domains
         /// </summary>
         /// <returns>IEnumerable&lt;DumpAppDomain&gt;.</returns>
-        public IEnumerable<DumpAppDomain> Get()
-        {
-            return AppDomains.Values;
-        }
+        public IEnumerable<DumpAppDomain> Get() => AppDomains.Values;
     }
 }

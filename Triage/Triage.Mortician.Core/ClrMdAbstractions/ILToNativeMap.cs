@@ -38,10 +38,8 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     To string.
         /// </summary>
         /// <returns>A visual display of the map entry.</returns>
-        public override string ToString()
-        {
-            return string.Format("{0,2:X} - [{1:X}-{2:X}]", ILOffset, StartAddress, EndAddress);
-        }
+        public override string ToString() =>
+            string.Format("{0,2:X} - [{1:X}-{2:X}]", ILOffset, StartAddress, EndAddress);
 
 #pragma warning disable 0169
         /// <summary>

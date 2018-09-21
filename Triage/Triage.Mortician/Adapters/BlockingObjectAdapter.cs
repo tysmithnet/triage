@@ -4,7 +4,7 @@
 // Created          : 09-19-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-19-2018
+// Last Modified On : 09-20-2018
 // ***********************************************************************
 // <copyright file="BlockingObjectAdapter.cs" company="">
 //     Copyright ©  2017
@@ -24,12 +24,14 @@ namespace Triage.Mortician.Adapters
     /// <summary>
     ///     Class BlockingObjectAdapter.
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Adapters.BaseAdapter" />
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IBlockingObject" />
     internal class BlockingObjectAdapter : BaseAdapter, IBlockingObject
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="BlockingObjectAdapter" /> class.
         /// </summary>
+        /// <param name="converter">The converter.</param>
         /// <param name="blockingObject">The blocking object.</param>
         /// <exception cref="ArgumentNullException">blockingObject</exception>
         /// <inheritdoc />
@@ -43,6 +45,9 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         internal BlockingObject BlockingObject;
 
+        /// <summary>
+        ///     Setups this instance.
+        /// </summary>
         /// <inheritdoc />
         public override void Setup()
         {

@@ -27,7 +27,7 @@ namespace Triage.Mortician.Core
         ///     there are numerous cases where the assembly has multiple modules. This is
         ///     the mutable internal version
         /// </summary>
-        protected internal IList<DumpModule> LoadedModulesInternal = new List<DumpModule>();
+        protected internal List<DumpModule> LoadedModulesInternal = new List<DumpModule>();
 
         /// <summary>
         ///     Gets or sets the address of where the app domain has been loaded in memory

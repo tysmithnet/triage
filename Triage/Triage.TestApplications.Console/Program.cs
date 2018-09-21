@@ -1,5 +1,8 @@
-﻿using Triage.Mortician.IntegrationTest;
+﻿using System;
+using System.Configuration;
+using Triage.Mortician.IntegrationTest;
 using static System.Console;
+using static System.IO.Path;
 
 namespace Triage.TestApplications.Console
 {
@@ -8,7 +11,9 @@ namespace Triage.TestApplications.Console
         public static void Main(string[] args)
         {
             WriteLine("hello world");
-            DumpHelper.CreateDump("helloworld.dmp");
+            DumpHelper.CreateDump(Combine(
+                ConfigurationManager.AppSettings[IntPtr.Size == 4 ? "DumpLocationX86" : "DumpLocationX64"],
+                "helloworld.dmp"));
         }
     }
 }

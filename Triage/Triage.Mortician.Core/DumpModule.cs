@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Triage.Mortician.Core
 {
@@ -44,18 +45,17 @@ namespace Triage.Mortician.Core
 
         internal DumpModule()
         {
-
         }
 
         /// <summary>
         ///     The app domains for which this module is loaded
         /// </summary>
-        protected internal IList<DumpAppDomain> AppDomainsInternal = new List<DumpAppDomain>();
+        protected internal List<DumpAppDomain> AppDomainsInternal = new List<DumpAppDomain>();
 
         /// <summary>
         ///     The types defined in this module
         /// </summary>
-        protected internal IList<DumpType> TypesInternal = new List<DumpType>();
+        protected internal List<DumpType> TypesInternal = new List<DumpType>();
 
         /// <summary>
         ///     Gets or sets the application domains.

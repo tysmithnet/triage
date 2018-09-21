@@ -45,7 +45,7 @@ namespace Triage.Mortician.Core
         ///     Gets or sets the stack frames according to !eestack
         /// </summary>
         /// <value>The ee stack frames.</value>
-        public IList<string> EEStackFrames { get; protected internal set; } = new List<string>();
+        public IEnumerable<string> EEStackFrames { get; protected internal set; } = new List<string>();
 
         /// <summary>
         ///     Gets or sets the kernel mode time.
@@ -58,13 +58,13 @@ namespace Triage.Mortician.Core
         ///     Gets or sets the stack frames.
         /// </summary>
         /// <value>The stack frames.</value>
-        public IList<DumpStackFrame> ManagedStackFrames { get; protected internal set; }
+        public IEnumerable<DumpStackFrame> ManagedStackFrames { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the object roots associated with this thread
         /// </summary>
         /// <value>The object roots.</value>
-        public IList<DumpObjectRoot> ObjectRoots { get; protected internal set; }
+        public IEnumerable<DumpObjectRoot> ObjectRoots { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the thread os id

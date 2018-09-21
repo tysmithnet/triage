@@ -9,14 +9,16 @@ using Xunit;
 
 namespace Triage.Mortician.IntegrationTest
 {
-    public class Mortician_Should
+    public class HelloWorld_Should
     {
-        internal class MyAnalyzer : IAnalyzer
+        internal class TestAnalyzer : IAnalyzer
         {
+            public int AppDomainCount { get; set; }
+
             /// <inheritdoc />
             public Task Process(CancellationToken cancellationToken)
             {
-                AppDomainRepo.Get().Count().Should().BeGreaterThan(0);
+                AppDomainCount = AppDomainRepo.Get().Count();
                 return Task.CompletedTask;
             }
 
@@ -43,7 +45,7 @@ namespace Triage.Mortician.IntegrationTest
         }
 
         [Fact]
-        public void Not_Fail_When_Loading_Dump()
+        public void Perform_Basic_Startup_Without_Failure()
         {
             // arrange
             var dumpFile = Scenario.HelloWorld.GetDumpFile();
@@ -52,11 +54,11 @@ namespace Triage.Mortician.IntegrationTest
                 DumpFile = dumpFile.FullName,
                 SettingsFile = "Settings/Mortician_Should.json"
             };
+            var analyzer = new TestAnalyzer();
 
             // act
             var result = Program.DefaultExecution(options, container =>
             {
-                var analyzer = new MyAnalyzer();
                 container.ComposeParts(analyzer);
                 container.ComposeExportedValue<IAnalyzer>(analyzer);
                 return container;
@@ -64,6 +66,7 @@ namespace Triage.Mortician.IntegrationTest
 
             // assert
             result.Should().Be(0);
+            analyzer.AppDomainCount.Should().Be(3);
         }
     }
 }

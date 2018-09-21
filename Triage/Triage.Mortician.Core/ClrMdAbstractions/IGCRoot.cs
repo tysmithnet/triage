@@ -93,7 +93,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     is only used when we can ensure all relevant data is local memory and we do not need to touch the debuggee.
         /// </summary>
         /// <value><c>true</c> if [allow parallel search]; otherwise, <c>false</c>.</value>
-        bool AllowParallelSearch { get;}
+        bool AllowParallelSearch { get; }
 
         /// <summary>
         ///     Returns the heap that's associated with this GCRoot instance.

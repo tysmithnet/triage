@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using Triage.Mortician.Core;
-using Triage.Mortician.Domain;
 
 namespace Triage.Mortician.Repository
 {
@@ -40,5 +39,10 @@ namespace Triage.Mortician.Repository
         ///     The types extracted from the memory dump
         /// </summary>
         protected internal Dictionary<DumpTypeKey, DumpType> Types;
+
+        public IEnumerable<DumpType> Get()
+        {
+            return Types.Values;
+        }
     }
 }

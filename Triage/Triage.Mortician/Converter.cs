@@ -4,7 +4,7 @@
 // Created          : 09-18-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-19-2018
+// Last Modified On : 09-20-2018
 // ***********************************************************************
 // <copyright file="Converter.cs" company="">
 //     Copyright ©  2017
@@ -962,6 +962,10 @@ namespace Triage.Mortician
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the cache.
+        /// </summary>
+        /// <value>The cache.</value>
         [Import]
         internal IConverterCache Cache { get; set; } = new DefaultConverterCache();
     }

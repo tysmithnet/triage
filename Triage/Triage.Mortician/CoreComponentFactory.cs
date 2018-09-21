@@ -4,7 +4,7 @@
 // Created          : 12-12-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-21-2018
 // ***********************************************************************
 // <copyright file="CoreComponentFactory.cs" company="">
 //     Copyright ©  2017
@@ -26,6 +26,7 @@ using Microsoft.Diagnostics.Runtime;
 using Newtonsoft.Json;
 using Triage.Mortician.Core;
 using Triage.Mortician.Domain;
+using Triage.Mortician.Reports;
 using Triage.Mortician.Repository;
 
 namespace Triage.Mortician
@@ -35,22 +36,21 @@ namespace Triage.Mortician
     /// </summary>
     internal class CoreComponentFactory
     {
-        public DebuggerProxy DebuggerProxy { get; internal set; }
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="CoreComponentFactory" /> class.
         /// </summary>
         /// <param name="compositionContainer">The composition container.</param>
         /// <param name="dumpFile">Dump file to analzye</param>
-        /// <exception cref="System.ArgumentNullException">
-        ///     compositionContainer
-        ///     or
-        ///     dumpFile
-        /// </exception>
         /// <exception cref="ArgumentNullException">
         ///     compositionContainer
         ///     or
         ///     dataTarget
+        /// </exception>
+        /// <exception cref="ApplicationException"></exception>
+        /// <exception cref="System.ArgumentNullException">
+        ///     compositionContainer
+        ///     or
+        ///     dumpFile
         /// </exception>
         public CoreComponentFactory(CompositionContainer compositionContainer, FileInfo dumpFile)
         {
@@ -65,9 +65,12 @@ namespace Triage.Mortician
             catch (Exception e)
             {
                 // todo: should check this ahead of time
-                Log.Fatal(
-                    $"Unable to open crash dump: {e.Message}, Does the dump file exist and do you have the x64 folder of the Windows Debugging Kit in your path?");
+                var message =
+                    $"Unable to open crash dump: {e.Message}, Does the dump file exist and do you have the x64 folder of the Windows Debugging Kit in your path?";
+                Log.Fatal(message);
+                throw new ApplicationException(message, e);
             }
+
             DebuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
             // todo: this is ugly
             var reloadResult = DebuggerProxy.Execute(@".sympath srv*https://msdl.microsoft.com/download/symbols");
@@ -86,6 +89,8 @@ namespace Triage.Mortician
         /// <summary>
         ///     Registers the repositories.
         /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="settings">The settings.</param>
         // todo: this is too big
         public void RegisterRepositories(DefaultOptions options, IEnumerable<ISettings> settings = null)
         {
@@ -155,11 +160,6 @@ namespace Triage.Mortician
             foreach (var setting in settingsToAdd) CompositionContainer.ComposeExportedValue(setting);
         }
 
-        private void SetupAppDomains(Dictionary<ulong, DumpAppDomain> appDomainStore)
-        {
-            var dumpdomainResults = DebuggerProxy.Execute("!dumpdomain");
-        }
-
         /// <summary>
         ///     Establishes the object relationships.
         /// </summary>
@@ -196,6 +196,11 @@ namespace Triage.Mortician
             });
         }
 
+        /// <summary>
+        ///     Gets the settings.
+        /// </summary>
+        /// <param name="settingsPath">The settings path.</param>
+        /// <returns>IEnumerable&lt;ISettings&gt;.</returns>
         private IEnumerable<ISettings> GetSettings(string settingsPath = null)
         {
             string settingsText;
@@ -205,6 +210,24 @@ namespace Triage.Mortician
                 settingsText = File.ReadAllText("settings.json");
             var converter = new SettingsJsonConverter();
             return JsonConvert.DeserializeObject<IEnumerable<ISettings>>(settingsText, converter);
+        }
+
+        /// <summary>
+        ///     Setups the application domains.
+        /// </summary>
+        /// <param name="appDomainStore">The application domain store.</param>
+        private void SetupAppDomains(Dictionary<ulong, DumpAppDomain> appDomainStore)
+        {
+            var dumpdomainResults = DebuggerProxy.Execute("!dumpdomain"); // todo: need an abstraction over "reports"
+            var processor = new DumpDomainOutputProcessor();
+            var results = processor.ProcessOutput(dumpdomainResults);
+            foreach (var current in results.AppDomains)
+                if (!appDomainStore.ContainsKey(current.Address))
+                    appDomainStore.Add(current.Address, new DumpAppDomain
+                    {
+                        Address = current.Address,
+                        Name = current.Name
+                    });
         }
 
         /// <summary>
@@ -235,20 +258,9 @@ namespace Triage.Mortician
 
                 foreach (var clrAppDomain in clrModule.AppDomains)
                 {
-                    if (!appDomainStore.ContainsKey(clrAppDomain.Address))
-                    {
-                        var newDumpAppDomain = new DumpAppDomain
-                        {
-                            Address = clrAppDomain.Address,
-                            Name = clrAppDomain.Name,
-                            ApplicationBase = clrAppDomain.ApplicationBase,
-                            ConfigFile = clrAppDomain.ConfigurationFile
-                        };
-
-                        appDomainStore.Add(newDumpAppDomain.Address, newDumpAppDomain);
-                    }
-
                     var dumpAppDomain = appDomainStore[clrAppDomain.Address];
+                    dumpAppDomain.ApplicationBase = clrAppDomain.ApplicationBase;
+                    dumpAppDomain.ConfigFile = clrAppDomain.ConfigurationFile;
                     dumpModule.AppDomainsInternal.Add(appDomainStore[clrAppDomain.Address]);
                     dumpAppDomain.LoadedModulesInternal.Add(dumpModule);
                 }
@@ -512,11 +524,21 @@ namespace Triage.Mortician
         public DataTarget DataTarget { get; set; }
 
         /// <summary>
+        ///     Gets or sets the debugger proxy.
+        /// </summary>
+        /// <value>The debugger proxy.</value>
+        public DebuggerProxy DebuggerProxy { get; internal set; }
+
+        /// <summary>
         ///     Gets or sets the location of the dump file
         /// </summary>
         /// <value>The dump file location.</value>
         public FileInfo DumpFile { get; protected set; }
 
+        /// <summary>
+        ///     Gets or sets the converter.
+        /// </summary>
+        /// <value>The converter.</value>
         internal IConverter Converter { get; set; }
     }
 }

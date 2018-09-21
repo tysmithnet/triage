@@ -12,6 +12,8 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System.Collections.Generic;
+
 namespace Triage.Mortician.Core
 {
     /// <summary>
@@ -19,5 +21,6 @@ namespace Triage.Mortician.Core
     /// </summary>
     public interface IDumpTypeRepository
     {
+        IEnumerable<DumpType> Get();
     }
 }

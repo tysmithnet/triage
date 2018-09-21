@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
@@ -23,9 +20,9 @@ namespace Triage.Mortician.Test
                     factory.StartAnalyzers(It.IsAny<IEnumerable<IAnalyzer>>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            var engine = new Engine()
+            var engine = new Engine
             {
-                Analyzers = new [] {new Mock<IAnalyzer>().Object},
+                Analyzers = new[] {new Mock<IAnalyzer>().Object},
                 EventHub = eventHubMock.Object,
                 AnalyzerTaskFactory = taskFactoryMock.Object
             };

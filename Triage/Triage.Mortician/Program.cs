@@ -4,7 +4,7 @@
 // Created          : 12-10-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-20-2018
 // ***********************************************************************
 // <copyright file="Program.cs" company="">
 //     Copyright ©  2017
@@ -38,8 +38,10 @@ namespace Triage.Mortician
         ///     Perform the default execution
         /// </summary>
         /// <param name="options">The options.</param>
+        /// <param name="dependencyInjectionTransformer">The dependency injection transformer.</param>
         /// <returns>Program status code</returns>
-        internal static int DefaultExecution(DefaultOptions options, Func<CompositionContainer, CompositionContainer> dependencyInjectionTransformer = null)
+        internal static int DefaultExecution(DefaultOptions options,
+            Func<CompositionContainer, CompositionContainer> dependencyInjectionTransformer = null)
         {
             // todo: fix
             var blacklistedAssemblies = options.BlackListedAssemblies;

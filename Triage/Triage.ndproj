@@ -1,14 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <NDepend AppName="Triage" Platform="DotNet" FileWrittenByProductVersion="2018.1.0.9030">
   <OutputDir KeepXmlFiles="False">C:\projects\triage\Triage\NDependOut</OutputDir>
   <Assemblies>
     <Name>Triage.Mortician.Analyzers</Name>
     <Name>Triage.Mortician</Name>
     <Name>Triage.TestApplications.Console</Name>
-    <Name>Microsoft.Diagnostics.Runtime</Name>
     <Name>Triage.Mortician.ExcelAnalyzer</Name>
     <Name>Triage.Mortician.WebUiAnalyzer</Name>
-    <Name>Triage.Mortician.Test</Name>
+    <Name>Triage.Mortician.Core</Name>
   </Assemblies>
   <FrameworkAssemblies>
     <Name>mscorlib</Name>
@@ -20,6 +19,7 @@
     <Name>Newtonsoft.Json</Name>
     <Name>System</Name>
     <Name>Common.Logging</Name>
+    <Name>System.Configuration</Name>
     <Name>SpreadsheetLight</Name>
     <Name>AWSSDK.Core</Name>
     <Name>AWSSDK.S3</Name>
@@ -40,26 +40,30 @@
     <Name>Microsoft.AspNetCore.Hosting</Name>
     <Name>Microsoft.AspNetCore.Server.Kestrel</Name>
     <Name>Microsoft.CodeAnalysis.CSharp</Name>
-    <Name>xunit.core</Name>
-    <Name>Moq</Name>
-    <Name>FluentAssertions</Name>
+    <Name>Microsoft.Diagnostics.Runtime</Name>
   </FrameworkAssemblies>
   <Dirs>
-    <Dir>C:\projects\triage\Triage\Triage.Mortician\bin\Debug</Dir>
-    <Dir>C:\projects\triage\Triage\Triage.TestApplications.Console\bin\Debug</Dir>
-    <Dir>C:\projects\triage\Triage\Triage.Mortician.Test\bin\Debug</Dir>
     <Dir>C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319</Dir>
     <Dir>C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\WPF</Dir>
     <Dir>C:\Users\master\.nuget\packages</Dir>
-    <Dir>C:\Program Files\dotnet\shared\Microsoft.NETCore.App\2.0.9</Dir>
-    <Dir>C:\Program Files\dotnet\store\x64\netcoreapp2.0</Dir>
-    <Dir>C:\Program Files\dotnet\sdk\NuGetFallbackFolder</Dir>
+    <Dir>C:\projects\triage\Triage\Triage.Mortician.Analyzers\bin\x86\Debug</Dir>
+    <Dir>C:\projects\triage\Triage\Triage.Mortician\bin\Debug</Dir>
+    <Dir>C:\projects\triage\Triage\Triage.TestApplications.Console\bin\Debug</Dir>
+    <Dir>C:\projects\triage\Triage\clrmd\src\Microsoft.Diagnostics.Runtime\bin\Debug</Dir>
+    <Dir>C:\projects\triage\Triage\Triage.Mortician.ExcelAnalyzer\bin\x86\Debug</Dir>
+    <Dir>C:\projects\triage\Triage\Triage.Mortician.WebUiAnalyzer\bin\x86\Debug</Dir>
+    <Dir>C:\projects\triage\Triage\Triage.Mortician.Test\bin\Debug</Dir>
+    <Dir>C:\projects\triage\Triage\Triage.Mortician.Core\bin\Debug</Dir>
+    <Dir>C:\projects\triage\Triage\Triage.Mortician.ExcelAnalyzer.Test\bin\Debug</Dir>
+    <Dir>C:\projects\triage\Triage\Triage.Mortician.IntegrationTest\bin\Debug</Dir>
   </Dirs>
   <MergeCodeGeneratedByCompiler>True</MergeCodeGeneratedByCompiler>
   <Report Kind="0" SectionsEnabled="110591" XslPath="" Flags="261120" />
   <BuildComparisonSetting ProjectMode="CurrentProject" BuildMode="NDaysAgoAnalysisResult" ProjectFileToCompareWith="" BuildFileToCompareWith="" NDaysAgo="30" />
   <BaselineInUISetting ProjectMode="CurrentProject" BuildMode="NDaysAgoAnalysisResult" ProjectFileToCompareWith="" BuildFileToCompareWith="" NDaysAgo="30" />
-  <CoverageFiles CoverageDir="" UncoverableAttribute="" />
+  <CoverageFiles CoverageDir="" UncoverableAttribute="">
+    <CoverageFile>C:\projects\triage\Triage\Coverage.xml</CoverageFile>
+  </CoverageFiles>
   <TrendMetrics UseCustomLog="False" LogRecurrence="3" LogLabel="2" UseCustomDir="False" CustomDir="">
     <Chart Name="Size" ShowInReport="True">
       <Serie MetricName="# Lines of Code" MetricUnit="Loc" Color="#FF00BFFF" ChartType="Line" ScaleExp="0" />
@@ -119,8 +123,7 @@
       <High2Critical_SeverityThreshold>72000000000</High2Critical_SeverityThreshold>
       <Critical2Blocker_SeverityThreshold>360000000000</Critical2Blocker_SeverityThreshold>
     </DebtSettings>
-  </ProjectDebtSettings>
-  <Queries>
+  </ProjectDebtSettings><Queries>
     <Group Name="Quality Gates" Active="True" ShownInReport="True">
       <Query Active="True" DisplayList="True" DisplayStat="True" DisplaySelectionView="False" IsCriticalRule="False"><![CDATA[// <Name>Quality Gates Evolution</Name>
 from qg in QualityGates
@@ -11504,6 +11507,4 @@ select new {
 //</HowToFix>]]></Query>
       </Group>
     </Group>
-  </Queries>
-  <WarnFilter />
-</NDepend>
+  </Queries></NDepend>
