@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using Architecture = Triage.Mortician.Core.ClrMdAbstractions.Architecture;
@@ -25,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class DacInfoAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IDacInfo" />
-    internal class DacInfoAdapter : IDacInfo
+    internal class DacInfoAdapter : BaseAdapter, IDacInfo
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="DacInfoAdapter" /> class.
@@ -33,18 +32,22 @@ namespace Triage.Mortician.Adapters
         /// <param name="dacInfo">The dac information.</param>
         /// <exception cref="ArgumentNullException">dacInfo</exception>
         /// <inheritdoc />
-        public DacInfoAdapter(DacInfo dacInfo)
+        public DacInfoAdapter(IConverter converter, DacInfo dacInfo) : base(converter)
         {
             DacInfo = dacInfo ?? throw new ArgumentNullException(nameof(dacInfo));
-            Pdb = Converter.Convert(dacInfo.Pdb);
-            TargetArchitecture = Converter.Convert(dacInfo.TargetArchitecture);
-            Version = Converter.Convert(dacInfo.Version);
         }
 
         /// <summary>
         ///     The dac information
         /// </summary>
         internal DacInfo DacInfo;
+
+        public override void Setup()
+        {
+            Pdb = Converter.Convert(DacInfo.Pdb);
+            TargetArchitecture = Converter.Convert(DacInfo.TargetArchitecture);
+            Version = Converter.Convert(DacInfo.Version);
+        }
 
         /// <summary>
         ///     The filename of the module on disk.
@@ -115,12 +118,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The version.</value>
         /// <inheritdoc />
         public VersionInfo Version { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

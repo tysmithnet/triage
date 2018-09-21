@@ -22,7 +22,7 @@ namespace Triage.Mortician.Adapters
     ///     Class FileVersionInfoAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IFileVersionInfo" />
-    internal class FileVersionInfoAdapter : IFileVersionInfo
+    internal class FileVersionInfoAdapter : BaseAdapter, IFileVersionInfo
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="FileVersionInfoAdapter" /> class.
@@ -30,7 +30,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="fileVersionInfo">The file version information.</param>
         /// <exception cref="ArgumentNullException">fileVersionInfo</exception>
         /// <inheritdoc />
-        public FileVersionInfoAdapter(FileVersionInfo fileVersionInfo)
+        public FileVersionInfoAdapter(IConverter converter, FileVersionInfo fileVersionInfo) : base(converter)
         {
             FileVersionInfo = fileVersionInfo ?? throw new ArgumentNullException(nameof(fileVersionInfo));
         }
@@ -39,6 +39,10 @@ namespace Triage.Mortician.Adapters
         ///     The file version information
         /// </summary>
         internal FileVersionInfo FileVersionInfo;
+
+        public override void Setup()
+        {
+        }
 
         /// <summary>
         ///     Comments to supplement the file version

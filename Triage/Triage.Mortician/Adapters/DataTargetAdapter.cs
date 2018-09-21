@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -28,7 +27,7 @@ namespace Triage.Mortician.Adapters
     ///     Class DataTargetAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IDataTarget" />
-    internal class DataTargetAdapter : IDataTarget
+    internal class DataTargetAdapter : BaseAdapter, IDataTarget
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="DataTargetAdapter" /> class.
@@ -36,7 +35,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="dataTarget">The data target.</param>
         /// <exception cref="ArgumentNullException">dataTarget</exception>
         /// <inheritdoc />
-        public DataTargetAdapter(DataTarget dataTarget)
+        public DataTargetAdapter(IConverter converter, DataTarget dataTarget) : base(converter)
         {
             DataTarget = dataTarget ?? throw new ArgumentNullException(nameof(dataTarget));
         }
@@ -77,26 +76,30 @@ namespace Triage.Mortician.Adapters
         public bool ReadProcessMemory(ulong address, byte[] buffer, int bytesRequested, out int bytesRead) =>
             DataTarget.ReadProcessMemory(address, buffer, bytesRequested, out bytesRead);
 
+        public override void Setup()
+        {
+        }
+
         /// <summary>
         ///     Returns the architecture of the target process or crash dump.
         /// </summary>
         /// <value>The architecture.</value>
         /// <inheritdoc />
-        public Architecture Architecture { get; }
+        public Architecture Architecture { get; internal set; }
 
         /// <summary>
         ///     Returns the list of Clr versions loaded into the process.
         /// </summary>
         /// <value>The color versions.</value>
         /// <inheritdoc />
-        public IList<IClrInfo> ClrVersions { get; }
+        public IList<IClrInfo> ClrVersions { get; internal set; }
 
         /// <summary>
         ///     The data reader for this instance.
         /// </summary>
         /// <value>The data reader.</value>
         /// <inheritdoc />
-        public IDataReader DataReader { get; }
+        public IDataReader DataReader { get; internal set; }
 
         /// <summary>
         ///     Returns true if the target process is a minidump, or otherwise might have limited memory.  If IsMinidump
@@ -128,12 +131,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The symbol provider.</value>
         /// <inheritdoc />
         public ISymbolProvider SymbolProvider { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

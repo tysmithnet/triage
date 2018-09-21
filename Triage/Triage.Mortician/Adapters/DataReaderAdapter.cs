@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -24,7 +23,7 @@ namespace Triage.Mortician.Adapters
     ///     Class DataReaderAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IDataReader" />
-    internal class DataReaderAdapter : IDataReader
+    internal class DataReaderAdapter : BaseAdapter, IDataReader
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="DataReaderAdapter" /> class.
@@ -32,7 +31,8 @@ namespace Triage.Mortician.Adapters
         /// <param name="dataReader">The data reader.</param>
         /// <exception cref="ArgumentNullException">dataReader</exception>
         /// <inheritdoc />
-        public DataReaderAdapter(Microsoft.Diagnostics.Runtime.IDataReader dataReader)
+        public DataReaderAdapter(IConverter converter, Microsoft.Diagnostics.Runtime.IDataReader dataReader) :
+            base(converter)
         {
             DataReader = dataReader ?? throw new ArgumentNullException(nameof(dataReader));
         }
@@ -170,6 +170,10 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public ulong ReadPointerUnsafe(ulong addr) => DataReader.ReadPointerUnsafe(addr);
 
+        public override void Setup()
+        {
+        }
+
         /// <summary>
         ///     Gets information about the given memory range.
         /// </summary>
@@ -190,12 +194,5 @@ namespace Triage.Mortician.Adapters
         /// <value><c>true</c> if this instance is minidump; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
         public bool IsMinidump => DataReader.IsMinidump;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

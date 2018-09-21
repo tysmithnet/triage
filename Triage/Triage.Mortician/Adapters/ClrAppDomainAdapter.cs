@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrMd = Microsoft.Diagnostics.Runtime;
@@ -25,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrAppDomainAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrAppDomain" />
-    internal class ClrAppDomainAdapter : IClrAppDomain
+    internal class ClrAppDomainAdapter : BaseAdapter, IClrAppDomain
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrAppDomainAdapter" /> class.
@@ -33,17 +32,22 @@ namespace Triage.Mortician.Adapters
         /// <param name="appDomain">The application domain.</param>
         /// <exception cref="ArgumentNullException">appDomain</exception>
         /// <inheritdoc />
-        public ClrAppDomainAdapter(ClrMd.ClrAppDomain appDomain)
+        public ClrAppDomainAdapter(IConverter converter, ClrMd.ClrAppDomain appDomain) : base(converter)
         {
             AppDomain = appDomain ?? throw new ArgumentNullException(nameof(appDomain));
-            Modules = appDomain.Modules.Select(Converter.Convert).ToList();
-            Runtime = Converter.Convert(appDomain.Runtime);
         }
 
         /// <summary>
         ///     The application domain
         /// </summary>
         internal ClrMd.ClrAppDomain AppDomain;
+
+        /// <inheritdoc />
+        public override void Setup()
+        {
+            Modules = AppDomain.Modules.Select(Converter.Convert).ToList();
+            Runtime = Converter.Convert(AppDomain.Runtime);
+        }
 
         /// <summary>
         ///     Address of the AppDomain.
@@ -80,7 +84,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The modules.</value>
         /// <inheritdoc />
-        public IList<IClrModule> Modules { get; }
+        public IList<IClrModule> Modules { get; internal set; }
 
         /// <summary>
         ///     The name of the AppDomain, as specified when the domain was created.
@@ -94,13 +98,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The runtime.</value>
         /// <inheritdoc />
-        public IClrRuntime Runtime { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        public IClrRuntime Runtime { get; internal set; }
     }
 }

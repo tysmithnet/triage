@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -25,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrThreadPoolAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrThreadPool" />
-    internal class ClrThreadPoolAdapter : IClrThreadPool
+    internal class ClrThreadPoolAdapter : BaseAdapter, IClrThreadPool
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrThreadPoolAdapter" /> class.
@@ -33,7 +32,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="threadPool">The thread pool.</param>
         /// <exception cref="ArgumentNullException">threadPool</exception>
         /// <inheritdoc />
-        public ClrThreadPoolAdapter(ClrThreadPool threadPool)
+        public ClrThreadPoolAdapter(IConverter converter, ClrThreadPool threadPool) : base(converter)
         {
             ThreadPool = threadPool ?? throw new ArgumentNullException(nameof(threadPool));
         }
@@ -58,6 +57,10 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public IEnumerable<INativeWorkItem> EnumerateNativeWorkItems() =>
             ThreadPool.EnumerateNativeWorkItems().Select(Converter.Convert);
+
+        public override void Setup()
+        {
+        }
 
         /// <summary>
         ///     Returns the CPU utilization of the threadpool (as a percentage out of 100).
@@ -128,12 +131,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The total threads.</value>
         /// <inheritdoc />
         public int TotalThreads => ThreadPool.TotalThreads;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

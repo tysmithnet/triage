@@ -12,7 +12,6 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -22,17 +21,16 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrValueClassAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrValueClass" />
-    internal class ClrValueClassAdapter : IClrValueClass
+    internal class ClrValueClassAdapter : BaseAdapter, IClrValueClass
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrValueClassAdapter" /> class.
         /// </summary>
         /// <param name="valueClass">The value class.</param>
         /// <inheritdoc />
-        public ClrValueClassAdapter(ClrValueClass valueClass)
+        public ClrValueClassAdapter(IConverter converter, ClrValueClass valueClass) : base(converter)
         {
             ValueClass = valueClass;
-            Type = Converter.Convert(valueClass.Type);
         }
 
         /// <summary>
@@ -81,6 +79,11 @@ namespace Triage.Mortician.Adapters
         public IClrValueClass GetValueClassField(string fieldName) =>
             Converter.Convert(ValueClass.GetValueClassField(fieldName));
 
+        public override void Setup()
+        {
+            Type = Converter.Convert(ValueClass.Type);
+        }
+
         /// <summary>
         ///     The address of the object.
         /// </summary>
@@ -100,13 +103,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type.</value>
         /// <inheritdoc />
-        public IClrType Type { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        public IClrType Type { get; internal set; }
     }
 }

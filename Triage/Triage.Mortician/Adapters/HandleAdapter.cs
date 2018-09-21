@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using HandleType = Triage.Mortician.Core.ClrMdAbstractions.HandleType;
@@ -24,7 +23,7 @@ namespace Triage.Mortician.Adapters
     ///     Class HandleAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrHandle" />
-    internal class HandleAdapter : IClrHandle
+    internal class HandleAdapter : BaseAdapter, IClrHandle
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="HandleAdapter" /> class.
@@ -32,19 +31,23 @@ namespace Triage.Mortician.Adapters
         /// <param name="handle">The handle.</param>
         /// <exception cref="ArgumentNullException">handle</exception>
         /// <inheritdoc />
-        public HandleAdapter(ClrHandle handle)
+        public HandleAdapter(IConverter converter, ClrHandle handle) : base(converter)
         {
             Handle = handle ?? throw new ArgumentNullException(nameof(handle));
-            AppDomain = Converter.Convert(handle.AppDomain);
-            DependentType = Converter.Convert(handle.DependentType);
-            HandleType = Converter.Convert(handle.HandleType);
-            Type = Converter.Convert(handle.Type);
         }
 
         /// <summary>
         ///     The handle
         /// </summary>
         internal ClrHandle Handle;
+
+        public override void Setup()
+        {
+            AppDomain = Converter.Convert(Handle.AppDomain);
+            DependentType = Converter.Convert(Handle.DependentType);
+            HandleType = Converter.Convert(Handle.HandleType);
+            Type = Converter.Convert(Handle.Type);
+        }
 
         /// <summary>
         ///     The address of the handle itself.  That is, *ulong == Object.
@@ -123,12 +126,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The type.</value>
         /// <inheritdoc />
         public IClrType Type { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using VersionInfo = Triage.Mortician.Core.ClrMdAbstractions.VersionInfo;
@@ -24,7 +23,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ModuleInfoAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IModuleInfo" />
-    internal class ModuleInfoAdapter : IModuleInfo
+    internal class ModuleInfoAdapter : BaseAdapter, IModuleInfo
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ModuleInfoAdapter" /> class.
@@ -32,11 +31,9 @@ namespace Triage.Mortician.Adapters
         /// <param name="moduleInfo">The module information.</param>
         /// <exception cref="ArgumentNullException">moduleInfo</exception>
         /// <inheritdoc />
-        public ModuleInfoAdapter(ModuleInfo moduleInfo)
+        public ModuleInfoAdapter(IConverter converter, ModuleInfo moduleInfo) : base(converter)
         {
             ModuleInfo = moduleInfo ?? throw new ArgumentNullException(nameof(moduleInfo));
-            Pdb = Converter.Convert(moduleInfo.Pdb);
-            Version = Converter.Convert(moduleInfo.Version);
         }
 
         /// <summary>
@@ -51,6 +48,12 @@ namespace Triage.Mortician.Adapters
         /// <returns>IPEFile.</returns>
         /// <inheritdoc />
         public IPeFile GetPEFile() => Converter.Convert(ModuleInfo.GetPEFile());
+
+        public override void Setup()
+        {
+            Pdb = Converter.Convert(ModuleInfo.Pdb);
+            Version = Converter.Convert(ModuleInfo.Version);
+        }
 
         /// <summary>
         ///     The filename of the module on disk.
@@ -107,12 +110,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The version.</value>
         /// <inheritdoc />
         public VersionInfo Version { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

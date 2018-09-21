@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrElementType = Triage.Mortician.Core.ClrMdAbstractions.ClrElementType;
@@ -24,7 +23,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrInstanceFieldAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrInstanceField" />
-    internal class ClrInstanceFieldAdapter : IClrInstanceField
+    internal class ClrInstanceFieldAdapter : BaseAdapter, IClrInstanceField
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrInstanceFieldAdapter" /> class.
@@ -32,11 +31,9 @@ namespace Triage.Mortician.Adapters
         /// <param name="instanceField">The instance field.</param>
         /// <exception cref="ArgumentNullException">instanceField</exception>
         /// <inheritdoc />
-        public ClrInstanceFieldAdapter(ClrInstanceField instanceField)
+        public ClrInstanceFieldAdapter(IConverter converter, ClrInstanceField instanceField) : base(converter)
         {
             InstanceField = instanceField ?? throw new ArgumentNullException(nameof(instanceField));
-            ElementType = Converter.Convert(instanceField.ElementType);
-            Type = Converter.Convert(instanceField.Type);
         }
 
         /// <summary>
@@ -107,13 +104,19 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public object GetValue(ulong objRef, bool interior, bool convertStrings) => InstanceField.GetValue(objRef);
 
+        public override void Setup()
+        {
+            ElementType = Converter.Convert(InstanceField.ElementType);
+            Type = Converter.Convert(InstanceField.Type);
+        }
+
         /// <summary>
         ///     Returns the element type of this field.  Note that even when Type is null, this should still tell you
         ///     the element type of the field.
         /// </summary>
         /// <value>The type of the element.</value>
         /// <inheritdoc />
-        public ClrElementType ElementType { get; }
+        public ClrElementType ElementType { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field has a simple value (meaning you may call "GetFieldValue" in one of the subtypes
@@ -206,13 +209,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type.</value>
         /// <inheritdoc />
-        public IClrType Type { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        public IClrType Type { get; internal set; }
     }
 }

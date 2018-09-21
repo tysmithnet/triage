@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -26,7 +25,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrThreadAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrThread" />
-    internal class ClrThreadAdapter : IClrThread
+    internal class ClrThreadAdapter : BaseAdapter, IClrThread
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrThreadAdapter" /> class.
@@ -34,14 +33,9 @@ namespace Triage.Mortician.Adapters
         /// <param name="thread">The thread.</param>
         /// <exception cref="ArgumentNullException">thread</exception>
         /// <inheritdoc />
-        public ClrThreadAdapter(ClrThread thread)
+        public ClrThreadAdapter(IConverter converter, ClrThread thread) : base(converter)
         {
             Thread = thread ?? throw new ArgumentNullException(nameof(thread));
-            BlockingObjects = thread.BlockingObjects.Select(Converter.Convert).ToList();
-            CurrentException = Converter.Convert(thread.CurrentException);
-            GcMode = Converter.Convert(thread.GcMode);
-            Runtime = Converter.Convert(thread.Runtime);
-            StackTrace = thread.StackTrace.Select(Converter.Convert).ToList();
         }
 
         /// <summary>
@@ -82,6 +76,15 @@ namespace Triage.Mortician.Adapters
         public IEnumerable<IClrStackFrame> EnumerateStackTrace() =>
             Thread.EnumerateStackTrace().Select(Converter.Convert);
 
+        public override void Setup()
+        {
+            BlockingObjects = Thread.BlockingObjects.Select(Converter.Convert).ToList();
+            CurrentException = Converter.Convert(Thread.CurrentException);
+            GcMode = Converter.Convert(Thread.GcMode);
+            Runtime = Converter.Convert(Thread.Runtime);
+            StackTrace = Thread.StackTrace.Select(Converter.Convert).ToList();
+        }
+
         /// <summary>
         ///     The address of the underlying datastructure which makes up the Thread object.  This
         ///     serves as a unique identifier.
@@ -102,7 +105,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The blocking objects.</value>
         /// <inheritdoc />
-        public IList<IBlockingObject> BlockingObjects { get; }
+        public IList<IBlockingObject> BlockingObjects { get; internal set; }
 
         /// <summary>
         ///     Returns the exception currently on the thread.  Note that this field may be null.  Also note
@@ -112,14 +115,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The current exception.</value>
         /// <inheritdoc />
-        public IClrException CurrentException { get; }
+        public IClrException CurrentException { get; internal set; }
 
         /// <summary>
         ///     The suspension state of the thread according to the runtime.
         /// </summary>
         /// <value>The gc mode.</value>
         /// <inheritdoc />
-        public GcMode GcMode { get; }
+        public GcMode GcMode { get; internal set; }
 
         /// <summary>
         ///     Returns true if this thread was aborted.
@@ -299,7 +302,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The runtime.</value>
         /// <inheritdoc />
-        public IClrRuntime Runtime { get; }
+        public IClrRuntime Runtime { get; internal set; }
 
         /// <summary>
         ///     The base of the stack for this thread, or 0 if the value could not be obtained.
@@ -330,7 +333,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The stack trace.</value>
         /// <inheritdoc />
-        public IList<IClrStackFrame> StackTrace { get; }
+        public IList<IClrStackFrame> StackTrace { get; internal set; }
 
         /// <summary>
         ///     The TEB (thread execution block) address in the process.
@@ -338,12 +341,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The teb.</value>
         /// <inheritdoc />
         public ulong Teb => Thread.Teb;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

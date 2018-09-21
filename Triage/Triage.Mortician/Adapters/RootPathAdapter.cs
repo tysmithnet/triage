@@ -12,7 +12,6 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -23,18 +22,16 @@ namespace Triage.Mortician.Adapters
     ///     Class RootPathAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IRootPath" />
-    internal class RootPathAdapter : IRootPath
+    internal class RootPathAdapter : BaseAdapter, IRootPath
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="RootPathAdapter" /> class.
         /// </summary>
         /// <param name="rootPath">The root path.</param>
         /// <inheritdoc />
-        public RootPathAdapter(RootPath rootPath)
+        public RootPathAdapter(IConverter converter, RootPath rootPath) : base(converter)
         {
             RootPath = rootPath;
-            Path = rootPath.Path.Select(Converter.Convert).ToArray();
-            Root = Converter.Convert(rootPath.Root);
         }
 
         /// <summary>
@@ -42,25 +39,24 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         internal RootPath RootPath;
 
+        public override void Setup()
+        {
+            Path = RootPath.Path.Select(Converter.Convert).ToArray();
+            Root = Converter.Convert(RootPath.Root);
+        }
+
         /// <summary>
         ///     The path from Root to a given target object.
         /// </summary>
         /// <value>The path.</value>
         /// <inheritdoc />
-        public IClrObject[] Path { get; }
+        public IClrObject[] Path { get; internal set; }
 
         /// <summary>
         ///     The location that roots the object.
         /// </summary>
         /// <value>The root.</value>
         /// <inheritdoc />
-        public IClrRoot Root { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        public IClrRoot Root { get; internal set; }
     }
 }

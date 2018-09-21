@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -25,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class CcwDataAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.ICcwData" />
-    internal class CcwDataAdapter : ICcwData
+    internal class CcwDataAdapter : BaseAdapter, ICcwData
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="CcwDataAdapter" /> class.
@@ -33,16 +32,21 @@ namespace Triage.Mortician.Adapters
         /// <param name="data">The data.</param>
         /// <exception cref="ArgumentNullException">data</exception>
         /// <inheritdoc />
-        public CcwDataAdapter(CcwData data)
+        public CcwDataAdapter(IConverter converter, CcwData data) : base(converter)
         {
             CcwData = data ?? throw new ArgumentNullException(nameof(data));
-            Interfaces = data.Interfaces.Select(Converter.Convert).ToList();
         }
 
         /// <summary>
         ///     The CCW data
         /// </summary>
         internal CcwData CcwData;
+
+        /// <inheritdoc />
+        public override void Setup()
+        {
+            Interfaces = CcwData.Interfaces.Select(Converter.Convert).ToList();
+        }
 
         /// <summary>
         ///     Returns the CLR handle associated with this CCW.
@@ -56,7 +60,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The interfaces.</value>
         /// <inheritdoc />
-        public IList<IComInterfaceData> Interfaces { get; }
+        public IList<IComInterfaceData> Interfaces { get; internal set; }
 
         /// <summary>
         ///     Returns the pointer to the IUnknown representing this CCW.
@@ -78,12 +82,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The reference count.</value>
         /// <inheritdoc />
         public int RefCount => CcwData.RefCount;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

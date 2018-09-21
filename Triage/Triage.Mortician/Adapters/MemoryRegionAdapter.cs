@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrMemoryRegionType = Triage.Mortician.Core.ClrMdAbstractions.ClrMemoryRegionType;
@@ -24,19 +23,23 @@ namespace Triage.Mortician.Adapters
     ///     Class MemoryRegionAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrMemoryRegion" />
-    internal class MemoryRegionAdapter : IClrMemoryRegion
+    internal class MemoryRegionAdapter : BaseAdapter, IClrMemoryRegion
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="MemoryRegionAdapter" /> class.
         /// </summary>
         /// <param name="memoryRegion">The memory region.</param>
         /// <exception cref="ArgumentNullException">memoryRegion</exception>
-        public MemoryRegionAdapter(ClrMemoryRegion memoryRegion)
+        public MemoryRegionAdapter(IConverter converter, ClrMemoryRegion memoryRegion) : base(converter)
         {
             MemoryRegion = memoryRegion ?? throw new ArgumentNullException(nameof(memoryRegion));
-            AppDomain = Converter.Convert(memoryRegion.AppDomain);
-            GcSegmentType = Converter.Convert(memoryRegion.GCSegmentType);
-            MemoryRegionType = Converter.Convert(memoryRegion.Type);
+        }
+
+        public override void Setup()
+        {
+            AppDomain = Converter.Convert(MemoryRegion.AppDomain);
+            GcSegmentType = Converter.Convert(MemoryRegion.GCSegmentType);
+            MemoryRegionType = Converter.Convert(MemoryRegion.Type);
         }
 
         /// <summary>
@@ -65,7 +68,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The application domain.</value>
         /// <inheritdoc />
-        public IClrAppDomain AppDomain { get; }
+        public IClrAppDomain AppDomain { get; internal set; }
 
         /// <summary>
         ///     Returns the gc segment type associated with this data.  Only callable if
@@ -105,13 +108,6 @@ namespace Triage.Mortician.Adapters
         /// <value>The size.</value>
         /// <inheritdoc />
         public ulong Size => MemoryRegion.Size;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
 
         /// <summary>
         ///     Gets or sets the memory region.

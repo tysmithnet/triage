@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using Microsoft.Diagnostics.Runtime;
@@ -26,7 +25,7 @@ namespace Triage.Mortician.Adapters
     ///     Class GcRootAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IGcRoot" />
-    internal class GcRootAdapter : IGcRoot
+    internal class GcRootAdapter : BaseAdapter, IGcRoot
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="GcRootAdapter" /> class.
@@ -34,15 +33,9 @@ namespace Triage.Mortician.Adapters
         /// <param name="root">The root.</param>
         /// <exception cref="ArgumentNullException">root</exception>
         /// <inheritdoc />
-        public GcRootAdapter(GCRoot root)
+        public GcRootAdapter(IConverter converter, GCRoot root) : base(converter)
         {
             Root = root ?? throw new ArgumentNullException(nameof(root));
-            Heap = Converter.Convert(root.Heap);
-            root.ProgressUpdate += (source, current, total) =>
-            {
-                var convertedSource = Converter.Convert(source);
-                ProgressUpdate?.Invoke(convertedSource, current, total);
-            };
         }
 
         /// <summary>
@@ -126,6 +119,16 @@ namespace Triage.Mortician.Adapters
         public IList<IClrObject> FindSinglePath(ulong source, ulong target, CancellationToken cancelToken) =>
             Root.FindSinglePath(source, target, cancelToken).Select(Converter.Convert).ToList();
 
+        public override void Setup()
+        {
+            Heap = Converter.Convert(Root.Heap);
+            Root.ProgressUpdate += (source, current, total) =>
+            {
+                var convertedSource = Converter.Convert(source);
+                ProgressUpdate?.Invoke(convertedSource, current, total);
+            };
+        }
+
         /// <summary>
         ///     Whether or not to allow GC root to search in parallel or not.  Note that GCRoot does not have to respect this
         ///     flag.  Parallel searching of roots will only happen if a copy of the stack and heap were built using BuildCache,
@@ -141,7 +144,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The heap.</value>
         /// <inheritdoc />
-        public IClrHeap Heap { get; }
+        public IClrHeap Heap { get; internal set; }
 
         /// <summary>
         ///     Returns true if all relevant heap and root data is locally cached in this process for fast GCRoot processing.
@@ -156,12 +159,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The maximum tasks allowed.</value>
         /// <inheritdoc />
         public int MaximumTasksAllowed => Root.MaximumTasksAllowed;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

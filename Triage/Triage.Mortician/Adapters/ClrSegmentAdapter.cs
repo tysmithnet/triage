@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -24,7 +23,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrSegmentAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrSegment" />
-    internal class ClrSegmentAdapter : IClrSegment
+    internal class ClrSegmentAdapter : BaseAdapter, IClrSegment
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrSegmentAdapter" /> class.
@@ -32,10 +31,9 @@ namespace Triage.Mortician.Adapters
         /// <param name="segment">The segment.</param>
         /// <exception cref="ArgumentNullException">segment</exception>
         /// <inheritdoc />
-        public ClrSegmentAdapter(ClrSegment segment)
+        public ClrSegmentAdapter(IConverter converter, ClrSegment segment) : base(converter)
         {
             Segment = segment ?? throw new ArgumentNullException(nameof(segment));
-            Heap = Converter.Convert(segment.Heap);
         }
 
         /// <summary>
@@ -96,6 +94,11 @@ namespace Triage.Mortician.Adapters
             var res = Segment.NextObject(objRef, out var nextType);
             type = nextType != null ? Converter.Convert(nextType) : null;
             return res;
+        }
+
+        public override void Setup()
+        {
+            Heap = Converter.Convert(Segment.Heap);
         }
 
         /// <summary>
@@ -170,7 +173,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The heap.</value>
         /// <inheritdoc />
-        public IClrHeap Heap { get; }
+        public IClrHeap Heap { get; internal set; }
 
         /// <summary>
         ///     Returns true if this segment is the ephemeral segment (meaning it contains gen0 and gen1
@@ -219,12 +222,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The start.</value>
         /// <inheritdoc />
         public ulong Start => Segment.Start;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

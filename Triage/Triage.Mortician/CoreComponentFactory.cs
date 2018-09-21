@@ -23,11 +23,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Common.Logging;
 using Microsoft.Diagnostics.Runtime;
+using Newtonsoft.Json;
 using Triage.Mortician.Core;
 using Triage.Mortician.Domain;
 using Triage.Mortician.Repository;
-using ClrStackFrameType = Microsoft.Diagnostics.Runtime.ClrStackFrameType;
-using GCRootKind = Microsoft.Diagnostics.Runtime.GCRootKind;
 
 namespace Triage.Mortician
 {
@@ -36,8 +35,8 @@ namespace Triage.Mortician
     /// </summary>
     internal class CoreComponentFactory
     {
-        [Import]
-        internal IConverter Converter { get; set; }
+        public DebuggerProxy DebuggerProxy { get; internal set; }
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="CoreComponentFactory" /> class.
         /// </summary>
@@ -57,6 +56,7 @@ namespace Triage.Mortician
         {
             CompositionContainer =
                 compositionContainer ?? throw new ArgumentNullException(nameof(compositionContainer));
+            Converter = compositionContainer.GetExportedValue<IConverter>();
             DumpFile = dumpFile ?? throw new ArgumentNullException(nameof(dumpFile));
             try
             {
@@ -68,6 +68,14 @@ namespace Triage.Mortician
                 Log.Fatal(
                     $"Unable to open crash dump: {e.Message}, Does the dump file exist and do you have the x64 folder of the Windows Debugging Kit in your path?");
             }
+            DebuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
+            // todo: this is ugly
+            var reloadResult = DebuggerProxy.Execute(@".sympath srv*https://msdl.microsoft.com/download/symbols");
+            reloadResult = DebuggerProxy.Execute(".reload /f /v");
+            DebuggerProxy.Execute(".load sosex");
+            DebuggerProxy.Execute(".load mex");
+            DebuggerProxy.Execute(".load netext");
+            var res = DebuggerProxy.Execute("!mu"); // forces sosex to load the appropriate SOS.dll
         }
 
         /// <summary>
@@ -79,7 +87,7 @@ namespace Triage.Mortician
         ///     Registers the repositories.
         /// </summary>
         // todo: this is too big
-        public void RegisterRepositories()
+        public void RegisterRepositories(DefaultOptions options, IEnumerable<ISettings> settings = null)
         {
             // todo: check symbols
             var heapObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
@@ -89,6 +97,7 @@ namespace Triage.Mortician
             try
             {
                 Log.Trace($"Attempting to create the CLRMd runtime");
+                // todo: handle multiple clrs? does anyone still do that?
                 runtime = DataTarget.ClrVersions.Single().CreateRuntime();
             }
             catch (Exception)
@@ -105,7 +114,6 @@ namespace Triage.Mortician
                 Log.Warn("CLRMd reports that the heap is unwalkable, results might vary");
 
             var dumpInformationRepository = new DumpInformationRepository(DataTarget, runtime, DumpFile);
-            var settingsRepository = new SettingsRepository(Settings.GetSettings());
             var eventHub = new EventHub();
             /*
              * IMPORTANT
@@ -121,11 +129,11 @@ namespace Triage.Mortician
             var typeStore =
                 new Dictionary<DumpTypeKey, DumpType>(); // same type can be loaded into multiple app domains (think IIS)
             var objectRootsStore = new Dictionary<ulong, DumpObjectRoot>();
+            SetupAppDomains(appDomainStore);
             SetupModulesAndTypes(runtime, appDomainStore, typeStore, moduleStore);
             SetupObjects(heapObjectExtractors, runtime, objectStore, objectHierarchy, typeStore, appDomainStore,
                 objectRootsStore);
             EstablishObjectRelationships(objectHierarchy, objectStore);
-            objectHierarchy = null;
             GC.Collect();
             SetupThreads(runtime, threadStore, objectRootsStore);
 
@@ -138,12 +146,18 @@ namespace Triage.Mortician
 
             CompositionContainer.ComposeExportedValue<IEventHub>(eventHub);
             CompositionContainer.ComposeExportedValue<IDumpInformationRepository>(dumpInformationRepository);
-            CompositionContainer.ComposeExportedValue<ISettingsRepository>(settingsRepository);
             CompositionContainer.ComposeExportedValue<IDumpObjectRepository>(dumpRepo);
             CompositionContainer.ComposeExportedValue<IDumpThreadRepository>(threadRepo);
             CompositionContainer.ComposeExportedValue<IDumpAppDomainRepository>(appDomainRepo);
             CompositionContainer.ComposeExportedValue<IDumpModuleRepository>(moduleRepo);
             CompositionContainer.ComposeExportedValue<IDumpTypeRepository>(typeRepo);
+            var settingsToAdd = settings ?? GetSettings(options.SettingsFile);
+            foreach (var setting in settingsToAdd) CompositionContainer.ComposeExportedValue(setting);
+        }
+
+        private void SetupAppDomains(Dictionary<ulong, DumpAppDomain> appDomainStore)
+        {
+            var dumpdomainResults = DebuggerProxy.Execute("!dumpdomain");
         }
 
         /// <summary>
@@ -180,6 +194,17 @@ namespace Triage.Mortician
                     child.AddReferencer(parent);
                 }
             });
+        }
+
+        private IEnumerable<ISettings> GetSettings(string settingsPath = null)
+        {
+            string settingsText;
+            if (settingsPath != null)
+                settingsText = File.ReadAllText(settingsPath);
+            else
+                settingsText = File.ReadAllText("settings.json");
+            var converter = new SettingsJsonConverter();
+            return JsonConvert.DeserializeObject<IEnumerable<ISettings>>(settingsText, converter);
         }
 
         /// <summary>
@@ -356,6 +381,7 @@ namespace Triage.Mortician
         private void SetupThreads(ClrRuntime rt,
             Dictionary<uint, DumpThread> threadStore, Dictionary<ulong, DumpObjectRoot> objectRootsStore)
         {
+            // todo: priority: rewrite this garbage
             Log.Trace("Extracting information about the threads");
             foreach (var thread in rt.Threads)
             {
@@ -400,14 +426,10 @@ namespace Triage.Mortician
                         $"Extracted a thread but there is already an entry with os id: {dumpThread.OsId}, you should investigate these manually");
             }
 
-            var debuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
             Log.Trace("Loading debugger extensions");
-            debuggerProxy.Execute(".load sosex");
-            debuggerProxy.Execute(".load mex");
-            debuggerProxy.Execute(".load netext");
-            var res = debuggerProxy.Execute("!mu"); // forces sosex to load the appropriate SOS.dll
+
             Log.Trace("Calling !runaway");
-            var runawayData = debuggerProxy.Execute("!runaway");
+            var runawayData = DebuggerProxy.Execute("!runaway");
             var isUserMode = false;
             var isKernelMode = false;
             foreach (var line in runawayData.Split('\n'))
@@ -425,7 +447,7 @@ namespace Triage.Mortician
                 }
 
                 var match = Regex.Match(line,
-                    @"(?<index>\d+):(?<id>[a-zA-Z0-9]+)\s*(?<days>\d+) days (?<time>\d+:\d{2}:\d{2}.\d{3})");
+                    @"(?<index>\d+):(?<id>[a-zA-Z0-9]+)\s*(?<days>\d+) days (?<time>\d+:\d{2}:\d{2}.\d{3})"); // todo: needs to be more robust
                 if (!match.Success) continue;
                 var index = uint.Parse(match.Groups["index"].Value);
                 var id = Convert.ToUInt32(match.Groups["id"].Value, 16);
@@ -450,7 +472,8 @@ namespace Triage.Mortician
 
             // todo: save !runaway, !eestack to disk and zip up and send to s3
             Log.Trace("Calling !EEStack");
-            var eestackCommandResult = debuggerProxy.Execute("!eestack");
+            var eestackCommandResult = DebuggerProxy.Execute("!eestack");
+            eestackCommandResult = DebuggerProxy.Execute("!eestack");
             var eeStacks = Regex.Split(eestackCommandResult, "---------------------------------------------")
                 .Select(threadInfo => threadInfo.Trim()).Skip(1).ToArray();
             foreach (var eeStack in eeStacks)
@@ -493,5 +516,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <value>The dump file location.</value>
         public FileInfo DumpFile { get; protected set; }
+
+        internal IConverter Converter { get; set; }
     }
 }

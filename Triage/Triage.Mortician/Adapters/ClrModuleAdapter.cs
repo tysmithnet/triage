@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
@@ -26,7 +25,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrModuleAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrModule" />
-    internal class ClrModuleAdapter : IClrModule
+    internal class ClrModuleAdapter : BaseAdapter, IClrModule
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrModuleAdapter" /> class.
@@ -34,13 +33,9 @@ namespace Triage.Mortician.Adapters
         /// <param name="module">The module.</param>
         /// <exception cref="ArgumentNullException">module</exception>
         /// <inheritdoc />
-        public ClrModuleAdapter(ClrModule module)
+        public ClrModuleAdapter(IConverter converter, ClrModule module) : base(converter)
         {
             Module = module ?? throw new ArgumentNullException(nameof(module));
-            AppDomains = module.AppDomains.Select(Converter.Convert).ToList();
-            DebuggingMode = module.DebuggingMode;
-            PdbInfo = Converter.Convert(module.Pdb);
-            Runtime = Converter.Convert(module.Runtime);
         }
 
         /// <summary>
@@ -68,13 +63,21 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public IClrType GetTypeByName(string name) => Converter.Convert(Module.GetTypeByName(name));
 
+        public override void Setup()
+        {
+            AppDomains = Module.AppDomains.Select(Converter.Convert).ToList();
+            DebuggingMode = Module.DebuggingMode;
+            PdbInfo = Converter.Convert(Module.Pdb);
+            Runtime = Converter.Convert(Module.Runtime);
+        }
+
         /// <summary>
         ///     Returns a list of all AppDomains this module is loaded into.  Please note that unlike
         ///     ClrRuntime.AppDomains, this list may include the shared AppDomain.
         /// </summary>
         /// <value>The application domains.</value>
         /// <inheritdoc />
-        public IList<IClrAppDomain> AppDomains { get; }
+        public IList<IClrAppDomain> AppDomains { get; internal set; }
 
         /// <summary>
         ///     Returns an identifier to uniquely represent this assembly.  This value is not used by any other
@@ -98,7 +101,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The debugging mode.</value>
         /// <inheritdoc />
-        public DebuggableAttribute.DebuggingModes DebuggingMode { get; }
+        public DebuggableAttribute.DebuggingModes DebuggingMode { get; internal set; }
 
         /// <summary>
         ///     Returns the filename of where the module was loaded from on disk.  Undefined results if
@@ -166,14 +169,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The PDB.</value>
         /// <inheritdoc />
-        public IPdbInfo PdbInfo { get; }
+        public IPdbInfo PdbInfo { get; internal set; }
 
         /// <summary>
         ///     Gets the runtime which contains this module.
         /// </summary>
         /// <value>The runtime.</value>
         /// <inheritdoc />
-        public IClrRuntime Runtime { get; }
+        public IClrRuntime Runtime { get; internal set; }
 
         /// <summary>
         ///     Returns the size of the image in memory.
@@ -181,12 +184,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The size.</value>
         /// <inheritdoc />
         public ulong Size => Module.Size;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

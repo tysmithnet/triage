@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -25,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class RcwDataAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IRcwData" />
-    internal class RcwDataAdapter : IRcwData
+    internal class RcwDataAdapter : BaseAdapter, IRcwData
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="RcwDataAdapter" /> class.
@@ -33,16 +32,20 @@ namespace Triage.Mortician.Adapters
         /// <param name="rcwData">The RCW data.</param>
         /// <exception cref="ArgumentNullException">rcwData</exception>
         /// <inheritdoc />
-        public RcwDataAdapter(RcwData rcwData)
+        public RcwDataAdapter(IConverter converter, RcwData rcwData) : base(converter)
         {
             RcwData = rcwData ?? throw new ArgumentNullException(nameof(rcwData));
-            Interfaces = rcwData.Interfaces.Select(Converter.Convert).ToList();
         }
 
         /// <summary>
         ///     The RCW data
         /// </summary>
         internal RcwData RcwData;
+
+        public override void Setup()
+        {
+            Interfaces = RcwData.Interfaces.Select(Converter.Convert).ToList();
+        }
 
         /// <summary>
         ///     Returns the thread which created this RCW.
@@ -63,7 +66,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The interfaces.</value>
         /// <inheritdoc />
-        public IList<IComInterfaceData> Interfaces { get; }
+        public IList<IComInterfaceData> Interfaces { get; internal set; }
 
         /// <summary>
         ///     Returns the pointer to the IUnknown representing this CCW.
@@ -100,12 +103,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The win rt object.</value>
         /// <inheritdoc />
         public ulong WinRTObject => RcwData.WinRTObject;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrMd = Microsoft.Diagnostics.Runtime;
 
@@ -23,7 +22,7 @@ namespace Triage.Mortician.Adapters
     ///     Class StackFrameAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrStackFrame" />
-    internal class StackFrameAdapter : IClrStackFrame
+    internal class StackFrameAdapter : BaseAdapter, IClrStackFrame
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="StackFrameAdapter" /> class.
@@ -31,18 +30,22 @@ namespace Triage.Mortician.Adapters
         /// <param name="frame">The frame.</param>
         /// <exception cref="ArgumentNullException">frame</exception>
         /// <inheritdoc />
-        public StackFrameAdapter(ClrMd.ClrStackFrame frame)
+        public StackFrameAdapter(IConverter converter, ClrMd.ClrStackFrame frame) : base(converter)
         {
             Frame = frame ?? throw new ArgumentNullException(nameof(frame));
-            Thread = Converter.Convert(Frame.Thread);
-            Kind = Converter.Convert(Frame.Kind);
-            Method = Converter.Convert(Frame.Method);
         }
 
         /// <summary>
         ///     The frame
         /// </summary>
         internal ClrMd.ClrStackFrame Frame;
+
+        public override void Setup()
+        {
+            Thread = Converter.Convert(Frame.Thread);
+            Kind = Converter.Convert(Frame.Kind);
+            Method = Converter.Convert(Frame.Method);
+        }
 
         /// <summary>
         ///     The string to display in a stack trace.  Similar to !clrstack output.
@@ -63,7 +66,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The kind.</value>
         /// <inheritdoc />
-        public ClrStackFrameType Kind { get; }
+        public ClrStackFrameType Kind { get; internal set; }
 
         /// <summary>
         ///     Returns the ClrMethod which corresponds to the current stack frame.  This may be null if the
@@ -72,7 +75,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The method.</value>
         /// <inheritdoc />
-        public IClrMethod Method { get; }
+        public IClrMethod Method { get; internal set; }
 
         /// <summary>
         ///     Returns the module name to use for building the stack trace.
@@ -93,13 +96,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The thread.</value>
         /// <inheritdoc />
-        public IClrThread Thread { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        public IClrThread Thread { get; internal set; }
     }
 }

@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -23,7 +22,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrRootAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrRoot" />
-    internal class ClrRootAdapter : IClrRoot
+    internal class ClrRootAdapter : BaseAdapter, IClrRoot
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrRootAdapter" /> class.
@@ -31,20 +30,24 @@ namespace Triage.Mortician.Adapters
         /// <param name="root">The root.</param>
         /// <exception cref="ArgumentNullException">root</exception>
         /// <inheritdoc />
-        public ClrRootAdapter(ClrRoot root)
+        public ClrRootAdapter(IConverter converter, ClrRoot root) : base(converter)
         {
             Root = root ?? throw new ArgumentNullException(nameof(root));
-            AppDomain = Converter.Convert(root.AppDomain);
-            Kind = Converter.Convert(root.Kind);
-            StackFrame = Converter.Convert(root.StackFrame);
-            Thread = Converter.Convert(root.Thread);
-            Type = Converter.Convert(root.Type);
         }
 
         /// <summary>
         ///     The root
         /// </summary>
         internal ClrRoot Root;
+
+        public override void Setup()
+        {
+            AppDomain = Converter.Convert(Root.AppDomain);
+            Kind = Converter.Convert(Root.Kind);
+            StackFrame = Converter.Convert(Root.StackFrame);
+            Thread = Converter.Convert(Root.Thread);
+            Type = Converter.Convert(Root.Type);
+        }
 
         /// <summary>
         ///     The address of the root in the target process.
@@ -59,7 +62,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The application domain.</value>
         /// <inheritdoc />
-        public IClrAppDomain AppDomain { get; }
+        public IClrAppDomain AppDomain { get; internal set; }
 
         /// <summary>
         ///     Returns true if Object is an "interior" pointer.  This means that the pointer may actually
@@ -90,7 +93,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The kind.</value>
         /// <inheritdoc />
-        public GcRootKind Kind { get; }
+        public GcRootKind Kind { get; internal set; }
 
         /// <summary>
         ///     The name of the root.
@@ -111,27 +114,20 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The stack frame.</value>
         /// <inheritdoc />
-        public IClrStackFrame StackFrame { get; }
+        public IClrStackFrame StackFrame { get; internal set; }
 
         /// <summary>
         ///     If the root has a thread associated with it, this will return that thread.
         /// </summary>
         /// <value>The thread.</value>
         /// <inheritdoc />
-        public IClrThread Thread { get; }
+        public IClrThread Thread { get; internal set; }
 
         /// <summary>
         ///     The type of the object this root points to.  That is, ClrHeap.GetObjectType(ClrRoot.Object).
         /// </summary>
         /// <value>The type.</value>
         /// <inheritdoc />
-        public IClrType Type { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        public IClrType Type { get; internal set; }
     }
 }

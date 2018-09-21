@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrElementType = Triage.Mortician.Core.ClrMdAbstractions.ClrElementType;
@@ -24,19 +23,18 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrStaticFieldAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrStaticField" />
-    internal class ClrStaticFieldAdapter : IClrStaticField
+    internal class ClrStaticFieldAdapter : BaseAdapter, IClrStaticField
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrStaticFieldAdapter" /> class.
         /// </summary>
+        /// <param name="converter">Converter to use</param>
         /// <param name="staticField">The static field.</param>
         /// <exception cref="ArgumentNullException">staticField</exception>
         /// <inheritdoc />
-        public ClrStaticFieldAdapter(ClrStaticField staticField)
+        public ClrStaticFieldAdapter(IConverter converter, ClrStaticField staticField) : base(converter)
         {
             StaticField = staticField ?? throw new ArgumentNullException(nameof(staticField));
-            ElementType = Converter.Convert(staticField.ElementType);
-            Type = Converter.Convert(staticField.Type);
         }
 
         /// <summary>
@@ -97,13 +95,19 @@ namespace Triage.Mortician.Adapters
         public bool IsInitialized(IClrAppDomain appDomain) =>
             StaticField.IsInitialized((appDomain as ClrAppDomainAdapter)?.AppDomain);
 
+        public override void Setup()
+        {
+            ElementType = Converter.Convert(StaticField.ElementType);
+            Type = Converter.Convert(StaticField.Type);
+        }
+
         /// <summary>
         ///     Returns the element type of this field.  Note that even when Type is null, this should still tell you
         ///     the element type of the field.
         /// </summary>
         /// <value>The type of the element.</value>
         /// <inheritdoc />
-        public ClrElementType ElementType { get; }
+        public ClrElementType ElementType { get; internal set; }
 
         /// <summary>
         ///     Gets a value indicating whether this instance has default value.
@@ -203,13 +207,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type.</value>
         /// <inheritdoc />
-        public IClrType Type { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        public IClrType Type { get; internal set; }
     }
 }

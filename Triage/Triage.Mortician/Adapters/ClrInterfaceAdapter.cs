@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -23,7 +22,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrInterfaceAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrInterface" />
-    internal class ClrInterfaceAdapter : IClrInterface
+    internal class ClrInterfaceAdapter : BaseAdapter, IClrInterface
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrInterfaceAdapter" /> class.
@@ -31,10 +30,9 @@ namespace Triage.Mortician.Adapters
         /// <param name="interface">The interface.</param>
         /// <exception cref="ArgumentNullException">interface</exception>
         /// <inheritdoc />
-        public ClrInterfaceAdapter(ClrInterface @interface)
+        public ClrInterfaceAdapter(IConverter converter, ClrInterface @interface) : base(converter)
         {
             Interface = @interface ?? throw new ArgumentNullException(nameof(@interface));
-            BaseInterface = Converter.Convert(@interface.BaseInterface);
         }
 
         /// <summary>
@@ -42,12 +40,17 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         internal ClrInterface Interface;
 
+        public override void Setup()
+        {
+            BaseInterface = Converter.Convert(Interface.BaseInterface);
+        }
+
         /// <summary>
         ///     The interface that this interface inherits from.
         /// </summary>
         /// <value>The base interface.</value>
         /// <inheritdoc />
-        public IClrInterface BaseInterface { get; }
+        public IClrInterface BaseInterface { get; internal set; }
 
         /// <summary>
         ///     The typename of the interface.
@@ -55,12 +58,5 @@ namespace Triage.Mortician.Adapters
         /// <value>The name.</value>
         /// <inheritdoc />
         public string Name => Interface.Name;
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
     }
 }

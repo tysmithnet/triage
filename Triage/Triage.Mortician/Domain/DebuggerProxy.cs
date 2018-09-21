@@ -31,6 +31,8 @@ namespace Triage.Mortician.Domain
     /// <seealso cref="T:Triage.Mortician.IDebuggerProxy" />
     public sealed class DebuggerProxy : IDebugOutputCallbacks, IDisposable
     {
+        // todo: autoresetevent to serialize access to client
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="DebuggerProxy" /> class.
         /// </summary>
@@ -119,7 +121,7 @@ namespace Triage.Mortician.Domain
         ///     The log
         /// </summary>
         /// <value>The log.</value>
-        private ILog Log { get; } = LogManager.GetLogger(typeof(DebuggerProxy));
+        private ILog Log { get; set; } = LogManager.GetLogger(typeof(DebuggerProxy));
 
         #region IDisposable Support
 

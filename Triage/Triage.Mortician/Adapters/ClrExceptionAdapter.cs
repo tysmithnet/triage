@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -25,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrExceptionAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrException" />
-    internal class ClrExceptionAdapter : IClrException
+    internal class ClrExceptionAdapter : BaseAdapter, IClrException
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrExceptionAdapter" /> class.
@@ -33,18 +32,22 @@ namespace Triage.Mortician.Adapters
         /// <param name="exception">The exception.</param>
         /// <exception cref="ArgumentNullException">exception</exception>
         /// <inheritdoc />
-        public ClrExceptionAdapter(ClrException exception)
+        public ClrExceptionAdapter(IConverter converter, ClrException exception) : base(converter)
         {
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
-            StackTrace = Exception.StackTrace.Select(Converter.Convert).ToList();
-            Type = Converter.Convert(Exception.Type);
-            Inner = Converter.Convert(Exception.Inner);
         }
 
         /// <summary>
         ///     The exception
         /// </summary>
         internal ClrException Exception;
+
+        public override void Setup()
+        {
+            StackTrace = Exception.StackTrace.Select(Converter.Convert).ToList();
+            Type = Converter.Convert(Exception.Type);
+            Inner = Converter.Convert(Exception.Inner);
+        }
 
         /// <summary>
         ///     Returns the address of the exception object.
@@ -65,7 +68,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The inner.</value>
         /// <inheritdoc />
-        public IClrException Inner { get; }
+        public IClrException Inner { get; internal set; }
 
         /// <summary>
         ///     Returns the exception message.
@@ -82,20 +85,13 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The stack trace.</value>
         /// <inheritdoc />
-        public IList<IClrStackFrame> StackTrace { get; }
+        public IList<IClrStackFrame> StackTrace { get; internal set; }
 
         /// <summary>
         ///     Returns the GCHeapType for this exception object.
         /// </summary>
         /// <value>The type.</value>
         /// <inheritdoc />
-        public IClrType Type { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        public IClrType Type { get; internal set; }
     }
 }

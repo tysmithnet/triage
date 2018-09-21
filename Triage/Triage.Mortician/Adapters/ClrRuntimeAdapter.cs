@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -25,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrRuntimeAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrRuntime" />
-    internal class ClrRuntimeAdapter : IClrRuntime
+    internal class ClrRuntimeAdapter : BaseAdapter, IClrRuntime
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrRuntimeAdapter" /> class.
@@ -33,18 +32,9 @@ namespace Triage.Mortician.Adapters
         /// <param name="runtime">The runtime.</param>
         /// <exception cref="ArgumentNullException">runtime</exception>
         /// <inheritdoc />
-        public ClrRuntimeAdapter(ClrRuntime runtime)
+        public ClrRuntimeAdapter(IConverter converter, ClrRuntime runtime) : base(converter)
         {
             Runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
-            AppDomains = runtime.AppDomains.Select(Converter.Convert).ToList();
-            ClrInfo = Converter.Convert(runtime.ClrInfo);
-            SharedDomain = Converter.Convert(runtime.SharedDomain);
-            SystemDomain = Converter.Convert(runtime.SystemDomain);
-            ThreadPool = Converter.Convert(runtime.ThreadPool);
-            Threads = runtime.Threads.Select(Converter.Convert).ToList();
-            Modules = runtime.Modules.Select(Converter.Convert).ToList();
-            Heap = Converter.Convert(runtime.Heap);
-            DataTarget = Converter.Convert(runtime.DataTarget);
         }
 
         /// <summary>
@@ -180,34 +170,47 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public bool ReadPointer(ulong address, out ulong value) => Runtime.ReadPointer(address, out value);
 
+        public override void Setup()
+        {
+            AppDomains = Runtime.AppDomains.Select(Converter.Convert).ToList();
+            ClrInfo = Converter.Convert(Runtime.ClrInfo);
+            SharedDomain = Converter.Convert(Runtime.SharedDomain);
+            SystemDomain = Converter.Convert(Runtime.SystemDomain);
+            ThreadPool = Converter.Convert(Runtime.ThreadPool);
+            Threads = Runtime.Threads.Select(Converter.Convert).ToList();
+            Modules = Runtime.Modules.Select(Converter.Convert).ToList();
+            Heap = Converter.Convert(Runtime.Heap);
+            DataTarget = Converter.Convert(Runtime.DataTarget);
+        }
+
         /// <summary>
         ///     Enumerates the list of appdomains in the process.  Note the System appdomain and Shared
         ///     AppDomain are omitted.
         /// </summary>
         /// <value>The application domains.</value>
         /// <inheritdoc />
-        public IList<IClrAppDomain> AppDomains { get; }
+        public IList<IClrAppDomain> AppDomains { get; internal set; }
 
         /// <summary>
         ///     The ClrInfo of the current runtime.
         /// </summary>
         /// <value>The color information.</value>
         /// <inheritdoc />
-        public IClrInfo ClrInfo { get; }
+        public IClrInfo ClrInfo { get; internal set; }
 
         /// <summary>
         ///     Returns the DataTarget associated with this runtime.
         /// </summary>
         /// <value>The data target.</value>
         /// <inheritdoc />
-        public IDataTarget DataTarget { get; }
+        public IDataTarget DataTarget { get; internal set; }
 
         /// <summary>
         ///     Gets the GC heap of the process.
         /// </summary>
         /// <value>The heap.</value>
         /// <inheritdoc />
-        public IClrHeap Heap { get; }
+        public IClrHeap Heap { get; internal set; }
 
         /// <summary>
         ///     The number of logical GC heaps in the process.  This is always 1 for a workstation
@@ -222,7 +225,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The modules.</value>
         /// <inheritdoc />
-        public IList<IClrModule> Modules { get; }
+        public IList<IClrModule> Modules { get; internal set; }
 
         /// <summary>
         ///     Returns the pointer size of the target process.
@@ -243,21 +246,21 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The shared domain.</value>
         /// <inheritdoc />
-        public IClrAppDomain SharedDomain { get; }
+        public IClrAppDomain SharedDomain { get; internal set; }
 
         /// <summary>
         ///     Give access to the System AppDomain
         /// </summary>
         /// <value>The system domain.</value>
         /// <inheritdoc />
-        public IClrAppDomain SystemDomain { get; }
+        public IClrAppDomain SystemDomain { get; internal set; }
 
         /// <summary>
         ///     Returns data on the CLR thread pool for this runtime.
         /// </summary>
         /// <value>The thread pool.</value>
         /// <inheritdoc />
-        public IClrThreadPool ThreadPool { get; }
+        public IClrThreadPool ThreadPool { get; internal set; }
 
         /// <summary>
         ///     Enumerates all managed threads in the process.  Only threads which have previously run managed
@@ -265,13 +268,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The threads.</value>
         /// <inheritdoc />
-        public IList<IClrThread> Threads { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        public IList<IClrThread> Threads { get; internal set; }
     }
 }

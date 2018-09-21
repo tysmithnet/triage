@@ -22,7 +22,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ObjectSetAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IObjectSet" />
-    internal class ObjectSetAdapter : IObjectSet
+    internal class ObjectSetAdapter : BaseAdapter, IObjectSet
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ObjectSetAdapter" /> class.
@@ -30,7 +30,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="objectSet">The object set.</param>
         /// <exception cref="ArgumentNullException">objectSet</exception>
         /// <inheritdoc />
-        public ObjectSetAdapter(ObjectSet objectSet)
+        public ObjectSetAdapter(IConverter converter, ObjectSet objectSet) : base(converter)
         {
             ObjectSet = objectSet ?? throw new ArgumentNullException(nameof(objectSet));
         }
@@ -72,6 +72,10 @@ namespace Triage.Mortician.Adapters
         /// <returns>True if the object was removed, returns false if the object was not in the set.</returns>
         /// <inheritdoc />
         public bool Remove(ulong obj) => ObjectSet.Remove(obj);
+
+        public override void Setup()
+        {
+        }
 
         /// <summary>
         ///     Returns the count of objects in this set.

@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
@@ -22,7 +21,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ComInterfaceDataAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IComInterfaceData" />
-    internal class ComInterfaceDataAdapter : IComInterfaceData
+    internal class ComInterfaceDataAdapter : BaseAdapter, IComInterfaceData
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ComInterfaceDataAdapter" /> class.
@@ -30,16 +29,21 @@ namespace Triage.Mortician.Adapters
         /// <param name="data">The data.</param>
         /// <exception cref="ArgumentNullException">data</exception>
         /// <inheritdoc />
-        public ComInterfaceDataAdapter(Microsoft.Diagnostics.Runtime.ComInterfaceData data)
+        public ComInterfaceDataAdapter(IConverter converter, Microsoft.Diagnostics.Runtime.ComInterfaceData data) :
+            base(converter)
         {
             Data = data ?? throw new ArgumentNullException(nameof(data));
-            Type = Converter.Convert(data.Type);
         }
 
         /// <summary>
         ///     The data
         /// </summary>
         internal Microsoft.Diagnostics.Runtime.ComInterfaceData Data;
+
+        public override void Setup()
+        {
+            Type = Converter.Convert(Data.Type);
+        }
 
         /// <summary>
         ///     The interface pointer of Type.
@@ -53,13 +57,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type.</value>
         /// <inheritdoc />
-        public IClrType Type { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        public IClrType Type { get; internal set; }
     }
 }

@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Adapters
@@ -22,7 +21,7 @@ namespace Triage.Mortician.Adapters
     ///     Class SymbolProviderAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.ISymbolProvider" />
-    internal class SymbolProviderAdapter : ISymbolProvider
+    internal class SymbolProviderAdapter : BaseAdapter, ISymbolProvider
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="SymbolProviderAdapter" /> class.
@@ -30,7 +29,8 @@ namespace Triage.Mortician.Adapters
         /// <param name="provider">The provider.</param>
         /// <exception cref="ArgumentNullException">provider</exception>
         /// <inheritdoc />
-        public SymbolProviderAdapter(Microsoft.Diagnostics.Runtime.ISymbolProvider provider)
+        public SymbolProviderAdapter(IConverter converter, Microsoft.Diagnostics.Runtime.ISymbolProvider provider) :
+            base(converter)
         {
             Provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
@@ -51,11 +51,8 @@ namespace Triage.Mortician.Adapters
         public ISymbolResolver GetSymbolResolver(string pdbName, Guid guid, int age) =>
             Converter.Convert(Provider.GetSymbolResolver(pdbName, guid, age));
 
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        public override void Setup()
+        {
+        }
     }
 }

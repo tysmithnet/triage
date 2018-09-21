@@ -22,7 +22,7 @@ namespace Triage.Mortician.Adapters
     ///     Class HotColdRegionsAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IHotColdRegions" />
-    internal class HotColdRegionsAdapter : IHotColdRegions
+    internal class HotColdRegionsAdapter : BaseAdapter, IHotColdRegions
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="HotColdRegionsAdapter" /> class.
@@ -30,7 +30,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="hotColdRegions">The hot cold regions.</param>
         /// <exception cref="ArgumentNullException">hotColdRegions</exception>
         /// <inheritdoc />
-        public HotColdRegionsAdapter(HotColdRegions hotColdRegions)
+        public HotColdRegionsAdapter(IConverter converter, HotColdRegions hotColdRegions) : base(converter)
         {
             HotColdRegions = hotColdRegions ?? throw new ArgumentNullException(nameof(hotColdRegions));
         }
@@ -39,6 +39,10 @@ namespace Triage.Mortician.Adapters
         ///     The hot cold regions
         /// </summary>
         internal HotColdRegions HotColdRegions;
+
+        public override void Setup()
+        {
+        }
 
         /// <summary>
         ///     Returns the size of the cold region.

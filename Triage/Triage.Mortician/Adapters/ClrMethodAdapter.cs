@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrMd = Microsoft.Diagnostics.Runtime;
@@ -25,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrMethodAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrMethod" />
-    internal class ClrMethodAdapter : IClrMethod
+    internal class ClrMethodAdapter : BaseAdapter, IClrMethod
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrMethodAdapter" /> class.
@@ -33,14 +32,9 @@ namespace Triage.Mortician.Adapters
         /// <param name="method">The method.</param>
         /// <exception cref="ArgumentNullException">method</exception>
         /// <inheritdoc />
-        public ClrMethodAdapter(ClrMd.ClrMethod method)
+        public ClrMethodAdapter(IConverter converter, ClrMd.ClrMethod method) : base(converter)
         {
             Method = method ?? throw new ArgumentNullException(nameof(method));
-            CompilationType = Converter.Convert(Method.CompilationType);
-            HotColdInfo = Converter.Convert(Method.HotColdInfo);
-            IlInfo = Converter.Convert(Method.IL);
-            IlOffsetMap = Method.ILOffsetMap.Select(Converter.Convert).ToArray();
-            Type = Converter.Convert(Method.Type);
         }
 
         /// <summary>
@@ -71,12 +65,21 @@ namespace Triage.Mortician.Adapters
         /// <inheritdoc />
         public int GetILOffset(ulong addr) => Method.GetILOffset(addr);
 
+        public override void Setup()
+        {
+            CompilationType = Converter.Convert(Method.CompilationType);
+            HotColdInfo = Converter.Convert(Method.HotColdInfo);
+            IlInfo = Converter.Convert(Method.IL);
+            IlOffsetMap = Method.ILOffsetMap?.Select(Converter.Convert).ToArray();
+            Type = Converter.Convert(Method.Type);
+        }
+
         /// <summary>
         ///     Returns the way this method was compiled.
         /// </summary>
         /// <value>The type of the compilation.</value>
         /// <inheritdoc />
-        public MethodCompilationType CompilationType { get; }
+        public MethodCompilationType CompilationType { get; internal set; }
 
         /// <summary>
         ///     Returns the location of the GCInfo for this method.
@@ -90,21 +93,21 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The hot cold information.</value>
         /// <inheritdoc />
-        public IHotColdRegions HotColdInfo { get; }
+        public IHotColdRegions HotColdInfo { get; internal set; }
 
         /// <summary>
         ///     Returns the location in memory of the IL for this method.
         /// </summary>
         /// <value>The il.</value>
         /// <inheritdoc />
-        public IILInfo IlInfo { get; }
+        public IILInfo IlInfo { get; internal set; }
 
         /// <summary>
         ///     Returns the IL to native offset mapping.
         /// </summary>
         /// <value>The il offset map.</value>
         /// <inheritdoc />
-        public ILToNativeMap[] IlOffsetMap { get; }
+        public ILToNativeMap[] IlOffsetMap { get; internal set; }
 
         /// <summary>
         ///     Returns if this method is abstract.
@@ -233,14 +236,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type.</value>
         /// <inheritdoc />
-        public IClrType Type { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        public IClrType Type { get; internal set; }
 
         /// <summary>
         ///     Gets or sets the method.

@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -26,7 +25,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrTypeAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrType" />
-    internal class ClrTypeAdapter : IClrType
+    internal class ClrTypeAdapter : BaseAdapter, IClrType
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrTypeAdapter" /> class.
@@ -34,19 +33,9 @@ namespace Triage.Mortician.Adapters
         /// <param name="type">The type.</param>
         /// <exception cref="ArgumentNullException">type</exception>
         /// <inheritdoc />
-        public ClrTypeAdapter(ClrType type)
+        public ClrTypeAdapter(IConverter converter, ClrType type) : base(converter)
         {
             ClrType = type ?? throw new ArgumentNullException(nameof(type));
-            BaseType = Converter.Convert(type.BaseType);
-            ComponentType = Converter.Convert(type.ComponentType);
-            ElementType = Converter.Convert(type.ElementType);
-            Fields = type.Fields.Select(Converter.Convert).ToList();
-            Heap = Converter.Convert(type.Heap);
-            Interfaces = type.Interfaces.Select(Converter.Convert).ToList();
-            Methods = type.Methods.Select(Converter.Convert).ToList();
-            StaticFields = type.StaticFields.Select(Converter.Convert).ToList();
-            ThreadStaticFields = type.ThreadStaticFields.Select(Converter.Convert).ToList();
-            Module = Converter.Convert(type.Module);
         }
 
         /// <summary>
@@ -261,6 +250,20 @@ namespace Triage.Mortician.Adapters
         /// <returns>True if this is an RCW.</returns>
         public bool IsRCW(ulong obj) => ClrType.IsRCW(obj);
 
+        public override void Setup()
+        {
+            BaseType = Converter.Convert(ClrType.BaseType);
+            ComponentType = Converter.Convert(ClrType.ComponentType);
+            ElementType = Converter.Convert(ClrType.ElementType);
+            Fields = ClrType.Fields?.Select(Converter.Convert).ToList();
+            Heap = Converter.Convert(ClrType.Heap);
+            Interfaces = ClrType.Interfaces?.Select(Converter.Convert).ToList();
+            Methods = ClrType.Methods?.Select(Converter.Convert).ToList();
+            StaticFields = ClrType.StaticFields?.Select(Converter.Convert).ToList();
+            ThreadStaticFields = ClrType.ThreadStaticFields?.Select(Converter.Convert).ToList();
+            Module = Converter.Convert(ClrType.Module);
+        }
+
         /// <summary>
         ///     Attempts to get the integer value for a given enum entry.  Note you should only call this function if
         ///     GetEnumElementType returns ELEMENT_TYPE_I4.
@@ -291,14 +294,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type of the base.</value>
         /// <inheritdoc />
-        public IClrType BaseType { get; }
+        public IClrType BaseType { get; internal set; }
 
         /// <summary>
         ///     Gets the type of the element referenced by the pointer.
         /// </summary>
         /// <value>The type of the component.</value>
         /// <inheritdoc />
-        public IClrType ComponentType { get; }
+        public IClrType ComponentType { get; internal set; }
 
         /// <summary>
         ///     Returns true if the type CAN contain references to other objects.  This is used in optimizations
@@ -320,7 +323,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The type of the element.</value>
         /// <inheritdoc />
-        public ClrElementType ElementType { get; }
+        public ClrElementType ElementType { get; internal set; }
 
         /// <summary>
         ///     Returns all possible fields in this type.   It does not return dynamically typed fields.
@@ -328,7 +331,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The fields.</value>
         /// <inheritdoc />
-        public IList<IClrInstanceField> Fields { get; }
+        public IList<IClrInstanceField> Fields { get; internal set; }
 
         /// <summary>
         ///     Returns true if instances of this type have a simple value.
@@ -342,14 +345,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The heap.</value>
         /// <inheritdoc />
-        public IClrHeap Heap { get; }
+        public IClrHeap Heap { get; internal set; }
 
         /// <summary>
         ///     Returns the list of interfaces this type implements.
         /// </summary>
         /// <value>The interfaces.</value>
         /// <inheritdoc />
-        public IList<IClrInterface> Interfaces { get; }
+        public IList<IClrInterface> Interfaces { get; internal set; }
 
         /// <summary>
         ///     Returns true if this class is abstract.
@@ -492,7 +495,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The methods.</value>
         /// <inheritdoc />
-        public IList<IClrMethod> Methods { get; }
+        public IList<IClrMethod> Methods { get; internal set; }
 
         /// <summary>
         ///     Retrieves the first type handle in EnumerateMethodTables().  MethodTables
@@ -508,7 +511,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The module.</value>
         /// <inheritdoc />
-        public IClrModule Module { get; }
+        public IClrModule Module { get; internal set; }
 
         /// <summary>
         ///     Types have names.
@@ -522,20 +525,13 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The static fields.</value>
         /// <inheritdoc />
-        public IList<IClrStaticField> StaticFields { get; }
+        public IList<IClrStaticField> StaticFields { get; internal set; }
 
         /// <summary>
         ///     Returns a list of thread static fields on this type.  Returns an empty list if there are no fields.
         /// </summary>
         /// <value>The thread static fields.</value>
         /// <inheritdoc />
-        public IList<IClrThreadStaticField> ThreadStaticFields { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        public IList<IClrThreadStaticField> ThreadStaticFields { get; internal set; }
     }
 }

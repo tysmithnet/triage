@@ -14,6 +14,7 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Triage.Mortician.Core;
@@ -46,10 +47,8 @@ namespace Triage.Mortician
         /// </summary>
         /// <typeparam name="TMessage">The type of the message.</typeparam>
         /// <returns>IObservable&lt;TMessage&gt;.</returns>
-        public IObservable<TMessage> Get<TMessage>() where TMessage : Message
-        {
-            return Subject.OfType<TMessage>();
-        }
+        // todo: need to do some thread logging to verify that we are maximizing concurrency
+        public IObservable<TMessage> Get<TMessage>() where TMessage : Message => Subject.OfType<TMessage>();
 
         /// <summary>
         ///     Indicate to observers that there are no more events coming

@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.ComponentModel.Composition;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrFlavor = Triage.Mortician.Core.ClrMdAbstractions.ClrFlavor;
@@ -25,7 +24,7 @@ namespace Triage.Mortician.Adapters
     ///     Class ClrInfoAdapter.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrInfo" />
-    internal class ClrInfoAdapter : IClrInfo
+    internal class ClrInfoAdapter : BaseAdapter, IClrInfo
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrInfoAdapter" /> class.
@@ -33,13 +32,9 @@ namespace Triage.Mortician.Adapters
         /// <param name="info">The information.</param>
         /// <exception cref="ArgumentNullException">info</exception>
         /// <inheritdoc />
-        public ClrInfoAdapter(ClrInfo info)
+        public ClrInfoAdapter(IConverter converter, ClrInfo info) : base(converter)
         {
             Info = info ?? throw new ArgumentNullException(nameof(info));
-            DacInfo = Converter.Convert(info.DacInfo);
-            Flavor = Converter.Convert(info.Flavor);
-            ModuleInfo = Converter.Convert(info.ModuleInfo);
-            Version = Converter.Convert(info.Version);
         }
 
         /// <summary>
@@ -81,19 +76,27 @@ namespace Triage.Mortician.Adapters
         public IClrRuntime CreateRuntime(string dacFilename, bool ignoreMismatch = false) =>
             Converter.Convert(Info.CreateRuntime(dacFilename, ignoreMismatch));
 
+        public override void Setup()
+        {
+            DacInfo = Converter.Convert(Info.DacInfo);
+            Flavor = Converter.Convert(Info.Flavor);
+            ModuleInfo = Converter.Convert(Info.ModuleInfo);
+            Version = Converter.Convert(Info.Version);
+        }
+
         /// <summary>
         ///     Returns module information about the Dac needed create a ClrRuntime instance for this runtime.
         /// </summary>
         /// <value>The dac information.</value>
         /// <inheritdoc />
-        public IDacInfo DacInfo { get; }
+        public IDacInfo DacInfo { get; internal set; }
 
         /// <summary>
         ///     The type of CLR this module represents.
         /// </summary>
         /// <value>The flavor.</value>
         /// <inheritdoc />
-        public ClrFlavor Flavor { get; }
+        public ClrFlavor Flavor { get; internal set; }
 
         /// <summary>
         ///     Returns the location of the local dac on your machine which matches this version of Clr, or null
@@ -108,20 +111,13 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The module information.</value>
         /// <inheritdoc />
-        public IModuleInfo ModuleInfo { get; }
+        public IModuleInfo ModuleInfo { get; internal set; }
 
         /// <summary>
         ///     The version number of this runtime.
         /// </summary>
         /// <value>The version.</value>
         /// <inheritdoc />
-        public VersionInfo Version { get; }
-
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        [Import]
-        internal IConverter Converter { get; set; }
+        public VersionInfo Version { get; internal set; }
     }
 }
