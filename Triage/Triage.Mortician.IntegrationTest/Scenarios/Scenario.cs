@@ -1,12 +1,10 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using Microsoft.CSharp;
 using Microsoft.Diagnostics.Runtime;
 
-namespace Triage.Mortician.IntegrationTest.IntegrationTests.Scenarios
+namespace Triage.Mortician.IntegrationTest.Scenarios
 {
     public abstract partial class Scenario
     {

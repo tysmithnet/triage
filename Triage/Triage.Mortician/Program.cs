@@ -39,7 +39,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="options">The options.</param>
         /// <returns>Program status code</returns>
-        internal static int DefaultExecution(DefaultOptions options)
+        internal static int DefaultExecution(DefaultOptions options, Func<CompositionContainer, CompositionContainer> dependencyInjectionTransformer = null)
         {
             // todo: fix
             var blacklistedAssemblies = options.BlackListedAssemblies;
@@ -75,6 +75,7 @@ namespace Triage.Mortician
             // todo: allow for export/import manipulation
             var repositoryFactory = new CoreComponentFactory(compositionContainer, new FileInfo(options.DumpFile));
             repositoryFactory.RegisterRepositories(options);
+            compositionContainer = dependencyInjectionTransformer?.Invoke(compositionContainer);
 
             var engine = compositionContainer.GetExportedValue<IEngine>();
             engine.Process().Wait();
@@ -91,7 +92,7 @@ namespace Triage.Mortician
             WarnIfNoDebuggingKitOnPath();
 
             Parser.Default.ParseArguments<DefaultOptions>(args).MapResult(
-                DefaultExecution,
+                options => DefaultExecution(options),
                 errs => -1
             );
         }
