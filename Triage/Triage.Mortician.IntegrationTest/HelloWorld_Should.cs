@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using FluentAssertions.Types;
 using Triage.Mortician.Core;
 using Triage.Mortician.IntegrationTest.IntegrationTests.Scenarios;
 using Xunit;
@@ -67,6 +68,12 @@ namespace Triage.Mortician.IntegrationTest
             // assert
             result.Should().Be(0);
             analyzer.AppDomainCount.Should().Be(3);
+            analyzer.TypeRepo.Get().FirstOrDefault(t => t.Name == "Triage.TestApplications.Console.Person").Should()
+                .NotBeNull();
+            analyzer.TypeRepo.Get().FirstOrDefault(t => t.Name == "Triage.TestApplications.Console.Address").Should()
+                .NotBeNull();
+            analyzer.ThreadRepo.Get().Any(t =>
+                t.ManagedStackFrames.Any(f => f.DisplayString.Contains("Triage.TestApplications.Console.Program.Main"))).Should().BeTrue();
         }
     }
 }

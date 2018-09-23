@@ -145,7 +145,6 @@
     <Compile Include="Adapters\ClrRuntimeAdapter.cs" />
     <Compile Include="Adapters\ClrSegmentAdapter.cs" />
     <Compile Include="AppDomainStage.cs" />
-    <Compile Include="ClrStackFrame.cs" />
     <Compile Include="Adapters\ClrStaticFieldAdapter.cs" />
     <Compile Include="Adapters\ClrThreadAdapter.cs" />
     <Compile Include="Adapters\ClrThreadPoolAdapter.cs" />
