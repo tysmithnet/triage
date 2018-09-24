@@ -1,24 +1,35 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 12-19-2017
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="DumpAppDomainRepository.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.Collections.Generic;
-using Triage.Mortician.Domain;
+using Triage.Mortician.Core;
 
 namespace Triage.Mortician.Repository
 {
     /// <summary>
     ///     An object capable of managing the discovered app domains from the memory dump
     /// </summary>
-    public class DumpAppDomainRepository
+    /// <seealso cref="IDumpAppDomainRepository" />
+    public class DumpAppDomainRepository : IDumpAppDomainRepository
     {
-        /// <summary>
-        ///     The application domains index by their address
-        /// </summary>
-        protected internal Dictionary<ulong, DumpAppDomain> AppDomains;
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="DumpAppDomainRepository" /> class. The key
         ///     to the dictionary is the address of the app domain in memory
         /// </summary>
         /// <param name="appDomains">The application domains.</param>
+        /// <exception cref="System.ArgumentNullException">appDomains</exception>
         /// <exception cref="ArgumentNullException">appDomains</exception>
         protected internal DumpAppDomainRepository(Dictionary<ulong, DumpAppDomain> appDomains)
         {
@@ -26,22 +37,21 @@ namespace Triage.Mortician.Repository
         }
 
         /// <summary>
+        ///     The application domains index by their address
+        /// </summary>
+        protected internal Dictionary<ulong, DumpAppDomain> AppDomains;
+
+        /// <summary>
         ///     Gets the app domain associated with the provided address
         /// </summary>
         /// <param name="address">The address.</param>
-        /// <returns></returns>
-        public DumpAppDomain Get(ulong address)
-        {
-            return AppDomains[address];
-        }
+        /// <returns>DumpAppDomain.</returns>
+        public DumpAppDomain Get(ulong address) => AppDomains[address];
 
         /// <summary>
         ///     Gets all the extracted appd domains
         /// </summary>
-        /// <returns></returns>
-        public IEnumerable<DumpAppDomain> Get()
-        {
-            return AppDomains.Values;
-        }
+        /// <returns>IEnumerable&lt;DumpAppDomain&gt;.</returns>
+        public IEnumerable<DumpAppDomain> Get() => AppDomains.Values;
     }
 }

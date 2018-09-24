@@ -1,5 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 12-10-2017
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-20-2018
+// ***********************************************************************
+// <copyright file="Program.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
@@ -7,6 +20,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using CommandLine;
 using Common.Logging;
+using Triage.Mortician.Core;
 
 namespace Triage.Mortician
 {
@@ -15,20 +29,72 @@ namespace Triage.Mortician
     /// </summary>
     internal class Program
     {
+        /// <summary>
+        ///     The log
+        /// </summary>
         internal static ILog Log = LogManager.GetLogger(typeof(Program));
+
+        /// <summary>
+        ///     Perform the default execution
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="dependencyInjectionTransformer">The dependency injection transformer.</param>
+        /// <returns>Program status code</returns>
+        internal static int DefaultExecution(DefaultOptions options,
+            Func<CompositionContainer, CompositionContainer> dependencyInjectionTransformer = null)
+        {
+            // todo: fix
+            var blacklistedAssemblies = options.BlackListedAssemblies;
+            var blacklistedTypes = options.BlackListedTypes;
+            var executionLocation = typeof(Program).Assembly.Location;
+            var morticianAssemblyFiles =
+                Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation),
+                        "Triage.Mortician.*.*")
+                    .Where(f => Regex.IsMatch(f, "(dll|exe)$",
+                        RegexOptions.IgnoreCase)); // todo: not ideal to require assembly name
+            var toLoad =
+                morticianAssemblyFiles.Except(AppDomain.CurrentDomain.GetAssemblies().Select(x => x.Location))
+                    .Select(x => new FileInfo(x)).Where(x => !blacklistedAssemblies.Contains(x.Name));
+
+            var aggregateCatalog = new AggregateCatalog();
+            foreach (var assembly in toLoad)
+                try
+                {
+                    var addedAssembly = Assembly.LoadFile(assembly.FullName);
+                    var definedTypes = addedAssembly.DefinedTypes;
+                    var filteredTypes = definedTypes.Where(t =>
+                        !blacklistedTypes.Select(x => x.ToLower()).Contains(t?.FullName?.ToLower()));
+                    var typeCatalog = new TypeCatalog(filteredTypes);
+                    aggregateCatalog.Catalogs.Add(typeCatalog);
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Unable to load {assembly.FullName}, it will not be available because {e.Message}");
+                }
+
+            aggregateCatalog.Catalogs.Add(new AssemblyCatalog(Assembly.GetExecutingAssembly()));
+            var compositionContainer = new CompositionContainer(aggregateCatalog);
+            // todo: allow for export/import manipulation
+            var repositoryFactory = new CoreComponentFactory(compositionContainer, new FileInfo(options.DumpFile));
+            repositoryFactory.RegisterRepositories(options);
+            compositionContainer = dependencyInjectionTransformer?.Invoke(compositionContainer);
+
+            var engine = compositionContainer.GetExportedValue<IEngine>();
+            engine.Process().Wait();
+            return 0;
+        }
 
         /// <summary>
         ///     Entry point to the application
         /// </summary>
         /// <param name="args">The arguments.</param>
-        private static void Main(string[] args)
+        internal static void Main(string[] args)
         {
             Log.Trace($"Starting mortician at {DateTime.UtcNow.ToString()} UTC");
             WarnIfNoDebuggingKitOnPath();
 
-            Parser.Default.ParseArguments<DefaultOptions, ConfigOptions>(args).MapResult(
-                (DefaultOptions opts) => DefaultExecution(opts),
-                (ConfigOptions opts) => ConfigExecution(opts),
+            Parser.Default.ParseArguments<DefaultOptions>(args).MapResult(
+                options => DefaultExecution(options),
                 errs => -1
             );
         }
@@ -40,7 +106,7 @@ namespace Triage.Mortician
         ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64
         ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\winext
         /// </summary>
-        private static void WarnIfNoDebuggingKitOnPath()
+        internal static void WarnIfNoDebuggingKitOnPath()
         {
             var path = Environment.GetEnvironmentVariable("PATH") ?? "";
             if (!Regex.IsMatch(path, @"[Dd]ebuggers[/\\]x64"))
@@ -50,80 +116,6 @@ namespace Triage.Mortician
             if (!Regex.IsMatch(path, @"[Dd]ebuggers[/\\]x64[/\\]winext"))
                 Log.Warn(
                     "Did not find Debuggers\\x64\\winext in PATH. Did you install the Windows Debugging Kit and set Debuggers\\x64\\winext as part of PATH?");
-        }
-
-        /// <summary>
-        ///     Executes the configuration module
-        /// </summary>
-        /// <param name="configOptions">The the configuration command line options</param>
-        /// <returns>Program status code</returns>
-        private static int ConfigExecution(ConfigOptions configOptions)
-        {
-            if (configOptions.ShouldList)
-                try
-                {
-                    var configText = File.ReadAllText("mortician.config.json");
-                    Console.WriteLine(configText);
-                    return 0;
-                }
-                catch (IOException e)
-                {
-                    Console.WriteLine(
-                        "Could not load mortician.config.json, use config -k \"some key\" -v \"some value\"");
-                    return 1;
-                }
-
-            var settings = Settings.GetSettings();
-
-            if (configOptions.KeysToDelete != null && configOptions.KeysToDelete.Any())
-            {
-                foreach (var key in configOptions.KeysToDelete)
-                    if (settings.ContainsKey(key))
-                        settings.Remove(key);
-                Settings.SaveSettings(settings);
-                return 0;
-            }
-
-            var pairs = configOptions.Keys.Zip(configOptions.Values, (s, s1) => (s, s1))
-                .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
-
-            var newSet = settings.Union(pairs);
-            settings = newSet
-                .GroupBy(kvp => kvp.Key)
-                .Select(group => new KeyValuePair<string, string>(group.Key, group.Last().Value))
-                .OrderBy(kvp => kvp.Key)
-                .ToDictionary(pair => pair.Key, pair => pair.Value);
-            Settings.SaveSettings(settings);
-
-            return 0;
-        }
-
-        /// <summary>
-        ///     Perform the default execution
-        /// </summary>
-        /// <param name="options">The options.</param>
-        /// <returns>Program status code</returns>
-        private static int DefaultExecution(DefaultOptions options)
-        {
-            var executionLocation = Assembly.GetEntryAssembly().Location;
-            var morticianAssemblyFiles =
-                Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation), "Triage.Mortician.*.dll");
-            var toLoad =
-                morticianAssemblyFiles.Except(AppDomain.CurrentDomain.GetAssemblies().Select(x => x.Location));
-            foreach (var assembly in toLoad)
-                Assembly.LoadFile(assembly);
-
-            var aggregateCatalog = new AggregateCatalog(AppDomain.CurrentDomain.GetAssemblies()
-                .Where(x => x.FullName.StartsWith("Triage.Mortician")).Select(x => new AssemblyCatalog(x)));
-            var compositionContainer = new CompositionContainer(aggregateCatalog);
-
-            var repositoryFactory = new CoreComponentFactory(compositionContainer, new FileInfo(options.DumpFile));
-            repositoryFactory.RegisterRepositories();
-
-            var engine = compositionContainer.GetExportedValue<Engine>();
-            engine.Process().Wait();
-
-            return 0;
         }
     }
 }

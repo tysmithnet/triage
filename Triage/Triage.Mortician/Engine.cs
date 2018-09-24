@@ -1,10 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician
+// Author           : @tysmithnet
+// Created          : 12-17-2017
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 09-18-2018
+// ***********************************************************************
+// <copyright file="Engine.cs" company="">
+//     Copyright ©  2017
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
 using System.ComponentModel.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Common.Logging;
+using Triage.Mortician.Core;
 
 namespace Triage.Mortician
 {
@@ -12,40 +24,14 @@ namespace Triage.Mortician
     ///     Represents the core execution component of the application. It is responsible for executing the analyzers
     ///     in concert with each other.
     /// </summary>
-    [Export]
-    public class Engine
+    /// <seealso cref="IEngine" />
+    [Export(typeof(IEngine))]
+    public class Engine : IEngine
     {
         /// <summary>
         ///     The log
         /// </summary>
         protected ILog Log = LogManager.GetLogger(typeof(Engine));
-
-        /// <summary>
-        ///     Gets or sets the analyzers.
-        /// </summary>
-        /// <value>
-        ///     The analyzers.
-        /// </value>
-        [ImportMany]
-        protected internal IAnalyzer[] Analyzers { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the analysis observers.
-        /// </summary>
-        /// <value>
-        ///     The analysis observers.
-        /// </value>
-        [ImportMany]
-        protected internal IAnalysisObserver[] AnalysisObservers { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the event hub.
-        /// </summary>
-        /// <value>
-        ///     The event hub.
-        /// </value>
-        [Import]
-        protected internal EventHub EventHub { get; set; }
 
         /// <summary>
         ///     Processes the analyzers
@@ -64,92 +50,50 @@ namespace Triage.Mortician
             }
 
             Log.Trace("Engine starting...");
-            var analysisObserverTasks = StartAnalysisObservers(analysisToken);
-            var analyzerTasks = StartAnalyzers(internalToken);
+            var analysisObserversTask = AnalyzerTaskFactory.StartAnalyzers(AnalysisObservers, analysisToken);
+            var analyzersTask = AnalyzerTaskFactory.StartAnalyzers(Analyzers, internalToken);
 
             // analyzer tasks handle the exceptions internally
-            await Task.WhenAll(analyzerTasks);
+            await analyzersTask;
             EventHub.Shutdown();
             try
             {
-                await Task.WhenAll(analysisObserverTasks);
+                await analysisObserversTask;
             }
             catch (TaskCanceledException)
             {
-                // we are expecting this
+                // todo: this is a mistake, analysis observers should be awaited the same
             }
+
             Log.Trace("Execution complete");
         }
 
-        private Task StartAnalysisObservers(CancellationToken cancellationToken)
-        {
-            var tasks = AnalysisObservers.Select(analysisObserver => Task.Run(async () =>
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                var isSetup = false;
-                try
-                {
-                    await analysisObserver.Setup(cancellationToken);
-                    isSetup = true;
-                }
-                catch (Exception e)
-                {
-                    Log.Error(
-                        $"AnalysisObserver Setup Exception: {analysisObserver.GetType().FullName} thew {e.GetType().FullName} - {e.Message}",
-                        e);
-                }
+        /// <summary>
+        ///     Gets or sets the analysis observers.
+        /// </summary>
+        /// <value>The analysis observers.</value>
+        [ImportMany]
+        protected internal IAnalysisObserver[] AnalysisObservers { get; set; }
 
-                if (!isSetup)
-                    return;
+        /// <summary>
+        ///     Gets or sets the analyzers.
+        /// </summary>
+        /// <value>The analyzers.</value>
+        [ImportMany]
+        protected internal IAnalyzer[] Analyzers { get; set; }
 
-                cancellationToken.ThrowIfCancellationRequested();
-                try
-                {
-                    await analysisObserver.Process(cancellationToken);
-                }
-                catch (Exception e)
-                {
-                    Log.Error(
-                        $"AnalysisObserver Process Exception: {analysisObserver.GetType().FullName} threw {e.GetType().FullName} - {e.Message}",
-                        e);
-                }
-            }, cancellationToken));
-            return Task.WhenAll(tasks);
-        }
+        /// <summary>
+        ///     Gets or sets the analyzer task factory.
+        /// </summary>
+        /// <value>The analyzer task factory.</value>
+        [Import]
+        protected internal IAnalyzerTaskFactory AnalyzerTaskFactory { get; set; }
 
-        private IEnumerable<Task> StartAnalyzers(CancellationToken cancellationToken)
-        {
-            return Analyzers.Select(analyzer => Task.Run(async () =>
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                var isSetup = false;
-                try
-                {
-                    await analyzer.Setup(cancellationToken);
-                    isSetup = true;
-                }
-                catch (Exception e)
-                {
-                    Log.Error(
-                        $"Anayler Setup Exception: {analyzer.GetType().FullName} thew {e.GetType().FullName} - {e.Message}",
-                        e);
-                }
-
-                if (!isSetup)
-                    return;
-
-                cancellationToken.ThrowIfCancellationRequested();
-                try
-                {
-                    await analyzer.Process(cancellationToken);
-                }
-                catch (Exception e)
-                {
-                    Log.Error(
-                        $"Analyzer Process Exception: {analyzer.GetType().FullName} threw {e.GetType().FullName} - {e.Message}",
-                        e);
-                }
-            }, cancellationToken));
-        }
+        /// <summary>
+        ///     Gets or sets the event hub.
+        /// </summary>
+        /// <value>The event hub.</value>
+        [Import]
+        protected internal IEventHub EventHub { get; set; }
     }
 }
