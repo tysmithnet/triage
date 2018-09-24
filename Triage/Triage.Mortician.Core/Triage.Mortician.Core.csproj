@@ -75,6 +75,7 @@
     <Compile Include="ClrMdAbstractions\MethodCompilationType.cs" />
     <Compile Include="ClrMdAbstractions\VirtualQueryData.cs" />
     <Compile Include="ClrMdAbstractions\WorkItemKind.cs" />
+    <Compile Include="CodeLocation.cs" />
     <Compile Include="DumpAppDomain.cs" />
     <Compile Include="DumpModule.cs" />
     <Compile Include="DumpObject.cs" />

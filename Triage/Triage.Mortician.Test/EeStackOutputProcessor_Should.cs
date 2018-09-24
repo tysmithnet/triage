@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using FluentAssertions;
+using Triage.Mortician.Core;
 using Triage.Mortician.Reports;
 using Xunit;
 
@@ -7,6 +8,105 @@ namespace Triage.Mortician.Test
 {
     public class EeStackOutputProcessor_Should
     {
+        [Fact]
+        public void Account_For_Frames_With_No_Callee()
+        {
+            // arrange
+            var processor = new EeStackOutputProcessor();
+
+            // act
+            var report = processor.ProcessOutput(HELLO_WORLD);
+
+            // assert
+            report.ThreadsInternal.Count.Should().Be(2);
+        }
+
+        [Fact]
+        public void Extract_Most_Basic_Frame_Type()
+        {
+            // arrange
+            var frameText = @"000000056e7cc800 00007ffc330dcc3a ntdll!LdrpLoadResourceFromAlternativeModule+0x2a2, calling ntdll!_security_check_cookie";
+            var processor = new EeStackOutputProcessor();
+
+            // act
+            var result = processor.ExtractFrame(frameText);
+
+            // assert
+            result.ChildStackPointer.Should().Be(0x000000056e7cc800);
+            result.ReturnAddress.Should().Be(0x00007ffc330dcc3a);
+            result.Caller.Module.Should().Be("ntdll");
+            result.Caller.Method.Should().Be("LdrpLoadResourceFromAlternativeModule");
+            result.Caller.Offset.Should().Be(0x2a2);
+
+            result.Callee.Module.Should().Be("ntdll");
+            result.Callee.Method.Should().Be("_security_check_cookie");
+            result.Callee.Offset.Should().Be(0);
+        }
+
+        [Fact]
+        public void Extract_Frame_With_No_Callee()
+        {
+            // arrange
+            var frameText = @"000000056e7cc800 00007ffc330dcc3a ntdll!LdrpLoadResourceFromAlternativeModule+0x2a2";
+            var processor = new EeStackOutputProcessor();
+
+            // act
+            var result = processor.ExtractFrame(frameText);
+
+            // assert
+            result.ChildStackPointer.Should().Be(0x000000056e7cc800);
+            result.ReturnAddress.Should().Be(0x00007ffc330dcc3a);
+            result.Caller.Module.Should().Be("ntdll");
+            result.Caller.Method.Should().Be("LdrpLoadResourceFromAlternativeModule");
+            result.Caller.Offset.Should().Be(0x2a2);
+
+            result.Callee.Should().BeNull();
+        }
+
+        [Fact]
+        public void Match_Managed_Method_With_No_Callee()
+        {
+            // arrange
+            var frameText = @"000000056e7ce810 00007ffbc079101f (MethodDesc 00007ffbc06887d0 +0x14f DomainBoundILStubClass.IL_STUB_PInvoke(IntPtr, Int32, IntPtr, _MINIDUMP_TYPE, MINIDUMP_EXCEPTION_INFORMATION ByRef, IntPtr, IntPtr))";
+            var processor = new EeStackOutputProcessor();
+
+            // act
+            var result = processor.ExtractFrame(frameText);
+            var codeLocation = result.Caller as ManagedCodeLocation;
+
+            // assert
+            codeLocation.Should().NotBeNull();
+            result.ChildStackPointer.Should().Be(0x000000056e7ce810);
+            result.ReturnAddress.Should().Be(0x00007ffbc079101f);
+            result.Caller.Module.Should().BeNull();
+            result.Caller.Method.Should().Be("DomainBoundILStubClass.IL_STUB_PInvoke(IntPtr, Int32, IntPtr, _MINIDUMP_TYPE, MINIDUMP_EXCEPTION_INFORMATION ByRef, IntPtr, IntPtr)");
+            result.Caller.Offset.Should().Be(0x14f);
+            codeLocation.MethodDescriptor.Should().Be(0x00007ffbc06887d0);
+
+            result.Callee.Should().BeNull();
+        }
+
+        [Fact]
+        public void Match_Managed_Method_With_Callee()
+        {
+            // arrange
+            var frameText = @"000000e49b0fedc0 00007ffbc0790a33 (MethodDesc 00007ffbc06873b0 +0x293 Triage.Mortician.IntegrationTest.DumpHelper.CreateDump(System.String)), calling 00007ffbc0790180 (stub for Triage.Mortician.IntegrationTest.DumpHelper.MiniDumpWriteDump(IntPtr, Int32, IntPtr, _MINIDUMP_TYPE, MINIDUMP_EXCEPTION_INFORMATION ByRef, IntPtr, IntPtr))";
+            var processor = new EeStackOutputProcessor();
+
+            // act
+            var result = processor.ExtractFrame(frameText);
+            var callerLocation = result.Caller as ManagedCodeLocation;
+            var calleeLocation = result.Callee as ManagedCodeLocation;
+
+            // assert
+            callerLocation.Should().NotBeNull();
+            calleeLocation.Should().NotBeNull();
+            result.ChildStackPointer.Should().Be(0x000000e49b0fedc0);
+            result.ReturnAddress.Should().Be(0x00007ffbc0790a33);
+
+        }
+
+        #region Sample !eestack output
         private const string HELLO_WORLD = @"---------------------------------------------
 Thread   0
 Current frame: ntdll!NtGetContextThread+0x14
@@ -148,20 +248,6 @@ Child-SP         RetAddr          Caller, Callee
 000000056efffb20 00007ffc31223034 kernel32!BaseThreadInitThunk+0x14, calling kernel32!guard_dispatch_icall_nop
 000000056efffb50 00007ffc33121461 ntdll!RtlUserThreadStart+0x21, calling ntdll!guard_dispatch_icall_nop
 ";
-
-        [Fact]
-        public void Account_For_Frames_With_No_Callee()
-        {
-            // arrange
-            var processor = new EeStackOutputProcessor();
-
-            // act
-            var report = processor.ProcessOutput(HELLO_WORLD);
-
-            // assert
-            report.ThreadsInternal.Count.Should().Be(2);
-            report.ThreadsInternal[0].StackFramesInternal.First(x => x.Caller == "clr!CallDescrWorkerInternal+0x83")
-                .Callee.Should().BeNull();
-        }
+#endregion
     }
 }

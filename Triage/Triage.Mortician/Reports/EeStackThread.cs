@@ -13,6 +13,7 @@
 // ***********************************************************************
 
 using System.Collections.Generic;
+using Triage.Mortician.Core;
 
 namespace Triage.Mortician.Reports
 {
@@ -21,6 +22,8 @@ namespace Triage.Mortician.Reports
     /// </summary>
     public sealed class EeStackThread
     {
+        public uint Index { get; internal set; }
+
         /// <summary>
         ///     Gets the stack frames.
         /// </summary>
@@ -32,5 +35,7 @@ namespace Triage.Mortician.Reports
         /// </summary>
         /// <value>The stack frames internal.</value>
         internal IList<EeStackFrame> StackFramesInternal { get; set; } = new List<EeStackFrame>();
+
+        public CodeLocation Location { get; internal set; }
     }
 }

@@ -485,6 +485,8 @@ namespace Triage.Mortician
             // todo: save !runaway, !eestack to disk and zip up and send to s3
             Log.Trace("Calling !EEStack");
             var eestackCommandResult = DebuggerProxy.Execute("!eestack");
+            var processor = new EeStackOutputProcessor();
+            var report = processor.ProcessOutput(eestackCommandResult);
             eestackCommandResult = DebuggerProxy.Execute("!eestack");
             var eeStacks = Regex.Split(eestackCommandResult, "---------------------------------------------")
                 .Select(threadInfo => threadInfo.Trim()).Skip(1).ToArray();

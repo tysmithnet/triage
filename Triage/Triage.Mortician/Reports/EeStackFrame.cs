@@ -1,16 +1,4 @@
-﻿// ***********************************************************************
-// Assembly         : Triage.Mortician
-// Author           : @tysmithnet
-// Created          : 09-21-2018
-//
-// Last Modified By : @tysmithnet
-// Last Modified On : 09-21-2018
-// ***********************************************************************
-// <copyright file="EeStackFrame.cs" company="">
-//     Copyright ©  2017
-// </copyright>
-// <summary></summary>
-// ***********************************************************************
+﻿using Triage.Mortician.Core;
 
 namespace Triage.Mortician.Reports
 {
@@ -19,17 +7,8 @@ namespace Triage.Mortician.Reports
     /// </summary>
     public sealed class EeStackFrame
     {
-        /// <summary>
-        ///     Gets the callee.
-        /// </summary>
-        /// <value>The callee.</value>
-        public string Callee { get; internal set; }
-
-        /// <summary>
-        ///     Gets the caller.
-        /// </summary>
-        /// <value>The caller.</value>
-        public string Caller { get; internal set; }
+        public CodeLocation Caller { get; internal set; }
+        public CodeLocation Callee { get; internal set; }
 
         /// <summary>
         ///     Gets the child stack pointer.
@@ -42,5 +21,7 @@ namespace Triage.Mortician.Reports
         /// </summary>
         /// <value>The return address.</value>
         public ulong ReturnAddress { get; internal set; }
+
+        public ulong MethodDescriptor { get; internal set; }
     }
 }

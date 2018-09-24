@@ -34,5 +34,8 @@ namespace Triage.Mortician.Reports
         /// </summary>
         /// <value>The threads internal.</value>
         internal IList<EeStackThread> ThreadsInternal { get; set; } = new List<EeStackThread>();
+
+
+        public EeStackFrame CurrentFrame { get; internal set; }
     }
 }
