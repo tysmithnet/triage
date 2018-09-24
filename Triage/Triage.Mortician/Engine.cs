@@ -62,7 +62,7 @@ namespace Triage.Mortician
             }
             catch (TaskCanceledException)
             {
-                // we are expecting this
+                // todo: this is a mistake, analysis observers should be awaited the same
             }
 
             Log.Trace("Execution complete");
