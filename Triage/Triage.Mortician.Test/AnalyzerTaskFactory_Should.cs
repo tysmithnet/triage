@@ -24,6 +24,7 @@ namespace Triage.Mortician.Test
             // assert
             try
             {
+                await Task.Delay(1000);
                 await task;
             }
             catch (Exception e)
