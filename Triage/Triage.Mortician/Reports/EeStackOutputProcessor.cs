@@ -67,58 +67,46 @@ namespace Triage.Mortician.Reports
         internal EeStackFrame ExtractFrame(string line)
         {
             var frame = new EeStackFrame();
-            var basicMatch = _basicLineRegex.Match(line);
-            if (basicMatch.Success)
+            var managedRegex = new Regex(@"(?<md>[a-fA-F0-9]+)\s(?<off>\+0x[a-fA-F0-9]+)?\s*(?<rest>.*)\)");
+            var managedLineRegex = new Regex(@"\(MethodDesc", RegexOptions.Compiled);
+            var isBothRegex = new Regex(@", calling", RegexOptions.Compiled);
+            var headerRegex = new Regex(@"([a-fA-F0-9]+ ){2}");
+            var header = headerRegex.Match(line);
+            var hexRegex = new Regex(@"[a-fA-F0-9]+", RegexOptions.Compiled);
+            var hexes = hexRegex.Matches(header.Value);
+            var sp = Convert.ToUInt64(hexes[0].Value, 16);
+            var ret = Convert.ToUInt64(hexes[1].Value, 16);
+            frame.ChildStackPointer = sp;
+            frame.ReturnAddress = ret;
+            var body = line.Substring(header.Value.Length);
+            var isManagedLine = managedLineRegex.IsMatch(body);
+            var isBoth = isBothRegex.IsMatch(body);
+            if (isManagedLine)
             {
-                var toMatch = _frameRegex.Match(basicMatch.Groups["to"].Value);
-                var fromMatch = _frameRegex.Match(basicMatch.Groups["from"].Value);
-                frame.ChildStackPointer = Convert.ToUInt64(basicMatch.Groups["sp"].Value, 16);
-                frame.ReturnAddress = Convert.ToUInt64(basicMatch.Groups["ret"].Value, 16);
-                var callerModule = fromMatch.Groups["mod"].Value.Trim();
-                var callerMethod = fromMatch.Groups["meth"].Value.Trim();
-                var callerOffset = Convert.ToUInt64(fromMatch.Groups["off"].Value, 16);
-                frame.Caller = new CodeLocation(callerModule, callerMethod, callerOffset);
-                if (toMatch.Success)
+                if (isBoth)
                 {
-                    var calleeModule = toMatch.Groups["mod"].Value.Trim();
-                    var calleeMethod = toMatch.Groups["meth"].Value.Trim();
-                    var calleeOffset = toMatch.Groups["off"].Success
-                        ? Convert.ToUInt64(toMatch.Groups["off"].Value, 16)
-                        : 0;
-                    frame.Callee = new CodeLocation(calleeModule, calleeMethod, calleeOffset);
-                    return frame;
+                    var halves = isBothRegex.Split(body).Select(x => x.Replace("(MethodDesc", "")).ToArray();
+                    var first = managedRegex.Match(halves[0]);
+                    var second = managedRegex.Match(halves[1]);
+                    var callerMd = Convert.ToUInt64(first.Groups["md"].Value, 16);
+                    var callerOff = first.Groups["off"].Success ? Convert.ToUInt64(first.Groups["off"].Value, 16) : 0;
+                    var calleeMd = Convert.ToUInt64(second.Groups["md"].Value, 16);
+                    var calleeOff = second.Groups["off"].Success ? Convert.ToUInt64(second.Groups["off"].Value, 16) : 0;
+                    var caller = new ManagedCodeLocation(callerMd, callerOff, first.Groups["rest"].Value.Trim());
+                    var callee = new ManagedCodeLocation(calleeMd, calleeOff, second.Groups["rest"].Value.Trim());
+                    frame.Caller = caller;
+                    frame.Callee = callee;
+                }
+                else
+                {
+                    var first = managedRegex.Match(body.Replace("(MethodDesc", ""));
+                    var callerMd = Convert.ToUInt64(first.Groups["md"].Value, 16);
+                    var callerOff = first.Groups["off"].Success ? Convert.ToUInt64(first.Groups["off"].Value, 16) : 0;
+                    var caller = new ManagedCodeLocation(callerMd, callerOff, first.Groups["rest"].Value.Trim());
+                    frame.Caller = caller;
                 }
             }
-
-            var singleManagedMatch = _singleManagedRegex.Match(line);
-            if (singleManagedMatch.Success)
-            {
-                var sp = Convert.ToUInt64(singleManagedMatch.Groups["sp"].Value, 16);
-                var ret = Convert.ToUInt64(singleManagedMatch.Groups["ret"].Value, 16);
-                var md = Convert.ToUInt64(singleManagedMatch.Groups["md"].Value, 16);
-                var offset = Convert.ToUInt64(singleManagedMatch.Groups["off"].Value, 16);
-                var text = singleManagedMatch.Groups["rest"].Value.Trim();
-                frame.ChildStackPointer = sp;
-                frame.ReturnAddress = ret;
-                frame.MethodDescriptor = md;
-                frame.Caller = new ManagedCodeLocation(md, offset, text);
-                return frame;
-            }
-
-            var noTargetMatch = _noTargetRegex.Match(line);
-            if (noTargetMatch.Success)
-            {
-                var fromMatch = _frameRegex.Match(noTargetMatch.Groups["from"].Value);
-                frame.ChildStackPointer = Convert.ToUInt64(noTargetMatch.Groups["sp"].Value, 16);
-                frame.ReturnAddress = Convert.ToUInt64(noTargetMatch.Groups["ret"].Value, 16);
-                var callerModule = fromMatch.Groups["mod"].Value.Trim();
-                var callerMethod = fromMatch.Groups["meth"].Value.Trim();
-                var callerOffset = Convert.ToUInt64(fromMatch.Groups["off"].Value, 16);
-                frame.Caller = new CodeLocation(callerModule, callerMethod, callerOffset);
-                return frame;
-            }
-
-
+            
 
             return frame;
         }
