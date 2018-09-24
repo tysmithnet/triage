@@ -74,11 +74,11 @@ namespace Triage.Mortician
             DebuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
             // todo: this is ugly
             var reloadResult = DebuggerProxy.Execute(@".sympath srv*https://msdl.microsoft.com/download/symbols");
-            reloadResult = DebuggerProxy.Execute(".reload /f /v");
             DebuggerProxy.Execute(".load sosex");
             DebuggerProxy.Execute(".load mex");
             DebuggerProxy.Execute(".load netext");
             var res = DebuggerProxy.Execute("!mu"); // forces sosex to load the appropriate SOS.dll
+            var eeStack = DebuggerProxy.Execute("!eestack"); // todo: figure out a better way to force symbol loading
         }
 
         /// <summary>
