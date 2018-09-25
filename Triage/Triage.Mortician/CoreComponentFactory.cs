@@ -111,6 +111,7 @@ namespace Triage.Mortician
                 throw;
             }
 
+            // todo: do we even know if we handle mini dumps? write an integration test for it
             if (DataTarget.IsMinidump)
                 Log.Warn(
                     "The provided dump is a mini dump and results will not contain any heap information (objects, etc)");

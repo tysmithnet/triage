@@ -14,6 +14,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Common.Logging;
 using Microsoft.Diagnostics.Runtime.Interop;
