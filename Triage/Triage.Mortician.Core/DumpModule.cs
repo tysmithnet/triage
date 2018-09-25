@@ -1,21 +1,6 @@
-﻿// ***********************************************************************
-// Assembly         : Triage.Mortician
-// Author           : @tysmithnet
-// Created          : 09-18-2018
-//
-// Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
-// ***********************************************************************
-// <copyright file="DumpModule.cs" company="">
-//     Copyright ©  2017
-// </copyright>
-// <summary></summary>
-// ***********************************************************************
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace Triage.Mortician.Core
 {

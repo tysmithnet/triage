@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DumpAppDomain_Should.cs" />
+    <Compile Include="DumpModule_Should.cs" />
     <Compile Include="DumpObject_Should.cs" />
     <Compile Include="DumpThread_Should.cs" />
     <Compile Include="DumpTypeKey_Should.cs" />
