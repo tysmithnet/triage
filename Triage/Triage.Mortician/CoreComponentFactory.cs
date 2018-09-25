@@ -400,7 +400,7 @@ namespace Triage.Mortician
                 var dumpThread = new DumpThread
                 {
                     OsId = thread.OSThreadId,
-                    ManagedStackFrames = thread.StackTrace.Select(f => new DumpStackFrame
+                    ManagedStackFramesInternal = thread.StackTrace.Select(f => new DumpStackFrame
                     {
                         IsManaged = f.Kind == ClrStackFrameType.ManagedMethod,
                         InstructionPointer = f.InstructionPointer,
