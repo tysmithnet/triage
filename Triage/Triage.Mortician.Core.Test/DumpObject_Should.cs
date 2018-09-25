@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Xunit;
 
 namespace Triage.Mortician.Core.Test
@@ -12,6 +7,21 @@ namespace Triage.Mortician.Core.Test
     {
         [Fact]
         public void Correctly_Add_A_Reference_Object()
+        {
+            // arrange
+            var first = new DumpObject(0x1337, "Dogs.Corgi.Duke", 0x42, 1);
+            var second = new DumpObject(0x1338, "Dogs.Corgi.Brady", 0x42, 2);
+            first.AddReference(second);
+            second.AddReferencer(first);
+
+            // act
+            // assert
+            first.References.Should().HaveCount(1);
+            second.Referencers.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public void Create_A_Short_Description_Correctly()
         {
             // arrange
             var dumpObject = new DumpObject(0x1337, "Dogs.Corgi.Duke", 0x42, 1);

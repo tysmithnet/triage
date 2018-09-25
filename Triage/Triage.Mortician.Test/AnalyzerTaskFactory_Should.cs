@@ -16,7 +16,8 @@ namespace Triage.Mortician.Test
             // arrange
             var fac = new AnalyzerTaskFactory();
             var analyzers = new[] {new Mock<IAnalyzer>().Object};
-            var cancellationTokenSource = new CancellationTokenSource(0);
+            var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.Cancel(true);
 
             // act
             var task = fac.StartAnalyzers(analyzers, cancellationTokenSource.Token);
