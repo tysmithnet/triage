@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using System.Threading;
 using System.Windows.Forms;
 using Triage.Mortician.IntegrationTest;
 using static System.IO.Path;
