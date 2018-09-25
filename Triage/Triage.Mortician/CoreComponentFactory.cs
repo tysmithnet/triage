@@ -166,7 +166,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="objectHierarchy">The object hierarchy.</param>
         /// <param name="objectStore">The object store.</param>
-        private void EstablishObjectRelationships(Dictionary<ulong, List<ulong>> objectHierarchy,
+        internal void EstablishObjectRelationships(Dictionary<ulong, List<ulong>> objectHierarchy,
             Dictionary<ulong, DumpObject> objectStore)
         {
             Log.Trace("Setting relationship references on the extracted objects");
