@@ -31,7 +31,8 @@ namespace Triage.Mortician.Core
         /// <param name="fullTypeName">Full name of the type.</param>
         /// <param name="size">The size.</param>
         /// <param name="gen">The gc generation 0,1,2,3 (3 is large object heap)</param>
-        public DumpObject(ulong address, string fullTypeName, ulong size, int gen)
+        // todo: this should be created from a factory, lock down ctor
+        public DumpObject(ulong address, string fullTypeName, ulong size, int gen) 
         {
             Address = address;
             FullTypeName = fullTypeName;
@@ -43,7 +44,7 @@ namespace Triage.Mortician.Core
         ///     The objects that reference this object
         /// </summary>
         protected internal ConcurrentDictionary<ulong, DumpObject> ReferencersInternal =
-            new ConcurrentDictionary<ulong, DumpObject>();
+            new ConcurrentDictionary<ulong, DumpObject>(); // todo: don't use concurrent dictionary.. write happens single threaded and reads happen read only
 
         /// <summary>
         ///     The references that this object has
@@ -74,7 +75,7 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <returns>A short description of this object</returns>
         /// <remarks>The return value is intended to be shown on a single line</remarks>
-        protected virtual string ToShortDescription() => $"{FullTypeName} : {Size} : {Address:x8} ({Address})";
+        public virtual string ToShortDescription() => $"{FullTypeName} : {Size} : 0x{Address:x16}";
 
         /// <summary>
         ///     Gets the address of this object

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Triage.Mortician.Core")]
+[assembly: AssemblyTitle("Triage.Mortician.Core.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Triage.Mortician.Core")]
+[assembly: AssemblyProduct("Triage.Mortician.Core.Test")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("2f433d34-bac1-4a64-aec9-46eb112946ea")]
+[assembly: Guid("2667fd6a-8bb3-4098-bf69-37cd1b3c5e9b")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,10 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.0.1.0")]
-[assembly: AssemblyFileVersion("0.0.1.0")]
-
-[assembly: InternalsVisibleTo("Triage.Mortician")]
-[assembly: InternalsVisibleTo("Triage.Mortician.Test")]
-[assembly: InternalsVisibleTo("Triage.Mortician.IntegrationTest")]
-[assembly: InternalsVisibleTo("Triage.Mortician.Core.Test")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
