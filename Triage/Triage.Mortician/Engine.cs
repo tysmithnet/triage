@@ -56,15 +56,7 @@ namespace Triage.Mortician
             // analyzer tasks handle the exceptions internally
             await analyzersTask;
             EventHub.Shutdown();
-            try
-            {
-                await analysisObserversTask;
-            }
-            catch (TaskCanceledException)
-            {
-                // todo: this is a mistake, analysis observers should be awaited the same
-            }
-
+            await analysisObserversTask;
             Log.Trace("Execution complete");
         }
 
