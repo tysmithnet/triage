@@ -3,19 +3,16 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using FluentAssertions.Types;
 using Triage.Mortician.Core;
 using Triage.Mortician.IntegrationTest.Scenarios;
 using Xunit;
 
 namespace Triage.Mortician.IntegrationTest
 {
-    public class HelloWorld_Should
+    public class WinForms_Should
     {
         internal class TestAnalyzer : IAnalyzer
         {
-            public int AppDomainCount { get; set; }
-
             /// <inheritdoc />
             public Task Process(CancellationToken cancellationToken)
             {
@@ -25,6 +22,8 @@ namespace Triage.Mortician.IntegrationTest
 
             /// <inheritdoc />
             public Task Setup(CancellationToken cancellationToken) => Task.CompletedTask;
+
+            public int AppDomainCount { get; set; }
 
             [Import]
             public IDumpAppDomainRepository AppDomainRepo { get; set; }
@@ -49,7 +48,7 @@ namespace Triage.Mortician.IntegrationTest
         public void Perform_Basic_Startup_Without_Failure()
         {
             // arrange
-            var dumpFile = Scenario.HelloWorld.GetDumpFile();
+            var dumpFile = Scenario.WinForms.GetDumpFile();
             var options = new DefaultOptions
             {
                 DumpFile = dumpFile.FullName,
@@ -68,12 +67,6 @@ namespace Triage.Mortician.IntegrationTest
             // assert
             result.Should().Be(0);
             analyzer.AppDomainCount.Should().Be(3);
-            analyzer.TypeRepo.Get().FirstOrDefault(t => t.Name == "Triage.TestApplications.Console.Person").Should()
-                .NotBeNull();
-            analyzer.TypeRepo.Get().FirstOrDefault(t => t.Name == "Triage.TestApplications.Console.Address").Should()
-                .NotBeNull();
-            analyzer.ThreadRepo.Get().Any(t =>
-                t.ManagedStackFrames.Any(f => f.DisplayString.Contains("Triage.TestApplications.Console.Program.Main"))).Should().BeTrue();
         }
     }
 }

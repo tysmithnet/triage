@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Threading;
 using System.Windows.Forms;
 using Triage.Mortician.IntegrationTest;
 using static System.IO.Path;
@@ -19,7 +20,8 @@ namespace Triage.TestApplications.WinForms
             Controls.Add(button);
             DumpHelper.CreateDump(Combine(
                 ConfigurationManager.AppSettings[IntPtr.Size == 4 ? "DumpLocationX86" : "DumpLocationX64"],
-                "helloworld.dmp"));
+                "winforms.dmp"));
+            Environment.Exit(0);
         }
     }
 }
