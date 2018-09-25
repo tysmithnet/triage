@@ -58,6 +58,6 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     To string.
         /// </summary>
         /// <returns>The A.B.C.D version prepended with 'v'.</returns>
-        public override string ToString() => string.Format("v{0}.{1}.{2}.{3:D2}", Major, Minor, Revision, Patch);
+        public override string ToString() => $"v{Major}.{Minor}.{Revision}.{Patch}";
     }
 }
