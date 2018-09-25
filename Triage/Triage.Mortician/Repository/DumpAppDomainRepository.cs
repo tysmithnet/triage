@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-25-2018
 // ***********************************************************************
 // <copyright file="DumpAppDomainRepository.cs" company="">
 //     Copyright ©  2017
@@ -21,6 +21,7 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     An object capable of managing the discovered app domains from the memory dump
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Core.IDumpAppDomainRepository" />
     /// <seealso cref="IDumpAppDomainRepository" />
     public class DumpAppDomainRepository : IDumpAppDomainRepository
     {

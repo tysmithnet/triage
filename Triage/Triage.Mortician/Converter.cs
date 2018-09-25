@@ -4,7 +4,7 @@
 // Created          : 09-18-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-20-2018
+// Last Modified On : 09-25-2018
 // ***********************************************************************
 // <copyright file="Converter.cs" company="">
 //     Copyright ©  2017
@@ -33,6 +33,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="architecture">The architecture.</param>
         /// <returns>Architecture.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">architecture - The Architecture contract does not match CLRMd.</exception>
         /// <exception cref="ArgumentOutOfRangeException">architecture - The Architecture contract does not match CLRMd.</exception>
         public Architecture Convert(ClrMd.Architecture architecture)
         {
@@ -57,6 +58,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="segmentType">Type of the segment.</param>
         /// <returns>GcSegmentType.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">segmentType - null</exception>
         /// <exception cref="ArgumentOutOfRangeException">segmentType - null</exception>
         public GcSegmentType Convert(ClrMd.GCSegmentType segmentType)
         {
@@ -246,6 +248,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="blockingReason">The blocking reason.</param>
         /// <returns>BlockingReason.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">blockingReason - The BlockingReason contract does not match CLRMd.</exception>
         /// <exception cref="ArgumentOutOfRangeException">blockingReason - The BlockingReason contract does not match CLRMd.</exception>
         public BlockingReason Convert(ClrMd.BlockingReason blockingReason)
         {
@@ -297,6 +300,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="clrElementType">Type of the color element.</param>
         /// <returns>ClrElementType.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">clrElementType - null</exception>
         /// <exception cref="ArgumentOutOfRangeException">clrElementType - null</exception>
         public ClrElementType Convert(ClrMd.ClrElementType clrElementType)
         {
@@ -358,6 +362,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="flavor">The flavor.</param>
         /// <returns>ClrFlavor.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">flavor - null</exception>
         /// <exception cref="ArgumentOutOfRangeException">flavor - null</exception>
         public ClrFlavor Convert(ClrMd.ClrFlavor flavor)
         {
@@ -389,6 +394,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="memoryRegionType">Type of the memory region.</param>
         /// <returns>ClrMemoryRegionType.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">memoryRegionType - null</exception>
         /// <exception cref="ArgumentOutOfRangeException">memoryRegionType - null</exception>
         public ClrMemoryRegionType Convert(ClrMd.ClrMemoryRegionType memoryRegionType)
         {
@@ -434,6 +440,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="policy">The policy.</param>
         /// <returns>ClrRootStackwalkPolicy.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">policy - null</exception>
         /// <exception cref="ArgumentOutOfRangeException">policy - null</exception>
         public ClrRootStackwalkPolicy Convert(ClrMd.ClrRootStackwalkPolicy policy)
         {
@@ -457,6 +464,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>ClrStackFrameType.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">type - null</exception>
         /// <exception cref="ArgumentOutOfRangeException">type - null</exception>
         public ClrStackFrameType Convert(ClrMd.ClrStackFrameType type)
         {
@@ -478,6 +486,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="mode">The mode.</param>
         /// <returns>GcMode.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">mode - null</exception>
         /// <exception cref="ArgumentOutOfRangeException">mode - null</exception>
         public GcMode Convert(ClrMd.GcMode mode)
         {
@@ -497,6 +506,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="kind">The kind.</param>
         /// <returns>GcRootKind.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">kind - null</exception>
         /// <exception cref="ArgumentOutOfRangeException">kind - null</exception>
         public GcRootKind Convert(ClrMd.GCRootKind kind)
         {
@@ -528,6 +538,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="compilationType">Type of the compilation.</param>
         /// <returns>MethodCompilationType.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">compilationType - null</exception>
         /// <exception cref="ArgumentOutOfRangeException">compilationType - null</exception>
         public MethodCompilationType Convert(ClrMd.MethodCompilationType compilationType)
         {
@@ -911,6 +922,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="kind">The kind.</param>
         /// <returns>WorkItemKind.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">kind - null</exception>
         /// <exception cref="ArgumentOutOfRangeException">kind - null</exception>
         public WorkItemKind Convert(ClrMd.WorkItemKind kind)
         {
@@ -936,6 +948,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="handleType">Type of the handle.</param>
         /// <returns>HandleType.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">handleType - null</exception>
         /// <exception cref="ArgumentOutOfRangeException">handleType - null</exception>
         public HandleType Convert(ClrMd.HandleType handleType)
         {

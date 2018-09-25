@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-25-2018
 // ***********************************************************************
 // <copyright file="DumpInformationRepository.cs" company="">
 //     Copyright ©  2017
@@ -25,6 +25,7 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     Represents a collection of high level information about the dump being analyzed
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Core.IDumpInformationRepository" />
     /// <seealso cref="IDumpInformationRepository" />
     [Export]
     public class DumpInformationRepository : IDumpInformationRepository
