@@ -66,6 +66,7 @@
     <Compile Include="DumpTypeKey_Should.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VersionInfo_Should.cs" />
+    <Compile Include="VirtualQueryData_Should.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Triage.Mortician.Core\Triage.Mortician.Core.csproj">
