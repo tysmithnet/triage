@@ -189,6 +189,9 @@
     <Compile Include="Reports\IEeStackOutputProcessor.cs" />
     <Compile Include="Reports\IReport.cs" />
     <Compile Include="Reports\IStandardReportOutputProcessor.cs" />
+    <Compile Include="Reports\RunawayLine.cs" />
+    <Compile Include="Reports\RunawayOutputProcessor.cs" />
+    <Compile Include="Reports\RunawayReport.cs" />
     <Compile Include="Repository\DumpAppDomainRepository.cs" />
     <Compile Include="Repository\DumpModuleRepository.cs" />
     <Compile Include="Repository\DumpThreadRepository.cs" />
