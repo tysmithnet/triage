@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using FluentAssertions;
+using Triage.Mortician.Domain;
 using Triage.Mortician.Reports;
 using Xunit;
 

@@ -12,7 +12,7 @@
 // <summary></summary>
 // ***********************************************************************
 
-namespace Triage.Mortician.Reports
+namespace Triage.Mortician.Domain
 {
     /// <summary>
     ///     Class DumpDomainModule. This class cannot be inherited.
