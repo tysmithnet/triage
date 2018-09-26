@@ -63,11 +63,18 @@ namespace Triage.Mortician
             {
                 DataTarget = DataTarget.LoadCrashDump(dumpFile.FullName);
             }
+            catch (IOException e)
+            {
+                var message =
+                    $"Unable to open crash dump: {e.Message}, Does the dump file exist?";
+                Log.Fatal(message);
+                throw new ApplicationException(message, e);
+            }
             catch (Exception e)
             {
-                // todo: should check this ahead of time
+                // todo: support x86
                 var message =
-                    $"Unable to open crash dump: {e.Message}, Does the dump file exist and do you have the x64 folder of the Windows Debugging Kit in your path?";
+                    $"Unable to open crash dump: {e.Message}, Do you have x64 folder of the Windows Debugging Kit in your path?";
                 Log.Fatal(message);
                 throw new ApplicationException(message, e);
             }
@@ -89,7 +96,6 @@ namespace Triage.Mortician
         // todo: this is too big
         public void RegisterRepositories(DefaultOptions options, IEnumerable<ISettings> settings = null)
         {
-            // todo: check symbols
             var heapObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
 
             ClrRuntime runtime;
