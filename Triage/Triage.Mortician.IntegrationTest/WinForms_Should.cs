@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using System.Threading;
@@ -21,20 +20,18 @@ namespace Triage.Mortician.IntegrationTest
             /// <inheritdoc />
             public Task Process(CancellationToken cancellationToken)
             {
-                if (ObjectRepo.Get().First(x => x.FullTypeName.Contains("System.Windows.Forms.Button")) is ButtonDumpObject button)
-                {
-                    ButtonText = button.Text;
-                }
+                if (ObjectRepo.Get().First(x => x.FullTypeName.Contains("System.Windows.Forms.Button")) is
+                    ButtonDumpObject button) ButtonText = button.Text;
                 return Task.CompletedTask;
             }
 
             /// <inheritdoc />
             public Task Setup(CancellationToken cancellationToken) => Task.CompletedTask;
 
-            public string ButtonText { get; set; }
-
             [Import]
             public IDumpAppDomainRepository AppDomainRepo { get; set; }
+
+            public string ButtonText { get; set; }
 
             [Import]
             public IDumpInformationRepository DumpInfoRepo { get; set; }
@@ -56,27 +53,28 @@ namespace Triage.Mortician.IntegrationTest
         internal class ButtonExtractor : IDumpObjectExtractor
         {
             /// <inheritdoc />
-            public bool CanExtract(IClrObject clrObject, IClrRuntime clrRuntime)
-            {
-                return clrObject.Type.Name == "System.Windows.Forms.Button";
-            }
+            public bool CanExtract(IClrObject clrObject, IClrRuntime clrRuntime) =>
+                clrObject.Type.Name == "System.Windows.Forms.Button";
 
             /// <inheritdoc />
             public DumpObject Extract(IClrObject clrObject, IClrRuntime clrRuntime)
             {
                 var text = clrObject.GetStringField("text");
-                return new ButtonDumpObject(clrObject.Address, clrObject.Type.Name, clrObject.Size, clrRuntime.Heap.GetGeneration(clrObject.Address), text);
+                return new ButtonDumpObject(clrObject.Address, clrObject.Type.Name, clrObject.Size,
+                    clrRuntime.Heap.GetGeneration(clrObject.Address), text);
             }
         }
 
         internal class ButtonDumpObject : DumpObject
         {
-            public string Text { get; set; }
             /// <inheritdoc />
-            public ButtonDumpObject(ulong address, string fullTypeName, ulong size, int gen, string text) : base(address, fullTypeName, size, gen)
+            public ButtonDumpObject(ulong address, string fullTypeName, ulong size, int gen, string text) : base(
+                address, fullTypeName, size, gen)
             {
                 Text = text;
             }
+
+            public string Text { get; set; }
         }
 
         [Fact]
@@ -86,14 +84,13 @@ namespace Triage.Mortician.IntegrationTest
             var dumpFile = Scenario.WinForms.GetDumpFile();
             var options = new DefaultOptions
             {
-                AdditionalTypes = new []
+                AdditionalTypes = new[]
                 {
                     typeof(ButtonExtractor),
                     typeof(TestAnalyzer)
                 },
                 DumpFile = dumpFile.FullName,
-                SettingsFile = "Settings/Mortician_Should.json",
-
+                SettingsFile = "Settings/Mortician_Should.json"
             };
 
             // act

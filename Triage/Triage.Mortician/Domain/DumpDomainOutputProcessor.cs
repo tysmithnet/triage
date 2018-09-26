@@ -16,12 +16,12 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Triage.Mortician.Reports
+namespace Triage.Mortician.Domain
 {
     /// <summary>
     ///     Class DumpDomainOutputProcessor.
     /// </summary>
-    /// <seealso cref="Triage.Mortician.Reports.IDumpDomainOutputProcessor" />
+    /// <seealso cref="IDumpDomainOutputProcessor" />
     /// <seealso cref="IDumpDomainOutputProcessor" />
     public class DumpDomainOutputProcessor : IDumpDomainOutputProcessor
     {

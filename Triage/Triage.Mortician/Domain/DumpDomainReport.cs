@@ -13,8 +13,9 @@
 // ***********************************************************************
 
 using System.Collections.Generic;
+using Triage.Mortician.Reports;
 
-namespace Triage.Mortician.Reports
+namespace Triage.Mortician.Domain
 {
     /// <summary>
     ///     Class DumpDomainReport. This class cannot be inherited.

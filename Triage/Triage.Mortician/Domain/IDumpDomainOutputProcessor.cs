@@ -12,7 +12,9 @@
 // <summary></summary>
 // ***********************************************************************
 
-namespace Triage.Mortician.Reports
+using Triage.Mortician.Reports;
+
+namespace Triage.Mortician.Domain
 {
     /// <summary>
     ///     Interface IDumpDomainOutputProcessor

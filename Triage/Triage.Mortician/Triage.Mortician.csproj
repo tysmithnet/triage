@@ -160,11 +160,11 @@
     <Compile Include="DefaultOptions.cs" />
     <Compile Include="Domain\DebuggerProxy.cs" />
     <Compile Include="Domain\DefaultObjectExtractor.cs" />
-    <Compile Include="Reports\DumpDomainAppDomain.cs" />
-    <Compile Include="Reports\DumpDomainAssembly.cs" />
-    <Compile Include="Reports\DumpDomainModule.cs" />
-    <Compile Include="Reports\DumpDomainOutputProcessor.cs" />
-    <Compile Include="Reports\DumpDomainReport.cs" />
+    <Compile Include="Domain\DumpDomainAppDomain.cs" />
+    <Compile Include="Domain\DumpDomainAssembly.cs" />
+    <Compile Include="Domain\DumpDomainModule.cs" />
+    <Compile Include="Domain\DumpDomainOutputProcessor.cs" />
+    <Compile Include="Domain\DumpDomainReport.cs" />
     <Compile Include="Reports\EeStackFrame.cs" />
     <Compile Include="Reports\EeStackOutputProcessor.cs" />
     <Compile Include="Reports\EeStackReport.cs" />
@@ -185,7 +185,7 @@
     <Compile Include="Adapters\PeFileAdapter.cs" />
     <Compile Include="Adapters\RcwDataAdapter.cs" />
     <Compile Include="Adapters\MemoryRegionAdapter.cs" />
-    <Compile Include="Reports\IDumpDomainOutputProcessor.cs" />
+    <Compile Include="Domain\IDumpDomainOutputProcessor.cs" />
     <Compile Include="Reports\IEeStackOutputProcessor.cs" />
     <Compile Include="Reports\IReport.cs" />
     <Compile Include="Reports\IStandardReportOutputProcessor.cs" />
