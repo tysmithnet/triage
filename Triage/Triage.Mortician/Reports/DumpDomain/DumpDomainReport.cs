@@ -13,9 +13,8 @@
 // ***********************************************************************
 
 using System.Collections.Generic;
-using Triage.Mortician.Reports;
 
-namespace Triage.Mortician.Domain
+namespace Triage.Mortician.Reports.DumpDomain
 {
     /// <summary>
     ///     Class DumpDomainReport. This class cannot be inherited.
@@ -52,5 +51,8 @@ namespace Triage.Mortician.Domain
         /// </summary>
         /// <value>The application domains internal.</value>
         internal IList<DumpDomainAppDomain> AppDomainsInternal { get; set; } = new List<DumpDomainAppDomain>();
+
+        /// <inheritdoc />
+        public string RawOutput { get; }
     }
 }

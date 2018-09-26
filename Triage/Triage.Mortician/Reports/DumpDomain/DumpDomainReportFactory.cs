@@ -15,15 +15,16 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Triage.Mortician.Domain;
 
-namespace Triage.Mortician.Domain
+namespace Triage.Mortician.Reports.DumpDomain
 {
     /// <summary>
     ///     Class DumpDomainOutputProcessor.
     /// </summary>
     /// <seealso cref="IDumpDomainOutputProcessor" />
     /// <seealso cref="IDumpDomainOutputProcessor" />
-    public class DumpDomainOutputProcessor : IDumpDomainOutputProcessor
+    public class DumpDomainReportFactory : IReportFactory
     {
         /// <summary>
         ///     The assembly start regex
@@ -107,6 +108,11 @@ namespace Triage.Mortician.Domain
         /// </summary>
         internal Regex SystemDomainRegex =
             new Regex(@"^System Domain:\s*(?<addr>[a-fA-F0-9]+)\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
+
+        public IReport CreateReport(DebuggerProxy debugger)
+        {
+            return ProcessOutput(debugger.Execute("!dumpdomain"));
+        }
 
         /// <summary>
         ///     Processes the output.

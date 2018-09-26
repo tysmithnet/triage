@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Triage.Mortician.Reports
+namespace Triage.Mortician.Reports.Runaway
 {
     /// <summary>
     ///     Class RunawayLine.

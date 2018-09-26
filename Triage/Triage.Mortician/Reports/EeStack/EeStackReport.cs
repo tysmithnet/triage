@@ -4,7 +4,7 @@
 // Created          : 09-21-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-24-2018
+// Last Modified On : 09-26-2018
 // ***********************************************************************
 // <copyright file="EeStackReport.cs" company="">
 //     Copyright ©  2017
@@ -14,7 +14,7 @@
 
 using System.Collections.Generic;
 
-namespace Triage.Mortician.Reports
+namespace Triage.Mortician.Reports.EeStack
 {
     /// <summary>
     ///     Class EeStackReport. This class cannot be inherited.
@@ -23,7 +23,12 @@ namespace Triage.Mortician.Reports
     /// <seealso cref="IReport" />
     public sealed class EeStackReport : IReport
     {
-        
+        /// <summary>
+        ///     Gets the raw output.
+        /// </summary>
+        /// <value>The raw output.</value>
+        /// <inheritdoc />
+        public string RawOutput { get; internal set; }
 
         /// <summary>
         ///     Gets the threads.

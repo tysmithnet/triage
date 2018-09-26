@@ -16,15 +16,16 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Triage.Mortician.Core;
+using Triage.Mortician.Domain;
 
-namespace Triage.Mortician.Reports
+namespace Triage.Mortician.Reports.EeStack
 {
     /// <summary>
     ///     Class EeStackOutputProcessor.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Reports.IEeStackOutputProcessor" />
     /// <seealso cref="IEeStackOutputProcessor" />
-    public class EeStackOutputProcessor : IEeStackOutputProcessor
+    public class EeStackReportFactory : IReportFactory
     {
         /// <summary>
         ///     The frame regex
@@ -78,7 +79,11 @@ namespace Triage.Mortician.Reports
         /// <returns>EeStackReport.</returns>
         public EeStackReport ProcessOutput(string eeStackOutput)
         {
-            var report = new EeStackReport();
+            var report = new EeStackReport()
+            {
+                RawOutput = eeStackOutput
+            };
+
             var threadChunks = GetThreadChunks(eeStackOutput);
 
             foreach (var chunk in threadChunks)
@@ -207,6 +212,13 @@ namespace Triage.Mortician.Reports
             var method = nativeMatch.Groups["meth"].Value;
             var offset = nativeMatch.Groups["off"].Success ? Convert.ToUInt64(nativeMatch.Groups["off"].Value, 16) : 0;
             return new CodeLocation(module, method, offset);
+        }
+
+        /// <inheritdoc />
+        public IReport CreateReport(DebuggerProxy debugger)
+        {
+            var output = debugger.Execute("!eestack");
+            return ProcessOutput(output);
         }
     }
 }

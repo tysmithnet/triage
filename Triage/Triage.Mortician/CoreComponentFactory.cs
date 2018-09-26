@@ -25,6 +25,9 @@ using Newtonsoft.Json;
 using Triage.Mortician.Core;
 using Triage.Mortician.Domain;
 using Triage.Mortician.Reports;
+using Triage.Mortician.Reports.DumpDomain;
+using Triage.Mortician.Reports.EeStack;
+using Triage.Mortician.Reports.Runaway;
 using Triage.Mortician.Repository;
 
 namespace Triage.Mortician
@@ -205,7 +208,7 @@ namespace Triage.Mortician
         {
             Log.Trace("Calling !EEStack");
             var eestackCommandResult = DebuggerProxy.Execute("!eestack");
-            var processor = new EeStackOutputProcessor();
+            var processor = new EeStackReportFactory();
             var report = processor.ProcessOutput(eestackCommandResult);
             foreach (var eeStackThread in report.Threads)
             {
@@ -229,7 +232,7 @@ namespace Triage.Mortician
         {
             Log.Trace("Calling !runaway");
             var runawayOutput = DebuggerProxy.Execute("!runaway 3");
-            var runawayOutputProcessor = new RunawayOutputProcessor();
+            var runawayOutputProcessor = new RunawayReportFactory();
             var runawayReport = runawayOutputProcessor.ProcessOutput(runawayOutput);
             foreach (var runawayReportRunawayLine in runawayReport.RunawayLines)
             {
@@ -276,7 +279,7 @@ namespace Triage.Mortician
         private void SetupAppDomains(Dictionary<ulong, DumpAppDomain> appDomainStore)
         {
             var dumpdomainResults = DebuggerProxy.Execute("!dumpdomain"); // todo: need an abstraction over "reports"
-            var processor = new DumpDomainOutputProcessor();
+            var processor = new DumpDomainReportFactory();
             var results = processor.ProcessOutput(dumpdomainResults);
             foreach (var current in results.AppDomains)
                 if (!appDomainStore.ContainsKey(current.Address))

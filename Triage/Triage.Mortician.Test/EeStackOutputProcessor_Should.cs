@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Triage.Mortician.Core;
 using Triage.Mortician.Reports;
+using Triage.Mortician.Reports.EeStack;
 using Xunit;
 using Xunit.Sdk;
 
@@ -13,7 +14,7 @@ namespace Triage.Mortician.Test
         public void Extract_The_Correct_Number_Of_Items()
         {
             // arrange
-            var processor = new EeStackOutputProcessor();
+            var processor = new EeStackReportFactory();
 
             // act
             var report = processor.ProcessOutput(HELLO_WORLD);
@@ -28,7 +29,7 @@ namespace Triage.Mortician.Test
         public void Extract_The_Correct_Number_Of_Items2()
         {
             // arrange
-            var processor = new EeStackOutputProcessor();
+            var processor = new EeStackReportFactory();
 
             // act
             var report = processor.ProcessOutput(IIS_EXAMPLE);
@@ -53,7 +54,7 @@ w3tp!THREAD_POOL::PostCompletion+0x86, calling kernel32!GetQueuedCompletionStatu
 000000f66b77fb40 00007fffb7d92774 kernel32!BaseThreadInitThunk+0x14, calling ntdll!LdrpDispatchUserCallTarget
 000000f66b77fb70 00007fffb8180d51 ntdll!RtlUserThreadStart+0x21, calling ntdll!LdrpDispatchUserCallTarget
 ";
-            var processor = new EeStackOutputProcessor();
+            var processor = new EeStackReportFactory();
 
             // act
             var thread = processor.ExtractThread(textWithErrors);
@@ -67,7 +68,7 @@ w3tp!THREAD_POOL::PostCompletion+0x86, calling kernel32!GetQueuedCompletionStatu
         {
             // arrange
             var frameText = @"000000f66cabeaa0 00007fff9ef6706a (MethodDesc 00007fff9ebc6a90 +0x1a System.MulticastDelegate.CtorOpened(System.Object, IntPtr, IntPtr)), calling clr!JIT_WriteBarrier";
-            var processor = new EeStackOutputProcessor();
+            var processor = new EeStackReportFactory();
 
             // act
             var result = processor.ExtractFrame(frameText);
@@ -93,7 +94,7 @@ w3tp!THREAD_POOL::PostCompletion+0x86, calling kernel32!GetQueuedCompletionStatu
         {
             // arrange
             var frameText = @"000000056e7cc800 00007ffc330dcc3a ntdll!LdrpLoadResourceFromAlternativeModule+0x2a2, calling ntdll!_security_check_cookie";
-            var processor = new EeStackOutputProcessor();
+            var processor = new EeStackReportFactory();
 
             // act
             var result = processor.ExtractFrame(frameText);
@@ -115,7 +116,7 @@ w3tp!THREAD_POOL::PostCompletion+0x86, calling kernel32!GetQueuedCompletionStatu
         {
             // arrange
             var frameText = @"000000056e7cc800 00007ffc330dcc3a ntdll!LdrpLoadResourceFromAlternativeModule+0x2a2";
-            var processor = new EeStackOutputProcessor();
+            var processor = new EeStackReportFactory();
 
             // act
             var result = processor.ExtractFrame(frameText);
@@ -135,7 +136,7 @@ w3tp!THREAD_POOL::PostCompletion+0x86, calling kernel32!GetQueuedCompletionStatu
         {
             // arrange
             var frameText = @"000000056e7ce810 00007ffbc079101f (MethodDesc 00007ffbc06887d0 +0x14f DomainBoundILStubClass.IL_STUB_PInvoke(IntPtr, Int32, IntPtr, _MINIDUMP_TYPE, MINIDUMP_EXCEPTION_INFORMATION ByRef, IntPtr, IntPtr))";
-            var processor = new EeStackOutputProcessor();
+            var processor = new EeStackReportFactory();
 
             // act
             var result = processor.ExtractFrame(frameText);
@@ -158,7 +159,7 @@ w3tp!THREAD_POOL::PostCompletion+0x86, calling kernel32!GetQueuedCompletionStatu
         {
             // arrange
             var frameText = @"000000e49b0fedc0 00007ffbc0790a33 (MethodDesc 00007ffbc06873b0 +0x293 Triage.Mortician.IntegrationTest.DumpHelper.CreateDump(System.String)), calling 00007ffbc0790180 (stub for Triage.Mortician.IntegrationTest.DumpHelper.MiniDumpWriteDump(IntPtr, Int32, IntPtr, _MINIDUMP_TYPE, MINIDUMP_EXCEPTION_INFORMATION ByRef, IntPtr, IntPtr))";
-            var processor = new EeStackOutputProcessor();
+            var processor = new EeStackReportFactory();
 
             // act
             var result = processor.ExtractFrame(frameText);

@@ -15,14 +15,15 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Triage.Mortician.Domain;
 
-namespace Triage.Mortician.Reports
+namespace Triage.Mortician.Reports.Runaway
 {
     /// <summary>
     ///     Class RunawayOutputProcessor.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Reports.IStandardReportOutputProcessor{Triage.Mortician.Reports.RunawayReport}" />
-    public class RunawayOutputProcessor : IStandardReportOutputProcessor<RunawayReport>
+    public class RunawayReportFactory : IReportFactory
     {
         /// <summary>
         ///     The line regex
@@ -39,7 +40,10 @@ namespace Triage.Mortician.Reports
         /// <inheritdoc />
         public RunawayReport ProcessOutput(string output)
         {
-            var report = new RunawayReport();
+            var report = new RunawayReport()
+            {
+                RawOutput = output
+            };
             var modes = Regex.Split(output, "Kernel Mode Time");
             var matches = LineRegex.Matches(modes[0]);
             foreach (Match match in matches)
@@ -71,6 +75,13 @@ namespace Triage.Mortician.Reports
             }
 
             return report;
+        }
+
+        /// <inheritdoc />
+        public IReport CreateReport(DebuggerProxy debugger)
+        {
+            var output = debugger.Execute("!runaway 3");
+            return ProcessOutput(output);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Triage.Mortician.Reports;
+using Triage.Mortician.Reports.Runaway;
 using Xunit;
 
 namespace Triage.Mortician.Test
@@ -15,7 +16,7 @@ namespace Triage.Mortician.Test
         public void Collect_Both_UserTime_And_KernelTime()
         {
             // arrange
-            var processor = new RunawayOutputProcessor();
+            var processor = new RunawayReportFactory();
 
             // act
             var report = processor.ProcessOutput(BASIC0);
