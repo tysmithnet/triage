@@ -57,7 +57,7 @@ namespace Triage.Mortician.Reports
         ///     The is caller and callee regex
         /// </summary>
         private static readonly Regex IsCallerAndCalleeRegex = new Regex(@", calling", RegexOptions.Compiled);
-        
+
         /// <summary>
         ///     The managed regex
         /// </summary>
@@ -118,13 +118,8 @@ namespace Triage.Mortician.Reports
                 else if (callerNative.Success) frame.Caller = ExtractNativeCodeLocation(callerNative);
 
                 if (calleeManaged.Success)
-                {
                     frame.Callee = ExtractManagedCodeLocation(calleeManaged);
-                }
-                else if (calleeNative.Success)
-                {
-                    frame.Callee = ExtractNativeCodeLocation(calleeNative);
-                }
+                else if (calleeNative.Success) frame.Callee = ExtractNativeCodeLocation(calleeNative);
             }
             // caller only
             else

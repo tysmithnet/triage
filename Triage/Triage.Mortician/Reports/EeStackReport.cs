@@ -4,7 +4,7 @@
 // Created          : 09-21-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-21-2018
+// Last Modified On : 09-24-2018
 // ***********************************************************************
 // <copyright file="EeStackReport.cs" company="">
 //     Copyright ©  2017
@@ -24,6 +24,12 @@ namespace Triage.Mortician.Reports
     public sealed class EeStackReport : IReport
     {
         /// <summary>
+        ///     Gets the current frame.
+        /// </summary>
+        /// <value>The current frame.</value>
+        public EeStackFrame CurrentFrame { get; internal set; }
+
+        /// <summary>
         ///     Gets the threads.
         /// </summary>
         /// <value>The threads.</value>
@@ -34,8 +40,5 @@ namespace Triage.Mortician.Reports
         /// </summary>
         /// <value>The threads internal.</value>
         internal IList<EeStackThread> ThreadsInternal { get; set; } = new List<EeStackThread>();
-
-
-        public EeStackFrame CurrentFrame { get; internal set; }
     }
 }

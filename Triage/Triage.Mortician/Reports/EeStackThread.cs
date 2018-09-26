@@ -4,7 +4,7 @@
 // Created          : 09-21-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-21-2018
+// Last Modified On : 09-24-2018
 // ***********************************************************************
 // <copyright file="EeStackThread.cs" company="">
 //     Copyright ©  2017
@@ -22,7 +22,17 @@ namespace Triage.Mortician.Reports
     /// </summary>
     public sealed class EeStackThread
     {
+        /// <summary>
+        ///     Gets the index.
+        /// </summary>
+        /// <value>The index.</value>
         public uint Index { get; internal set; }
+
+        /// <summary>
+        ///     Gets the location.
+        /// </summary>
+        /// <value>The location.</value>
+        public CodeLocation Location { get; internal set; }
 
         /// <summary>
         ///     Gets the stack frames.
@@ -35,7 +45,5 @@ namespace Triage.Mortician.Reports
         /// </summary>
         /// <value>The stack frames internal.</value>
         internal IList<EeStackFrame> StackFramesInternal { get; set; } = new List<EeStackFrame>();
-
-        public CodeLocation Location { get; internal set; }
     }
 }
