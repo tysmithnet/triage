@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Triage.Mortician.Test
 {
-    public class DumpDomainOutputProcessor_Should
+    public class DumpDomainReportFactory_Should
     {
         public const string HELLO_WORLD = @"PDB symbol for clr.dll not loaded
 --------------------------------------

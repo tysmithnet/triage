@@ -8,7 +8,7 @@ using Xunit.Sdk;
 
 namespace Triage.Mortician.Test
 {
-    public class EeStackOutputProcessor_Should
+    public class EeStackReportFactory_Should
     {
         [Fact]
         public void Extract_The_Correct_Number_Of_Items()
