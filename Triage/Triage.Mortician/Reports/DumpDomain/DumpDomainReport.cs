@@ -13,6 +13,7 @@
 // ***********************************************************************
 
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 
 namespace Triage.Mortician.Reports.DumpDomain
 {
@@ -20,6 +21,8 @@ namespace Triage.Mortician.Reports.DumpDomain
     ///     Class DumpDomainReport. This class cannot be inherited.
     /// </summary>
     /// <seealso cref="IReport" />
+    [Export(typeof(IReport))]
+    [Export]
     public sealed class DumpDomainReport : IReport
     {
         /// <summary>

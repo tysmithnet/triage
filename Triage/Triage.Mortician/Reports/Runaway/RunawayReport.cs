@@ -13,6 +13,7 @@
 // ***********************************************************************
 
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 
 namespace Triage.Mortician.Reports.Runaway
 {
@@ -20,6 +21,8 @@ namespace Triage.Mortician.Reports.Runaway
     ///     Class RunawayReport.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Reports.IReport" />
+    [Export(typeof(IReport))]
+    [Export]
     public class RunawayReport : IReport
     {
         /// <summary>
