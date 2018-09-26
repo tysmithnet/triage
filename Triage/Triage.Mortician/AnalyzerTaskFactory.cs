@@ -4,7 +4,7 @@
 // Created          : 09-18-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-24-2018
 // ***********************************************************************
 // <copyright file="AnalyzerTaskFactory.cs" company="">
 //     Copyright ©  2017
@@ -26,6 +26,7 @@ namespace Triage.Mortician
     /// <summary>
     ///     Class AnalyzerTaskFactory.
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Core.IAnalyzerTaskFactory" />
     /// <seealso cref="IAnalyzerTaskFactory" />
     [Export(typeof(IAnalyzerTaskFactory))]
     public class AnalyzerTaskFactory : IAnalyzerTaskFactory

@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-25-2018
 // ***********************************************************************
 // <copyright file="DumpThreadRepository.cs" company="">
 //     Copyright ©  2017
@@ -22,6 +22,7 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     Represents a repository that stores threads that were extracted from the memory dump
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Core.IDumpThreadRepository" />
     /// <seealso cref="IDumpThreadRepository" />
     public class DumpThreadRepository : IDumpThreadRepository
     {
@@ -55,7 +56,7 @@ namespace Triage.Mortician.Repository
         /// <param name="osId">The os identifier.</param>
         /// <returns>Get the thread with the operation system id provided</returns>
         /// <exception cref="System.IndexOutOfRangeException"></exception>
-        /// <exception cref="IndexOutOfRangeException">If the there isn't a thread registered with the specified id</exception>
+        /// <exception cref="IndexOutOfRangeException"></exception>
         public DumpThread Get(uint osId)
         {
             if (DumpThreads.ContainsKey(osId))

@@ -4,7 +4,7 @@
 // Created          : 12-17-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-20-2018
+// Last Modified On : 09-24-2018
 // ***********************************************************************
 // <copyright file="DefaultOptions.cs" company="">
 //     Copyright ©  2017
@@ -12,6 +12,8 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System;
+using System.Collections.Generic;
 using CommandLine;
 
 namespace Triage.Mortician
@@ -57,5 +59,7 @@ namespace Triage.Mortician
         /// <value>The settings file.</value>
         [Option('s', "settings", HelpText = "Settings for Mortician and its plugins")]
         public string SettingsFile { get; set; }
+
+        internal Type[] AdditionalTypes { get; set; } = new Type[0];
     }
 }

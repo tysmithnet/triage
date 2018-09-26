@@ -36,3 +36,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("0.0.1.0")]
 
 [assembly: InternalsVisibleTo("Triage.Mortician")]
+[assembly: InternalsVisibleTo("Triage.Mortician.Test")]
+[assembly: InternalsVisibleTo("Triage.Mortician.IntegrationTest")]
+[assembly: InternalsVisibleTo("Triage.Mortician.Core.Test")]

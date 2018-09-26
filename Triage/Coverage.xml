@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Root CoveredStatements="1351" TotalStatements="3136" CoveragePercent="43" ReportType="NDependXML" DotCoverVersion="2017.3.5">
-  <Assembly Name="Triage.Mortician" CoveredStatements="1191" TotalStatements="2422" CoveragePercent="49">
-    <Namespace Name="Triage.Mortician" CoveredStatements="684" TotalStatements="1119" CoveragePercent="61">
+<Root CoveredStatements="1719" TotalStatements="3352" CoveragePercent="51" ReportType="NDependXML" DotCoverVersion="2017.3.5">
+  <Assembly Name="Triage.Mortician" CoveredStatements="1423" TotalStatements="2545" CoveragePercent="56">
+    <Namespace Name="Triage.Mortician" CoveredStatements="771" TotalStatements="1116" CoveragePercent="69">
       <Type Name="AnalyzerTaskFactory" CoveredStatements="19" TotalStatements="29" CoveragePercent="66">
         <Type Name="&lt;&gt;c__DisplayClass0_0" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
           <Method Name="&lt;StartAnalyzers&gt;b__0(IAnalyzer)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="41" />
@@ -123,7 +123,7 @@
         <Method Name="set_InterfacePointer(UInt64)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="17" />
         <Method Name="set_Type(IClrType)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="20" />
       </Type>
-      <Type Name="Converter" CoveredStatements="215" TotalStatements="491" CoveragePercent="44">
+      <Type Name="Converter" CoveredStatements="292" TotalStatements="491" CoveragePercent="59">
         <Type Name="&lt;&gt;c__DisplayClass10_0" CoveredStatements="0" TotalStatements="2" CoveragePercent="0">
           <Method Name="&lt;Convert&gt;b__0()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="181" />
           <Method Name="&lt;Convert&gt;b__1()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="181" />
@@ -302,12 +302,12 @@
           <Method Name="&lt;Convert&gt;b__1()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="169" />
         </Type>
         <Method Name=".ctor()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="970" />
-        <Method Name="Convert(Architecture)" CoveredStatements="4" TotalStatements="8" CoveragePercent="50" FirstStatementLine="38" />
+        <Method Name="Convert(Architecture)" CoveredStatements="7" TotalStatements="8" CoveragePercent="88" FirstStatementLine="38" />
         <Method Name="Convert(BlockingObject)" CoveredStatements="0" TotalStatements="6" CoveragePercent="0" FirstStatementLine="94" />
-        <Method Name="Convert(BlockingReason)" CoveredStatements="0" TotalStatements="14" CoveragePercent="0" FirstStatementLine="251" />
+        <Method Name="Convert(BlockingReason)" CoveredStatements="12" TotalStatements="14" CoveragePercent="86" FirstStatementLine="251" />
         <Method Name="Convert(CcwData)" CoveredStatements="0" TotalStatements="6" CoveragePercent="0" FirstStatementLine="190" />
         <Method Name="Convert(ClrAppDomain)" CoveredStatements="5" TotalStatements="6" CoveragePercent="83" FirstStatementLine="202" />
-        <Method Name="Convert(ClrElementType)" CoveredStatements="23" TotalStatements="27" CoveragePercent="85" FirstStatementLine="302" />
+        <Method Name="Convert(ClrElementType)" CoveredStatements="26" TotalStatements="27" CoveragePercent="96" FirstStatementLine="302" />
         <Method Name="Convert(ClrException)" CoveredStatements="4" TotalStatements="6" CoveragePercent="67" FirstStatementLine="863" />
         <Method Name="Convert(ClrFlavor)" CoveredStatements="4" TotalStatements="8" CoveragePercent="50" FirstStatementLine="363" />
         <Method Name="Convert(ClrHandle)" CoveredStatements="0" TotalStatements="6" CoveragePercent="0" FirstStatementLine="178" />
@@ -316,16 +316,16 @@
         <Method Name="Convert(ClrInstanceField)" CoveredStatements="5" TotalStatements="6" CoveragePercent="83" FirstStatementLine="82" />
         <Method Name="Convert(ClrInterface)" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" FirstStatementLine="130" />
         <Method Name="Convert(ClrMemoryRegion)" CoveredStatements="0" TotalStatements="6" CoveragePercent="0" FirstStatementLine="166" />
-        <Method Name="Convert(ClrMemoryRegionType)" CoveredStatements="0" TotalStatements="19" CoveragePercent="0" FirstStatementLine="394" />
+        <Method Name="Convert(ClrMemoryRegionType)" CoveredStatements="18" TotalStatements="19" CoveragePercent="95" FirstStatementLine="394" />
         <Method Name="Convert(ClrMethod)" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" FirstStatementLine="226" />
         <Method Name="Convert(ClrModule)" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" FirstStatementLine="106" />
         <Method Name="Convert(ClrObject)" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" FirstStatementLine="851" />
         <Method Name="Convert(ClrRoot)" CoveredStatements="0" TotalStatements="6" CoveragePercent="0" FirstStatementLine="839" />
-        <Method Name="Convert(ClrRootStackwalkPolicy)" CoveredStatements="4" TotalStatements="8" CoveragePercent="50" FirstStatementLine="439" />
+        <Method Name="Convert(ClrRootStackwalkPolicy)" CoveredStatements="7" TotalStatements="8" CoveragePercent="88" FirstStatementLine="439" />
         <Method Name="Convert(ClrRuntime)" CoveredStatements="5" TotalStatements="6" CoveragePercent="83" FirstStatementLine="827" />
         <Method Name="Convert(ClrSegment)" CoveredStatements="5" TotalStatements="6" CoveragePercent="83" FirstStatementLine="815" />
         <Method Name="Convert(ClrStackFrame)" CoveredStatements="5" TotalStatements="6" CoveragePercent="83" FirstStatementLine="238" />
-        <Method Name="Convert(ClrStackFrameType)" CoveredStatements="5" TotalStatements="7" CoveragePercent="71" FirstStatementLine="462" />
+        <Method Name="Convert(ClrStackFrameType)" CoveredStatements="6" TotalStatements="7" CoveragePercent="86" FirstStatementLine="462" />
         <Method Name="Convert(ClrStaticField)" CoveredStatements="5" TotalStatements="6" CoveragePercent="83" FirstStatementLine="803" />
         <Method Name="Convert(ClrThread)" CoveredStatements="5" TotalStatements="6" CoveragePercent="83" FirstStatementLine="791" />
         <Method Name="Convert(ClrThreadPool)" CoveredStatements="5" TotalStatements="6" CoveragePercent="83" FirstStatementLine="779" />
@@ -336,12 +336,12 @@
         <Method Name="Convert(DacInfo)" CoveredStatements="5" TotalStatements="6" CoveragePercent="83" FirstStatementLine="732" />
         <Method Name="Convert(DataTarget)" CoveredStatements="5" TotalStatements="6" CoveragePercent="83" FirstStatementLine="708" />
         <Method Name="Convert(FileVersionInfo)" CoveredStatements="0" TotalStatements="6" CoveragePercent="0" FirstStatementLine="696" />
-        <Method Name="Convert(GcMode)" CoveredStatements="4" TotalStatements="6" CoveragePercent="67" FirstStatementLine="483" />
+        <Method Name="Convert(GcMode)" CoveredStatements="5" TotalStatements="6" CoveragePercent="83" FirstStatementLine="483" />
         <Method Name="Convert(GCRoot)" CoveredStatements="0" TotalStatements="6" CoveragePercent="0" FirstStatementLine="893" />
-        <Method Name="Convert(GCRootKind)" CoveredStatements="0" TotalStatements="12" CoveragePercent="0" FirstStatementLine="502" />
+        <Method Name="Convert(GCRootKind)" CoveredStatements="11" TotalStatements="12" CoveragePercent="92" FirstStatementLine="502" />
         <Method Name="Convert(GCRootProgressEvent)" CoveredStatements="0" TotalStatements="3" CoveragePercent="0" FirstStatementLine="883" />
-        <Method Name="Convert(GCSegmentType)" CoveredStatements="0" TotalStatements="7" CoveragePercent="0" FirstStatementLine="62" />
-        <Method Name="Convert(HandleType)" CoveredStatements="0" TotalStatements="12" CoveragePercent="0" FirstStatementLine="941" />
+        <Method Name="Convert(GCSegmentType)" CoveredStatements="6" TotalStatements="7" CoveragePercent="86" FirstStatementLine="62" />
+        <Method Name="Convert(HandleType)" CoveredStatements="11" TotalStatements="12" CoveragePercent="92" FirstStatementLine="941" />
         <Method Name="Convert(HotColdRegions)" CoveredStatements="5" TotalStatements="6" CoveragePercent="83" FirstStatementLine="684" />
         <Method Name="Convert(IDataReader)" CoveredStatements="0" TotalStatements="6" CoveragePercent="0" FirstStatementLine="720" />
         <Method Name="Convert(ILInfo)" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" FirstStatementLine="214" />
@@ -360,55 +360,55 @@
         <Method Name="Convert(SymbolLocator)" CoveredStatements="0" TotalStatements="6" CoveragePercent="0" FirstStatementLine="577" />
         <Method Name="Convert(VersionInfo)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="874" />
         <Method Name="Convert(VirtualQueryData)" CoveredStatements="0" TotalStatements="3" CoveragePercent="0" FirstStatementLine="905" />
-        <Method Name="Convert(WorkItemKind)" CoveredStatements="0" TotalStatements="9" CoveragePercent="0" FirstStatementLine="916" />
+        <Method Name="Convert(WorkItemKind)" CoveredStatements="8" TotalStatements="9" CoveragePercent="89" FirstStatementLine="916" />
         <Method Name="get_Cache()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="970" />
         <Method Name="set_Cache(IConverterCache)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="970" />
       </Type>
-      <Type Name="CoreComponentFactory" CoveredStatements="285" TotalStatements="316" CoveragePercent="90">
+      <Type Name="CoreComponentFactory" CoveredStatements="292" TotalStatements="318" CoveragePercent="92">
         <Type Name="&lt;&gt;c" CoveredStatements="5" TotalStatements="5" CoveragePercent="100">
-          <Method Name="&lt;SetupObjects&gt;b__7_0(ClrObject)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="327" />
-          <Method Name="&lt;SetupObjects&gt;b__7_1(ClrThread)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="358" />
-          <Method Name="&lt;SetupThreads&gt;b__8_0(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="490" />
-          <Method Name="&lt;SetupThreads&gt;b__8_3(ClrStackFrame)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="403" />
-          <Method Name="&lt;SetupThreads&gt;b__8_6(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="495" />
+          <Method Name="&lt;SetupObjects&gt;b__7_0(ClrObject)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="328" />
+          <Method Name="&lt;SetupObjects&gt;b__7_1(ClrThread)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="359" />
+          <Method Name="&lt;SetupThreads&gt;b__8_0(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="493" />
+          <Method Name="&lt;SetupThreads&gt;b__8_3(ClrStackFrame)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="404" />
+          <Method Name="&lt;SetupThreads&gt;b__8_6(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="498" />
         </Type>
         <Type Name="&lt;&gt;c__DisplayClass3_0" CoveredStatements="14" TotalStatements="20" CoveragePercent="70">
-          <Method Name="&lt;EstablishObjectRelationships&gt;b__0(KeyValuePair&lt;UInt64,List&lt;UInt64&gt;&gt;)" CoveredStatements="14" TotalStatements="20" CoveragePercent="70" FirstStatementLine="173" />
+          <Method Name="&lt;EstablishObjectRelationships&gt;b__0(KeyValuePair&lt;UInt64,List&lt;UInt64&gt;&gt;)" CoveredStatements="14" TotalStatements="20" CoveragePercent="70" FirstStatementLine="174" />
         </Type>
         <Type Name="&lt;&gt;c__DisplayClass8_0" CoveredStatements="0" TotalStatements="0" CoveragePercent="0" />
         <Type Name="&lt;&gt;c__DisplayClass8_1" CoveredStatements="4" TotalStatements="6" CoveragePercent="67">
-          <Method Name="&lt;SetupThreads&gt;b__1(ClrRoot)" CoveredStatements="4" TotalStatements="6" CoveragePercent="67" FirstStatementLine="418" />
+          <Method Name="&lt;SetupThreads&gt;b__1(ClrRoot)" CoveredStatements="4" TotalStatements="6" CoveragePercent="67" FirstStatementLine="419" />
         </Type>
         <Type Name="&lt;&gt;c__DisplayClass8_2" CoveredStatements="6" TotalStatements="6" CoveragePercent="100">
-          <Method Name="&lt;SetupThreads&gt;b__2(ClrRoot)" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" FirstStatementLine="425" />
+          <Method Name="&lt;SetupThreads&gt;b__2(ClrRoot)" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" FirstStatementLine="426" />
         </Type>
         <Type Name="&lt;&gt;c__DisplayClass8_3" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
-          <Method Name="&lt;SetupThreads&gt;b__4(DumpStackFrame)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="430" />
+          <Method Name="&lt;SetupThreads&gt;b__4(DumpStackFrame)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="431" />
         </Type>
         <Type Name="&lt;&gt;c__DisplayClass8_4" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
-          <Method Name="&lt;SetupThreads&gt;b__5(DumpThread)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="470" />
+          <Method Name="&lt;SetupThreads&gt;b__5(DumpThread)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="471" />
         </Type>
         <Type Name="&lt;&gt;c__DisplayClass8_5" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
-          <Method Name="&lt;SetupThreads&gt;b__7(DumpThread)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="501" />
+          <Method Name="&lt;SetupThreads&gt;b__7(DumpThread)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="504" />
         </Type>
-        <Method Name=".ctor(CompositionContainer,FileInfo)" CoveredStatements="17" TotalStatements="22" CoveragePercent="77" FirstStatementLine="87" />
-        <Method Name="EstablishObjectRelationships(Dictionary&lt;UInt64,List&lt;UInt64&gt;&gt;,Dictionary&lt;UInt64,DumpObject&gt;)" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" FirstStatementLine="170" />
-        <Method Name="get_CompositionContainer()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="518" />
-        <Method Name="get_Converter()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="542" />
-        <Method Name="get_DataTarget()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="524" />
-        <Method Name="get_DebuggerProxy()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="530" />
-        <Method Name="get_DumpFile()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="536" />
-        <Method Name="GetSettings(String)" CoveredStatements="6" TotalStatements="7" CoveragePercent="86" FirstStatementLine="205" />
+        <Method Name=".ctor(CompositionContainer,FileInfo)" CoveredStatements="22" TotalStatements="22" CoveragePercent="100" FirstStatementLine="87" />
+        <Method Name="EstablishObjectRelationships(Dictionary&lt;UInt64,List&lt;UInt64&gt;&gt;,Dictionary&lt;UInt64,DumpObject&gt;)" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" FirstStatementLine="171" />
+        <Method Name="get_CompositionContainer()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="521" />
+        <Method Name="get_Converter()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="545" />
+        <Method Name="get_DataTarget()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="527" />
+        <Method Name="get_DebuggerProxy()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="533" />
+        <Method Name="get_DumpFile()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="539" />
+        <Method Name="GetSettings(String)" CoveredStatements="6" TotalStatements="7" CoveragePercent="86" FirstStatementLine="206" />
         <Method Name="RegisterRepositories(DefaultOptions,IEnumerable&lt;ISettings&gt;)" CoveredStatements="42" TotalStatements="48" CoveragePercent="88" FirstStatementLine="96" />
-        <Method Name="set_CompositionContainer(CompositionContainer)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="518" />
-        <Method Name="set_Converter(IConverter)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="542" />
-        <Method Name="set_DataTarget(DataTarget)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="524" />
-        <Method Name="set_DebuggerProxy(DebuggerProxy)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="530" />
-        <Method Name="set_DumpFile(FileInfo)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="536" />
-        <Method Name="SetupAppDomains(Dictionary&lt;UInt64,DumpAppDomain&gt;)" CoveredStatements="11" TotalStatements="11" CoveragePercent="100" FirstStatementLine="220" />
-        <Method Name="SetupModulesAndTypes(ClrRuntime,Dictionary&lt;UInt64,DumpAppDomain&gt;,Dictionary&lt;DumpTypeKey,DumpType&gt;,Dictionary&lt;ValueTuple&lt;UInt64,String&gt;,DumpModule&gt;)" CoveredStatements="40" TotalStatements="41" CoveragePercent="98" FirstStatementLine="243" />
-        <Method Name="SetupObjects(List&lt;IDumpObjectExtractor&gt;,ClrRuntime,Dictionary&lt;UInt64,DumpObject&gt;,Dictionary&lt;UInt64,List&lt;UInt64&gt;&gt;,Dictionary&lt;DumpTypeKey,DumpType&gt;,Dictionary&lt;UInt64,DumpAppDomain&gt;,Dictionary&lt;UInt64,DumpObjectRoot&gt;)" CoveredStatements="52" TotalStatements="52" CoveragePercent="100" FirstStatementLine="323" />
-        <Method Name="SetupThreads(ClrRuntime,Dictionary&lt;UInt32,DumpThread&gt;,Dictionary&lt;UInt64,DumpObjectRoot&gt;)" CoveredStatements="71" TotalStatements="81" CoveragePercent="88" FirstStatementLine="395" />
+        <Method Name="set_CompositionContainer(CompositionContainer)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="521" />
+        <Method Name="set_Converter(IConverter)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="545" />
+        <Method Name="set_DataTarget(DataTarget)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="527" />
+        <Method Name="set_DebuggerProxy(DebuggerProxy)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="533" />
+        <Method Name="set_DumpFile(FileInfo)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="539" />
+        <Method Name="SetupAppDomains(Dictionary&lt;UInt64,DumpAppDomain&gt;)" CoveredStatements="11" TotalStatements="11" CoveragePercent="100" FirstStatementLine="221" />
+        <Method Name="SetupModulesAndTypes(ClrRuntime,Dictionary&lt;UInt64,DumpAppDomain&gt;,Dictionary&lt;DumpTypeKey,DumpType&gt;,Dictionary&lt;ValueTuple&lt;UInt64,String&gt;,DumpModule&gt;)" CoveredStatements="40" TotalStatements="41" CoveragePercent="98" FirstStatementLine="244" />
+        <Method Name="SetupObjects(List&lt;IDumpObjectExtractor&gt;,ClrRuntime,Dictionary&lt;UInt64,DumpObject&gt;,Dictionary&lt;UInt64,List&lt;UInt64&gt;&gt;,Dictionary&lt;DumpTypeKey,DumpType&gt;,Dictionary&lt;UInt64,DumpAppDomain&gt;,Dictionary&lt;UInt64,DumpObjectRoot&gt;)" CoveredStatements="52" TotalStatements="52" CoveragePercent="100" FirstStatementLine="324" />
+        <Method Name="SetupThreads(ClrRuntime,Dictionary&lt;UInt32,DumpThread&gt;,Dictionary&lt;UInt64,DumpObjectRoot&gt;)" CoveredStatements="73" TotalStatements="83" CoveragePercent="88" FirstStatementLine="396" />
       </Type>
       <Type Name="DefaultConverterCache" CoveredStatements="13" TotalStatements="19" CoveragePercent="68">
         <Method Name=".ctor()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="71" />
@@ -429,28 +429,28 @@
         <Method Name="set_DumpFile(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="52" />
         <Method Name="set_SettingsFile(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="59" />
       </Type>
-      <Type Name="Engine" CoveredStatements="25" TotalStatements="31" CoveragePercent="81">
-        <Type Name="&lt;Process&gt;d__1" CoveredStatements="16" TotalStatements="22" CoveragePercent="73">
-          <Method Name="MoveNext()" CoveredStatements="16" TotalStatements="22" CoveragePercent="73" FirstStatementLine="41" />
+      <Type Name="Engine" CoveredStatements="26" TotalStatements="26" CoveragePercent="100">
+        <Type Name="&lt;Process&gt;d__1" CoveredStatements="17" TotalStatements="17" CoveragePercent="100">
+          <Method Name="MoveNext()" CoveredStatements="17" TotalStatements="17" CoveragePercent="100" FirstStatementLine="41" />
         </Type>
         <Method Name=".ctor()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="34" />
-        <Method Name="get_AnalysisObservers()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="76" />
-        <Method Name="get_Analyzers()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="83" />
-        <Method Name="get_AnalyzerTaskFactory()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="90" />
-        <Method Name="get_EventHub()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="97" />
-        <Method Name="set_AnalysisObservers(IAnalysisObserver[])" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="76" />
-        <Method Name="set_Analyzers(IAnalyzer[])" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="83" />
-        <Method Name="set_AnalyzerTaskFactory(IAnalyzerTaskFactory)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="90" />
-        <Method Name="set_EventHub(IEventHub)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="97" />
+        <Method Name="get_AnalysisObservers()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="68" />
+        <Method Name="get_Analyzers()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="75" />
+        <Method Name="get_AnalyzerTaskFactory()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="82" />
+        <Method Name="get_EventHub()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="89" />
+        <Method Name="set_AnalysisObservers(IAnalysisObserver[])" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="68" />
+        <Method Name="set_Analyzers(IAnalyzer[])" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="75" />
+        <Method Name="set_AnalyzerTaskFactory(IAnalyzerTaskFactory)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="82" />
+        <Method Name="set_EventHub(IEventHub)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="89" />
       </Type>
       <Type Name="EngineSettings" CoveredStatements="1" TotalStatements="2" CoveragePercent="50">
         <Method Name="get_TestString()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="32" />
         <Method Name="set_TestString(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="32" />
       </Type>
-      <Type Name="EventHub" CoveredStatements="7" TotalStatements="8" CoveragePercent="88">
+      <Type Name="EventHub" CoveredStatements="8" TotalStatements="8" CoveragePercent="100">
         <Method Name=".ctor()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="33" />
         <Method Name="Broadcast(Message)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" FirstStatementLine="40" />
-        <Method Name="Get&lt;TMessage&gt;()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="50" />
+        <Method Name="Get&lt;TMessage&gt;()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="50" />
         <Method Name="Shutdown()" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" FirstStatementLine="56" />
       </Type>
       <Type Name="Program" CoveredStatements="33" TotalStatements="52" CoveragePercent="63">
@@ -475,9 +475,9 @@
         <Method Name="ReadJson(JsonReader,Type,IEnumerable&lt;ISettings&gt;,Boolean,JsonSerializer)" CoveredStatements="19" TotalStatements="24" CoveragePercent="79" FirstStatementLine="33" />
         <Method Name="WriteJson(JsonWriter,IEnumerable&lt;ISettings&gt;,JsonSerializer)" CoveredStatements="0" TotalStatements="14" CoveragePercent="0" FirstStatementLine="66" />
       </Type>
-      <Type Name="StringDumpObject" CoveredStatements="5" TotalStatements="7" CoveragePercent="71">
+      <Type Name="StringDumpObject" CoveredStatements="6" TotalStatements="7" CoveragePercent="86">
         <Method Name=".ctor(UInt64,String,UInt64,String,Int32)" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" FirstStatementLine="36" />
-        <Method Name="get_Value()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="54" />
+        <Method Name="get_Value()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="54" />
         <Method Name="set_Value(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="54" />
         <Method Name="ToShortDescription()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="48" />
       </Type>
@@ -1265,21 +1265,21 @@
     </Namespace>
     <Namespace Name="Triage.Mortician.Domain" CoveredStatements="49" TotalStatements="56" CoveragePercent="88">
       <Type Name="DebuggerProxy" CoveredStatements="41" TotalStatements="47" CoveragePercent="87">
-        <Method Name=".ctor(IDebugClient)" CoveredStatements="11" TotalStatements="11" CoveragePercent="100" FirstStatementLine="55" />
-        <Method Name="Dispose()" CoveredStatements="0" TotalStatements="4" CoveragePercent="0" FirstStatementLine="153" />
-        <Method Name="Dispose(Boolean)" CoveredStatements="7" TotalStatements="7" CoveragePercent="100" FirstStatementLine="133" />
-        <Method Name="Execute(String)" CoveredStatements="11" TotalStatements="11" CoveragePercent="100" FirstStatementLine="86" />
-        <Method Name="Finalize()" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" FirstStatementLine="145" />
-        <Method Name="get_Log()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="124" />
-        <Method Name="Microsoft.Diagnostics.Runtime.Interop.IDebugOutputCallbacks.Output(DEBUG_OUTPUT,String)" CoveredStatements="7" TotalStatements="7" CoveragePercent="100" FirstStatementLine="109" />
-        <Method Name="set_Log(ILog)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="124" />
+        <Method Name=".ctor(IDebugClient)" CoveredStatements="11" TotalStatements="11" CoveragePercent="100" FirstStatementLine="56" />
+        <Method Name="Dispose()" CoveredStatements="0" TotalStatements="4" CoveragePercent="0" FirstStatementLine="154" />
+        <Method Name="Dispose(Boolean)" CoveredStatements="7" TotalStatements="7" CoveragePercent="100" FirstStatementLine="134" />
+        <Method Name="Execute(String)" CoveredStatements="11" TotalStatements="11" CoveragePercent="100" FirstStatementLine="87" />
+        <Method Name="Finalize()" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" FirstStatementLine="146" />
+        <Method Name="get_Log()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="125" />
+        <Method Name="Microsoft.Diagnostics.Runtime.Interop.IDebugOutputCallbacks.Output(DEBUG_OUTPUT,String)" CoveredStatements="7" TotalStatements="7" CoveragePercent="100" FirstStatementLine="110" />
+        <Method Name="set_Log(ILog)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="125" />
       </Type>
       <Type Name="DefaultObjectExtractor" CoveredStatements="8" TotalStatements="9" CoveragePercent="89">
         <Method Name="CanExtract(IClrObject,IClrRuntime)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="33" />
         <Method Name="Extract(IClrObject,IClrRuntime)" CoveredStatements="8" TotalStatements="8" CoveragePercent="100" FirstStatementLine="42" />
       </Type>
     </Namespace>
-    <Namespace Name="Triage.Mortician.Reports" CoveredStatements="133" TotalStatements="156" CoveragePercent="85">
+    <Namespace Name="Triage.Mortician.Reports" CoveredStatements="272" TotalStatements="282" CoveragePercent="96">
       <Type Name="DumpDomainAppDomain" CoveredStatements="17" TotalStatements="18" CoveragePercent="94">
         <Method Name=".ctor()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="27" />
         <Method Name="get_Address()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="33" />
@@ -1343,33 +1343,53 @@
         <Method Name="set_SharedDomain(DumpDomainAppDomain)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="41" />
         <Method Name="set_SystemDomain(DumpDomainAppDomain)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="47" />
       </Type>
-      <Type Name="EeStackFrame" CoveredStatements="0" TotalStatements="8" CoveragePercent="0">
-        <Method Name="get_Callee()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="26" />
-        <Method Name="get_Caller()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="32" />
-        <Method Name="get_ChildStackPointer()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="38" />
-        <Method Name="get_ReturnAddress()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="44" />
-        <Method Name="set_Callee(String)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="26" />
-        <Method Name="set_Caller(String)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="32" />
-        <Method Name="set_ChildStackPointer(UInt64)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="38" />
-        <Method Name="set_ReturnAddress(UInt64)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="44" />
+      <Type Name="EeStackFrame" CoveredStatements="8" TotalStatements="10" CoveragePercent="80">
+        <Method Name="get_Callee()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="11" />
+        <Method Name="get_Caller()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="10" />
+        <Method Name="get_ChildStackPointer()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="17" />
+        <Method Name="get_MethodDescriptor()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="25" />
+        <Method Name="get_ReturnAddress()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="23" />
+        <Method Name="set_Callee(CodeLocation)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="11" />
+        <Method Name="set_Caller(CodeLocation)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="10" />
+        <Method Name="set_ChildStackPointer(UInt64)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="17" />
+        <Method Name="set_MethodDescriptor(UInt64)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="25" />
+        <Method Name="set_ReturnAddress(UInt64)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="23" />
       </Type>
-      <Type Name="EeStackOutputProcessor" CoveredStatements="0" TotalStatements="4" CoveragePercent="0">
-        <Method Name="ProcessOutput(String)" CoveredStatements="0" TotalStatements="4" CoveragePercent="0" FirstStatementLine="31" />
+      <Type Name="EeStackOutputProcessor" CoveredStatements="122" TotalStatements="122" CoveragePercent="100">
+        <Type Name="&lt;&gt;c" CoveredStatements="3" TotalStatements="3" CoveragePercent="100">
+          <Method Name="&lt;ExtractFrame&gt;b__11_0(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="89" />
+          <Method Name="&lt;ExtractThread&gt;b__10_0(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="49" />
+          <Method Name="&lt;GetThreadChunks&gt;b__14_0(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="160" />
+        </Type>
+        <Method Name=".cctor()" CoveredStatements="7" TotalStatements="7" CoveragePercent="100" FirstStatementLine="19" />
+        <Method Name=".ctor()" CoveredStatements="2" TotalStatements="2" CoveragePercent="100" FirstStatementLine="14" />
+        <Method Name="ExtractFrame(String)" CoveredStatements="53" TotalStatements="53" CoveragePercent="100" FirstStatementLine="77" />
+        <Method Name="ExtractManagedCodeLocation(Match)" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" FirstStatementLine="149" />
+        <Method Name="ExtractNativeCodeLocation(Match)" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" FirstStatementLine="141" />
+        <Method Name="ExtractThread(String)" CoveredStatements="29" TotalStatements="29" CoveragePercent="100" FirstStatementLine="47" />
+        <Method Name="GetThreadChunks(String)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" FirstStatementLine="157" />
+        <Method Name="ProcessOutput(String)" CoveredStatements="13" TotalStatements="13" CoveragePercent="100" FirstStatementLine="33" />
       </Type>
-      <Type Name="EeStackReport" CoveredStatements="0" TotalStatements="4" CoveragePercent="0">
-        <Method Name=".ctor()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="36" />
-        <Method Name="get_Threads()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="30" />
-        <Method Name="get_ThreadsInternal()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="36" />
+      <Type Name="EeStackReport" CoveredStatements="3" TotalStatements="6" CoveragePercent="50">
+        <Method Name=".ctor()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="36" />
+        <Method Name="get_CurrentFrame()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="39" />
+        <Method Name="get_Threads()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="30" />
+        <Method Name="get_ThreadsInternal()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="36" />
+        <Method Name="set_CurrentFrame(EeStackFrame)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="39" />
         <Method Name="set_ThreadsInternal(IList&lt;EeStackThread&gt;)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="36" />
       </Type>
-      <Type Name="EeStackThread" CoveredStatements="0" TotalStatements="4" CoveragePercent="0">
-        <Method Name=".ctor()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="34" />
-        <Method Name="get_StackFrames()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="28" />
-        <Method Name="get_StackFramesInternal()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="34" />
-        <Method Name="set_StackFramesInternal(IList&lt;EeStackFrame&gt;)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="34" />
+      <Type Name="EeStackThread" CoveredStatements="6" TotalStatements="8" CoveragePercent="75">
+        <Method Name=".ctor()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="37" />
+        <Method Name="get_Index()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="25" />
+        <Method Name="get_Location()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="39" />
+        <Method Name="get_StackFrames()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="31" />
+        <Method Name="get_StackFramesInternal()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="37" />
+        <Method Name="set_Index(UInt32)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="25" />
+        <Method Name="set_Location(CodeLocation)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="39" />
+        <Method Name="set_StackFramesInternal(IList&lt;EeStackFrame&gt;)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="37" />
       </Type>
     </Namespace>
-    <Namespace Name="Triage.Mortician.Repository" CoveredStatements="68" TotalStatements="101" CoveragePercent="67">
+    <Namespace Name="Triage.Mortician.Repository" CoveredStatements="74" TotalStatements="101" CoveragePercent="73">
       <Type Name="DumpAppDomainRepository" CoveredStatements="5" TotalStatements="6" CoveragePercent="83">
         <Method Name=".ctor(Dictionary&lt;UInt64,DumpAppDomain&gt;)" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" FirstStatementLine="34" />
         <Method Name="Get()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="55" />
@@ -1424,10 +1444,10 @@
         <Method Name="Get()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="78" />
         <Method Name="Get(UInt64)" CoveredStatements="0" TotalStatements="5" CoveragePercent="0" FirstStatementLine="68" />
       </Type>
-      <Type Name="DumpThreadRepository" CoveredStatements="6" TotalStatements="12" CoveragePercent="50">
+      <Type Name="DumpThreadRepository" CoveredStatements="12" TotalStatements="12" CoveragePercent="100">
         <Method Name=".ctor(Dictionary&lt;UInt32,DumpThread&gt;)" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" FirstStatementLine="50" />
         <Method Name="Get()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="71" />
-        <Method Name="Get(UInt32)" CoveredStatements="0" TotalStatements="6" CoveragePercent="0" FirstStatementLine="60" />
+        <Method Name="Get(UInt32)" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" FirstStatementLine="60" />
       </Type>
       <Type Name="DumpTypeRepository" CoveredStatements="7" TotalStatements="7" CoveragePercent="100">
         <Method Name=".ctor(Dictionary&lt;DumpTypeKey,DumpType&gt;)" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" FirstStatementLine="33" />
@@ -1486,64 +1506,71 @@
       </Type>
     </Namespace>
   </Assembly>
-  <Assembly Name="Triage.Mortician.Core" CoveredStatements="114" TotalStatements="216" CoveragePercent="53">
-    <Namespace Name="Triage.Mortician.Core" CoveredStatements="108" TotalStatements="204" CoveragePercent="53">
-      <Type Name="DumpAppDomain" CoveredStatements="5" TotalStatements="10" CoveragePercent="50">
+  <Assembly Name="Triage.Mortician.Core" CoveredStatements="180" TotalStatements="239" CoveragePercent="75">
+    <Namespace Name="Triage.Mortician.Core" CoveredStatements="164" TotalStatements="223" CoveragePercent="74">
+      <Type Name="CodeLocation" CoveredStatements="9" TotalStatements="9" CoveragePercent="100">
+        <Method Name=".ctor(String,String,UInt64)" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" FirstStatementLine="17" />
+        <Method Name="get_Method()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="12" />
+        <Method Name="get_Module()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="11" />
+        <Method Name="get_Offset()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="13" />
+      </Type>
+      <Type Name="DumpAppDomain" CoveredStatements="9" TotalStatements="13" CoveragePercent="69">
         <Method Name=".ctor()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="30" />
+        <Method Name="AddModule(DumpModule)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" FirstStatementLine="63" />
         <Method Name="get_Address()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="36" />
         <Method Name="get_ApplicationBase()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="42" />
         <Method Name="get_ConfigFile()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="48" />
-        <Method Name="get_LoadedModules()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="54" />
+        <Method Name="get_LoadedModules()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="54" />
         <Method Name="get_Name()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="60" />
         <Method Name="set_Address(UInt64)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="36" />
         <Method Name="set_ApplicationBase(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="42" />
         <Method Name="set_ConfigFile(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="48" />
         <Method Name="set_Name(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="60" />
       </Type>
-      <Type Name="DumpModule" CoveredStatements="14" TotalStatements="44" CoveragePercent="32">
-        <Method Name=".ctor()" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" FirstStatementLine="53" />
-        <Method Name=".ctor(UInt64,String,DebuggableAttribute.DebuggingModes,String,Nullable&lt;UInt64&gt;,Boolean,Boolean,String,String,Nullable&lt;Guid&gt;,UInt64)" CoveredStatements="0" TotalStatements="16" CoveragePercent="0" FirstStatementLine="53" />
-        <Method Name="get_AppDomains()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="64" />
-        <Method Name="get_AssemblyId()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="70" />
-        <Method Name="get_AssemblyName()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="76" />
-        <Method Name="get_DebuggingMode()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="82" />
-        <Method Name="get_FileName()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="88" />
-        <Method Name="get_ImageBase()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="95" />
-        <Method Name="get_IsDynamic()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="101" />
-        <Method Name="get_IsFile()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="107" />
-        <Method Name="get_Name()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="113" />
-        <Method Name="get_PdbFile()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="119" />
-        <Method Name="get_PdbGuid()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="125" />
-        <Method Name="get_Size()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="131" />
-        <Method Name="set_AssemblyId(UInt64)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="70" />
-        <Method Name="set_AssemblyName(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="76" />
-        <Method Name="set_DebuggingMode(DebuggableAttribute.DebuggingModes)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="82" />
-        <Method Name="set_FileName(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="88" />
-        <Method Name="set_ImageBase(Nullable&lt;UInt64&gt;)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="95" />
-        <Method Name="set_IsDynamic(Boolean)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="101" />
-        <Method Name="set_IsFile(Boolean)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="107" />
-        <Method Name="set_Name(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="113" />
-        <Method Name="set_PdbFile(String)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="119" />
-        <Method Name="set_PdbGuid(Nullable&lt;Guid&gt;)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="125" />
-        <Method Name="set_Size(UInt64)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="131" />
+      <Type Name="DumpModule" CoveredStatements="41" TotalStatements="44" CoveragePercent="93">
+        <Method Name=".ctor()" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" FirstStatementLine="38" />
+        <Method Name=".ctor(UInt64,String,DebuggableAttribute.DebuggingModes,String,Nullable&lt;UInt64&gt;,Boolean,Boolean,String,String,Nullable&lt;Guid&gt;,UInt64)" CoveredStatements="16" TotalStatements="16" CoveragePercent="100" FirstStatementLine="38" />
+        <Method Name="get_AppDomains()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="49" />
+        <Method Name="get_AssemblyId()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="55" />
+        <Method Name="get_AssemblyName()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="61" />
+        <Method Name="get_DebuggingMode()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="67" />
+        <Method Name="get_FileName()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="73" />
+        <Method Name="get_ImageBase()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="80" />
+        <Method Name="get_IsDynamic()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="86" />
+        <Method Name="get_IsFile()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="92" />
+        <Method Name="get_Name()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="98" />
+        <Method Name="get_PdbFile()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="104" />
+        <Method Name="get_PdbGuid()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="110" />
+        <Method Name="get_Size()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="116" />
+        <Method Name="set_AssemblyId(UInt64)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="55" />
+        <Method Name="set_AssemblyName(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="61" />
+        <Method Name="set_DebuggingMode(DebuggableAttribute.DebuggingModes)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="67" />
+        <Method Name="set_FileName(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="73" />
+        <Method Name="set_ImageBase(Nullable&lt;UInt64&gt;)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="80" />
+        <Method Name="set_IsDynamic(Boolean)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="86" />
+        <Method Name="set_IsFile(Boolean)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="92" />
+        <Method Name="set_Name(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="98" />
+        <Method Name="set_PdbFile(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="104" />
+        <Method Name="set_PdbGuid(Nullable&lt;Guid&gt;)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="110" />
+        <Method Name="set_Size(UInt64)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="116" />
       </Type>
-      <Type Name="DumpObject" CoveredStatements="21" TotalStatements="28" CoveragePercent="75">
-        <Method Name=".ctor(UInt64,String,UInt64,Int32)" CoveredStatements="9" TotalStatements="9" CoveragePercent="100" FirstStatementLine="45" />
-        <Method Name="AddReference(DumpObject)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" FirstStatementLine="59" />
-        <Method Name="AddReferencer(DumpObject)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" FirstStatementLine="68" />
-        <Method Name="get_Address()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="83" />
-        <Method Name="get_DumpType()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="89" />
-        <Method Name="get_FullTypeName()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="95" />
-        <Method Name="get_Gen()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="101" />
-        <Method Name="get_Referencers()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="107" />
-        <Method Name="get_References()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="113" />
-        <Method Name="get_Size()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="120" />
-        <Method Name="set_Address(UInt64)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="83" />
-        <Method Name="set_DumpType(DumpType)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="89" />
-        <Method Name="set_FullTypeName(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="95" />
-        <Method Name="set_Gen(Int32)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="101" />
-        <Method Name="set_Size(UInt64)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="120" />
-        <Method Name="ToShortDescription()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="77" />
+      <Type Name="DumpObject" CoveredStatements="27" TotalStatements="28" CoveragePercent="96">
+        <Method Name=".ctor(UInt64,String,UInt64,Int32)" CoveredStatements="9" TotalStatements="9" CoveragePercent="100" FirstStatementLine="46" />
+        <Method Name="AddReference(DumpObject)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" FirstStatementLine="60" />
+        <Method Name="AddReferencer(DumpObject)" CoveredStatements="3" TotalStatements="3" CoveragePercent="100" FirstStatementLine="69" />
+        <Method Name="get_Address()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="84" />
+        <Method Name="get_DumpType()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="90" />
+        <Method Name="get_FullTypeName()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="96" />
+        <Method Name="get_Gen()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="102" />
+        <Method Name="get_Referencers()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="108" />
+        <Method Name="get_References()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="114" />
+        <Method Name="get_Size()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="121" />
+        <Method Name="set_Address(UInt64)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="84" />
+        <Method Name="set_DumpType(DumpType)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="90" />
+        <Method Name="set_FullTypeName(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="96" />
+        <Method Name="set_Gen(Int32)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="102" />
+        <Method Name="set_Size(UInt64)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="121" />
+        <Method Name="ToShortDescription()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="78" />
       </Type>
       <Type Name="DumpObjectRoot" CoveredStatements="18" TotalStatements="34" CoveragePercent="53">
         <Method Name="get_Address()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="29" />
@@ -1595,30 +1622,31 @@
         <Method Name="set_StackPointer(UInt64)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="50" />
         <Method Name="set_Thread(DumpThread)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="56" />
       </Type>
-      <Type Name="DumpThread" CoveredStatements="11" TotalStatements="21" CoveragePercent="52">
-        <Type Name="&lt;&gt;c" CoveredStatements="0" TotalStatements="1" CoveragePercent="0">
-          <Method Name="&lt;get_StackTrace&gt;b__30_0(DumpStackFrame)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="80" />
+      <Type Name="DumpThread" CoveredStatements="15" TotalStatements="23" CoveragePercent="65">
+        <Type Name="&lt;&gt;c" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
+          <Method Name="&lt;get_StackTrace&gt;b__32_0(DumpStackFrame)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="82" />
         </Type>
-        <Method Name=".ctor()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="48" />
+        <Method Name=".ctor()" CoveredStatements="2" TotalStatements="2" CoveragePercent="100" FirstStatementLine="48" />
         <Method Name="get_CurrentFrame()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="35" />
         <Method Name="get_DebuggerIndex()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="42" />
         <Method Name="get_EEStackFrames()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="48" />
         <Method Name="get_KernelModeTime()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="54" />
         <Method Name="get_ManagedStackFrames()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="61" />
-        <Method Name="get_ObjectRoots()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="67" />
-        <Method Name="get_OsId()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="73" />
-        <Method Name="get_StackTrace()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="80" />
-        <Method Name="get_TotalTime()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="86" />
-        <Method Name="get_UserModeTime()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="92" />
+        <Method Name="get_ManagedStackFramesInternal()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="63" />
+        <Method Name="get_ObjectRoots()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="69" />
+        <Method Name="get_OsId()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="75" />
+        <Method Name="get_StackTrace()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="82" />
+        <Method Name="get_TotalTime()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="88" />
+        <Method Name="get_UserModeTime()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="94" />
         <Method Name="set_CurrentFrame(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="35" />
         <Method Name="set_DebuggerIndex(UInt32)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="42" />
         <Method Name="set_EEStackFrames(IEnumerable&lt;String&gt;)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="48" />
         <Method Name="set_KernelModeTime(TimeSpan)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="54" />
-        <Method Name="set_ManagedStackFrames(IEnumerable&lt;DumpStackFrame&gt;)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="61" />
-        <Method Name="set_ObjectRoots(IEnumerable&lt;DumpObjectRoot&gt;)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="67" />
-        <Method Name="set_OsId(UInt32)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="73" />
-        <Method Name="set_TotalTime(TimeSpan)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="86" />
-        <Method Name="set_UserModeTime(TimeSpan)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="92" />
+        <Method Name="set_ManagedStackFramesInternal(IList&lt;DumpStackFrame&gt;)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="63" />
+        <Method Name="set_ObjectRoots(IEnumerable&lt;DumpObjectRoot&gt;)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="69" />
+        <Method Name="set_OsId(UInt32)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="75" />
+        <Method Name="set_TotalTime(TimeSpan)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="88" />
+        <Method Name="set_UserModeTime(TimeSpan)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="94" />
       </Type>
       <Type Name="DumpType" CoveredStatements="23" TotalStatements="45" CoveragePercent="51">
         <Method Name=".ctor()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="27" />
@@ -1667,26 +1695,67 @@
         <Method Name="set_Name(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="153" />
         <Method Name="set_Objects(IEnumerable&lt;DumpObject&gt;)" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="159" />
       </Type>
-      <Type Name="DumpTypeKey" CoveredStatements="7" TotalStatements="10" CoveragePercent="70">
-        <Method Name=".ctor(UInt64,String)" CoveredStatements="5" TotalStatements="6" CoveragePercent="83" FirstStatementLine="46" />
+      <Type Name="DumpTypeKey" CoveredStatements="8" TotalStatements="10" CoveragePercent="80">
+        <Method Name=".ctor(UInt64,String)" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" FirstStatementLine="46" />
         <Method Name="get_MethodTable()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="30" />
         <Method Name="get_TypeName()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="36" />
         <Method Name="set_MethodTable(UInt64)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="30" />
         <Method Name="set_TypeName(String)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="36" />
       </Type>
+      <Type Name="ManagedCodeLocation" CoveredStatements="5" TotalStatements="5" CoveragePercent="100">
+        <Method Name=".ctor(UInt64,UInt64,String)" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" FirstStatementLine="30" />
+        <Method Name="get_MethodDescriptor()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="27" />
+      </Type>
       <Type Name="Message" CoveredStatements="0" TotalStatements="0" CoveragePercent="0" />
     </Namespace>
-    <Namespace Name="Triage.Mortician.Core.ClrMdAbstractions" CoveredStatements="6" TotalStatements="12" CoveragePercent="50">
+    <Namespace Name="Triage.Mortician.Core.ClrMdAbstractions" CoveredStatements="16" TotalStatements="16" CoveragePercent="100">
       <Type Name="GcRootProgressEvent" CoveredStatements="0" TotalStatements="0" CoveragePercent="0" />
-      <Type Name="ILToNativeMap" CoveredStatements="0" TotalStatements="1" CoveragePercent="0">
-        <Method Name="ToString()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="42" />
+      <Type Name="ILToNativeMap" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
+        <Method Name="ToString()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="42" />
       </Type>
-      <Type Name="VersionInfo" CoveredStatements="6" TotalStatements="7" CoveragePercent="86">
+      <Type Name="VersionInfo" CoveredStatements="7" TotalStatements="7" CoveragePercent="100">
         <Method Name=".ctor(Int32,Int32,Int32,Int32)" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" FirstStatementLine="50" />
-        <Method Name="ToString()" CoveredStatements="0" TotalStatements="1" CoveragePercent="0" FirstStatementLine="61" />
+        <Method Name="ToString()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="61" />
       </Type>
-      <Type Name="VirtualQueryData" CoveredStatements="0" TotalStatements="4" CoveragePercent="0">
-        <Method Name=".ctor(UInt64,UInt64)" CoveredStatements="0" TotalStatements="4" CoveragePercent="0" FirstStatementLine="41" />
+      <Type Name="VirtualQueryData" CoveredStatements="8" TotalStatements="8" CoveragePercent="100">
+        <Method Name=".ctor(UInt64,UInt64)" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" FirstStatementLine="41" />
+        <Method Name="get_BaseAddress()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="28" />
+        <Method Name="get_Size()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="33" />
+        <Method Name="set_BaseAddress(UInt64)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="28" />
+        <Method Name="set_Size(UInt64)" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="33" />
+      </Type>
+    </Namespace>
+  </Assembly>
+  <Assembly Name="Triage.Mortician.Core.Test" CoveredStatements="70" TotalStatements="70" CoveragePercent="100">
+    <Namespace Name="Triage.Mortician.Core.Test" CoveredStatements="70" TotalStatements="70" CoveragePercent="100">
+      <Type Name="DumpAppDomain_Should" CoveredStatements="6" TotalStatements="6" CoveragePercent="100">
+        <Method Name="Correctly_Add_Modules()" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" FirstStatementLine="15" />
+      </Type>
+      <Type Name="DumpModule_Should" CoveredStatements="20" TotalStatements="20" CoveragePercent="100">
+        <Method Name="Return_The_Correct_AppDomains()" CoveredStatements="6" TotalStatements="6" CoveragePercent="100" FirstStatementLine="34" />
+        <Method Name="Set_Member_Values_Correctly()" CoveredStatements="14" TotalStatements="14" CoveragePercent="100" FirstStatementLine="12" />
+      </Type>
+      <Type Name="DumpObject_Should" CoveredStatements="13" TotalStatements="13" CoveragePercent="100">
+        <Method Name="Correctly_Add_A_Reference_Object()" CoveredStatements="8" TotalStatements="8" CoveragePercent="100" FirstStatementLine="10" />
+        <Method Name="Create_A_Short_Description_Correctly()" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" FirstStatementLine="25" />
+      </Type>
+      <Type Name="DumpThread_Should" CoveredStatements="12" TotalStatements="12" CoveragePercent="100">
+        <Method Name="Return_The_Correct_StackTrace()" CoveredStatements="12" TotalStatements="12" CoveragePercent="100" FirstStatementLine="15" />
+      </Type>
+      <Type Name="DumpTypeKey_Should" CoveredStatements="5" TotalStatements="5" CoveragePercent="100">
+        <Type Name="&lt;&gt;c" CoveredStatements="1" TotalStatements="1" CoveragePercent="100">
+          <Method Name="&lt;Disallow_Method_Table_Value_Of_Zero&gt;b__0_0()" CoveredStatements="1" TotalStatements="1" CoveragePercent="100" FirstStatementLine="17" />
+        </Type>
+        <Method Name="Disallow_Method_Table_Value_Of_Zero()" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" FirstStatementLine="15" />
+      </Type>
+      <Type Name="ILToNativeMap_Should" CoveredStatements="4" TotalStatements="4" CoveragePercent="100">
+        <Method Name="Have_The_Correct_To_String()" CoveredStatements="4" TotalStatements="4" CoveragePercent="100" FirstStatementLine="11" />
+      </Type>
+      <Type Name="VersionInfo_Should" CoveredStatements="5" TotalStatements="5" CoveragePercent="100">
+        <Method Name="Return_The_Correct_Version_String()" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" FirstStatementLine="16" />
+      </Type>
+      <Type Name="VirtualQueryData_Should" CoveredStatements="5" TotalStatements="5" CoveragePercent="100">
+        <Method Name="Require_Create_An_Instance_With_Required_Parameters()" CoveredStatements="5" TotalStatements="5" CoveragePercent="100" FirstStatementLine="11" />
       </Type>
     </Namespace>
   </Assembly>

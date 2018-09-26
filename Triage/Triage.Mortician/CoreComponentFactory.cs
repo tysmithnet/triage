@@ -4,7 +4,7 @@
 // Created          : 12-12-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-21-2018
+// Last Modified On : 09-25-2018
 // ***********************************************************************
 // <copyright file="CoreComponentFactory.cs" company="">
 //     Copyright ©  2017
@@ -41,17 +41,18 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="compositionContainer">The composition container.</param>
         /// <param name="dumpFile">Dump file to analzye</param>
-        /// <exception cref="ArgumentNullException">
-        ///     compositionContainer
-        ///     or
-        ///     dataTarget
-        /// </exception>
-        /// <exception cref="ApplicationException"></exception>
         /// <exception cref="System.ArgumentNullException">
         ///     compositionContainer
         ///     or
         ///     dumpFile
         /// </exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        /// <exception cref="ArgumentNullException">
+        ///     compositionContainer
+        ///     or
+        ///     dumpFile
+        /// </exception>
+        /// <exception cref="ApplicationException"></exception>
         public CoreComponentFactory(CompositionContainer compositionContainer, FileInfo dumpFile)
         {
             CompositionContainer =
@@ -72,13 +73,7 @@ namespace Triage.Mortician
             }
 
             DebuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
-            // todo: this is ugly
-            var reloadResult = DebuggerProxy.Execute(@".sympath srv*https://msdl.microsoft.com/download/symbols");
-            DebuggerProxy.Execute(".load sosex");
-            DebuggerProxy.Execute(".load mex");
-            DebuggerProxy.Execute(".load netext");
-            var res = DebuggerProxy.Execute("!mu"); // forces sosex to load the appropriate SOS.dll
-            var eeStack = DebuggerProxy.Execute("!eestack"); // todo: figure out a better way to force symbol loading
+            LoadPlugins();
         }
 
         /// <summary>
@@ -111,6 +106,7 @@ namespace Triage.Mortician
                 throw;
             }
 
+            // todo: do we even know if we handle mini dumps? write an integration test for it
             if (DataTarget.IsMinidump)
                 Log.Warn(
                     "The provided dump is a mini dump and results will not contain any heap information (objects, etc)");
@@ -165,7 +161,7 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="objectHierarchy">The object hierarchy.</param>
         /// <param name="objectStore">The object store.</param>
-        private void EstablishObjectRelationships(Dictionary<ulong, List<ulong>> objectHierarchy,
+        internal void EstablishObjectRelationships(Dictionary<ulong, List<ulong>> objectHierarchy,
             Dictionary<ulong, DumpObject> objectStore)
         {
             Log.Trace("Setting relationship references on the extracted objects");
@@ -210,6 +206,19 @@ namespace Triage.Mortician
                 settingsText = File.ReadAllText("settings.json");
             var converter = new SettingsJsonConverter();
             return JsonConvert.DeserializeObject<IEnumerable<ISettings>>(settingsText, converter);
+        }
+
+        /// <summary>
+        ///     Loads the plugins.
+        /// </summary>
+        private void LoadPlugins()
+        {
+            DebuggerProxy.Execute(@".sympath srv*https://msdl.microsoft.com/download/symbols");
+            DebuggerProxy.Execute(".load sosex");
+            DebuggerProxy.Execute(".load mex");
+            DebuggerProxy.Execute(".load netext");
+            DebuggerProxy.Execute("!mu"); // forces sosex to load the appropriate SOS.dll
+            DebuggerProxy.Execute("!eestack"); // todo: figure out a better way to force symbol loading
         }
 
         /// <summary>
@@ -400,7 +409,7 @@ namespace Triage.Mortician
                 var dumpThread = new DumpThread
                 {
                     OsId = thread.OSThreadId,
-                    ManagedStackFrames = thread.StackTrace.Select(f => new DumpStackFrame
+                    ManagedStackFramesInternal = thread.StackTrace.Select(f => new DumpStackFrame
                     {
                         IsManaged = f.Kind == ClrStackFrameType.ManagedMethod,
                         InstructionPointer = f.InstructionPointer,

@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-25-2018
 // ***********************************************************************
 // <copyright file="DumpObjectRepository.cs" company="">
 //     Copyright ©  2017
@@ -22,6 +22,7 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     Repository for objects that were extracted from the managed heap
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Core.IDumpObjectRepository" />
     /// <seealso cref="IDumpObjectRepository" />
     public class DumpObjectRepository : IDumpObjectRepository
     {
@@ -63,7 +64,7 @@ namespace Triage.Mortician.Repository
         /// <param name="address">The address.</param>
         /// <returns>The object at the specified address</returns>
         /// <exception cref="System.IndexOutOfRangeException"></exception>
-        /// <exception cref="IndexOutOfRangeException">The provided address is not a valid object address</exception>
+        /// <exception cref="IndexOutOfRangeException"></exception>
         public DumpObject Get(ulong address)
         {
             if (Objects.TryGetValue(address, out var obj))

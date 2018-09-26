@@ -58,7 +58,9 @@ namespace Triage.Mortician.Core
         ///     Gets or sets the stack frames.
         /// </summary>
         /// <value>The stack frames.</value>
-        public IEnumerable<DumpStackFrame> ManagedStackFrames { get; protected internal set; }
+        public IEnumerable<DumpStackFrame> ManagedStackFrames => ManagedStackFramesInternal;
+
+        internal IList<DumpStackFrame> ManagedStackFramesInternal { get; set; } = new List<DumpStackFrame>();
 
         /// <summary>
         ///     Gets or sets the object roots associated with this thread

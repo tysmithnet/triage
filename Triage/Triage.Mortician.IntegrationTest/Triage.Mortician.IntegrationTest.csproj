@@ -80,6 +80,8 @@
     <Compile Include="Scenarios\HelloWorld.cs" />
     <Compile Include="Scenarios\Scenario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scenarios\WinForms.cs" />
+    <Compile Include="WinForms_Should.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

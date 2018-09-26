@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Types;
 using Triage.Mortician.Core;
-using Triage.Mortician.IntegrationTest.IntegrationTests.Scenarios;
+using Triage.Mortician.IntegrationTest.Scenarios;
 using Xunit;
 
 namespace Triage.Mortician.IntegrationTest

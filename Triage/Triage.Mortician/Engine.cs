@@ -4,7 +4,7 @@
 // Created          : 12-17-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-24-2018
 // ***********************************************************************
 // <copyright file="Engine.cs" company="">
 //     Copyright ©  2017
@@ -24,6 +24,7 @@ namespace Triage.Mortician
     ///     Represents the core execution component of the application. It is responsible for executing the analyzers
     ///     in concert with each other.
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Core.IEngine" />
     /// <seealso cref="IEngine" />
     [Export(typeof(IEngine))]
     public class Engine : IEngine
@@ -56,15 +57,7 @@ namespace Triage.Mortician
             // analyzer tasks handle the exceptions internally
             await analyzersTask;
             EventHub.Shutdown();
-            try
-            {
-                await analysisObserversTask;
-            }
-            catch (TaskCanceledException)
-            {
-                // todo: this is a mistake, analysis observers should be awaited the same
-            }
-
+            await analysisObserversTask;
             Log.Trace("Execution complete");
         }
 

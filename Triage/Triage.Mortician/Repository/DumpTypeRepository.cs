@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-25-2018
 // ***********************************************************************
 // <copyright file="DumpTypeRepository.cs" company="">
 //     Copyright ©  2017
@@ -21,6 +21,7 @@ namespace Triage.Mortician.Repository
     /// <summary>
     ///     An object capable of managing all the types extracted from the memory dump
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Core.IDumpTypeRepository" />
     /// <seealso cref="IDumpTypeRepository" />
     public class DumpTypeRepository : IDumpTypeRepository
     {
@@ -40,9 +41,10 @@ namespace Triage.Mortician.Repository
         /// </summary>
         protected internal Dictionary<DumpTypeKey, DumpType> Types;
 
-        public IEnumerable<DumpType> Get()
-        {
-            return Types.Values;
-        }
+        /// <summary>
+        ///     Gets this instance.
+        /// </summary>
+        /// <returns>IEnumerable&lt;DumpType&gt;.</returns>
+        public IEnumerable<DumpType> Get() => Types.Values;
     }
 }
