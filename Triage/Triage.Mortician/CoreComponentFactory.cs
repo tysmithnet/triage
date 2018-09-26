@@ -282,6 +282,8 @@ namespace Triage.Mortician
 
                 foreach (var clrType in clrModule.EnumerateTypes())
                 {
+                    if (clrType.MethodTable == 0 || clrType.Name == null)
+                        continue;
                     var key = new DumpTypeKey(clrType.MethodTable, clrType.Name);
                     if (typeStore.ContainsKey(key)) continue;
                     baseClassMapping.Add(key, new DumpTypeKey(clrType.MethodTable, clrType.Name));
