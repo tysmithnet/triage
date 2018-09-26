@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.Composition;
+﻿using System;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,13 +14,14 @@ namespace Triage.Mortician.IntegrationTest
 {
     public class WinForms_Should
     {
+        [Export(typeof(IAnalyzer))]
+        [Export]
         internal class TestAnalyzer : IAnalyzer
         {
             /// <inheritdoc />
             public Task Process(CancellationToken cancellationToken)
             {
-                var button = ObjectRepo.Get().First(x => x.FullTypeName.Contains("System.Windows.Forms.Button")) as ButtonDumpObject;
-                if (button != null)
+                if (ObjectRepo.Get().First(x => x.FullTypeName.Contains("System.Windows.Forms.Button")) is ButtonDumpObject button)
                 {
                     ButtonText = button.Text;
                 }
@@ -49,6 +52,7 @@ namespace Triage.Mortician.IntegrationTest
             public IDumpTypeRepository TypeRepo { get; set; }
         }
 
+        [Export(typeof(IDumpObjectExtractor))]
         internal class ButtonExtractor : IDumpObjectExtractor
         {
             /// <inheritdoc />
@@ -76,25 +80,26 @@ namespace Triage.Mortician.IntegrationTest
         }
 
         [Fact]
-        public void Perform_Basic_Startup_Without_Failure()
+        public void Extract_The_Text_From_A_Button()
         {
             // arrange
             var dumpFile = Scenario.WinForms.GetDumpFile();
             var options = new DefaultOptions
             {
+                AdditionalTypes = new []
+                {
+                    typeof(ButtonExtractor),
+                    typeof(TestAnalyzer)
+                },
                 DumpFile = dumpFile.FullName,
-                SettingsFile = "Settings/Mortician_Should.json"
+                SettingsFile = "Settings/Mortician_Should.json",
+
             };
-            var analyzer = new TestAnalyzer();
 
             // act
-            var result = Program.DefaultExecution(options, container =>
-            {
-                container.ComposeParts(analyzer);
-                container.ComposeExportedValue<IDumpObjectExtractor>(new ButtonExtractor());
-                container.ComposeExportedValue<IAnalyzer>(analyzer);
-                return container;
-            });
+            CompositionContainer cc = null;
+            var result = Program.DefaultExecution(options, container => cc = container);
+            var analyzer = cc.GetExportedValue<TestAnalyzer>();
 
             // assert
             result.Should().Be(0);

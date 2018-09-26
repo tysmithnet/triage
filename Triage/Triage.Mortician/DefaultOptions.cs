@@ -12,6 +12,8 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System;
+using System.Collections.Generic;
 using CommandLine;
 
 namespace Triage.Mortician
@@ -57,5 +59,7 @@ namespace Triage.Mortician
         /// <value>The settings file.</value>
         [Option('s', "settings", HelpText = "Settings for Mortician and its plugins")]
         public string SettingsFile { get; set; }
+
+        internal Type[] AdditionalTypes { get; set; } = new Type[0];
     }
 }

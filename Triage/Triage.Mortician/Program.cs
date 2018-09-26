@@ -43,10 +43,11 @@ namespace Triage.Mortician
         internal static int DefaultExecution(DefaultOptions options,
             Func<CompositionContainer, CompositionContainer> dependencyInjectionTransformer = null)
         {
-            // todo: fix
+            // todo: this feels like an awkward interface, it can probably be better
             var blacklistedAssemblies = options.BlackListedAssemblies;
             var blacklistedTypes = options.BlackListedTypes;
             var executionLocation = typeof(Program).Assembly.Location;
+            var aggregateCatalog = new AggregateCatalog();
             var morticianAssemblyFiles =
                 Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation),
                         "Triage.Mortician.*.*")
@@ -55,8 +56,7 @@ namespace Triage.Mortician
             var toLoad =
                 morticianAssemblyFiles.Except(AppDomain.CurrentDomain.GetAssemblies().Select(x => x.Location))
                     .Select(x => new FileInfo(x)).Where(x => !blacklistedAssemblies.Contains(x.Name));
-
-            var aggregateCatalog = new AggregateCatalog();
+            aggregateCatalog.Catalogs.Add(new TypeCatalog(options.AdditionalTypes));
             foreach (var assembly in toLoad)
                 try
                 {
@@ -77,7 +77,7 @@ namespace Triage.Mortician
             // todo: allow for export/import manipulation
             var repositoryFactory = new CoreComponentFactory(compositionContainer, new FileInfo(options.DumpFile));
             repositoryFactory.RegisterRepositories(options);
-            compositionContainer = dependencyInjectionTransformer?.Invoke(compositionContainer);
+            compositionContainer = dependencyInjectionTransformer?.Invoke(compositionContainer) ?? compositionContainer;
 
             var engine = compositionContainer.GetExportedValue<IEngine>();
             engine.Process().Wait();
