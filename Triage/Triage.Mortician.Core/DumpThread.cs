@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-26-2018
 // ***********************************************************************
 // <copyright file="DumpThread.cs" company="">
 //     Copyright ©  2017
@@ -32,7 +32,7 @@ namespace Triage.Mortician.Core
         ///     Gets or sets the current frame of the thread
         /// </summary>
         /// <value>The current frame.</value>
-        public string CurrentFrame { get; protected internal set; }
+        public CodeLocation CurrentFrame { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the index of the thread in the debugger. This is a low integer value used by the debugging interface
@@ -40,12 +40,6 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The index of the thread in the debugger.</value>
         public uint DebuggerIndex { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets the stack frames according to !eestack
-        /// </summary>
-        /// <value>The ee stack frames.</value>
-        public IEnumerable<string> EEStackFrames { get; protected internal set; } = new List<string>();
 
         /// <summary>
         ///     Gets or sets the kernel mode time.
@@ -59,8 +53,6 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The stack frames.</value>
         public IEnumerable<DumpStackFrame> ManagedStackFrames => ManagedStackFramesInternal;
-
-        internal IList<DumpStackFrame> ManagedStackFramesInternal { get; set; } = new List<DumpStackFrame>();
 
         /// <summary>
         ///     Gets or sets the object roots associated with this thread
@@ -92,5 +84,11 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The user mode time.</value>
         public TimeSpan UserModeTime { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets the managed stack frames internal.
+        /// </summary>
+        /// <value>The managed stack frames internal.</value>
+        internal IList<DumpStackFrame> ManagedStackFramesInternal { get; set; } = new List<DumpStackFrame>();
     }
 }
