@@ -4,7 +4,7 @@
 // Created          : 12-12-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-25-2018
+// Last Modified On : 09-26-2018
 // ***********************************************************************
 // <copyright file="CoreComponentFactory.cs" company="">
 //     Copyright ©  2017
@@ -16,10 +16,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Common.Logging;
 using Microsoft.Diagnostics.Runtime;
@@ -46,7 +44,8 @@ namespace Triage.Mortician
         ///     or
         ///     dumpFile
         /// </exception>
-        /// <exception cref="System.ApplicationException"></exception>
+        /// <exception cref="System.ApplicationException">
+        /// </exception>
         /// <exception cref="ArgumentNullException">
         ///     compositionContainer
         ///     or
@@ -199,6 +198,49 @@ namespace Triage.Mortician
         }
 
         /// <summary>
+        ///     Collects the ee stack information.
+        /// </summary>
+        /// <param name="threadStore">The thread store.</param>
+        private void CollectEeStackInformation(Dictionary<uint, DumpThread> threadStore)
+        {
+            Log.Trace("Calling !EEStack");
+            var eestackCommandResult = DebuggerProxy.Execute("!eestack");
+            var processor = new EeStackOutputProcessor();
+            var report = processor.ProcessOutput(eestackCommandResult);
+            foreach (var eeStackThread in report.Threads)
+            {
+                var existing = threadStore.Values.FirstOrDefault(t => t.DebuggerIndex == eeStackThread.Index);
+                if (existing == null)
+                {
+                    Log.Error(
+                        $"!eestack indicates that there is a thread with index {eeStackThread.Index}, but it was not found in the thread store. This should not happen. Investigate dump and check why this happened -it is probably a bug.");
+                    continue;
+                }
+
+                existing.CurrentFrame = eeStackThread.CurrentLocation;
+            }
+        }
+
+        /// <summary>
+        ///     Collects the runaway information.
+        /// </summary>
+        /// <param name="threadStore">The thread store.</param>
+        private void CollectRunawayInformation(Dictionary<uint, DumpThread> threadStore)
+        {
+            Log.Trace("Calling !runaway");
+            var runawayOutput = DebuggerProxy.Execute("!runaway 3");
+            var runawayOutputProcessor = new RunawayOutputProcessor();
+            var runawayReport = runawayOutputProcessor.ProcessOutput(runawayOutput);
+            foreach (var runawayReportRunawayLine in runawayReport.RunawayLines)
+            {
+                if (!threadStore.TryGetValue(runawayReportRunawayLine.ThreadId, out var dumpThread))
+                    continue; // todo: log?
+                dumpThread.UserModeTime = runawayReportRunawayLine.UserModeTime;
+                dumpThread.KernelModeTime = runawayReportRunawayLine.KernelModeTime;
+            }
+        }
+
+        /// <summary>
         ///     Gets the settings.
         /// </summary>
         /// <param name="settingsPath">The settings path.</param>
@@ -223,7 +265,7 @@ namespace Triage.Mortician
             DebuggerProxy.Execute(".load sosex");
             DebuggerProxy.Execute(".load mex");
             DebuggerProxy.Execute(".load netext");
-            DebuggerProxy.Execute("!mu"); // forces sosex to load the appropriate SOS.dll
+            DebuggerProxy.Execute("!mu"); // forces sosex to load the appropriate SOS.dll // todo: should be possible from API
             DebuggerProxy.Execute("!eestack"); // todo: figure out a better way to force symbol loading
         }
 
@@ -282,6 +324,8 @@ namespace Triage.Mortician
 
                 foreach (var clrType in clrModule.EnumerateTypes())
                 {
+                    if (clrType.MethodTable == 0 || clrType.Name == null)
+                        continue;
                     var key = new DumpTypeKey(clrType.MethodTable, clrType.Name);
                     if (typeStore.ContainsKey(key)) continue;
                     baseClassMapping.Add(key, new DumpTypeKey(clrType.MethodTable, clrType.Name));
@@ -455,77 +499,9 @@ namespace Triage.Mortician
 
             Log.Trace("Loading debugger extensions");
 
-            Log.Trace("Calling !runaway");
-            var runawayData = DebuggerProxy.Execute("!runaway");
-            var isUserMode = false;
-            var isKernelMode = false;
-            foreach (var line in runawayData.Split('\n'))
-            {
-                if (Regex.IsMatch(line, "User Mode Time"))
-                {
-                    isUserMode = true;
-                    continue;
-                }
-
-                if (Regex.IsMatch(line, "Kernel Mode Time"))
-                {
-                    isUserMode = false;
-                    isKernelMode = true;
-                }
-
-                var match = Regex.Match(line,
-                    @"(?<index>\d+):(?<id>[a-zA-Z0-9]+)\s*(?<days>\d+) days (?<time>\d+:\d{2}:\d{2}.\d{3})"); // todo: needs to be more robust
-                if (!match.Success) continue;
-                var index = uint.Parse(match.Groups["index"].Value);
-                var id = Convert.ToUInt32(match.Groups["id"].Value, 16);
-                var days = uint.Parse(match.Groups["days"].Value);
-                var time = match.Groups["time"].Value;
-                var timeSpan = TimeSpan.Parse(time, CultureInfo.CurrentCulture);
-                timeSpan = timeSpan.Add(TimeSpan.FromDays(days));
-                var dumpThread = threadStore.Values.SingleOrDefault(x => x.OsId == id);
-                if (dumpThread == null)
-                {
-                    dumpThread = new DumpThread {OsId = id};
-                    threadStore.Add(dumpThread.OsId, dumpThread);
-                }
-
-                dumpThread.DebuggerIndex = index;
-
-                if (isUserMode)
-                    dumpThread.UserModeTime = timeSpan;
-                else if (isKernelMode)
-                    dumpThread.KernelModeTime = timeSpan;
-            }
-
-            // todo: save !runaway, !eestack to disk and zip up and send to s3
-            Log.Trace("Calling !EEStack");
-            var eestackCommandResult = DebuggerProxy.Execute("!eestack");
-            var processor = new EeStackOutputProcessor();
-            var report = processor.ProcessOutput(eestackCommandResult);
-            eestackCommandResult = DebuggerProxy.Execute("!eestack");
-            var eeStacks = Regex.Split(eestackCommandResult, "---------------------------------------------")
-                .Select(threadInfo => threadInfo.Trim()).Skip(1).ToArray();
-            foreach (var eeStack in eeStacks)
-            {
-                var lines = eeStack.Split('\n');
-                var header = lines.Take(3).ToArray();
-                var stackFrames = lines.Skip(3).Select(x => x.Substring("0000000000000000 0000000000000000 ".Length));
-
-                var threadIndex =
-                    Convert.ToUInt32(Regex.Match(header[0], @"Thread\s+(?<index>\d+)").Groups["index"].Value);
-                var currentFrame = header[1].Substring("Current frame: ".Length);
-
-                var existingThread = threadStore.Values.FirstOrDefault(t => t.DebuggerIndex == threadIndex);
-                if (existingThread == null)
-                {
-                    Log.Error(
-                        $"Found thread in !eestack that wasn't in !runaway: {threadIndex}, consider investigating the dump manually");
-                    continue;
-                }
-
-                existingThread.CurrentFrame = currentFrame;
-                existingThread.EEStackFrames = stackFrames.ToList();
-            }
+            // todo: create a better report system
+            CollectRunawayInformation(threadStore);
+            CollectEeStackInformation(threadStore);
         }
 
         /// <summary>

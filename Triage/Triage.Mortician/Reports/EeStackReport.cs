@@ -23,11 +23,7 @@ namespace Triage.Mortician.Reports
     /// <seealso cref="IReport" />
     public sealed class EeStackReport : IReport
     {
-        /// <summary>
-        ///     Gets the current frame.
-        /// </summary>
-        /// <value>The current frame.</value>
-        public EeStackFrame CurrentFrame { get; internal set; }
+        
 
         /// <summary>
         ///     Gets the threads.

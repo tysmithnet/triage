@@ -152,7 +152,7 @@ namespace Triage.Mortician.Reports
             var currentFrameModule = currentFrameMatch.Groups["mod"].Value;
             var currentFrameMethod = currentFrameMatch.Groups["meth"].Value;
             var currentFrameOffset = Convert.ToUInt64(currentFrameMatch.Groups["off"].Value, 16);
-            thread.Location = new CodeLocation(currentFrameModule, currentFrameMethod, currentFrameOffset);
+            thread.CurrentLocation = new CodeLocation(currentFrameModule, currentFrameMethod, currentFrameOffset);
             for (var i = 0; i < body.Length; i++)
             {
                 var line = body[i];

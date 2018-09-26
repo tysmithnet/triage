@@ -32,7 +32,7 @@ namespace Triage.Mortician.Reports
         ///     Gets the location.
         /// </summary>
         /// <value>The location.</value>
-        public CodeLocation Location { get; internal set; }
+        public CodeLocation CurrentLocation { get; internal set; }
 
         /// <summary>
         ///     Gets the stack frames.
