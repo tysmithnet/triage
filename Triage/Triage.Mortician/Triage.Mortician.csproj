@@ -217,16 +217,16 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="mex.dll">
+    <Content Include="NativeAssemblies\x64\mex.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="NetExt.dll">
+    <Content Include="NativeAssemblies\x64\sosex.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="psscor4.dll">
+    <Content Include="NativeAssemblies\x86\mex.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="sosex.dll">
+    <Content Include="NativeAssemblies\x86\sosex.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
