@@ -119,5 +119,7 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The size of this object</value>
         public ulong Size { get; protected internal set; }
+
+        public bool IsInFinalizerQueue { get; internal set; }
     }
 }

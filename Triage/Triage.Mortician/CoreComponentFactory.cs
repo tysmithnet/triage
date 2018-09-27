@@ -139,6 +139,7 @@ namespace Triage.Mortician
             var typeStore =
                 new Dictionary<DumpTypeKey, DumpType>(); // same type can be loaded into multiple app domains (think IIS)
             var objectRootsStore = new Dictionary<ulong, DumpObjectRoot>();
+            
 
             SetupAppDomains(appDomainStore);
             SetupModulesAndTypes(runtime, appDomainStore, typeStore, moduleStore);
@@ -232,7 +233,7 @@ namespace Triage.Mortician
         ///     Collects the ee stack information.
         /// </summary>
         /// <param name="threadStore">The thread store.</param>
-        private void CollectEeStackInformation(Dictionary<uint, DumpThread> threadStore)
+        private void ApplyEeStackInformation(Dictionary<uint, DumpThread> threadStore)
         {
             var report = CompositionContainer.GetExportedValue<EeStackReport>();
             foreach (var eeStackThread in report.Threads)
@@ -253,7 +254,7 @@ namespace Triage.Mortician
         ///     Collects the runaway information.
         /// </summary>
         /// <param name="threadStore">The thread store.</param>
-        private void CollectRunawayInformation(Dictionary<uint, DumpThread> threadStore)
+        private void ApplyRunawayInformation(Dictionary<uint, DumpThread> threadStore)
         {
             Log.Trace("Calling !runaway");
             var runawayReport = CompositionContainer.GetExportedValue<RunawayReport>();
@@ -270,22 +271,22 @@ namespace Triage.Mortician
         ///     Extracts the heap objects.
         /// </summary>
         /// <param name="heapObjectExtractors">The heap object extractors.</param>
-        /// <param name="rt">The rt.</param>
+        /// <param name="runtime">The rt.</param>
         /// <param name="objectStore">The object store.</param>
         /// <param name="objectHierarchy">The object hierarchy.</param>
         /// <param name="typeStore">The type store.</param>
-        private void ExtractHeapObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime rt,
+        private void ExtractHeapObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime runtime,
             Dictionary<ulong, DumpObject> objectStore,
             Dictionary<ulong, List<ulong>> objectHierarchy, Dictionary<DumpTypeKey, DumpType> typeStore)
         {
             Log.Trace("Using registered object extractors to process objects on the heap");
             var defaultExtractor = new DefaultObjectExtractor();
-            foreach (var clrObject in rt.Heap.EnumerateObjects()
+            foreach (var clrObject in runtime.Heap.EnumerateObjects()
                 .Where(o => !o.IsNull && !o.Type.IsFree))
             {
                 var isExtracted = false;
                 var convertedClrObject = Converter.Convert(clrObject);
-                var convertedRuntime = Converter.Convert(rt);
+                var convertedRuntime = Converter.Convert(runtime);
                 foreach (var heapObjectExtractor in heapObjectExtractors)
                 {
                     if (!heapObjectExtractor.CanExtract(convertedClrObject, convertedRuntime))
@@ -309,6 +310,14 @@ namespace Triage.Mortician
 
                 foreach (var clrObjectRef in clrObject.EnumerateObjectReferences(true))
                     objectHierarchy[clrObject.Address].Add(clrObjectRef.Address);
+            }
+
+            foreach (var address in runtime.EnumerateFinalizerQueueObjectAddresses())
+            {
+                if (objectStore.TryGetValue(address, out var o))
+                {
+                    o.IsInFinalizerQueue = true;
+                }
             }
         }
 
@@ -612,9 +621,18 @@ namespace Triage.Mortician
                         $"Extracted a thread but there is already an entry with os id: {dumpThread.OsId}, you should investigate these manually");
             }
 
+            foreach (var gcThreadOsId in rt.EnumerateGCThreads())
+            {
+                var osId = Convert.ToUInt32(gcThreadOsId);
+                if (threadStore.ContainsKey(osId))
+                {
+                    threadStore[osId].IsGcThread = true;
+                }
+            }
+
             Log.Trace("Loading debugger extensions");
-            CollectRunawayInformation(threadStore);
-            CollectEeStackInformation(threadStore);
+            ApplyRunawayInformation(threadStore);
+            ApplyEeStackInformation(threadStore);
         }
 
         /// <summary>
