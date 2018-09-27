@@ -25,7 +25,6 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Common.Logging;
 using Triage.Mortician.Core;
-using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.ExcelAnalyzer
 {

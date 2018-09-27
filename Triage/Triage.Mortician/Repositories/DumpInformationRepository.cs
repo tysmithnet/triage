@@ -20,7 +20,7 @@ using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core;
 
-namespace Triage.Mortician.Repository
+namespace Triage.Mortician.Repositories
 {
     /// <summary>
     ///     Represents a collection of high level information about the dump being analyzed

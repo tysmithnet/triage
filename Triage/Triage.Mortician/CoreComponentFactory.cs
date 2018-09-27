@@ -28,7 +28,7 @@ using Triage.Mortician.Reports;
 using Triage.Mortician.Reports.DumpDomain;
 using Triage.Mortician.Reports.EeStack;
 using Triage.Mortician.Reports.Runaway;
-using Triage.Mortician.Repository;
+using Triage.Mortician.Repositories;
 
 namespace Triage.Mortician
 {

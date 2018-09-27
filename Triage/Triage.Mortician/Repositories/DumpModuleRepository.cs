@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 using Triage.Mortician.Core;
 
-namespace Triage.Mortician.Repository
+namespace Triage.Mortician.Repositories
 {
     /// <summary>
     ///     An object capable of managing all the discovered modules in the memory dump

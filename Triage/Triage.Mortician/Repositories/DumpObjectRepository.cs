@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using Common.Logging;
 using Triage.Mortician.Core;
 
-namespace Triage.Mortician.Repository
+namespace Triage.Mortician.Repositories
 {
     /// <summary>
     ///     Repository for objects that were extracted from the managed heap
