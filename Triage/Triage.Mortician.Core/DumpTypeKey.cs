@@ -40,16 +40,10 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <param name="methodTable">The method table.</param>
         /// <param name="typeName">Name of the type.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">methodTable</exception>
-        /// <exception cref="System.ArgumentNullException">typeName</exception>
         public DumpTypeKey(ulong methodTable, string typeName)
         {
-            if (methodTable == 0)
-                throw new ArgumentOutOfRangeException(
-                    $"{nameof(methodTable)} cannot be 0. No methods tables are loaded at 0x0");
-
             MethodTable = methodTable;
-            TypeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
+            TypeName = typeName;
         }
     }
 }
