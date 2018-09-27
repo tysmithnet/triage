@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -397,10 +398,12 @@ namespace Triage.Mortician
         /// </summary>
         private void LoadPlugins()
         {
+            string cwd = Environment.CurrentDirectory;
+            string extPath = DebuggerProxy.Execute(".extpath");
             DebuggerProxy.Execute(@".sympath srv*https://msdl.microsoft.com/download/symbols");
-            DebuggerProxy.Execute(".load sosex");
-            DebuggerProxy.Execute(".load mex");
-            DebuggerProxy.Execute(".load netext");
+            string suffix = IntPtr.Size == 4 ? "32" : "64";
+            var loadSosex = DebuggerProxy.Execute($".load {cwd}\\sosex{suffix}");
+            var loadMex = DebuggerProxy.Execute($".load {cwd}\\mex{suffix}");
             DebuggerProxy
                 .Execute("!mu"); // forces sosex to load the appropriate SOS.dll // todo: should be possible from API
             DebuggerProxy.Execute("!eestack"); // todo: figure out a better way to force symbol loading
