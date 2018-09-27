@@ -21,11 +21,21 @@ namespace Triage.Mortician.Reports
     /// </summary>
     public interface IReportFactory
     {
+        string DisplayName { get; }
+
         /// <summary>
-        ///     Creates the report.
+        ///     Generate the report artifact
+        /// </summary>
+        /// <returns>IReport.</returns>
+        IReport Process();
+
+        /// <summary>
+        ///     Prepare to generate report artifacts. This typically means using the debugger
+        ///     interface to run some commands and store those results. This method will be called
+        ///     on the main thread serially, and so it is not necessary to lock the debugger.
         /// </summary>
         /// <param name="debugger">The debugger.</param>
         /// <returns>IReport.</returns>
-        IReport CreateReport(DebuggerProxy debugger);
+        void Setup(DebuggerProxy debugger);
     }
 }

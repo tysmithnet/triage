@@ -21,7 +21,6 @@ namespace Triage.Mortician.Reports.Runaway
     ///     Class RunawayReport.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Reports.IReport" />
-    [Export(typeof(IReport))]
     [Export]
     public class RunawayReport : IReport
     {

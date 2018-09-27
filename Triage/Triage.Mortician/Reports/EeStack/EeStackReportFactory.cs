@@ -4,7 +4,7 @@
 // Created          : 09-24-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-25-2018
+// Last Modified On : 09-26-2018
 // ***********************************************************************
 // <copyright file="EeStackOutputProcessor.cs" company="">
 //     Copyright ©  2017
@@ -13,6 +13,7 @@
 // ***********************************************************************
 
 using System;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Triage.Mortician.Core;
@@ -23,10 +24,13 @@ namespace Triage.Mortician.Reports.EeStack
     /// <summary>
     ///     Class EeStackOutputProcessor.
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Reports.IReportFactory" />
     /// <seealso cref="Triage.Mortician.Reports.IEeStackOutputProcessor" />
     /// <seealso cref="IEeStackOutputProcessor" />
+    [Export(typeof(IReportFactory))]
     public class EeStackReportFactory : IReportFactory
     {
+        public string DisplayName { get; } = "!eestack";
         /// <summary>
         ///     The frame regex
         /// </summary>
@@ -73,13 +77,31 @@ namespace Triage.Mortician.Reports.EeStack
                 RegexOptions.Compiled);
 
         /// <summary>
+        ///     Creates the report.
+        /// </summary>
+        /// <param name="debugger">The debugger.</param>
+        /// <returns>IReport.</returns>
+        /// <inheritdoc />
+        public IReport CreateReport(DebuggerProxy debugger)
+        {
+            var output = debugger.Execute("!eestack");
+            return ProcessOutput(output);
+        }
+
+        /// <summary>
+        ///     Generate the report artifact
+        /// </summary>
+        /// <returns>IReport.</returns>
+        public IReport Process() => ProcessOutput(RawOutput);
+
+        /// <summary>
         ///     Processes the output.
         /// </summary>
         /// <param name="eeStackOutput">The ee stack output.</param>
         /// <returns>EeStackReport.</returns>
         public EeStackReport ProcessOutput(string eeStackOutput)
         {
-            var report = new EeStackReport()
+            var report = new EeStackReport
             {
                 RawOutput = eeStackOutput
             };
@@ -93,6 +115,18 @@ namespace Triage.Mortician.Reports.EeStack
             }
 
             return report;
+        }
+
+        /// <summary>
+        ///     Prepare to generate report artifacts. This typically means using the debugger
+        ///     interface to run some commands and store those results. This method will be called
+        ///     on the main thread serially, and so it is not necessary to lock the debugger.
+        /// </summary>
+        /// <param name="debugger">The debugger.</param>
+        /// <returns>IReport.</returns>
+        public void Setup(DebuggerProxy debugger)
+        {
+            RawOutput = debugger.Execute("!eestack");
         }
 
         /// <summary>
@@ -214,11 +248,10 @@ namespace Triage.Mortician.Reports.EeStack
             return new CodeLocation(module, method, offset);
         }
 
-        /// <inheritdoc />
-        public IReport CreateReport(DebuggerProxy debugger)
-        {
-            var output = debugger.Execute("!eestack");
-            return ProcessOutput(output);
-        }
+        /// <summary>
+        ///     Gets or sets the raw output.
+        /// </summary>
+        /// <value>The raw output.</value>
+        public string RawOutput { get; set; }
     }
 }

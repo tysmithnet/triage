@@ -42,19 +42,19 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="compositionContainer">The composition container.</param>
         /// <param name="dumpFile">Dump file to analzye</param>
-        /// <exception cref="System.ArgumentNullException">
-        ///     compositionContainer
-        ///     or
-        ///     dumpFile
-        /// </exception>
-        /// <exception cref="System.ApplicationException">
-        /// </exception>
         /// <exception cref="ArgumentNullException">
         ///     compositionContainer
         ///     or
         ///     dumpFile
         /// </exception>
-        /// <exception cref="ApplicationException"></exception>
+        /// <exception cref="ApplicationException">
+        /// </exception>
+        /// <exception cref="System.ArgumentNullException">
+        ///     compositionContainer
+        ///     or
+        ///     dumpFile
+        /// </exception>
+        /// <exception cref="System.ApplicationException"></exception>
         public CoreComponentFactory(CompositionContainer compositionContainer, FileInfo dumpFile)
         {
             CompositionContainer =
@@ -83,6 +83,7 @@ namespace Triage.Mortician
 
             DebuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
             LoadPlugins();
+            ProcessReports();
         }
 
         /// <summary>
@@ -206,10 +207,7 @@ namespace Triage.Mortician
         /// <param name="threadStore">The thread store.</param>
         private void CollectEeStackInformation(Dictionary<uint, DumpThread> threadStore)
         {
-            Log.Trace("Calling !EEStack");
-            var eestackCommandResult = DebuggerProxy.Execute("!eestack");
-            var processor = new EeStackReportFactory();
-            var report = processor.ProcessOutput(eestackCommandResult);
+            var report = CompositionContainer.GetExportedValue<EeStackReport>();
             foreach (var eeStackThread in report.Threads)
             {
                 var existing = threadStore.Values.FirstOrDefault(t => t.DebuggerIndex == eeStackThread.Index);
@@ -231,9 +229,7 @@ namespace Triage.Mortician
         private void CollectRunawayInformation(Dictionary<uint, DumpThread> threadStore)
         {
             Log.Trace("Calling !runaway");
-            var runawayOutput = DebuggerProxy.Execute("!runaway 3");
-            var runawayOutputProcessor = new RunawayReportFactory();
-            var runawayReport = runawayOutputProcessor.ProcessOutput(runawayOutput);
+            var runawayReport = CompositionContainer.GetExportedValue<RunawayReport>();
             foreach (var runawayReportRunawayLine in runawayReport.RunawayLines)
             {
                 if (!threadStore.TryGetValue(runawayReportRunawayLine.ThreadId, out var dumpThread))
@@ -268,8 +264,53 @@ namespace Triage.Mortician
             DebuggerProxy.Execute(".load sosex");
             DebuggerProxy.Execute(".load mex");
             DebuggerProxy.Execute(".load netext");
-            DebuggerProxy.Execute("!mu"); // forces sosex to load the appropriate SOS.dll // todo: should be possible from API
+            DebuggerProxy
+                .Execute("!mu"); // forces sosex to load the appropriate SOS.dll // todo: should be possible from API
             DebuggerProxy.Execute("!eestack"); // todo: figure out a better way to force symbol loading
+        }
+
+        private void ProcessReports()
+        {
+            var reportFactories = CompositionContainer.GetExportedValues<IReportFactory>().ToArray();
+            var failedSetup = new List<IReportFactory>();
+            // setup must happen serially on the main thread because it uses COM
+            foreach (var reportFactory in reportFactories)
+                try
+                {
+                    reportFactory.Setup(DebuggerProxy);
+                }
+                catch (Exception e)
+                {
+                    failedSetup.Add(reportFactory);
+                }
+
+            var setupFactories = reportFactories.Except(failedSetup).ToArray();
+            var tasks = setupFactories.Select(f => Task.Run(() => f.Process())).ToArray();
+            try
+            {
+                Task.WaitAll(tasks);
+            }
+            catch (AggregateException e)
+            {
+                e.Flatten().Handle(exception =>
+                {
+                    Log.Error($"Error occurred during report processing");
+                    return true;
+                });
+            }
+
+            foreach (var (task, factory) in tasks.Zip(setupFactories, (task, factory) => (task, factory)))
+            {
+                if (task.IsFaulted)
+                {
+                    Log.Error(
+                        $"There was a problem processing the report for {factory.DisplayName}, it will not be available for this execution. Make sure that your report factory can correctly handle all variations of output.",
+                        task.Exception);
+                    continue;
+                }
+
+                CompositionContainer.ComposeExportedValue(task.Result);
+            }
         }
 
         /// <summary>
@@ -278,10 +319,9 @@ namespace Triage.Mortician
         /// <param name="appDomainStore">The application domain store.</param>
         private void SetupAppDomains(Dictionary<ulong, DumpAppDomain> appDomainStore)
         {
-            var dumpdomainResults = DebuggerProxy.Execute("!dumpdomain"); // todo: need an abstraction over "reports"
-            var processor = new DumpDomainReportFactory();
-            var results = processor.ProcessOutput(dumpdomainResults);
-            foreach (var current in results.AppDomains)
+            var results = CompositionContainer.GetExportedValues<IReport>();
+            var report = results.OfType<DumpDomainReport>().First();
+            foreach (var current in report.AppDomainsInternal)
                 if (!appDomainStore.ContainsKey(current.Address))
                     appDomainStore.Add(current.Address, new DumpAppDomain
                     {

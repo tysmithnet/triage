@@ -22,7 +22,6 @@ namespace Triage.Mortician.Reports.EeStack
     /// </summary>
     /// <seealso cref="Triage.Mortician.Reports.IReport" />
     /// <seealso cref="IReport" />
-    [Export(typeof(IReport))]
     [Export]
     public sealed class EeStackReport : IReport
     {
