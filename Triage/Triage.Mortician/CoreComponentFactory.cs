@@ -24,7 +24,6 @@ using Common.Logging;
 using Microsoft.Diagnostics.Runtime;
 using Newtonsoft.Json;
 using Triage.Mortician.Core;
-using Triage.Mortician.Domain;
 using Triage.Mortician.Reports;
 using Triage.Mortician.Reports.DumpDomain;
 using Triage.Mortician.Reports.EeStack;

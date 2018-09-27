@@ -182,8 +182,8 @@
     <Compile Include="Adapters\DataTargetAdapter.cs" />
     <Compile Include="DefaultConverterCache.cs" />
     <Compile Include="DefaultOptions.cs" />
-    <Compile Include="Domain\DebuggerProxy.cs" />
-    <Compile Include="Domain\DefaultObjectExtractor.cs" />
+    <Compile Include="DebuggerProxy.cs" />
+    <Compile Include="DefaultObjectExtractor.cs" />
     <Compile Include="Reports\DumpDomain\DumpDomainAppDomain.cs" />
     <Compile Include="Reports\DumpDomain\DumpDomainAssembly.cs" />
     <Compile Include="Reports\DumpDomain\DumpDomainModule.cs" />

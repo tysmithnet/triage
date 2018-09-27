@@ -16,7 +16,6 @@ using System;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Triage.Mortician.Domain;
 
 namespace Triage.Mortician.Reports.Runaway
 {
