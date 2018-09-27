@@ -102,7 +102,7 @@ namespace Triage.Mortician
             var heapObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
 
             ClrRuntime runtime;
-
+            
             try
             {
                 Log.Trace($"Attempting to create the CLRMd runtime");
@@ -139,24 +139,24 @@ namespace Triage.Mortician
             var typeStore =
                 new Dictionary<DumpTypeKey, DumpType>(); // same type can be loaded into multiple app domains (think IIS)
             var objectRootsStore = new Dictionary<ulong, DumpObjectRoot>();
-            
+            var finalizerStore = new Dictionary<ulong, DumpObject>();
+            var blockingObjectStore = new Dictionary<ulong, DumpBlockingObject>();
 
             SetupAppDomains(appDomainStore);
             SetupModulesAndTypes(runtime, appDomainStore, typeStore, moduleStore);
             SetupObjects(heapObjectExtractors, runtime, objectStore, objectHierarchy, typeStore, appDomainStore,
-                objectRootsStore);
+                objectRootsStore, finalizerStore, blockingObjectStore);
             SetupHandles(runtime, appDomainStore, typeStore, handleStore);
             EstablishObjectRelationships(objectHierarchy, objectStore);
             GC.Collect();
             SetupThreads(runtime, threadStore, objectRootsStore);
 
-            var dumpRepo = new DumpObjectRepository(objectStore, objectRootsStore);
+            var dumpRepo = new DumpObjectRepository(objectStore, objectRootsStore, finalizerStore, blockingObjectStore);
             var threadRepo = new DumpThreadRepository(threadStore);
             var appDomainRepo = new DumpAppDomainRepository(appDomainStore);
             var moduleRepo = new DumpModuleRepository(moduleStore);
             var typeRepo = new DumpTypeRepository(typeStore);
             var handleRepo = new DumpHandleRepository(handleStore);
-
             CompositionContainer.ComposeExportedValue<IEventHub>(eventHub);
             CompositionContainer.ComposeExportedValue<IDumpInformationRepository>(dumpInformationRepository);
             CompositionContainer.ComposeExportedValue<IDumpObjectRepository>(dumpRepo);
@@ -277,7 +277,7 @@ namespace Triage.Mortician
         /// <param name="typeStore">The type store.</param>
         private void ExtractHeapObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime runtime,
             Dictionary<ulong, DumpObject> objectStore,
-            Dictionary<ulong, List<ulong>> objectHierarchy, Dictionary<DumpTypeKey, DumpType> typeStore)
+            Dictionary<ulong, List<ulong>> objectHierarchy, Dictionary<DumpTypeKey, DumpType> typeStore, Dictionary<ulong, DumpObject> finalizerQueue, Dictionary<ulong, DumpBlockingObject> blockingObjects)
         {
             Log.Trace("Using registered object extractors to process objects on the heap");
             var defaultExtractor = new DefaultObjectExtractor();
@@ -317,7 +317,21 @@ namespace Triage.Mortician
                 if (objectStore.TryGetValue(address, out var o))
                 {
                     o.IsInFinalizerQueue = true;
+                    finalizerQueue.Add(address, o);
                 }
+            }
+
+            foreach (var blockingObject in runtime.Heap.EnumerateBlockingObjects())
+            {
+                blockingObjects.Add(blockingObject.Object, new DumpBlockingObject()
+                {
+                    Address = blockingObject.Object,
+                    BlockingReason = Converter.Convert(blockingObject.Reason),
+                    HasSingleOwner = blockingObject.HasSingleOwner,
+                    IsLocked = blockingObject.Taken,
+                    RecursionCount = blockingObject.RecursionCount,
+                    // todo: owners
+                });
             }
         }
 
@@ -561,9 +575,9 @@ namespace Triage.Mortician
         private void SetupObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime runtime,
             Dictionary<ulong, DumpObject> objectStore, Dictionary<ulong, List<ulong>> objectHierarchy,
             Dictionary<DumpTypeKey, DumpType> typeStore, Dictionary<ulong, DumpAppDomain> appDomainStore,
-            Dictionary<ulong, DumpObjectRoot> objectRootStore)
+            Dictionary<ulong, DumpObjectRoot> objectRootStore, Dictionary<ulong, DumpObject> finalizerQueue, Dictionary<ulong, DumpBlockingObject> blockingObjects)
         {
-            ExtractHeapObjects(heapObjectExtractors, runtime, objectStore, objectHierarchy, typeStore);
+            ExtractHeapObjects(heapObjectExtractors, runtime, objectStore, objectHierarchy, typeStore, finalizerQueue, blockingObjects);
             ExtractStackObjects(runtime, objectStore, appDomainStore, objectRootStore);
         }
 

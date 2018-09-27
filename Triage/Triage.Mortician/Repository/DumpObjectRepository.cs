@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-25-2018
+// Last Modified On : 09-26-2018
 // ***********************************************************************
 // <copyright file="DumpObjectRepository.cs" company="">
 //     Copyright ©  2017
@@ -29,34 +29,55 @@ namespace Triage.Mortician.Repository
         /// <summary>
         ///     Initializes a new instance of the <see cref="DumpObjectRepository" /> class.
         /// </summary>
-        /// <param name="objects">The objects.</param>
+        /// <param name="allObjects">The objects.</param>
         /// <param name="objectRoots">The object roots.</param>
+        /// <param name="finalizerQueue">The finalizer queue.</param>
+        /// <param name="blockingObjects">The blocking objects.</param>
         /// <exception cref="System.ArgumentNullException">
         ///     objects
         ///     or
         ///     objectRoots
         /// </exception>
-        public DumpObjectRepository(Dictionary<ulong, DumpObject> objects,
-            Dictionary<ulong, DumpObjectRoot> objectRoots)
+        public DumpObjectRepository(Dictionary<ulong, DumpObject> allObjects,
+            Dictionary<ulong, DumpObjectRoot> objectRoots, Dictionary<ulong, DumpObject> finalizerQueue,
+            Dictionary<ulong, DumpBlockingObject> blockingObjects)
         {
-            Objects = objects ?? throw new ArgumentNullException(nameof(objects));
+            Objects = allObjects ?? throw new ArgumentNullException(nameof(allObjects));
             ObjectRoots = objectRoots ?? throw new ArgumentNullException(nameof(objectRoots));
+            FinalizerQueueInternal = finalizerQueue;
+            BlockingObjectsInternal = blockingObjects;
         }
 
         /// <summary>
         ///     The log
         /// </summary>
-        protected internal ILog Log = LogManager.GetLogger(typeof(DumpObjectRepository));
+        internal ILog Log = LogManager.GetLogger(typeof(DumpObjectRepository));
 
         /// <summary>
         ///     The object roots that keep objects on the heap alive
         /// </summary>
-        protected internal Dictionary<ulong, DumpObjectRoot> ObjectRoots;
+        internal Dictionary<ulong, DumpObjectRoot> ObjectRoots;
 
         /// <summary>
         ///     The heap objects
         /// </summary>
-        protected internal Dictionary<ulong, DumpObject> Objects;
+        internal Dictionary<ulong, DumpObject> Objects;
+
+        /// <summary>
+        ///     Blockings the objects.
+        /// </summary>
+        /// <returns>IEnumerable&lt;DumpBlockingObject&gt;.</returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        /// <inheritdoc />
+        public IEnumerable<DumpBlockingObject> BlockingObjects() => BlockingObjectsInternal.Values;
+
+        /// <summary>
+        ///     Finalizers the queue.
+        /// </summary>
+        /// <returns>IEnumerable&lt;DumpObject&gt;.</returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        /// <inheritdoc />
+        public IEnumerable<DumpObject> FinalizerQueue() => FinalizerQueueInternal.Values;
 
         /// <summary>
         ///     Gets the object at the specified address
@@ -77,5 +98,17 @@ namespace Triage.Mortician.Repository
         /// </summary>
         /// <returns>All dump objects extracted from the heap</returns>
         public IEnumerable<DumpObject> Get() => Objects.Values;
+
+        /// <summary>
+        ///     Gets or sets the blocking objects internal.
+        /// </summary>
+        /// <value>The blocking objects internal.</value>
+        public Dictionary<ulong, DumpBlockingObject> BlockingObjectsInternal { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the finalizer queue internal.
+        /// </summary>
+        /// <value>The finalizer queue internal.</value>
+        public Dictionary<ulong, DumpObject> FinalizerQueueInternal { get; set; }
     }
 }
