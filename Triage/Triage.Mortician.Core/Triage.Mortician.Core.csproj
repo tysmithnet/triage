@@ -161,6 +161,7 @@
     <Compile Include="ClrMdAbstractions\IRootPath.cs" />
     <Compile Include="ISettings.cs" />
     <Compile Include="ClrMdAbstractions\ISymbolLocator.cs" />
+    <Compile Include="ManagedCodeLocation.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ClrMdAbstractions\VersionInfo.cs" />
