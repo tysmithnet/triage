@@ -75,8 +75,9 @@ namespace Triage.Mortician
             aggregateCatalog.Catalogs.Add(new AssemblyCatalog(Assembly.GetExecutingAssembly()));
             var compositionContainer = new CompositionContainer(aggregateCatalog);
             // todo: allow for export/import manipulation
-            var repositoryFactory = new CoreComponentFactory(compositionContainer, new FileInfo(options.DumpFile));
-            repositoryFactory.RegisterRepositories(options);
+            var componentFactory = new CoreComponentFactory(compositionContainer, new FileInfo(options.DumpFile));
+            componentFactory.Setup();
+            componentFactory.RegisterRepositories(options);
             compositionContainer = dependencyInjectionTransformer?.Invoke(compositionContainer) ?? compositionContainer;
 
             var engine = compositionContainer.GetExportedValue<IEngine>();
