@@ -77,6 +77,8 @@
     <Compile Include="ClrMdAbstractions\WorkItemKind.cs" />
     <Compile Include="CodeLocation.cs" />
     <Compile Include="DumpAppDomain.cs" />
+    <Compile Include="DumpBlockingObject.cs" />
+    <Compile Include="DumpHandle.cs" />
     <Compile Include="DumpModule.cs" />
     <Compile Include="DumpObject.cs" />
     <Compile Include="DumpObjectRoot.cs" />
@@ -117,6 +119,7 @@
     <Compile Include="ClrMdAbstractions\IDacInfo.cs" />
     <Compile Include="ClrMdAbstractions\IDataTarget.cs" />
     <Compile Include="IDumpAppDomainRepository.cs" />
+    <Compile Include="IDumpHandleRepository.cs" />
     <Compile Include="IDumpInformationRepository.cs" />
     <Compile Include="IDumpModuleRepository.cs" />
     <Compile Include="IDumpObjectExtractor.cs" />

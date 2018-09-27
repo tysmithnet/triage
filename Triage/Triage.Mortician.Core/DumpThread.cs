@@ -90,5 +90,7 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The managed stack frames internal.</value>
         internal IList<DumpStackFrame> ManagedStackFramesInternal { get; set; } = new List<DumpStackFrame>();
+
+        public bool IsGcThread { get; internal set; }
     }
 }

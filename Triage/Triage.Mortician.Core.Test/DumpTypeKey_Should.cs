@@ -11,14 +11,14 @@ namespace Triage.Mortician.Core.Test
     public class DumpTypeKey_Should
     {
         [Fact]
-        public void Disallow_Method_Table_Value_Of_Zero()
+        public void Allow_Zero_And_Null()
         {
             // arrange
-            Action throws = () => new DumpTypeKey(0, "ThisDoesntMatter");
+            Action throws = () => new DumpTypeKey(0, null);
             
             // act
             // assert
-            throws.Should().Throw<ArgumentOutOfRangeException>();
+            throws.Should().NotThrow();
         }
     }
 }
