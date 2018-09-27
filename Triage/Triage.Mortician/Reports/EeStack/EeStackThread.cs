@@ -15,7 +15,7 @@
 using System.Collections.Generic;
 using Triage.Mortician.Core;
 
-namespace Triage.Mortician.Reports
+namespace Triage.Mortician.Reports.EeStack
 {
     /// <summary>
     ///     Class EeStackThread. This class cannot be inherited.

@@ -4,7 +4,7 @@
 // Created          : 09-20-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-20-2018
+// Last Modified On : 09-26-2018
 // ***********************************************************************
 // <copyright file="DumpDomainReport.cs" company="">
 //     Copyright ©  2017
@@ -13,14 +13,16 @@
 // ***********************************************************************
 
 using System.Collections.Generic;
-using Triage.Mortician.Reports;
+using System.ComponentModel.Composition;
 
-namespace Triage.Mortician.Domain
+namespace Triage.Mortician.Reports.DumpDomain
 {
     /// <summary>
     ///     Class DumpDomainReport. This class cannot be inherited.
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Reports.IReport" />
     /// <seealso cref="IReport" />
+    [Export]
     public sealed class DumpDomainReport : IReport
     {
         /// <summary>
@@ -34,6 +36,13 @@ namespace Triage.Mortician.Domain
         /// </summary>
         /// <value>The default domain.</value>
         public DumpDomainAppDomain DefaultDomain { get; internal set; }
+
+        /// <summary>
+        ///     Gets the raw output.
+        /// </summary>
+        /// <value>The raw output.</value>
+        /// <inheritdoc />
+        public string RawOutput { get; internal set; }
 
         /// <summary>
         ///     Gets the shared domain.

@@ -14,7 +14,7 @@
 
 using Triage.Mortician.Core;
 
-namespace Triage.Mortician.Reports
+namespace Triage.Mortician.Reports.EeStack
 {
     /// <summary>
     ///     Class EeStackFrame. This class cannot be inherited.

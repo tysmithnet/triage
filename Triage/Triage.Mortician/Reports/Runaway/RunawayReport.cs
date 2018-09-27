@@ -13,13 +13,15 @@
 // ***********************************************************************
 
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 
-namespace Triage.Mortician.Reports
+namespace Triage.Mortician.Reports.Runaway
 {
     /// <summary>
     ///     Class RunawayReport.
     /// </summary>
     /// <seealso cref="Triage.Mortician.Reports.IReport" />
+    [Export]
     public class RunawayReport : IReport
     {
         /// <summary>
@@ -27,5 +29,8 @@ namespace Triage.Mortician.Reports
         /// </summary>
         /// <value>The runaway lines.</value>
         public IList<RunawayLine> RunawayLines { get; internal set; } = new List<RunawayLine>();
+
+        /// <inheritdoc />
+        public string RawOutput { get; internal set; }
     }
 }

@@ -2,11 +2,12 @@
 using FluentAssertions;
 using Triage.Mortician.Domain;
 using Triage.Mortician.Reports;
+using Triage.Mortician.Reports.DumpDomain;
 using Xunit;
 
 namespace Triage.Mortician.Test
 {
-    public class DumpDomainOutputProcessor_Should
+    public class DumpDomainReportFactory_Should
     {
         public const string HELLO_WORLD = @"PDB symbol for clr.dll not loaded
 --------------------------------------
@@ -76,7 +77,7 @@ SecurityDescriptor: 0000014c430c1850
         public void Correctly_Identify_The_Default_Domain()
         {
             // arrange
-            var processor = new DumpDomainOutputProcessor();
+            var processor = new DumpDomainReportFactory();
 
             // act
             var report = processor.ProcessOutput(HELLO_WORLD);
@@ -113,7 +114,7 @@ SecurityDescriptor: 0000014c430c1850
         public void Correctly_Identify_The_Shared_Domain()
         {
             // arrange
-            var processor = new DumpDomainOutputProcessor();
+            var processor = new DumpDomainReportFactory();
 
             // act
             var report = processor.ProcessOutput(HELLO_WORLD);
@@ -140,7 +141,7 @@ SecurityDescriptor: 0000014c430c1850
         public void Correctly_Identify_The_System_Domain()
         {
             // arrange
-            var processor = new DumpDomainOutputProcessor();
+            var processor = new DumpDomainReportFactory();
 
             // act
             var report = processor.ProcessOutput(HELLO_WORLD);

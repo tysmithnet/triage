@@ -6,25 +6,29 @@
 // Last Modified By : @tysmithnet
 // Last Modified On : 09-21-2018
 // ***********************************************************************
-// <copyright file="IStandardReportOutputProcessor.cs" company="">
+// <copyright file="DumpDomainModule.cs" company="">
 //     Copyright ©  2017
 // </copyright>
 // <summary></summary>
 // ***********************************************************************
 
-namespace Triage.Mortician.Reports
+namespace Triage.Mortician.Reports.DumpDomain
 {
     /// <summary>
-    ///     Interface IStandardReportOutputProcessor
+    ///     Class DumpDomainModule. This class cannot be inherited.
     /// </summary>
-    /// <typeparam name="TReport">The type of the t report.</typeparam>
-    public interface IStandardReportOutputProcessor<out TReport> where TReport : IReport
+    public sealed class DumpDomainModule
     {
         /// <summary>
-        ///     Processes the output.
+        ///     Gets the address.
         /// </summary>
-        /// <param name="output">The output.</param>
-        /// <returns>TReport.</returns>
-        TReport ProcessOutput(string output);
+        /// <value>The address.</value>
+        public ulong Address { get; internal set; }
+
+        /// <summary>
+        ///     Gets the location.
+        /// </summary>
+        /// <value>The location.</value>
+        public string Location { get; internal set; }
     }
 }

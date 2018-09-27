@@ -13,33 +13,56 @@
 // ***********************************************************************
 
 using System;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Triage.Mortician.Domain;
 
-namespace Triage.Mortician.Reports
+namespace Triage.Mortician.Reports.Runaway
 {
     /// <summary>
-    ///     Class RunawayOutputProcessor.
+    /// Class RunawayOutputProcessor.
     /// </summary>
-    /// <seealso cref="Triage.Mortician.Reports.IStandardReportOutputProcessor{Triage.Mortician.Reports.RunawayReport}" />
-    public class RunawayOutputProcessor : IStandardReportOutputProcessor<RunawayReport>
+    /// <seealso cref="Triage.Mortician.Reports.IReportFactory" />
+    [Export(typeof(IReportFactory))]
+    public class RunawayReportFactory : IReportFactory
     {
         /// <summary>
-        ///     The line regex
+        /// The line regex
         /// </summary>
         private static readonly Regex LineRegex =
             new Regex(@"^\s*(?<idx>\d+):(?<id>[a-fA-F0-9]+)\s*(?<days>\d+)\s*days\s(?<ts>[\d\.:]+)\s*$",
                 RegexOptions.Compiled | RegexOptions.Multiline);
 
         /// <summary>
-        ///     Processes the output.
+        /// Creates the report.
+        /// </summary>
+        /// <param name="debugger">The debugger.</param>
+        /// <returns>IReport.</returns>
+        public IReport CreateReport(DebuggerProxy debugger)
+        {
+            var output = debugger.Execute("!runaway 3");
+            return ProcessOutput(output);
+        }
+
+        /// <summary>
+        /// Generate the report artifact
+        /// </summary>
+        /// <returns>IReport.</returns>
+        /// <inheritdoc />
+        public IReport Process() => ProcessOutput(RawOutput);
+
+        /// <summary>
+        /// Processes the output.
         /// </summary>
         /// <param name="output">The output.</param>
         /// <returns>TReport.</returns>
-        /// <inheritdoc />
-        public RunawayReport ProcessOutput(string output)
+        internal RunawayReport ProcessOutput(string output)
         {
-            var report = new RunawayReport();
+            var report = new RunawayReport
+            {
+                RawOutput = output
+            };
             var modes = Regex.Split(output, "Kernel Mode Time");
             var matches = LineRegex.Matches(modes[0]);
             foreach (Match match in matches)
@@ -72,5 +95,30 @@ namespace Triage.Mortician.Reports
 
             return report;
         }
+
+        /// <summary>
+        /// Prepare to generate report artifacts. This typically means using the debugger
+        /// interface to run some commands and store those results. This method will be called
+        /// on the main thread serially, and so it is not necessary to lock the debugger.
+        /// </summary>
+        /// <param name="debugger">The debugger.</param>
+        /// <returns>IReport.</returns>
+        /// <inheritdoc />
+        public void Setup(DebuggerProxy debugger)
+        {
+            RawOutput = debugger.Execute("!runaway 3");
+        }
+
+        /// <summary>
+        /// Gets the display name.
+        /// </summary>
+        /// <value>The display name.</value>
+        public string DisplayName { get; } = "!runaway";
+
+        /// <summary>
+        /// Gets or sets the raw output.
+        /// </summary>
+        /// <value>The raw output.</value>
+        public string RawOutput { get; set; }
     }
 }

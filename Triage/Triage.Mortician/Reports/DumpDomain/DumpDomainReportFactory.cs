@@ -4,7 +4,7 @@
 // Created          : 09-20-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-21-2018
+// Last Modified On : 09-26-2018
 // ***********************************************************************
 // <copyright file="DumpDomainOutputProcessor.cs" company="">
 //     Copyright ©  2017
@@ -13,18 +13,25 @@
 // ***********************************************************************
 
 using System;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Primitives;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Triage.Mortician.Domain;
 
-namespace Triage.Mortician.Domain
+namespace Triage.Mortician.Reports.DumpDomain
 {
     /// <summary>
     ///     Class DumpDomainOutputProcessor.
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Reports.IReportFactory" />
     /// <seealso cref="IDumpDomainOutputProcessor" />
     /// <seealso cref="IDumpDomainOutputProcessor" />
-    public class DumpDomainOutputProcessor : IDumpDomainOutputProcessor
+    [Export(typeof(IReportFactory))]
+    public class DumpDomainReportFactory : IReportFactory
     {
+        public string DisplayName { get; } = "!dumpdomain";
+
         /// <summary>
         ///     The assembly start regex
         /// </summary>
@@ -109,16 +116,30 @@ namespace Triage.Mortician.Domain
             new Regex(@"^System Domain:\s*(?<addr>[a-fA-F0-9]+)\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
 
         /// <summary>
+        ///     Creates the report.
+        /// </summary>
+        /// <param name="debugger">The debugger.</param>
+        /// <returns>IReport.</returns>
+        public IReport CreateReport(DebuggerProxy debugger) => ProcessOutput(debugger.Execute("!dumpdomain"));
+
+        /// <summary>
+        ///     Generate the report artifact
+        /// </summary>
+        /// <returns>IReport.</returns>
+        public IReport Process() => ProcessOutput(RawOutput);
+
+        /// <summary>
         ///     Processes the output.
         /// </summary>
         /// <param name="output">The output.</param>
         /// <returns>DumpDomainReport.</returns>
-        /// <exception cref="NotImplementedException"></exception>
-        /// <inheritdoc />
         public DumpDomainReport ProcessOutput(string output)
         {
             // todo: break up
-            var returnVal = new DumpDomainReport();
+            var returnVal = new DumpDomainReport
+            {
+                RawOutput = output
+            };
             var domainTextChunks = output.Split(new[] {"--------------------------------------"},
                 StringSplitOptions.RemoveEmptyEntries).Where(c => NameRegex.IsMatch(c)).ToArray();
             for (var i = 0; i < domainTextChunks.Length; i++)
@@ -237,5 +258,23 @@ namespace Triage.Mortician.Domain
 
             return returnVal;
         }
+
+        /// <summary>
+        ///     Prepare to generate report artifacts. This typically means using the debugger
+        ///     interface to run some commands and store those results. This method will be called
+        ///     on the main thread serially, and so it is not necessary to lock the debugger.
+        /// </summary>
+        /// <param name="debugger">The debugger.</param>
+        /// <returns>IReport.</returns>
+        public void Setup(DebuggerProxy debugger)
+        {
+            RawOutput = debugger.Execute("!dumpdomain");
+        }
+
+        /// <summary>
+        ///     Gets or sets the raw output.
+        /// </summary>
+        /// <value>The raw output.</value>
+        public string RawOutput { get; set; }
     }
 }
