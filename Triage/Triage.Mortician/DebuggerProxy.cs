@@ -29,7 +29,7 @@ namespace Triage.Mortician
     /// <seealso cref="T:Microsoft.Diagnostics.Runtime.Interop.IDebugOutputCallbacks" />
     /// <seealso cref="T:System.IDisposable" />
     /// <seealso cref="T:Triage.Mortician.IDebuggerProxy" />
-    public sealed class DebuggerProxy : IDebugOutputCallbacks, IDisposable
+    public sealed class DebuggerProxy : IDebugOutputCallbacks, IDisposable, IDebuggerProxy
     {
         // todo: autoresetevent to serialize access to client
 

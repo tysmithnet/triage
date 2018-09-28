@@ -48,7 +48,7 @@ namespace Triage.Mortician.Core
         ///     Gets or sets the key to uniquely identify this type
         /// </summary>
         /// <value>The dump type key.</value>
-        public DumpTypeKey DumpTypeKey { get; protected internal set; }
+        public DumpTypeKey Key { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is abstract.

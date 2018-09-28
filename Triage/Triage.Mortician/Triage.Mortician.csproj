@@ -185,6 +185,7 @@
     <Compile Include="DefaultOptions.cs" />
     <Compile Include="DebuggerProxy.cs" />
     <Compile Include="DefaultObjectExtractor.cs" />
+    <Compile Include="IDebuggerProxy.cs" />
     <Compile Include="Reports\DumpDomain\DumpDomainAppDomain.cs" />
     <Compile Include="Reports\DumpDomain\DumpDomainAssembly.cs" />
     <Compile Include="Reports\DumpDomain\DumpDomainModule.cs" />

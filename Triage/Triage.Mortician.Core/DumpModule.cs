@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Core
 {
@@ -13,18 +14,16 @@ namespace Triage.Mortician.Core
         public DumpModule(ulong assemblyId = 0, string assemblyName = null,
             DebuggableAttribute.DebuggingModes debuggingMode = DebuggableAttribute.DebuggingModes.None,
             string fileName = null, ulong? imageBase = default(ulong?), bool isDynamic = false, bool isFile = false,
-            string name = null, string pdbFile = null, Guid? pdbGuid = default(Guid?), ulong size = 0)
+            string name = null, ulong size = 0)
         {
             AssemblyId = assemblyId;
             AssemblyName = assemblyName;
             DebuggingMode = debuggingMode;
             FileName = fileName;
-            ImageBase = imageBase;
+            ImageBase = imageBase ?? 0;
             IsDynamic = isDynamic;
             IsFile = isFile;
             Name = name;
-            PdbFile = pdbFile;
-            PdbGuid = pdbGuid;
             Size = size;
         }
 
@@ -77,7 +76,7 @@ namespace Triage.Mortician.Core
         ///     it not backed by phsical memory
         /// </summary>
         /// <value>The image base.</value>
-        public ulong? ImageBase { get; protected internal set; }
+        public ulong ImageBase { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this module is a dynamic module
@@ -96,18 +95,12 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The name.</value>
         public string Name { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets the PDB file location if available, null otherwise
-        /// </summary>
-        /// <value>The PDB file.</value>
-        public string PdbFile { get; protected internal set; }
-
+        
         /// <summary>
         ///     Gets or sets the PDB guid if available
         /// </summary>
         /// <value>The PDB unique identifier.</value>
-        public Guid? PdbGuid { get; protected internal set; }
+        public IPdbInfo PdbInfo { get; set; }
 
         /// <summary>
         ///     Gets or sets the size of this module
