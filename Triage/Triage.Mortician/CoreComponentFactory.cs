@@ -10,62 +10,35 @@ namespace Triage.Mortician
 {
     public class DumpHeapSegment
     {
-
-        /// <inheritdoc />
-        public ulong ReservedEnd {get; set;}
-        public ulong Start { get; set; }
-
         public ulong CommittedEnd { get; set; }
+        public ulong End { get; set; }
+        public ulong FirstObject { get; set; }
+        public ulong Gen0Length { get; set; }
+        public ulong Gen0Start { get; set; }
+        public ulong Gen1Length { get; set; }
+        public ulong Gen1Start { get; set; }
+        public ulong Gen2Length { get; set; }
+        public ulong Gen2Start { get; set; }
+        public IClrHeap Heap { get; set; }
+        public bool IsEphemeral { get; set; }
+        public bool IsLarge { get; set; }
+        public ulong Length { get; set; }
+        public int ProcessorAffinity { get; set; }
+        public ulong ReservedEnd { get; set; }
+        public ulong Start { get; set; }
+    }
 
-        /// <inheritdoc />
-        public ulong End {get; set;}
-
-        /// <inheritdoc />
-        public ulong FirstObject {get; set;}
-
-        /// <inheritdoc />
-        public ulong Gen0Length {get; set;}
-
-        /// <inheritdoc />
-        public ulong Gen0Start {get; set;}
-
-        /// <inheritdoc />
-        public ulong Gen1Length {get; set;}
-
-        /// <inheritdoc />
-        public ulong Gen1Start {get; set;}
-
-        /// <inheritdoc />
-        public ulong Gen2Length {get; set;}
-
-        /// <inheritdoc />
-        public ulong Gen2Start {get; set;}
-
-        /// <inheritdoc />
-        public IClrHeap Heap {get; set;}
-
-        /// <inheritdoc />
-        public bool IsEphemeral {get; set;}
-
-        /// <inheritdoc />
-        public bool IsLarge {get; set;}
-
-        /// <inheritdoc />
-        public ulong Length {get; set;}
-
-        /// <inheritdoc />
-        public int ProcessorAffinity {get; set;}
+    public class DumpMemoryRegion
+    {
+        public ulong Address { get; set; }
+        public GcSegmentType GcSegmentType { get; set; }
+        public int HeapNumber { get; set; }
+        public ClrMemoryRegionType MemoryRegionType { get; set; }
+        public ulong Size { get; set; }
     }
 
     internal class CoreComponentFactory
     {
-        public CompositionContainer CompositionContainer { get; set; }
-        public FileInfo DumpFile { get; set; }
-        public IDataTarget DataTarget { get; set; }
-        public IClrRuntime Runtime { get; set; }
-        public IDebuggerProxy DebuggerProxy { get; set; }
-        public IConverter Converter { get; set; } = new Converter(); // todo: doesn't feel great
-
         /// <inheritdoc />
         public CoreComponentFactory(CompositionContainer compositionContainer, FileInfo dumpFile)
         {
@@ -76,31 +49,164 @@ namespace Triage.Mortician
             Runtime = DataTarget.ClrVersions.Single().CreateRuntime();
         }
 
+        public void RegisterRepositories(DefaultOptions options)
+        {
+        }
+
         public void Setup()
         {
-            var objects = CreateObjects();
-            var types = CreateTypes();
-            var appDomains = CreateAppDomains();
-            var modules = CreateModules();
-            var blockingObjects = CreateBlockingObjects();
-            var roots = CreateRoots();
-            var threads = CreateThreads();
-            var handles = CreateHandles();
-            var segments = CreateHeapSegments();
+            CreateObjects();
+            CreateTypes();
+            CreateAppDomains();
+            CreateClrModules();
+            CreateBlockingObjects();
+            CreateRoots();
+            CreateThreads();
+            CreateHandles();
+            CreateHeapSegments();
+            CreateDumpModuleInfo();
+            FinalizableObjects = Runtime.Heap.EnumerateFinalizableObjectAddresses().ToList();
+            ManagedWorkItems = Runtime.ThreadPool.EnumerateManagedWorkItems().Select(x => x.Object).ToList();
+            NativeWorkitems = Runtime.ThreadPool.EnumerateNativeWorkItems().ToList();
+            CreateMemoryRegions();
+            ObjectsInFinalizerQueue = Runtime.EnumerateFinalizerQueueObjectAddresses().ToList();
+            GcThreads = Runtime.EnumerateGCThreads().Select(Convert.ToUInt64).ToList();
         }
 
-        public void EstablishRelationships()
+        internal void ConnectObjects()
         {
+            foreach (var kvp in ObjectGraph)
+            {
+                var address = kvp.Key;
+                var references = kvp.Value;
+                var current = Objects[address];
 
+                foreach (var refAddr in references)
+                {
+                    var reference = Objects[refAddr];
+                    current.AddReference(reference);
+                    reference.AddReferencer(current);
+                }
+            }
         }
 
-        private Dictionary<ulong, DumpHeapSegment> CreateHeapSegments()
+        internal void CreateAppDomains()
         {
-            var heaps = new Dictionary<ulong, DumpHeapSegment>();
-            
+            var appDomains = new Dictionary<ulong, DumpAppDomain>();
+            foreach (var runtimeAppDomain in Runtime.AppDomains)
+            {
+                var dumpAppDomain = new DumpAppDomain
+                {
+                    Address = runtimeAppDomain.Address,
+                    Name = runtimeAppDomain.Name,
+                    ApplicationBase = runtimeAppDomain.ApplicationBase,
+                    ConfigFile = runtimeAppDomain.ConfigurationFile
+                };
+                appDomains.Add(dumpAppDomain.Address, dumpAppDomain);
+            }
+
+            AppDomains = appDomains;
+        }
+
+        internal void CreateBlockingObjects()
+        {
+            var blockingObjects = new Dictionary<ulong, DumpBlockingObject>();
+
+            foreach (var blockingObject in Runtime.Heap.EnumerateBlockingObjects())
+            {
+                var dumpBlockingObject = new DumpBlockingObject
+                {
+                    Address = blockingObject.Object,
+                    BlockingReason = blockingObject.Reason,
+                    HasSingleOwner = blockingObject.HasSingleOwner,
+                    IsLocked = blockingObject.Taken,
+                    RecursionCount = blockingObject.RecursionCount
+                };
+
+                blockingObjects.Add(dumpBlockingObject.Address, dumpBlockingObject);
+            }
+
+            BlockingObjects = blockingObjects;
+        }
+
+        internal void CreateClrModules()
+        {
+            var modules = new Dictionary<ulong, DumpModule>();
+
+            foreach (var module in Runtime.Modules)
+            {
+                var dumpModule = new DumpModule
+                {
+                    AssemblyId = module.AssemblyId,
+                    Name = module.Name,
+                    Size = module.Size,
+                    AssemblyName = module.AssemblyName,
+                    IsDynamic = module.IsDynamic,
+                    IsFile = module.IsFile,
+                    FileName = module.FileName,
+                    ImageBase = module.ImageBase,
+                    DebuggingMode = module.DebuggingMode,
+                    PdbInfo = module.PdbInfo
+                };
+                modules.Add(module.AssemblyId, dumpModule);
+            }
+
+            Modules = modules;
+        }
+
+        internal void CreateDumpModuleInfo()
+        {
+            var res = new Dictionary<string, DumpModuleInfo>();
+
+            foreach (var info in Runtime.DataTarget.EnumerateModules())
+            {
+                var moduleInfo = new DumpModuleInfo
+                {
+                    Pdb = info.Pdb,
+                    Version = info.Version,
+                    IsManaged = info.IsManaged,
+                    FileName = info.FileName,
+                    ImageBase = info.ImageBase,
+                    FileSize = info.FileSize,
+                    PeFile = info.GetPEFile(),
+                    IsRuntime = info.IsRuntime,
+                    TimeStamp = info.TimeStamp
+                };
+                res.Add(info.FileName, moduleInfo);
+            }
+
+            ModuleInfos = res;
+        }
+
+        internal void CreateHandles()
+        {
+            var handles = new Dictionary<ulong, DumpHandle>();
+
+            foreach (var handle in Runtime.EnumerateHandles())
+            {
+                var newHandle = new DumpHandle
+                {
+                    Address = handle.Address,
+                    HandleType = handle.HandleType,
+                    DependentTarget = handle.DependentTarget,
+                    IsPinned = handle.IsPinned,
+                    IsStrong = handle.IsStrong,
+                    ObjectAddress = handle.Object,
+                    RefCount = handle.RefCount
+                };
+
+                handles.Add(newHandle.Address, newHandle);
+            }
+
+            Handles = handles;
+        }
+
+        internal void CreateHeapSegments()
+        {
+            var segments = new Dictionary<ulong, DumpHeapSegment>();
+
             foreach (var heapSegment in Runtime.Heap.Segments)
             {
-                
                 var segment = new DumpHeapSegment
                 {
                     ReservedEnd = heapSegment.ReservedEnd,
@@ -118,42 +224,85 @@ namespace Triage.Mortician
                     IsEphemeral = heapSegment.IsEphemeral,
                     IsLarge = heapSegment.IsLarge,
                     Length = heapSegment.Length,
-                    ProcessorAffinity = heapSegment.ProcessorAffinity,
+                    ProcessorAffinity = heapSegment.ProcessorAffinity
                 };
 
-                heaps.Add(heapSegment.Start, segment);
+                segments.Add(heapSegment.Start, segment);
             }
 
-            return heaps;
+            Segments = segments;
         }
 
-        private Dictionary<ulong, DumpHandle> CreateHandles()
+        internal void CreateMemoryRegions()
         {
-            var handles = new Dictionary<ulong, DumpHandle>();
-
-            foreach (var handle in Runtime.EnumerateHandles())
+            var regions = new Dictionary<ulong, DumpMemoryRegion>();
+            foreach (var region in Runtime.EnumerateMemoryRegions())
             {
-                var newHandle = new DumpHandle()
+                var newRegion = new DumpMemoryRegion
                 {
-                    Address = handle.Address,
-                    HandleType = handle.HandleType,
-                    DependentTarget = handle.DependentTarget,
-                    IsPinned = handle.IsPinned,
-                    IsStrong = handle.IsStrong,
-                    ObjectAddress = handle.Object,
-                    RefCount = handle.RefCount
+                    Address = region.Address,
+                    GcSegmentType = region.GcSegmentType,
+                    HeapNumber = region.HeapNumber,
+                    MemoryRegionType = region.MemoryRegionType,
+                    Size = region.Size
                 };
-
-                handles.Add(newHandle.Address, newHandle);
+                regions.Add(region.Address, newRegion);
             }
 
-            return handles;
+            MemoryRegions = regions;
         }
 
-        private Dictionary<uint, DumpThread> CreateThreads()
+        internal void CreateObjects()
+        {
+            var objects = new Dictionary<ulong, DumpObject>();
+            var objectGraph = new Dictionary<ulong, IList<ulong>>();
+
+            foreach (var cur in Runtime.Heap.EnumerateObjects())
+            {
+                var o = new DumpObject(cur.Address)
+                {
+                    Address = cur.Address,
+                    FullTypeName = cur.Type?.Name,
+                    Size = cur.Size,
+                    IsNull = cur.IsNull,
+                    IsBoxed = cur.IsBoxed,
+                    IsArray = cur.IsArray,
+                    ContainsPointers = cur.ContainsPointers
+                };
+                objects.Add(o.Address, o);
+                objectGraph.Add(o.Address, cur.EnumerateObjectReferences().Select(x => x.Address).ToList());
+            }
+
+            Objects = objects;
+            ObjectGraph = objectGraph;
+        }
+
+        internal void CreateRoots()
+        {
+            var roots = new Dictionary<ulong, DumpObjectRoot>();
+
+            foreach (var root in Runtime.Heap.EnumerateRoots())
+            {
+                var newRoot = new DumpObjectRoot
+                {
+                    Address = root.Address,
+                    Name = root.Name,
+                    IsPinned = root.IsPinned,
+                    IsInteriorPointer = root.IsInterior,
+                    GcRootKind = root.Kind,
+                    IsPossibleFalsePositive = root.IsPossibleFalsePositive
+                };
+
+                roots.Add(newRoot.Address, newRoot);
+            }
+
+            Roots = roots;
+        }
+
+        internal void CreateThreads()
         {
             var threads = new Dictionary<uint, DumpThread>();
-            
+
             foreach (var thread in Runtime.Threads)
             {
                 var newThread = new DumpThread
@@ -185,171 +334,147 @@ namespace Triage.Mortician
                     LockCount = thread.LockCount,
                     StackLimit = thread.StackLimit,
                     Teb = thread.Teb,
-                    OsId = thread.OSThreadId,
+                    OsId = thread.OSThreadId
                 };
-                newThread.ManagedStackFramesInternal = thread.StackTrace.Select(x => new DumpStackFrame()
+                newThread.ManagedStackFramesInternal = thread.StackTrace.Select(x => new DumpStackFrame
                 {
                     InstructionPointer = x.InstructionPointer,
                     Kind = x.Kind,
                     ModuleName = x.ModuleName,
                     StackPointer = x.StackPointer,
                     Thread = newThread,
-                    DisplayString = x.DisplayString,
+                    DisplayString = x.DisplayString
                 }).ToList();
-                
+
                 threads.Add(newThread.OsId, newThread);
             }
 
-            return threads;
+            Threads = threads;
         }
 
-        private Dictionary<ulong, DumpObjectRoot> CreateRoots()
+        internal void CreateTypes()
         {
-            var roots = new Dictionary<ulong, DumpObjectRoot>();
-
-            foreach (var root in Runtime.Heap.EnumerateRoots())
-            {
-                var newRoot = new DumpObjectRoot()
-                {
-                    Address = root.Address,
-                    Name = root.Name,
-                    IsPinned = root.IsPinned,
-                    IsInteriorPointer = root.IsInterior,
-                    GcRootKind = root.Kind,
-                    IsPossibleFalsePositive = root.IsPossibleFalsePositive,
-                };
-
-                roots.Add(newRoot.Address, newRoot);
-            }
-
-            return roots;
-        }
-
-        private Dictionary<ulong, DumpBlockingObject> CreateBlockingObjects()
-        {
-            var blockingObjects = new Dictionary<ulong, DumpBlockingObject>();
-
-            foreach (var blockingObject in Runtime.Heap.EnumerateBlockingObjects())
-            {
-                var dumpBlockingObject = new DumpBlockingObject()
-                {
-                    Address = blockingObject.Object,
-                    BlockingReason = blockingObject.Reason,
-                    HasSingleOwner = blockingObject.HasSingleOwner,
-                    IsLocked = blockingObject.Taken,
-                    RecursionCount = blockingObject.RecursionCount
-                };
-
-                blockingObjects.Add(dumpBlockingObject.Address, dumpBlockingObject);
-            }
-
-            return blockingObjects;
-        }
-
-        private Dictionary<ulong, DumpModule> CreateModules()
-        {
-            var modules = new Dictionary<ulong, DumpModule>();
-
-            foreach (var module in Runtime.Modules)
-            {
-                var dumpModule = new DumpModule()
-                {
-                    AssemblyId = module.AssemblyId,
-                    Name = module.Name,
-                    Size = module.Size,
-                    AssemblyName = module.AssemblyName,
-                    IsDynamic = module.IsDynamic,
-                    IsFile = module.IsFile,
-                    FileName = module.FileName,
-                    ImageBase = module.ImageBase,
-                    DebuggingMode = module.DebuggingMode,
-                    PdbInfo = module.PdbInfo
-                };
-                modules.Add(module.AssemblyId, dumpModule);
-            }
-
-            return modules;
-        }
-
-        private Dictionary<ulong, DumpAppDomain> CreateAppDomains()
-        {
-            var appDomains = new Dictionary<ulong, DumpAppDomain>();
-            foreach (var runtimeAppDomain in Runtime.AppDomains)
-            {
-                var dumpAppDomain = new DumpAppDomain()
-                {
-                    Address = runtimeAppDomain.Address,
-                    Name = runtimeAppDomain.Name,
-                    ApplicationBase = runtimeAppDomain.ApplicationBase,
-                    ConfigFile = runtimeAppDomain.ConfigurationFile
-                };
-                appDomains.Add(dumpAppDomain.Address, dumpAppDomain);
-            }
-
-            return appDomains;
-        }
-
-        private Dictionary<(ulong, string), DumpType> CreateTypes()
-        {
-            var types = new Dictionary<(ulong, string), DumpType>();
-
+            Types = new Dictionary<(ulong, string), DumpType>();
+            TypeToBaseTypeMapping = new Dictionary<(ulong, string), (ulong, string)>();
+            TypeToModuleMapping = new Dictionary<(ulong, string), (ulong, string)>();
+            TypeToComponentTypeMapping = new Dictionary<(ulong, string), (ulong, string)>();
+            TypeToInterfacesImplementedMapping = new Dictionary<(ulong, string), string>();
             foreach (var cur in Runtime.Heap.EnumerateTypes())
             {
-                var t = new DumpType()
+                var t = new DumpType
                 {
-                    Key = new DumpTypeKey(cur.MethodTable, cur.Name),
-                    MethodTable = cur.MethodTable,
-                    Name = cur.Name,
+                    AssemblyId = cur.Module.AssemblyId,
                     BaseSize = cur.BaseSize,
                     ContainsPointers = cur.ContainsPointers,
+                    HasSimpleValue = cur.HasSimpleValue,
                     IsAbstract = cur.IsAbstract,
                     IsArray = cur.IsArray,
                     IsEnum = cur.IsEnum,
                     IsException = cur.IsException,
                     IsFinalizable = cur.IsFinalizable,
+                    IsFree = cur.IsFree,
                     IsInterface = cur.IsInterface,
                     IsInternal = cur.IsInternal,
+                    IsObjectReference = cur.IsObjectReference,
                     IsPointer = cur.IsPointer,
                     IsPrimitive = cur.IsPrimitive,
                     IsPrivate = cur.IsPrivate,
                     IsProtected = cur.IsProtected,
+                    IsPublic = cur.IsPublic,
                     IsRuntimeType = cur.IsRuntimeType,
                     IsSealed = cur.IsSealed,
-                    IsString = cur.IsString
+                    IsString = cur.IsString,
+                    IsValueClass = cur.IsValueClass,
+                    Key = new DumpTypeKey(cur.Module.AssemblyId, cur.Name),
+                    MetaDataToken = cur.MetadataToken,
+                    MethodTable = cur.MethodTable,
+                    Name = cur.Name,
+                    ElementSize = cur.ElementSize,
+                    ElementType = cur.ElementType,
                 };
-                types.Add((t.MethodTable, t.Name), t);
-            }
-
-            return types;
-        }
-
-        private Dictionary<ulong, DumpObject> CreateObjects()
-        {
-            var objects = new Dictionary<ulong, DumpObject>();
-
-            foreach (var cur in Runtime.Heap.EnumerateObjects())
-            {
-                var o = new DumpObject(cur.Address)
+                Types.Add((t.AssemblyId, t.Name), t);
+                TypeToBaseTypeMapping.Add((t.AssemblyId, t.Name), (cur.BaseType.Module.AssemblyId, cur.BaseType.Name));
+                TypeToModuleMapping.Add((t.AssemblyId, t.Name), (t.Module.AssemblyId, t.Module.Name));
+                foreach (var curInterface in cur.Interfaces)
                 {
-                    Address = cur.Address,
-                    FullTypeName = cur.Type?.Name,
-                    Size = cur.Size,
-                    IsNull = cur.IsNull,
-                    IsBoxed = cur.IsBoxed,
-                    IsArray = cur.IsArray,
-                    ContainsPointers = cur.ContainsPointers,
-                };
-                objects.Add(o.Address, o);
+                    // unfortunately, the API for CLRMd provides this as a string
+                    TypeToInterfacesImplementedMapping.Add((t.AssemblyId, t.Name), curInterface.Name);
+                }
             }
-
-            return objects;
         }
 
+        public Dictionary<(ulong, string), string> TypeToInterfacesImplementedMapping { get; set; }
 
+        public Dictionary<(ulong, string), (ulong, string)> TypeToComponentTypeMapping { get; set; }
 
-        public void RegisterRepositories(DefaultOptions options)
-        {
-            
-        }
+        public Dictionary<(ulong, string), (ulong, string)> TypeToModuleMapping { get; set; }
+
+        public Dictionary<ulong, DumpAppDomain> AppDomains { get; set; }
+        public Dictionary<(ulong, string), (ulong, string)> TypeToBaseTypeMapping { get; set; }
+        public Dictionary<ulong, DumpBlockingObject> BlockingObjects { get; set; }
+        public CompositionContainer CompositionContainer { get; set; }
+        public IConverter Converter { get; set; } = new Converter(); // todo: doesn't feel great
+        public IDataTarget DataTarget { get; set; }
+        public IDebuggerProxy DebuggerProxy { get; set; }
+        public FileInfo DumpFile { get; set; }
+
+        public List<ulong> FinalizableObjects { get; set; }
+        public List<ulong> GcThreads { get; set; }
+
+        public Dictionary<ulong, DumpHandle> Handles { get; set; }
+
+        public List<ulong> ManagedWorkItems { get; set; }
+
+        public Dictionary<ulong, DumpMemoryRegion> MemoryRegions { get; set; }
+
+        public Dictionary<string, DumpModuleInfo> ModuleInfos { get; set; }
+
+        public Dictionary<ulong, DumpModule> Modules { get; set; }
+
+        public List<INativeWorkItem> NativeWorkitems { get; set; }
+        public Dictionary<ulong, IList<ulong>> ObjectGraph { get; set; }
+
+        public Dictionary<ulong, DumpObject> Objects { get; set; }
+
+        public List<ulong> ObjectsInFinalizerQueue { get; set; }
+
+        public Dictionary<ulong, DumpObjectRoot> Roots { get; set; }
+        public IClrRuntime Runtime { get; set; }
+
+        public Dictionary<ulong, DumpHeapSegment> Segments { get; set; }
+
+        public Dictionary<uint, DumpThread> Threads { get; set; }
+
+        public Dictionary<(ulong, string), DumpType> Types { get; set; }
+    }
+
+    public class DumpModuleInfo
+    {
+        /// <inheritdoc />
+        public string FileName { get; set; }
+
+        /// <inheritdoc />
+        public uint FileSize { get; set; }
+
+        /// <inheritdoc />
+        public ulong ImageBase { get; set; }
+
+        /// <inheritdoc />
+        public bool IsManaged { get; set; }
+
+        /// <inheritdoc />
+        public bool IsRuntime { get; set; }
+
+        /// <inheritdoc />
+        public IPdbInfo Pdb { get; set; }
+
+        /// <inheritdoc />
+        public IPeFile PeFile { get; set; }
+
+        /// <inheritdoc />
+        public uint TimeStamp { get; set; }
+
+        /// <inheritdoc />
+        public VersionInfo Version { get; set; }
     }
 }

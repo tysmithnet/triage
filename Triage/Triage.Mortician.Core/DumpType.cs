@@ -13,6 +13,7 @@
 // ***********************************************************************
 
 using System.Collections.Generic;
+using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Core
 {
@@ -157,5 +158,15 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The objects.</value>
         public IEnumerable<DumpObject> Objects { get; protected internal set; }
+
+        public bool IsPublic { get; set; }
+        public ulong AssemblyId { get; set; }
+        public uint MetaDataToken { get; set; }
+        public bool IsValueClass { get; set; }
+        public bool IsObjectReference { get; set; }
+        public bool IsFree { get; set; }
+        public bool HasSimpleValue { get; set; }
+        public int ElementSize { get; set; }
+        public ClrElementType ElementType { get; set; }
     }
 }
