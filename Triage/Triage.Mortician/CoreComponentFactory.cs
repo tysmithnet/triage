@@ -500,10 +500,12 @@ namespace Triage.Mortician
                     Interfaces = cur.Interfaces.Select(x => x.Name).ToList()
                 };
                 Types.Add(new DumpTypeKey(t.AssemblyId, t.Name), t);
-                TypeToBaseTypeMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name), cur.BaseType.ToTypeKey());
-                TypeToComponentTypeMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name), cur.ComponentType.ToTypeKey());
+                if(cur.BaseType != null)
+                    TypeToBaseTypeMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name), cur.BaseType.ToTypeKey());
+                if(cur.ComponentType != null)
+                    TypeToComponentTypeMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name), cur.ComponentType.ToTypeKey());
                 TypeToModuleMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name),
-                    new DumpTypeKey(t.Module.Key.AssemblyId, t.Module.Name));
+                    new DumpTypeKey(cur.Module.AssemblyId, cur.Module.Name));
 
                 t.InstanceFields = new List<DumpTypeField>();
                 foreach (var field in cur.Fields)
