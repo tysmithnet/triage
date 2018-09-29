@@ -231,7 +231,7 @@ namespace Triage.Mortician
         {
             var objects = new Dictionary<ulong, DumpObject>();
             var objectGraph = new Dictionary<ulong, IList<ulong>>();
-
+            ObjectToTypeMapping = new Dictionary<ulong, DumpTypeKey>();
             foreach (var cur in Runtime.Heap.EnumerateObjects())
             {
                 var o = new DumpObject(cur.Address)
@@ -251,6 +251,8 @@ namespace Triage.Mortician
             Objects = objects;
             ObjectGraph = objectGraph;
         }
+
+        public Dictionary<ulong, DumpTypeKey> ObjectToTypeMapping { get; set; }
 
         internal void CreateRoots()
         {
@@ -329,12 +331,12 @@ namespace Triage.Mortician
 
         internal void CreateTypes()
         {
-            Types = new Dictionary<(ulong, string), DumpType>();
-            TypeToBaseTypeMapping = new Dictionary<(ulong, string), (ulong, string)>();
-            TypeToModuleMapping = new Dictionary<(ulong, string), (ulong, string)>();
-            TypeToComponentTypeMapping = new Dictionary<(ulong, string), (ulong, string)>();
-            InstanceFieldToTypeMapping = new Dictionary<DumpTypeField, (ulong, string)>();
-            StaticFieldToTypeMapping = new Dictionary<DumpTypeField, (ulong, string)>();
+            Types = new Dictionary<DumpTypeKey, DumpType>();
+            TypeToBaseTypeMapping = new Dictionary<DumpTypeKey, DumpTypeKey>();
+            TypeToModuleMapping = new Dictionary<DumpTypeKey, DumpTypeKey>();
+            TypeToComponentTypeMapping = new Dictionary<DumpTypeKey, DumpTypeKey>();
+            InstanceFieldToTypeMapping = new Dictionary<DumpTypeField, DumpTypeKey>();
+            StaticFieldToTypeMapping = new Dictionary<DumpTypeField, DumpTypeKey>();
             foreach (var cur in Runtime.Heap.EnumerateTypes())
             {
                 var t = new DumpType
@@ -369,10 +371,10 @@ namespace Triage.Mortician
                     ElementType = cur.ElementType,
                     Interfaces = cur.Interfaces.Select(x => x.Name).ToList(),
                 };
-                Types.Add((t.AssemblyId, t.Name), t);
-                TypeToBaseTypeMapping.Add((t.AssemblyId, t.Name), (cur.BaseType.Module.AssemblyId, cur.BaseType.Name));
-                TypeToComponentTypeMapping.Add((t.AssemblyId, t.Name), cur.ComponentType.ToTypeTuple());
-                TypeToModuleMapping.Add((t.AssemblyId, t.Name), (t.Module.AssemblyId, t.Module.Name));
+                Types.Add(new DumpTypeKey(t.AssemblyId, t.Name), t);
+                TypeToBaseTypeMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name), cur.BaseType.ToTypeKey());
+                TypeToComponentTypeMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name), cur.ComponentType.ToTypeKey());
+                TypeToModuleMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name), new DumpTypeKey(t.Module.AssemblyId, t.Module.Name));
 
                 t.InstanceFields = new List<DumpTypeField>();
                 foreach (var field in cur.Fields)
@@ -394,7 +396,7 @@ namespace Triage.Mortician
                         ElementType = field.ElementType
                     };
                     t.InstanceFields.Add(newField);
-                    InstanceFieldToTypeMapping.Add(newField, field.Type.ToTypeTuple());
+                    InstanceFieldToTypeMapping.Add(newField, field.Type.ToTypeKey());
                 }
 
                 foreach (var field in cur.StaticFields)
@@ -416,7 +418,7 @@ namespace Triage.Mortician
                         ElementType = field.ElementType
                     };
                     t.StaticFields.Add(newField);
-                    StaticFieldToTypeMapping.Add(newField, field.Type.ToTypeTuple());
+                    StaticFieldToTypeMapping.Add(newField, field.Type.ToTypeKey());
                 }
             }
         }
@@ -442,7 +444,7 @@ namespace Triage.Mortician
             {
                 var type = Types[kvp.Key];
                 var module =
-                    Modules.First(x => x.Value.AssemblyId == kvp.Value.Item1 && x.Value.Name == kvp.Value.Item2).Value;
+                    Modules.First(x => x.Value.AssemblyId == kvp.Value.AssemblyId && x.Value.Name == kvp.Value.TypeName).Value;
                 type.Module = module;
             }
 
@@ -461,12 +463,20 @@ namespace Triage.Mortician
             }
         }
 
-        public Dictionary<DumpTypeField, (ulong, string)> InstanceFieldToTypeMapping { get; set; }
-        public Dictionary<DumpTypeField, (ulong, string)> StaticFieldToTypeMapping { get; set; }
-        public Dictionary<(ulong, string), (ulong, string)> TypeToComponentTypeMapping { get; set; }
-        public Dictionary<(ulong, string), (ulong, string)> TypeToModuleMapping { get; set; }
+        internal void ConnectObjectsToTypes()
+        {
+            foreach (var kvp in Objects)
+            {
+                
+            }
+        }
+
+        public Dictionary<DumpTypeField, DumpTypeKey> InstanceFieldToTypeMapping { get; set; }
+        public Dictionary<DumpTypeField, DumpTypeKey> StaticFieldToTypeMapping { get; set; }
+        public Dictionary<DumpTypeKey, DumpTypeKey> TypeToComponentTypeMapping { get; set; }
+        public Dictionary<DumpTypeKey, DumpTypeKey> TypeToModuleMapping { get; set; }
         public Dictionary<ulong, DumpAppDomain> AppDomains { get; set; }
-        public Dictionary<(ulong, string), (ulong, string)> TypeToBaseTypeMapping { get; set; }
+        public Dictionary<DumpTypeKey, DumpTypeKey> TypeToBaseTypeMapping { get; set; }
         public Dictionary<ulong, DumpBlockingObject> BlockingObjects { get; set; }
         public CompositionContainer CompositionContainer { get; set; }
         public IConverter Converter { get; set; } = new Converter(); // todo: doesn't feel great
@@ -488,7 +498,7 @@ namespace Triage.Mortician
         public IClrRuntime Runtime { get; set; }
         public Dictionary<ulong, DumpHeapSegment> Segments { get; set; }
         public Dictionary<uint, DumpThread> Threads { get; set; }
-        public Dictionary<(ulong, string), DumpType> Types { get; set; }
+        public Dictionary<DumpTypeKey, DumpType> Types { get; set; }
     }
 
     public class DumpModuleInfo
@@ -506,9 +516,9 @@ namespace Triage.Mortician
 
     internal static class ClrMdExtensionMethods
     {
-        public static (ulong, string) ToTypeTuple(this IClrType type)
+        public static DumpTypeKey ToTypeKey(this IClrType type)
         {
-            return (type.Module.AssemblyId, type.Name);
+            return new DumpTypeKey(type.Module.AssemblyId, type.Name);
         }
     }
 }

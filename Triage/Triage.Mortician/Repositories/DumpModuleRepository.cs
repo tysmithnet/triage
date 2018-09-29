@@ -31,7 +31,7 @@ namespace Triage.Mortician.Repositories
         /// <param name="dumpModules">The dump modules.</param>
         /// <exception cref="System.ArgumentNullException">dumpModules</exception>
         /// <exception cref="ArgumentNullException">dumpModules</exception>
-        protected internal DumpModuleRepository(Dictionary<(ulong, string), DumpModule> dumpModules)
+        protected internal DumpModuleRepository(Dictionary<DumpTypeKey, DumpModule> dumpModules)
         {
             DumpModules = dumpModules ?? throw new ArgumentNullException(nameof(dumpModules));
         }
@@ -40,7 +40,7 @@ namespace Triage.Mortician.Repositories
         ///     The extracted modules found in the memory dump
         ///     Note that a module is identified by the tuble (assemblyId, moduleName)
         /// </summary>
-        protected internal Dictionary<(ulong, string), DumpModule> DumpModules;
+        protected internal Dictionary<DumpTypeKey, DumpModule> DumpModules;
 
         /// <summary>
         ///     Gets the specified assembly identifier.
@@ -48,7 +48,7 @@ namespace Triage.Mortician.Repositories
         /// <param name="assemblyId">The assembly identifier.</param>
         /// <param name="moduleName">Name of the module.</param>
         /// <returns>DumpModule.</returns>
-        public DumpModule Get(ulong assemblyId, string moduleName) => DumpModules[(assemblyId, moduleName)];
+        public DumpModule Get(ulong assemblyId, string moduleName) => DumpModules[new DumpTypeKey(assemblyId, moduleName)];
 
         /// <summary>
         ///     Gets this instance.
