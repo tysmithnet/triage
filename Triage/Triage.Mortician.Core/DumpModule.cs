@@ -31,6 +31,16 @@ namespace Triage.Mortician.Core
         {
         }
 
+        internal void AddAppDomain(DumpAppDomain domain)
+        {
+            AppDomainsInternal.Add(domain);
+        }
+
+        internal void AddType(DumpType type)
+        {
+            TypesInternal.Add(type);
+        }
+
         /// <summary>
         ///     The app domains for which this module is loaded
         /// </summary>
@@ -107,5 +117,7 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The size.</value>
         public ulong Size { get; protected internal set; }
+
+        public DumpModuleKey Key { get; set; }
     }
 }

@@ -21,7 +21,7 @@ namespace Triage.Mortician.Core
     ///     The method table alone is not sufficent to identify a type because generics
     ///     can share the same method table
     /// </summary>
-    public struct DumpTypeKey : IEquatable<DumpTypeKey>
+    public class DumpTypeKey : IEquatable<DumpTypeKey>
     {
         /// <summary>
         ///     Gets or sets the assembly id to which this type belongs

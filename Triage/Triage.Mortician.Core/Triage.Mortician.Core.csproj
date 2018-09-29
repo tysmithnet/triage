@@ -98,6 +98,7 @@
     <Compile Include="DumpBlockingObject.cs" />
     <Compile Include="DumpHandle.cs" />
     <Compile Include="DumpModule.cs" />
+    <Compile Include="DumpModuleKey.cs" />
     <Compile Include="DumpObject.cs" />
     <Compile Include="DumpObjectRoot.cs" />
     <Compile Include="DumpStackFrame.cs" />

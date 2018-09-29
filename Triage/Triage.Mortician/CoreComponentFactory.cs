@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
-using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core;
 using Triage.Mortician.Core.ClrMdAbstractions;
-using VersionInfo = Triage.Mortician.Core.ClrMdAbstractions.VersionInfo;
 
 namespace Triage.Mortician
 {
-
-
     internal class CoreComponentFactory
     {
         /// <inheritdoc />
@@ -40,12 +36,23 @@ namespace Triage.Mortician
             CreateHandles();
             CreateHeapSegments();
             CreateDumpModuleInfo();
-            FinalizableObjects = Runtime.Heap.EnumerateFinalizableObjectAddresses().ToList();
+            FinalizableObjectAddresses = Runtime.Heap.EnumerateFinalizableObjectAddresses().ToList();
             ManagedWorkItems = Runtime.ThreadPool.EnumerateManagedWorkItems().Select(x => x.Object).ToList();
             NativeWorkitems = Runtime.ThreadPool.EnumerateNativeWorkItems().ToList();
             CreateMemoryRegions();
-            ObjectsInFinalizerQueue = Runtime.EnumerateFinalizerQueueObjectAddresses().ToList();
+            ObjectAddressesInFinalizerQueue = Runtime.EnumerateFinalizerQueueObjectAddresses().ToList();
             GcThreads = Runtime.EnumerateGCThreads().Select(Convert.ToUInt64).ToList();
+        }
+
+        internal void ConnectAppDomainsAndModules()
+        {
+            foreach (var kvp in AppDomainToModuleMapping)
+            {
+                var domain = AppDomains[kvp.Key];
+                var modules = kvp.Value.Select(x => Modules[x]).ToList();
+                modules.ForEach(domain.AddModule);
+                modules.ForEach(x => x.AddAppDomain(domain));
+            }
         }
 
         internal void ConnectObjects()
@@ -65,28 +72,81 @@ namespace Triage.Mortician
             }
         }
 
+        internal void ConnectObjectsToTypes()
+        {
+            foreach (var kvp in ObjectToTypeMapping)
+            {
+                var o = Objects[kvp.Key];
+                var type = Types[kvp.Value];
+                o.Type = type;
+                type.ObjectsInternal.Add(o.Address, o);
+            }
+        }
+
+        internal void ConnectTypes()
+        {
+            foreach (var kvp in TypeToBaseTypeMapping)
+            {
+                var type = Types[kvp.Key];
+                var baseType = Types[kvp.Value];
+                type.BaseType = baseType;
+                baseType.InheritingTypes.Add(type);
+            }
+
+            foreach (var kvp in TypeToComponentTypeMapping)
+            {
+                var type = Types[kvp.Key];
+                var componentType = Types[kvp.Value];
+                type.ComponentType = componentType;
+            }
+
+            foreach (var kvp in TypeToModuleMapping)
+            {
+                var type = Types[kvp.Key];
+                var module =
+                    Modules.First(x => x.Value.AssemblyId == kvp.Value.AssemblyId && x.Value.Name == kvp.Value.TypeName)
+                        .Value;
+                type.Module = module;
+                module.AddType(type);
+            }
+
+            foreach (var kvp in InstanceFieldToTypeMapping)
+            {
+                var field = kvp.Key;
+                var type = Types[kvp.Value];
+                field.Type = type;
+            }
+
+            foreach (var kvp in StaticFieldToTypeMapping)
+            {
+                var field = kvp.Key;
+                var type = Types[kvp.Value];
+                field.Type = type;
+            }
+        }
+
         internal void CreateAppDomains()
         {
-            var appDomains = new Dictionary<ulong, DumpAppDomain>();
-            foreach (var runtimeAppDomain in Runtime.AppDomains)
+            AppDomains = new Dictionary<ulong, DumpAppDomain>();
+            AppDomainToModuleMapping = new Dictionary<ulong, IList<DumpModuleKey>>();
+            foreach (var domain in Runtime.AppDomains)
             {
                 var dumpAppDomain = new DumpAppDomain
                 {
-                    Address = runtimeAppDomain.Address,
-                    Name = runtimeAppDomain.Name,
-                    ApplicationBase = runtimeAppDomain.ApplicationBase,
-                    ConfigFile = runtimeAppDomain.ConfigurationFile
+                    Address = domain.Address,
+                    Name = domain.Name,
+                    ApplicationBase = domain.ApplicationBase,
+                    ConfigFile = domain.ConfigurationFile
                 };
-                appDomains.Add(dumpAppDomain.Address, dumpAppDomain);
+                AppDomains.Add(dumpAppDomain.Address, dumpAppDomain);
+                AppDomainToModuleMapping.Add(domain.Address, domain.Modules.Select(x => x.ToKeyType()).ToList());
             }
-
-            AppDomains = appDomains;
         }
 
         internal void CreateBlockingObjects()
         {
-            var blockingObjects = new Dictionary<ulong, DumpBlockingObject>();
-
+            BlockingObjects = new Dictionary<ulong, DumpBlockingObject>();
+            BlockingObjectToThreadMapping = new Dictionary<ulong, IList<uint>>();
             foreach (var blockingObject in Runtime.Heap.EnumerateBlockingObjects())
             {
                 var dumpBlockingObject = new DumpBlockingObject
@@ -98,20 +158,23 @@ namespace Triage.Mortician
                     RecursionCount = blockingObject.RecursionCount
                 };
 
-                blockingObjects.Add(dumpBlockingObject.Address, dumpBlockingObject);
+                BlockingObjects.Add(dumpBlockingObject.Address, dumpBlockingObject);
+                BlockingObjectToThreadMapping.Add(blockingObject.Object,
+                    blockingObject.HasSingleOwner
+                        ? new List<uint> {blockingObject.Owner.OSThreadId}
+                        : blockingObject.Owners.Select(x => x.OSThreadId).ToList());
             }
-
-            BlockingObjects = blockingObjects;
         }
 
         internal void CreateClrModules()
         {
-            var modules = new Dictionary<ulong, DumpModule>();
+            var modules = new Dictionary<DumpModuleKey, DumpModule>();
 
             foreach (var module in Runtime.Modules)
             {
                 var dumpModule = new DumpModule
                 {
+                    Key = module.ToKeyType(),
                     AssemblyId = module.AssemblyId,
                     Name = module.Name,
                     Size = module.Size,
@@ -123,7 +186,7 @@ namespace Triage.Mortician
                     DebuggingMode = module.DebuggingMode,
                     PdbInfo = module.PdbInfo
                 };
-                modules.Add(module.AssemblyId, dumpModule);
+                modules.Add(dumpModule.Key, dumpModule);
             }
 
             Modules = modules;
@@ -246,13 +309,12 @@ namespace Triage.Mortician
                 };
                 objects.Add(o.Address, o);
                 objectGraph.Add(o.Address, cur.EnumerateObjectReferences().Select(x => x.Address).ToList());
+                ObjectToTypeMapping.Add(o.Address, cur.Type.ToTypeKey());
             }
 
             Objects = objects;
             ObjectGraph = objectGraph;
         }
-
-        public Dictionary<ulong, DumpTypeKey> ObjectToTypeMapping { get; set; }
 
         internal void CreateRoots()
         {
@@ -369,12 +431,13 @@ namespace Triage.Mortician
                     Name = cur.Name,
                     ElementSize = cur.ElementSize,
                     ElementType = cur.ElementType,
-                    Interfaces = cur.Interfaces.Select(x => x.Name).ToList(),
+                    Interfaces = cur.Interfaces.Select(x => x.Name).ToList()
                 };
                 Types.Add(new DumpTypeKey(t.AssemblyId, t.Name), t);
                 TypeToBaseTypeMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name), cur.BaseType.ToTypeKey());
                 TypeToComponentTypeMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name), cur.ComponentType.ToTypeKey());
-                TypeToModuleMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name), new DumpTypeKey(t.Module.AssemblyId, t.Module.Name));
+                TypeToModuleMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name),
+                    new DumpTypeKey(t.Module.AssemblyId, t.Module.Name));
 
                 t.InstanceFields = new List<DumpTypeField>();
                 foreach (var field in cur.Fields)
@@ -423,82 +486,41 @@ namespace Triage.Mortician
             }
         }
 
-        internal void ConnectTypes()
-        {
-            foreach (var kvp in TypeToBaseTypeMapping)
-            {
-                var type = Types[kvp.Key];
-                var baseType = Types[kvp.Value];
-                type.BaseType = baseType;
-                baseType.InheritingTypes.Add(type);
-            }
-
-            foreach (var kvp in TypeToComponentTypeMapping)
-            {
-                var type = Types[kvp.Key];
-                var componentType = Types[kvp.Value];
-                type.ComponentType = componentType;
-            }
-
-            foreach (var kvp in TypeToModuleMapping)
-            {
-                var type = Types[kvp.Key];
-                var module =
-                    Modules.First(x => x.Value.AssemblyId == kvp.Value.AssemblyId && x.Value.Name == kvp.Value.TypeName).Value;
-                type.Module = module;
-            }
-
-            foreach (var kvp in InstanceFieldToTypeMapping)
-            {
-                var field = kvp.Key;
-                var type = Types[kvp.Value];
-                field.Type = type;
-            }
-
-            foreach (var kvp in StaticFieldToTypeMapping)
-            {
-                var field = kvp.Key;
-                var type = Types[kvp.Value];
-                field.Type = type;
-            }
-        }
-
-        internal void ConnectObjectsToTypes()
-        {
-            foreach (var kvp in Objects)
-            {
-                
-            }
-        }
-
-        public Dictionary<DumpTypeField, DumpTypeKey> InstanceFieldToTypeMapping { get; set; }
-        public Dictionary<DumpTypeField, DumpTypeKey> StaticFieldToTypeMapping { get; set; }
-        public Dictionary<DumpTypeKey, DumpTypeKey> TypeToComponentTypeMapping { get; set; }
-        public Dictionary<DumpTypeKey, DumpTypeKey> TypeToModuleMapping { get; set; }
         public Dictionary<ulong, DumpAppDomain> AppDomains { get; set; }
-        public Dictionary<DumpTypeKey, DumpTypeKey> TypeToBaseTypeMapping { get; set; }
+
+        public Dictionary<ulong, IList<DumpModuleKey>> AppDomainToModuleMapping { get; set; }
         public Dictionary<ulong, DumpBlockingObject> BlockingObjects { get; set; }
+
+        public Dictionary<ulong, IList<uint>> BlockingObjectToThreadMapping { get; set; }
         public CompositionContainer CompositionContainer { get; set; }
         public IConverter Converter { get; set; } = new Converter(); // todo: doesn't feel great
         public IDataTarget DataTarget { get; set; }
         public IDebuggerProxy DebuggerProxy { get; set; }
         public FileInfo DumpFile { get; set; }
-        public List<ulong> FinalizableObjects { get; set; }
+        public List<ulong> FinalizableObjectAddresses { get; set; } // todo: cleanup
         public List<ulong> GcThreads { get; set; }
         public Dictionary<ulong, DumpHandle> Handles { get; set; }
+
+        public Dictionary<DumpTypeField, DumpTypeKey> InstanceFieldToTypeMapping { get; set; }
         public List<ulong> ManagedWorkItems { get; set; }
         public Dictionary<ulong, DumpMemoryRegion> MemoryRegions { get; set; }
         public Dictionary<string, DumpModuleInfo> ModuleInfos { get; set; }
-        public Dictionary<ulong, DumpModule> Modules { get; set; }
+        public Dictionary<DumpModuleKey, DumpModule> Modules { get; set; }
         public List<INativeWorkItem> NativeWorkitems { get; set; }
+        public List<ulong> ObjectAddressesInFinalizerQueue { get; set; }
         public Dictionary<ulong, IList<ulong>> ObjectGraph { get; set; }
         public Dictionary<ulong, DumpObject> Objects { get; set; }
-        public List<ulong> ObjectsInFinalizerQueue { get; set; }
+
+        public Dictionary<ulong, DumpTypeKey> ObjectToTypeMapping { get; set; }
         public Dictionary<ulong, DumpObjectRoot> Roots { get; set; }
         public IClrRuntime Runtime { get; set; }
         public Dictionary<ulong, DumpHeapSegment> Segments { get; set; }
+        public Dictionary<DumpTypeField, DumpTypeKey> StaticFieldToTypeMapping { get; set; }
         public Dictionary<uint, DumpThread> Threads { get; set; }
         public Dictionary<DumpTypeKey, DumpType> Types { get; set; }
+        public Dictionary<DumpTypeKey, DumpTypeKey> TypeToBaseTypeMapping { get; set; }
+        public Dictionary<DumpTypeKey, DumpTypeKey> TypeToComponentTypeMapping { get; set; }
+        public Dictionary<DumpTypeKey, DumpTypeKey> TypeToModuleMapping { get; set; }
     }
 
     public class DumpModuleInfo
@@ -516,9 +538,9 @@ namespace Triage.Mortician
 
     internal static class ClrMdExtensionMethods
     {
-        public static DumpTypeKey ToTypeKey(this IClrType type)
-        {
-            return new DumpTypeKey(type.Module.AssemblyId, type.Name);
-        }
+        public static DumpModuleKey ToKeyType(this IClrModule module) =>
+            new DumpModuleKey(module.AssemblyId, module.Name);
+
+        public static DumpTypeKey ToTypeKey(this IClrType type) => new DumpTypeKey(type.Module.AssemblyId, type.Name);
     }
 }
