@@ -3,39 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
+using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core;
 using Triage.Mortician.Core.ClrMdAbstractions;
+using VersionInfo = Triage.Mortician.Core.ClrMdAbstractions.VersionInfo;
 
 namespace Triage.Mortician
 {
-    public class DumpHeapSegment
-    {
-        public ulong CommittedEnd { get; set; }
-        public ulong End { get; set; }
-        public ulong FirstObject { get; set; }
-        public ulong Gen0Length { get; set; }
-        public ulong Gen0Start { get; set; }
-        public ulong Gen1Length { get; set; }
-        public ulong Gen1Start { get; set; }
-        public ulong Gen2Length { get; set; }
-        public ulong Gen2Start { get; set; }
-        public IClrHeap Heap { get; set; }
-        public bool IsEphemeral { get; set; }
-        public bool IsLarge { get; set; }
-        public ulong Length { get; set; }
-        public int ProcessorAffinity { get; set; }
-        public ulong ReservedEnd { get; set; }
-        public ulong Start { get; set; }
-    }
 
-    public class DumpMemoryRegion
-    {
-        public ulong Address { get; set; }
-        public GcSegmentType GcSegmentType { get; set; }
-        public int HeapNumber { get; set; }
-        public ClrMemoryRegionType MemoryRegionType { get; set; }
-        public ulong Size { get; set; }
-    }
 
     internal class CoreComponentFactory
     {
@@ -358,7 +333,8 @@ namespace Triage.Mortician
             TypeToBaseTypeMapping = new Dictionary<(ulong, string), (ulong, string)>();
             TypeToModuleMapping = new Dictionary<(ulong, string), (ulong, string)>();
             TypeToComponentTypeMapping = new Dictionary<(ulong, string), (ulong, string)>();
-            TypeToInterfacesImplementedMapping = new Dictionary<(ulong, string), string>();
+            InstanceFieldToTypeMapping = new Dictionary<DumpTypeField, (ulong, string)>();
+            StaticFieldToTypeMapping = new Dictionary<DumpTypeField, (ulong, string)>();
             foreach (var cur in Runtime.Heap.EnumerateTypes())
             {
                 var t = new DumpType
@@ -391,24 +367,104 @@ namespace Triage.Mortician
                     Name = cur.Name,
                     ElementSize = cur.ElementSize,
                     ElementType = cur.ElementType,
+                    Interfaces = cur.Interfaces.Select(x => x.Name).ToList(),
                 };
                 Types.Add((t.AssemblyId, t.Name), t);
                 TypeToBaseTypeMapping.Add((t.AssemblyId, t.Name), (cur.BaseType.Module.AssemblyId, cur.BaseType.Name));
+                TypeToComponentTypeMapping.Add((t.AssemblyId, t.Name), cur.ComponentType.ToTypeTuple());
                 TypeToModuleMapping.Add((t.AssemblyId, t.Name), (t.Module.AssemblyId, t.Module.Name));
-                foreach (var curInterface in cur.Interfaces)
+
+                t.InstanceFields = new List<DumpTypeField>();
+                foreach (var field in cur.Fields)
                 {
-                    // unfortunately, the API for CLRMd provides this as a string
-                    TypeToInterfacesImplementedMapping.Add((t.AssemblyId, t.Name), curInterface.Name);
+                    var newField = new DumpTypeField
+                    {
+                        HasSimpleValue = field.HasSimpleValue,
+                        IsInternal = field.IsInternal,
+                        IsObjectReference = field.IsObjectReference,
+                        IsPrimitive = field.IsPrimitive,
+                        IsPrivate = field.IsPrivate,
+                        IsProtected = field.IsProtected,
+                        IsPublic = field.IsPublic,
+                        IsValueClass = field.IsValueClass,
+                        Name = field.Name,
+                        Offset = field.Offset,
+                        Size = field.Size,
+                        Token = field.Token,
+                        ElementType = field.ElementType
+                    };
+                    t.InstanceFields.Add(newField);
+                    InstanceFieldToTypeMapping.Add(newField, field.Type.ToTypeTuple());
+                }
+
+                foreach (var field in cur.StaticFields)
+                {
+                    var newField = new DumpTypeField
+                    {
+                        HasSimpleValue = field.HasSimpleValue,
+                        IsInternal = field.IsInternal,
+                        IsObjectReference = field.IsObjectReference,
+                        IsPrimitive = field.IsPrimitive,
+                        IsPrivate = field.IsPrivate,
+                        IsProtected = field.IsProtected,
+                        IsPublic = field.IsPublic,
+                        IsValueClass = field.IsValueClass,
+                        Name = field.Name,
+                        Offset = field.Offset,
+                        Size = field.Size,
+                        Token = field.Token,
+                        ElementType = field.ElementType
+                    };
+                    t.StaticFields.Add(newField);
+                    StaticFieldToTypeMapping.Add(newField, field.Type.ToTypeTuple());
                 }
             }
         }
 
-        public Dictionary<(ulong, string), string> TypeToInterfacesImplementedMapping { get; set; }
+        internal void ConnectTypes()
+        {
+            foreach (var kvp in TypeToBaseTypeMapping)
+            {
+                var type = Types[kvp.Key];
+                var baseType = Types[kvp.Value];
+                type.BaseType = baseType;
+                baseType.InheritingTypes.Add(type);
+            }
 
+            foreach (var kvp in TypeToComponentTypeMapping)
+            {
+                var type = Types[kvp.Key];
+                var componentType = Types[kvp.Value];
+                type.ComponentType = componentType;
+            }
+
+            foreach (var kvp in TypeToModuleMapping)
+            {
+                var type = Types[kvp.Key];
+                var module =
+                    Modules.First(x => x.Value.AssemblyId == kvp.Value.Item1 && x.Value.Name == kvp.Value.Item2).Value;
+                type.Module = module;
+            }
+
+            foreach (var kvp in InstanceFieldToTypeMapping)
+            {
+                var field = kvp.Key;
+                var type = Types[kvp.Value];
+                field.Type = type;
+            }
+
+            foreach (var kvp in StaticFieldToTypeMapping)
+            {
+                var field = kvp.Key;
+                var type = Types[kvp.Value];
+                field.Type = type;
+            }
+        }
+
+        public Dictionary<DumpTypeField, (ulong, string)> InstanceFieldToTypeMapping { get; set; }
+        public Dictionary<DumpTypeField, (ulong, string)> StaticFieldToTypeMapping { get; set; }
         public Dictionary<(ulong, string), (ulong, string)> TypeToComponentTypeMapping { get; set; }
-
         public Dictionary<(ulong, string), (ulong, string)> TypeToModuleMapping { get; set; }
-
         public Dictionary<ulong, DumpAppDomain> AppDomains { get; set; }
         public Dictionary<(ulong, string), (ulong, string)> TypeToBaseTypeMapping { get; set; }
         public Dictionary<ulong, DumpBlockingObject> BlockingObjects { get; set; }
@@ -417,64 +473,42 @@ namespace Triage.Mortician
         public IDataTarget DataTarget { get; set; }
         public IDebuggerProxy DebuggerProxy { get; set; }
         public FileInfo DumpFile { get; set; }
-
         public List<ulong> FinalizableObjects { get; set; }
         public List<ulong> GcThreads { get; set; }
-
         public Dictionary<ulong, DumpHandle> Handles { get; set; }
-
         public List<ulong> ManagedWorkItems { get; set; }
-
         public Dictionary<ulong, DumpMemoryRegion> MemoryRegions { get; set; }
-
         public Dictionary<string, DumpModuleInfo> ModuleInfos { get; set; }
-
         public Dictionary<ulong, DumpModule> Modules { get; set; }
-
         public List<INativeWorkItem> NativeWorkitems { get; set; }
         public Dictionary<ulong, IList<ulong>> ObjectGraph { get; set; }
-
         public Dictionary<ulong, DumpObject> Objects { get; set; }
-
         public List<ulong> ObjectsInFinalizerQueue { get; set; }
-
         public Dictionary<ulong, DumpObjectRoot> Roots { get; set; }
         public IClrRuntime Runtime { get; set; }
-
         public Dictionary<ulong, DumpHeapSegment> Segments { get; set; }
-
         public Dictionary<uint, DumpThread> Threads { get; set; }
-
         public Dictionary<(ulong, string), DumpType> Types { get; set; }
     }
 
     public class DumpModuleInfo
     {
-        /// <inheritdoc />
         public string FileName { get; set; }
-
-        /// <inheritdoc />
         public uint FileSize { get; set; }
-
-        /// <inheritdoc />
         public ulong ImageBase { get; set; }
-
-        /// <inheritdoc />
         public bool IsManaged { get; set; }
-
-        /// <inheritdoc />
         public bool IsRuntime { get; set; }
-
-        /// <inheritdoc />
         public IPdbInfo Pdb { get; set; }
-
-        /// <inheritdoc />
         public IPeFile PeFile { get; set; }
-
-        /// <inheritdoc />
         public uint TimeStamp { get; set; }
-
-        /// <inheritdoc />
         public VersionInfo Version { get; set; }
+    }
+
+    internal static class ClrMdExtensionMethods
+    {
+        public static (ulong, string) ToTypeTuple(this IClrType type)
+        {
+            return (type.Module.AssemblyId, type.Name);
+        }
     }
 }
