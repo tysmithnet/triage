@@ -81,6 +81,7 @@ namespace Triage.Mortician.Core
         public DumpStackFrame StackFrame { get; protected internal set; }
 
         public IList<DumpThread> Threads { get; set; } = new List<DumpThread>();
+        public DumpType Type { get; set; }
 
         public void AddThread(DumpThread thread)
         {

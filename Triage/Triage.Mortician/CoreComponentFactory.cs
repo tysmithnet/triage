@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using Triage.Mortician.Core;
 using Triage.Mortician.Core.ClrMdAbstractions;
+using Triage.Mortician.Repositories;
 
 namespace Triage.Mortician
 {
@@ -64,10 +66,6 @@ namespace Triage.Mortician
                     dumpObjectRoot.AddThread(thread);
                 }
             }
-        }
-
-        public void RegisterRepositories(DefaultOptions options)
-        {
         }
 
         public void Setup()
@@ -161,7 +159,7 @@ namespace Triage.Mortician
             {
                 var type = Types[kvp.Key];
                 var module =
-                    Modules.First(x => x.Value.AssemblyId == kvp.Value.AssemblyId && x.Value.Name == kvp.Value.TypeName)
+                    Modules.First(x => x.Value.Key.AssemblyId == kvp.Value.AssemblyId && x.Value.Name == kvp.Value.TypeName)
                         .Value;
                 type.Module = module;
                 module.AddType(type);
@@ -231,10 +229,8 @@ namespace Triage.Mortician
                 var dumpModule = new DumpModule
                 {
                     Key = module.ToKeyType(),
-                    AssemblyId = module.AssemblyId,
                     Name = module.Name,
                     Size = module.Size,
-                    AssemblyName = module.AssemblyName,
                     IsDynamic = module.IsDynamic,
                     IsFile = module.IsFile,
                     FileName = module.FileName,
@@ -376,7 +372,7 @@ namespace Triage.Mortician
         internal void CreateRoots()
         {
             var roots = new Dictionary<ulong, DumpObjectRoot>();
-
+            RootToTypeMapping = new Dictionary<ulong, DumpTypeKey>();
             foreach (var root in Runtime.Heap.EnumerateRoots())
             {
                 var newRoot = new DumpObjectRoot
@@ -390,10 +386,23 @@ namespace Triage.Mortician
                 };
 
                 roots.Add(newRoot.Address, newRoot);
+                RootToTypeMapping.Add(root.Address, root.Type.ToTypeKey());
             }
 
             Roots = roots;
         }
+
+        internal void ConnectRoots()
+        {
+            foreach (var kvp in RootToTypeMapping)
+            {
+                var root = Roots[kvp.Key];
+                var type = Types[kvp.Value];
+                root.Type = type;
+            }
+        }
+
+        public Dictionary<ulong, DumpTypeKey> RootToTypeMapping { get; set; }
 
         internal void CreateThreads()
         {
@@ -494,7 +503,7 @@ namespace Triage.Mortician
                 TypeToBaseTypeMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name), cur.BaseType.ToTypeKey());
                 TypeToComponentTypeMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name), cur.ComponentType.ToTypeKey());
                 TypeToModuleMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name),
-                    new DumpTypeKey(t.Module.AssemblyId, t.Module.Name));
+                    new DumpTypeKey(t.Module.Key.AssemblyId, t.Module.Name));
 
                 t.InstanceFields = new List<DumpTypeField>();
                 foreach (var field in cur.Fields)
@@ -588,6 +597,17 @@ namespace Triage.Mortician
         public Dictionary<DumpTypeKey, DumpTypeKey> TypeToBaseTypeMapping { get; set; }
         public Dictionary<DumpTypeKey, DumpTypeKey> TypeToComponentTypeMapping { get; set; }
         public Dictionary<DumpTypeKey, DumpTypeKey> TypeToModuleMapping { get; set; }
+
+        public void RegisterRepositories(DefaultOptions options)
+        {
+            var objRepo = new DumpObjectRepository(Objects, Roots, BlockingObjects);
+            var typeRepo = new DumpTypeRepository(Types);
+            var threadRepo = new DumpThreadRepository(Threads);
+
+            CompositionContainer.ComposeExportedValue<IDumpObjectRepository>(objRepo);
+            CompositionContainer.ComposeExportedValue<IDumpTypeRepository>(typeRepo);
+            CompositionContainer.ComposeExportedValue<IDumpThreadRepository>(threadRepo);
+        }
     }
 
     public class DumpModuleInfo

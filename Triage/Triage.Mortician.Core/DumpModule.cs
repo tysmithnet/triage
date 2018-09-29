@@ -10,22 +10,6 @@ namespace Triage.Mortician.Core
     /// </summary>
     public class DumpModule
     {
-        /// <inheritdoc />
-        public DumpModule(ulong assemblyId = 0, string assemblyName = null,
-            DebuggableAttribute.DebuggingModes debuggingMode = DebuggableAttribute.DebuggingModes.None,
-            string fileName = null, ulong? imageBase = default(ulong?), bool isDynamic = false, bool isFile = false,
-            string name = null, ulong size = 0)
-        {
-            AssemblyId = assemblyId;
-            AssemblyName = assemblyName;
-            DebuggingMode = debuggingMode;
-            FileName = fileName;
-            ImageBase = imageBase ?? 0;
-            IsDynamic = isDynamic;
-            IsFile = isFile;
-            Name = name;
-            Size = size;
-        }
 
         internal DumpModule()
         {
@@ -57,17 +41,6 @@ namespace Triage.Mortician.Core
         /// <value>The application domains.</value>
         public IEnumerable<DumpAppDomain> AppDomains => AppDomainsInternal;
 
-        /// <summary>
-        ///     Gets or sets the assembly id that this module is associated iwth
-        /// </summary>
-        /// <value>The assembly identifier.</value>
-        public ulong AssemblyId { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets the name of the assembly.
-        /// </summary>
-        /// <value>The name of the assembly.</value>
-        public string AssemblyName { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the debugging mode for this assembly (edit and continue, etc)

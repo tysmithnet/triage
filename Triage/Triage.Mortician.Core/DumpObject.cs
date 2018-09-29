@@ -34,6 +34,14 @@ namespace Triage.Mortician.Core
             Address = address;
         }
 
+        public DumpObject(ulong address, string name, ulong size, int gen)
+        {
+            Address = address;
+            FullTypeName = name;
+            Size = size;
+            Gen = gen;
+        }
+
         /// <summary>
         ///     The objects that reference this object
         /// </summary>

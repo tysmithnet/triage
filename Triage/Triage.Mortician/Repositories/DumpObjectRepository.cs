@@ -39,12 +39,11 @@ namespace Triage.Mortician.Repositories
         ///     objectRoots
         /// </exception>
         public DumpObjectRepository(Dictionary<ulong, DumpObject> allObjects,
-            Dictionary<ulong, DumpObjectRoot> objectRoots, Dictionary<ulong, DumpObject> finalizerQueue,
+            Dictionary<ulong, DumpObjectRoot> objectRoots,
             Dictionary<ulong, DumpBlockingObject> blockingObjects)
         {
             Objects = allObjects ?? throw new ArgumentNullException(nameof(allObjects));
             ObjectRoots = objectRoots ?? throw new ArgumentNullException(nameof(objectRoots));
-            FinalizerQueueInternal = finalizerQueue;
             BlockingObjectsInternal = blockingObjects;
         }
 
