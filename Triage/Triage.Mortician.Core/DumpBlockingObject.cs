@@ -12,8 +12,6 @@ namespace Triage.Mortician.Core
         public ulong Address { get; set; }
         public bool IsLocked { get; set; }
         public int RecursionCount { get; set; }
-        public DumpThread Owner { get; set; }
-        public bool HasSingleOwner { get; set; }
         public IList<DumpThread> Owners { get; set; }
         public IList<DumpThread> Waiters { get; set; }
         public BlockingReason BlockingReason { get; set; }

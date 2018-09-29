@@ -13,6 +13,7 @@
 // ***********************************************************************
 
 using System;
+using System.Collections.Generic;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Core
@@ -79,10 +80,11 @@ namespace Triage.Mortician.Core
         /// <exception cref="NotImplementedException">You still need to implement stack frame in object root</exception>
         public DumpStackFrame StackFrame { get; protected internal set; }
 
-        /// <summary>
-        ///     Gets or sets the thread that this object root belongs to if possible, null otherwise
-        /// </summary>
-        /// <value>The thread.</value>
-        public DumpThread Thread { get; protected internal set; }
+        public IList<DumpThread> Threads { get; set; } = new List<DumpThread>();
+
+        public void AddThread(DumpThread thread)
+        {
+            Threads.Add(thread);
+        }
     }
 }

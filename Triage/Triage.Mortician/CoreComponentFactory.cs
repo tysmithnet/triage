@@ -20,6 +20,52 @@ namespace Triage.Mortician
             Runtime = DataTarget.ClrVersions.Single().CreateRuntime();
         }
 
+        public void ConnectHandles()
+        {
+            foreach (var kvp in HandleToAppDomainMapping)
+            {
+                var handle = Handles[kvp.Key];
+                var appDomain = AppDomains[kvp.Value];
+                handle.AppDomain = appDomain;
+                appDomain.AddHandle(handle);
+            }
+
+            foreach (var kvp in HandleToDependentTypeMapping)
+            {
+                var handle = Handles[kvp.Key];
+                var type = Types[kvp.Value];
+                handle.DependentType = type;
+            }
+
+            foreach (var kvp in HandleToTypeMapping)
+            {
+                var handle = Handles[kvp.Key];
+                var type = Types[kvp.Value];
+                handle.ObjectType = type;
+            }
+        }
+
+        public void ConnectThreads()
+        {
+            foreach (var kvp in ThreadToExceptionMapping)
+            {
+                var thread = Threads[kvp.Key];
+                var exception = Objects[kvp.Value];
+                thread.CurrentException = exception;
+            }
+
+            foreach (var kvp in ThreadToRootMapping)
+            {
+                var thread = Threads[kvp.Key];
+                var roots = Roots.Where(r => kvp.Value.Contains(r.Key)).Select(x => x.Value).ToList();
+                foreach (var dumpObjectRoot in roots)
+                {
+                    thread.AddRoot(dumpObjectRoot);
+                    dumpObjectRoot.AddThread(thread);
+                }
+            }
+        }
+
         public void RegisterRepositories(DefaultOptions options)
         {
         }
@@ -52,6 +98,17 @@ namespace Triage.Mortician
                 var modules = kvp.Value.Select(x => Modules[x]).ToList();
                 modules.ForEach(domain.AddModule);
                 modules.ForEach(x => x.AddAppDomain(domain));
+            }
+        }
+
+        internal void ConnectBlockingObjects()
+        {
+            foreach (var kvp in BlockingObjectToThreadMapping)
+            {
+                var o = BlockingObjects[kvp.Key];
+                var threads = Threads.Where(x => kvp.Value.Contains(x.Key)).Select(x => x.Value).ToList();
+                o.Owners = threads;
+                foreach (var dumpThread in threads) dumpThread.AddBlockingObject(o);
             }
         }
 
@@ -153,7 +210,6 @@ namespace Triage.Mortician
                 {
                     Address = blockingObject.Object,
                     BlockingReason = blockingObject.Reason,
-                    HasSingleOwner = blockingObject.HasSingleOwner,
                     IsLocked = blockingObject.Taken,
                     RecursionCount = blockingObject.RecursionCount
                 };
@@ -194,7 +250,7 @@ namespace Triage.Mortician
 
         internal void CreateDumpModuleInfo()
         {
-            var res = new Dictionary<string, DumpModuleInfo>();
+            ModuleInfos = new Dictionary<string, DumpModuleInfo>();
 
             foreach (var info in Runtime.DataTarget.EnumerateModules())
             {
@@ -210,16 +266,16 @@ namespace Triage.Mortician
                     IsRuntime = info.IsRuntime,
                     TimeStamp = info.TimeStamp
                 };
-                res.Add(info.FileName, moduleInfo);
+                ModuleInfos.Add(info.FileName, moduleInfo);
             }
-
-            ModuleInfos = res;
         }
 
         internal void CreateHandles()
         {
-            var handles = new Dictionary<ulong, DumpHandle>();
-
+            Handles = new Dictionary<ulong, DumpHandle>();
+            HandleToTypeMapping = new Dictionary<ulong, DumpTypeKey>();
+            HandleToDependentTypeMapping = new Dictionary<ulong, DumpTypeKey>();
+            HandleToAppDomainMapping = new Dictionary<ulong, ulong>();
             foreach (var handle in Runtime.EnumerateHandles())
             {
                 var newHandle = new DumpHandle
@@ -233,10 +289,11 @@ namespace Triage.Mortician
                     RefCount = handle.RefCount
                 };
 
-                handles.Add(newHandle.Address, newHandle);
+                Handles.Add(newHandle.Address, newHandle);
+                HandleToTypeMapping.Add(newHandle.Address, handle.Type.ToTypeKey());
+                HandleToAppDomainMapping.Add(newHandle.Address, handle.AppDomain.Address);
+                HandleToDependentTypeMapping.Add(handle.Address, handle.DependentType.ToTypeKey());
             }
-
-            Handles = handles;
         }
 
         internal void CreateHeapSegments()
@@ -340,8 +397,9 @@ namespace Triage.Mortician
 
         internal void CreateThreads()
         {
-            var threads = new Dictionary<uint, DumpThread>();
-
+            Threads = new Dictionary<uint, DumpThread>();
+            ThreadToExceptionMapping = new Dictionary<uint, ulong>();
+            ThreadToRootMapping = new Dictionary<uint, IList<ulong>>();
             foreach (var thread in Runtime.Threads)
             {
                 var newThread = new DumpThread
@@ -385,10 +443,9 @@ namespace Triage.Mortician
                     DisplayString = x.DisplayString
                 }).ToList();
 
-                threads.Add(newThread.OsId, newThread);
+                Threads.Add(newThread.OsId, newThread);
+                ThreadToExceptionMapping.Add(newThread.OsId, thread.CurrentException.Address);
             }
-
-            Threads = threads;
         }
 
         internal void CreateTypes()
@@ -501,6 +558,12 @@ namespace Triage.Mortician
         public List<ulong> GcThreads { get; set; }
         public Dictionary<ulong, DumpHandle> Handles { get; set; }
 
+        public Dictionary<ulong, ulong> HandleToAppDomainMapping { get; set; }
+
+        public Dictionary<ulong, DumpTypeKey> HandleToDependentTypeMapping { get; set; }
+
+        public Dictionary<ulong, DumpTypeKey> HandleToTypeMapping { get; set; }
+
         public Dictionary<DumpTypeField, DumpTypeKey> InstanceFieldToTypeMapping { get; set; }
         public List<ulong> ManagedWorkItems { get; set; }
         public Dictionary<ulong, DumpMemoryRegion> MemoryRegions { get; set; }
@@ -517,6 +580,10 @@ namespace Triage.Mortician
         public Dictionary<ulong, DumpHeapSegment> Segments { get; set; }
         public Dictionary<DumpTypeField, DumpTypeKey> StaticFieldToTypeMapping { get; set; }
         public Dictionary<uint, DumpThread> Threads { get; set; }
+
+        public Dictionary<uint, ulong> ThreadToExceptionMapping { get; set; }
+
+        public Dictionary<uint, IList<ulong>> ThreadToRootMapping { get; set; }
         public Dictionary<DumpTypeKey, DumpType> Types { get; set; }
         public Dictionary<DumpTypeKey, DumpTypeKey> TypeToBaseTypeMapping { get; set; }
         public Dictionary<DumpTypeKey, DumpTypeKey> TypeToComponentTypeMapping { get; set; }

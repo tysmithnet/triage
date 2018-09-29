@@ -63,5 +63,12 @@ namespace Triage.Mortician.Core
         {
             LoadedModulesInternal.Add(module);
         }
+
+        public void AddHandle(DumpHandle handle)
+        {
+            Handles.Add(handle);
+        }
+
+        internal IList<DumpHandle> Handles = new List<DumpHandle>();
     }
 }

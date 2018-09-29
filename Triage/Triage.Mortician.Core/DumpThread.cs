@@ -120,5 +120,18 @@ namespace Triage.Mortician.Core
         public bool IsThreadpoolWait { get; set; }
         public bool IsThreadpoolWorker { get; set; }
         public bool IsCreatedButNotStarted { get; set; }
+        public IList<DumpBlockingObject> BlockingObjects { get; set; } = new List<DumpBlockingObject>();
+        public IList<DumpObjectRoot> Roots { get; set; }
+        public DumpObject CurrentException { get; set; }
+
+        public void AddBlockingObject(DumpBlockingObject dumpBlockingObject)
+        {
+            BlockingObjects.Add(dumpBlockingObject);
+        }
+
+        public void AddRoot(DumpObjectRoot dumpObjectRoot)
+        {
+            Roots.Add(dumpObjectRoot);
+        }
     }
 }

@@ -143,5 +143,8 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The type of the dump.</value>
         public DumpType Type { get; protected internal set; }
+
+        public bool IsFinalizable { get; set; }
+        public bool IsManagedWorkItem { get; set; }
     }
 }
