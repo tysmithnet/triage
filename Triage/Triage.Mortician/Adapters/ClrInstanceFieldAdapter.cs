@@ -190,11 +190,24 @@ namespace Triage.Mortician.Adapters
         public int Offset => InstanceField.Offset;
 
         /// <summary>
-        ///     Gets the size of this field.
+        ///     Gets the size of this field. Returns -1 if the size cannot be determined.
         /// </summary>
         /// <value>The size.</value>
         /// <inheritdoc />
-        public int Size => InstanceField.Size;
+        public int Size
+        {
+            get
+            {
+                try
+                {
+                    return InstanceField.Size;
+                }
+                catch (Exception)
+                {
+                    return -1;
+                }
+            }
+        }
 
         /// <summary>
         ///     Returns the type token of this field.
@@ -202,7 +215,7 @@ namespace Triage.Mortician.Adapters
         /// <value>The token.</value>
         /// <inheritdoc />
         public uint Token => InstanceField.Token;
-
+        
         /// <summary>
         ///     The type of the field.  Note this property may return null on error.  There is a bug in several versions
         ///     of our debugging layer which causes this.  You should always null-check the return value of this field.

@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
+using Common.Logging;
 using Triage.Mortician.Core;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using Triage.Mortician.Repositories;
@@ -12,6 +13,8 @@ namespace Triage.Mortician
 {
     internal class CoreComponentFactory
     {
+        private const string ERROR_TYPE = "ERROR";
+
         /// <inheritdoc />
         public CoreComponentFactory(CompositionContainer compositionContainer, FileInfo dumpFile)
         {
@@ -21,6 +24,8 @@ namespace Triage.Mortician
             DataTarget = Converter.Convert(Microsoft.Diagnostics.Runtime.DataTarget.LoadCrashDump(dumpFile.FullName));
             Runtime = DataTarget.ClrVersions.Single().CreateRuntime();
         }
+
+        internal static ILog Log = LogManager.GetLogger<CoreComponentFactory>();
 
         public void ConnectHandles()
         {
@@ -66,6 +71,25 @@ namespace Triage.Mortician
                     dumpObjectRoot.AddThread(thread);
                 }
             }
+        }
+
+        public void RegisterRepositories(DefaultOptions options)
+        {
+            var objRepo = new DumpObjectRepository(Objects, Roots, BlockingObjects);
+            var typeRepo = new DumpTypeRepository(Types);
+            var threadRepo = new DumpThreadRepository(Threads);
+            var appDomainRepo = new DumpAppDomainRepository(AppDomains);
+            var moduleRepo = new DumpModuleRepository(Modules);
+            var handleRepo = new DumpHandleRepository(Handles);
+            var infoRepo = new DumpInformationRepository(DataTarget, Runtime, DumpFile);
+
+            CompositionContainer.ComposeExportedValue<IDumpObjectRepository>(objRepo);
+            CompositionContainer.ComposeExportedValue<IDumpTypeRepository>(typeRepo);
+            CompositionContainer.ComposeExportedValue<IDumpThreadRepository>(threadRepo);
+            CompositionContainer.ComposeExportedValue<IDumpAppDomainRepository>(appDomainRepo);
+            CompositionContainer.ComposeExportedValue<IDumpModuleRepository>(moduleRepo);
+            CompositionContainer.ComposeExportedValue<IDumpHandleRepository>(handleRepo);
+            CompositionContainer.ComposeExportedValue<IDumpInformationRepository>(infoRepo);
         }
 
         public void Setup()
@@ -138,6 +162,16 @@ namespace Triage.Mortician
             }
         }
 
+        internal void ConnectRoots()
+        {
+            foreach (var kvp in RootToTypeMapping)
+            {
+                var root = Roots[kvp.Key];
+                var type = Types[kvp.Value];
+                root.Type = type;
+            }
+        }
+
         internal void ConnectTypes()
         {
             foreach (var kvp in TypeToBaseTypeMapping)
@@ -159,7 +193,8 @@ namespace Triage.Mortician
             {
                 var type = Types[kvp.Key];
                 var module =
-                    Modules.First(x => x.Value.Key.AssemblyId == kvp.Value.AssemblyId && x.Value.Name == kvp.Value.TypeName)
+                    Modules.First(x =>
+                            x.Value.Key.AssemblyId == kvp.Value.AssemblyId && x.Value.Name == kvp.Value.TypeName)
                         .Value;
                 type.Module = module;
                 module.AddType(type);
@@ -213,10 +248,17 @@ namespace Triage.Mortician
                 };
 
                 BlockingObjects.Add(dumpBlockingObject.Address, dumpBlockingObject);
-                BlockingObjectToThreadMapping.Add(blockingObject.Object,
-                    blockingObject.HasSingleOwner
-                        ? new List<uint> {blockingObject.Owner.OSThreadId}
-                        : blockingObject.Owners.Select(x => x.OSThreadId).ToList());
+                try
+                {
+                    BlockingObjectToThreadMapping.Add(blockingObject.Object,
+                        blockingObject.HasSingleOwner
+                            ? new List<uint> {blockingObject.Owner.OSThreadId}
+                            : blockingObject.Owners.Select(x => x.OSThreadId).ToList());
+                }
+                catch (Exception)
+                {
+                    // todo: something
+                }
             }
         }
 
@@ -285,10 +327,37 @@ namespace Triage.Mortician
                     RefCount = handle.RefCount
                 };
 
-                Handles.Add(newHandle.Address, newHandle);
-                HandleToTypeMapping.Add(newHandle.Address, handle.Type.ToTypeKey());
-                HandleToAppDomainMapping.Add(newHandle.Address, handle.AppDomain.Address);
-                HandleToDependentTypeMapping.Add(handle.Address, handle.DependentType.ToTypeKey());
+                try
+                {
+                    Handles.Add(newHandle.Address, newHandle);
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
+                    HandleToTypeMapping.Add(newHandle.Address, handle.Type.ToTypeKey());
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
+                    HandleToAppDomainMapping.Add(newHandle.Address, handle.AppDomain.Address);
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
+                    HandleToDependentTypeMapping.Add(handle.Address, handle.DependentType.ToTypeKey());
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 
@@ -337,7 +406,14 @@ namespace Triage.Mortician
                     MemoryRegionType = region.MemoryRegionType,
                     Size = region.Size
                 };
-                regions.Add(region.Address, newRegion);
+                try
+                {
+                    regions.Add(region.Address, newRegion);
+                }
+                catch (Exception)
+                {
+                    // todo: something
+                }
             }
 
             MemoryRegions = regions;
@@ -385,24 +461,27 @@ namespace Triage.Mortician
                     IsPossibleFalsePositive = root.IsPossibleFalsePositive
                 };
 
-                roots.Add(newRoot.Address, newRoot);
-                RootToTypeMapping.Add(root.Address, root.Type.ToTypeKey());
+                try
+                {
+                    roots.Add(newRoot.Address, newRoot);
+                }
+                catch (Exception)
+                {
+                    // todo: something
+                }
+
+                try
+                {
+                    RootToTypeMapping.Add(root.Address, root.Type.ToTypeKey());
+                }
+                catch (Exception)
+                {
+                    // todo: do something
+                }
             }
 
             Roots = roots;
         }
-
-        internal void ConnectRoots()
-        {
-            foreach (var kvp in RootToTypeMapping)
-            {
-                var root = Roots[kvp.Key];
-                var type = Types[kvp.Value];
-                root.Type = type;
-            }
-        }
-
-        public Dictionary<ulong, DumpTypeKey> RootToTypeMapping { get; set; }
 
         internal void CreateThreads()
         {
@@ -452,8 +531,23 @@ namespace Triage.Mortician
                     DisplayString = x.DisplayString
                 }).ToList();
 
-                Threads.Add(newThread.OsId, newThread);
-                ThreadToExceptionMapping.Add(newThread.OsId, thread.CurrentException.Address);
+                try
+                {
+                    Threads.Add(newThread.OsId, newThread);
+                }
+                catch (Exception)
+                {
+                    // todo: something
+                }
+
+                try
+                {
+                    ThreadToExceptionMapping.Add(newThread.OsId, thread.CurrentException.Address);
+                }
+                catch (Exception)
+                {
+                    // todo: something
+                }
             }
         }
 
@@ -499,13 +593,43 @@ namespace Triage.Mortician
                     ElementType = cur.ElementType,
                     Interfaces = cur.Interfaces.Select(x => x.Name).ToList()
                 };
-                Types.Add(new DumpTypeKey(t.AssemblyId, t.Name), t);
-                if(cur.BaseType != null)
+                try
+                {
+                    Types.Add(new DumpTypeKey(t.AssemblyId, t.Name), t);
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Found duplicate type in Types: ({t.AssemblyId}, {t.Name})");
+                }
+
+                try
+                {
                     TypeToBaseTypeMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name), cur.BaseType.ToTypeKey());
-                if(cur.ComponentType != null)
-                    TypeToComponentTypeMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name), cur.ComponentType.ToTypeKey());
-                TypeToModuleMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name),
-                    new DumpTypeKey(cur.Module.AssemblyId, cur.Module.Name));
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Found duplicate type in TypeToBaseTypeMapping: ({t.AssemblyId}, {t.Name})");
+                }
+
+                try
+                {
+                    TypeToComponentTypeMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name),
+                        cur.ComponentType.ToTypeKey());
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Found duplicate type in TypeToComponentTypeMapping: ({t.AssemblyId}, {t.Name})");
+                }
+
+                try
+                {
+                    TypeToModuleMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name),
+                        new DumpTypeKey(cur.Module.AssemblyId, cur.Module.Name));
+                }
+                catch (Exception)
+                {
+                    Log.Error($"Found duplicate type in TypeToModuleMapping: ({t.AssemblyId}, {t.Name})");
+                }
 
                 t.InstanceFields = new List<DumpTypeField>();
                 foreach (var field in cur.Fields)
@@ -527,7 +651,8 @@ namespace Triage.Mortician
                         ElementType = field.ElementType
                     };
                     t.InstanceFields.Add(newField);
-                    InstanceFieldToTypeMapping.Add(newField, field.Type.ToTypeKey());
+                    if (field.Type.Name != ERROR_TYPE)
+                        InstanceFieldToTypeMapping.Add(newField, field.Type.ToTypeKey());
                 }
 
                 foreach (var field in cur.StaticFields)
@@ -587,6 +712,8 @@ namespace Triage.Mortician
 
         public Dictionary<ulong, DumpTypeKey> ObjectToTypeMapping { get; set; }
         public Dictionary<ulong, DumpObjectRoot> Roots { get; set; }
+
+        public Dictionary<ulong, DumpTypeKey> RootToTypeMapping { get; set; }
         public IClrRuntime Runtime { get; set; }
         public Dictionary<ulong, DumpHeapSegment> Segments { get; set; }
         public Dictionary<DumpTypeField, DumpTypeKey> StaticFieldToTypeMapping { get; set; }
@@ -599,17 +726,6 @@ namespace Triage.Mortician
         public Dictionary<DumpTypeKey, DumpTypeKey> TypeToBaseTypeMapping { get; set; }
         public Dictionary<DumpTypeKey, DumpTypeKey> TypeToComponentTypeMapping { get; set; }
         public Dictionary<DumpTypeKey, DumpTypeKey> TypeToModuleMapping { get; set; }
-
-        public void RegisterRepositories(DefaultOptions options)
-        {
-            var objRepo = new DumpObjectRepository(Objects, Roots, BlockingObjects);
-            var typeRepo = new DumpTypeRepository(Types);
-            var threadRepo = new DumpThreadRepository(Threads);
-
-            CompositionContainer.ComposeExportedValue<IDumpObjectRepository>(objRepo);
-            CompositionContainer.ComposeExportedValue<IDumpTypeRepository>(typeRepo);
-            CompositionContainer.ComposeExportedValue<IDumpThreadRepository>(threadRepo);
-        }
     }
 
     public class DumpModuleInfo
