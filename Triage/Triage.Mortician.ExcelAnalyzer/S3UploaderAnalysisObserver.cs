@@ -23,7 +23,7 @@ using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Common.Logging;
+using Serilog;
 using Triage.Mortician.Core;
 
 namespace Triage.Mortician.ExcelAnalyzer
@@ -47,10 +47,6 @@ namespace Triage.Mortician.ExcelAnalyzer
         /// </summary>
         private const string UploadExcelToS3 = "upload-excel-to-s3";
 
-        /// <summary>
-        ///     The log
-        /// </summary>
-        public ILog Log = LogManager.GetLogger(typeof(S3UploaderAnalysisObserver));
 
         /// <summary>
         ///     Performs the core execution
@@ -66,7 +62,7 @@ namespace Triage.Mortician.ExcelAnalyzer
                 var shouldUpload = false; // SettingsRepository.GetBool(UploadExcelToS3, true);
                 if (!shouldUpload)
                 {
-                    Log.Trace($"Skipping upload excel report to s3. Is the setting {UploadExcelToS3} set to true?");
+                    Log.Information($"Skipping upload excel report to s3. Is the setting {UploadExcelToS3} set to true?");
                     return;
                 }
 
@@ -98,12 +94,12 @@ namespace Triage.Mortician.ExcelAnalyzer
                     };
 
                     // todo: make a service
-                    Log.Info("Attempting to upload report to S3");
+                    Log.Information("Attempting to upload report to S3");
                     try
                     {
                         var putObjectResponse = client.PutObject(putReportRequest);
                         if (putObjectResponse.HttpStatusCode == HttpStatusCode.OK)
-                            Log.Trace($"Upload of {message.ReportFile} was successful");
+                            Log.Information($"Upload of {message.ReportFile} was successful");
                         else
                             throw new ApplicationException("Unknown error");
                     }

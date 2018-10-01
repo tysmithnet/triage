@@ -19,7 +19,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using CommandLine;
-using Common.Logging;
+using Serilog;
 using Triage.Mortician.Core;
 
 namespace Triage.Mortician
@@ -32,7 +32,6 @@ namespace Triage.Mortician
         /// <summary>
         ///     The log
         /// </summary>
-        internal static ILog Log = LogManager.GetLogger(typeof(Program));
 
         /// <summary>
         ///     Perform the default execution
@@ -90,7 +89,7 @@ namespace Triage.Mortician
         /// <param name="args">The arguments.</param>
         internal static void Main(string[] args)
         {
-            Log.Trace($"Starting mortician at {DateTime.UtcNow.ToString()} UTC");
+            Log.Information($"Starting mortician at {DateTime.UtcNow} UTC");
             WarnIfNoDebuggingKitOnPath();
 
             Parser.Default.ParseArguments<DefaultOptions>(args).MapResult(
@@ -110,11 +109,11 @@ namespace Triage.Mortician
         {
             var path = Environment.GetEnvironmentVariable("PATH") ?? "";
             if (!Regex.IsMatch(path, @"[Dd]ebuggers[/\\]x64"))
-                Log.Warn(
+                Log.Warning(
                     "Did not find Debuggers\\x64 in PATH. Did you install the Windows Debugging Kit and set Debuggers\\x64 as part of PATH?");
 
             if (!Regex.IsMatch(path, @"[Dd]ebuggers[/\\]x64[/\\]winext"))
-                Log.Warn(
+                Log.Warning(
                     "Did not find Debuggers\\x64\\winext in PATH. Did you install the Windows Debugging Kit and set Debuggers\\x64\\winext as part of PATH?");
         }
     }

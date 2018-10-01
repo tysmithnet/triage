@@ -14,7 +14,7 @@
 
 using System;
 using System.Collections.Generic;
-using Common.Logging;
+using Serilog;
 using Triage.Mortician.Core;
 
 namespace Triage.Mortician.Repositories
@@ -45,10 +45,6 @@ namespace Triage.Mortician.Repositories
         /// </value>
         protected internal Dictionary<uint, DumpThread> DumpThreads;
 
-        /// <summary>
-        ///     The log
-        /// </summary>
-        protected internal ILog Log = LogManager.GetLogger(typeof(DumpThreadRepository));
 
         /// <summary>
         ///     Gets the thread with the provided id

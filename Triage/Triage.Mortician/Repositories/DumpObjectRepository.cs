@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using Common.Logging;
 using Triage.Mortician.Core;
 
 namespace Triage.Mortician.Repositories
@@ -46,11 +45,6 @@ namespace Triage.Mortician.Repositories
             ObjectRoots = objectRoots ?? throw new ArgumentNullException(nameof(objectRoots));
             BlockingObjectsInternal = blockingObjects;
         }
-
-        /// <summary>
-        ///     The log
-        /// </summary>
-        internal ILog Log = LogManager.GetLogger(typeof(DumpObjectRepository));
 
         /// <summary>
         ///     The object roots that keep objects on the heap alive

@@ -15,7 +15,6 @@
 using System;
 using System.Diagnostics;
 using System.Text;
-using Common.Logging;
 using Microsoft.Diagnostics.Runtime.Interop;
 
 namespace Triage.Mortician
@@ -116,12 +115,6 @@ namespace Triage.Mortician
 
             return 0;
         }
-
-        /// <summary>
-        ///     The log
-        /// </summary>
-        /// <value>The log.</value>
-        private ILog Log { get; set; } = LogManager.GetLogger(typeof(DebuggerProxy));
 
         #region IDisposable Support
 

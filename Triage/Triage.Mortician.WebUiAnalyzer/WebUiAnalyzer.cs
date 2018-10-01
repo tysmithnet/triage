@@ -17,8 +17,8 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Common.Logging;
 using Microsoft.AspNetCore.Hosting;
+using Serilog;
 using Triage.Mortician.Core;
 
 namespace Triage.Mortician.WebUiAnalyzer
@@ -135,10 +135,5 @@ namespace Triage.Mortician.WebUiAnalyzer
         /// <value>The host.</value>
         private IWebHost Host { get; set; }
 
-        /// <summary>
-        ///     Gets the log.
-        /// </summary>
-        /// <value>The log.</value>
-        private ILog Log { get; } = LogManager.GetLogger<WebUiAnalyzer>();
     }
 }

@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Types;
+using Serilog;
 using Triage.Mortician.Core;
 using Triage.Mortician.IntegrationTest.Scenarios;
 using Xunit;
@@ -49,6 +51,9 @@ namespace Triage.Mortician.IntegrationTest
         public void Perform_Basic_Startup_Without_Failure()
         {
             // arrange
+            Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Trace().CreateLogger();
+            Log.Information("Hello, Serilog!");
+            Assert.True(false);
             var dumpFile = Scenario.HelloWorld.GetDumpFile();
             var options = new DefaultOptions
             {

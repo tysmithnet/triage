@@ -4,7 +4,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
-using Common.Logging;
+using Serilog;
 using Triage.Mortician.Core;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using Triage.Mortician.Repositories;
@@ -25,7 +25,6 @@ namespace Triage.Mortician
             Runtime = DataTarget.ClrVersions.Single().CreateRuntime();
         }
 
-        internal static ILog Log = LogManager.GetLogger<CoreComponentFactory>();
 
         public void ConnectHandles()
         {
