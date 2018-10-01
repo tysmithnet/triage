@@ -4,7 +4,6 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
-using Serilog;
 using Triage.Mortician.Core;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using Triage.Mortician.Repositories;
@@ -24,7 +23,6 @@ namespace Triage.Mortician
             DataTarget = Converter.Convert(Microsoft.Diagnostics.Runtime.DataTarget.LoadCrashDump(dumpFile.FullName));
             Runtime = DataTarget.ClrVersions.Single().CreateRuntime();
         }
-
 
         public void ConnectHandles()
         {
@@ -218,7 +216,8 @@ namespace Triage.Mortician
         {
             AppDomains = new Dictionary<ulong, DumpAppDomain>();
             AppDomainToModuleMapping = new Dictionary<ulong, IList<DumpModuleKey>>();
-            foreach (var domain in Runtime.AppDomains)
+            var runtimeAppDomains = Runtime.AppDomains.Concat(new[] {Runtime.SharedDomain, Runtime.SystemDomain});
+            foreach (var domain in runtimeAppDomains)
             {
                 var dumpAppDomain = new DumpAppDomain
                 {
@@ -336,7 +335,7 @@ namespace Triage.Mortician
 
                 try
                 {
-                    HandleToTypeMapping.Add(newHandle.Address, handle.Type.ToTypeKey());
+                    HandleToTypeMapping.Add(newHandle.Address, handle.Type.ToKeyType());
                 }
                 catch (Exception)
                 {
@@ -352,7 +351,7 @@ namespace Triage.Mortician
 
                 try
                 {
-                    HandleToDependentTypeMapping.Add(handle.Address, handle.DependentType.ToTypeKey());
+                    HandleToDependentTypeMapping.Add(handle.Address, handle.DependentType.ToKeyType());
                 }
                 catch (Exception)
                 {
@@ -437,7 +436,7 @@ namespace Triage.Mortician
                 };
                 objects.Add(o.Address, o);
                 objectGraph.Add(o.Address, cur.EnumerateObjectReferences().Select(x => x.Address).ToList());
-                ObjectToTypeMapping.Add(o.Address, cur.Type.ToTypeKey());
+                ObjectToTypeMapping.Add(o.Address, cur.Type.ToKeyType());
             }
 
             Objects = objects;
@@ -471,7 +470,7 @@ namespace Triage.Mortician
 
                 try
                 {
-                    RootToTypeMapping.Add(root.Address, root.Type.ToTypeKey());
+                    RootToTypeMapping.Add(root.Address, root.Type.ToKeyType());
                 }
                 catch (Exception)
                 {
@@ -592,42 +591,29 @@ namespace Triage.Mortician
                     ElementType = cur.ElementType,
                     Interfaces = cur.Interfaces.Select(x => x.Name).ToList()
                 };
-                try
                 {
-                    Types.Add(new DumpTypeKey(t.AssemblyId, t.Name), t);
+                    var key = new DumpTypeKey(t.AssemblyId, t.Name);
+                    if (!Types.ContainsKey(key))
+                        Types.Add(key, t);
                 }
-                catch (Exception e)
                 {
-                    Log.Error($"Found duplicate type in Types: ({t.AssemblyId}, {t.Name})");
-                }
-
-                try
-                {
-                    TypeToBaseTypeMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name), cur.BaseType.ToTypeKey());
-                }
-                catch (Exception e)
-                {
-                    Log.Error($"Found duplicate type in TypeToBaseTypeMapping: ({t.AssemblyId}, {t.Name})");
+                    var key = new DumpTypeKey(t.AssemblyId, t.Name);
+                    if(cur.BaseType != null && !TypeToBaseTypeMapping.ContainsKey(key))
+                        TypeToBaseTypeMapping.Add(key, cur.BaseType.ToKeyType());
                 }
 
-                try
                 {
-                    TypeToComponentTypeMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name),
-                        cur.ComponentType.ToTypeKey());
-                }
-                catch (Exception e)
-                {
-                    Log.Error($"Found duplicate type in TypeToComponentTypeMapping: ({t.AssemblyId}, {t.Name})");
+                    var key = new DumpTypeKey(t.AssemblyId, t.Name);
+                    if(cur.ComponentType != null && !TypeToComponentTypeMapping.ContainsKey(key))
+                        TypeToComponentTypeMapping.Add(key,
+                            cur.ComponentType.ToKeyType());
                 }
 
-                try
                 {
-                    TypeToModuleMapping.Add(new DumpTypeKey(t.AssemblyId, t.Name),
-                        new DumpTypeKey(cur.Module.AssemblyId, cur.Module.Name));
-                }
-                catch (Exception)
-                {
-                    Log.Error($"Found duplicate type in TypeToModuleMapping: ({t.AssemblyId}, {t.Name})");
+                    var key = new DumpTypeKey(t.AssemblyId, t.Name);
+                    if(cur.Module != null && !TypeToModuleMapping.ContainsKey(key))
+                        TypeToModuleMapping.Add(key,
+                            new DumpTypeKey(cur.Module.AssemblyId, cur.Module.Name));
                 }
 
                 t.InstanceFields = new List<DumpTypeField>();
@@ -651,7 +637,7 @@ namespace Triage.Mortician
                     };
                     t.InstanceFields.Add(newField);
                     if (field.Type.Name != ERROR_TYPE)
-                        InstanceFieldToTypeMapping.Add(newField, field.Type.ToTypeKey());
+                        InstanceFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
                 }
 
                 foreach (var field in cur.StaticFields)
@@ -673,7 +659,7 @@ namespace Triage.Mortician
                         ElementType = field.ElementType
                     };
                     t.StaticFields.Add(newField);
-                    StaticFieldToTypeMapping.Add(newField, field.Type.ToTypeKey());
+                    StaticFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
                 }
             }
         }
@@ -745,6 +731,6 @@ namespace Triage.Mortician
         public static DumpModuleKey ToKeyType(this IClrModule module) =>
             new DumpModuleKey(module.AssemblyId, module.Name);
 
-        public static DumpTypeKey ToTypeKey(this IClrType type) => new DumpTypeKey(type.Module.AssemblyId, type.Name);
+        public static DumpTypeKey ToKeyType(this IClrType type) => new DumpTypeKey(type.Module?.AssemblyId ?? 0, type.Name);
     }
 }

@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Triage.Mortician.IntegrationTest
 {
-    public class WinForms_Should
+    public class WinForms_Should : Test
     {
         [Export(typeof(IAnalyzer))]
         [Export]
