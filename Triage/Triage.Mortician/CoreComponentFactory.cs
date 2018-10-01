@@ -20,9 +20,20 @@ namespace Triage.Mortician
             CompositionContainer =
                 compositionContainer ?? throw new ArgumentNullException(nameof(compositionContainer));
             DumpFile = dumpFile ?? throw new ArgumentNullException(nameof(dumpFile));
-            DataTarget = Converter.Convert(Microsoft.Diagnostics.Runtime.DataTarget.LoadCrashDump(dumpFile.FullName));
+
+            try
+            {
+                DataTarget = Converter.Convert(Microsoft.Diagnostics.Runtime.DataTarget.LoadCrashDump(dumpFile.FullName));
+            }
+            catch (FileNotFoundException e)
+            {
+                throw new ApplicationException("Memory dump was not found. Is the path correct? Is it read only?", e);
+            }
             Runtime = DataTarget.ClrVersions.Single().CreateRuntime();
+            DumpObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>();
         }
+
+        public IEnumerable<IDumpObjectExtractor> DumpObjectExtractors { get; set; }
 
         public void ConnectHandles()
         {
@@ -269,7 +280,6 @@ namespace Triage.Mortician
                 var dumpModule = new DumpModule
                 {
                     Key = module.ToKeyType(),
-                    Name = module.Name,
                     Size = module.Size,
                     IsDynamic = module.IsDynamic,
                     IsFile = module.IsFile,
@@ -424,19 +434,28 @@ namespace Triage.Mortician
             ObjectToTypeMapping = new Dictionary<ulong, DumpTypeKey>();
             foreach (var cur in Runtime.Heap.EnumerateObjects())
             {
-                var o = new DumpObject(cur.Address)
+                DumpObject toAdd;
+                var handler = DumpObjectExtractors.FirstOrDefault(h => h.CanExtract(cur, Runtime));
+                if (handler != null)
                 {
-                    Address = cur.Address,
-                    FullTypeName = cur.Type?.Name,
-                    Size = cur.Size,
-                    IsNull = cur.IsNull,
-                    IsBoxed = cur.IsBoxed,
-                    IsArray = cur.IsArray,
-                    ContainsPointers = cur.ContainsPointers
-                };
-                objects.Add(o.Address, o);
-                objectGraph.Add(o.Address, cur.EnumerateObjectReferences().Select(x => x.Address).ToList());
-                ObjectToTypeMapping.Add(o.Address, cur.Type.ToKeyType());
+                    toAdd = handler.Extract(cur, Runtime);
+                }
+                else
+                {
+                    toAdd = new DumpObject(cur.Address)
+                    {
+                        Address = cur.Address,
+                        FullTypeName = cur.Type?.Name,
+                        Size = cur.Size,
+                        IsNull = cur.IsNull,
+                        IsBoxed = cur.IsBoxed,
+                        IsArray = cur.IsArray,
+                        ContainsPointers = cur.ContainsPointers
+                    };
+                }
+                objects.Add(toAdd.Address, toAdd);
+                objectGraph.Add(toAdd.Address, cur.EnumerateObjectReferences().Select(x => x.Address).ToList());
+                ObjectToTypeMapping.Add(toAdd.Address, cur.Type.ToKeyType());
             }
 
             Objects = objects;

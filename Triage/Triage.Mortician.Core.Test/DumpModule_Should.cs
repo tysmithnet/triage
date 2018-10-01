@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using FluentAssertions;
+using Triage.Mortician.Core.ClrMdAbstractions;
 using Xunit;
 
 namespace Triage.Mortician.Core.Test
@@ -11,10 +12,14 @@ namespace Triage.Mortician.Core.Test
         public void Set_Member_Values_Correctly()
         {
             // arrange
-            var module = new DumpModule()
+            var module = new DumpModule(new DumpModuleKey(0x1337, "AssemblyName"))
             {
-                Key = new DumpModuleKey(0x1337, "AssemblyName"),
-
+                DebuggingMode = DebuggableAttribute.DebuggingModes.Default,
+                FileName = @"C:\temp\assembly.dll",
+                ImageBase = 0x4000,
+                IsFile = true,
+                IsDynamic = false,
+                Size = 0x42
             };
 
             // act
@@ -26,10 +31,8 @@ namespace Triage.Mortician.Core.Test
             module.ImageBase = 0x4000;
             module.IsFile = true;
             module.IsDynamic = false;
-            module.Name.Should().Be("Assembly");
-            module.PdbInfo.FileName.Should().Be(@"C:\temp\assembly.pdb");
+            module.Name.Should().Be("AssemblyName");
             module.Size.Should().Be(0x42);
-            module.PdbInfo.Guid.Should().Be(Guid.Empty);
         }
 
         [Fact]

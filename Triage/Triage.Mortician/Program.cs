@@ -32,7 +32,6 @@ namespace Triage.Mortician
         /// <summary>
         ///     The log
         /// </summary>
-
         /// <summary>
         ///     Perform the default execution
         /// </summary>
@@ -53,7 +52,8 @@ namespace Triage.Mortician
                     .Where(f => Regex.IsMatch(f, "(dll|exe)$",
                         RegexOptions.IgnoreCase)); // todo: not ideal to require assembly name
             var toLoad =
-                morticianAssemblyFiles.Except(AppDomain.CurrentDomain.GetAssemblies().Select(x => x.Location))
+                morticianAssemblyFiles
+                    .Except(AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).Select(x => x.Location))
                     .Select(x => new FileInfo(x)).Where(x => !blacklistedAssemblies.Contains(x.Name));
             aggregateCatalog.Catalogs.Add(new TypeCatalog(options.AdditionalTypes));
             foreach (var assembly in toLoad)

@@ -35,6 +35,11 @@ namespace Triage.Mortician.Core
         /// </summary>
         protected internal List<DumpType> TypesInternal = new List<DumpType>();
 
+        public DumpModule(DumpModuleKey dumpModuleKey)
+        {
+            Key = dumpModuleKey ?? throw new ArgumentNullException(nameof(dumpModuleKey));
+        }
+
         /// <summary>
         ///     Gets or sets the application domains.
         /// </summary>
@@ -77,7 +82,9 @@ namespace Triage.Mortician.Core
         ///     Gets or sets the name of this module
         /// </summary>
         /// <value>The name.</value>
-        public string Name { get; protected internal set; }
+        public string Name => Key.Name;
+
+        public ulong AssemblyId => Key.AssemblyId;
         
         /// <summary>
         ///     Gets or sets the PDB guid if available
