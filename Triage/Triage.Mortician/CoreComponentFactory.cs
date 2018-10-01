@@ -436,7 +436,7 @@ namespace Triage.Mortician
                 if (!HandleToAppDomainMapping.ContainsKey(newHandle.Address))
                     HandleToAppDomainMapping.Add(newHandle.Address, handle.AppDomain.Address);
 
-                if (!HandleToDependentTypeMapping.ContainsKey(handle.Address))
+                if (handle.DependentType != null && !HandleToDependentTypeMapping.ContainsKey(handle.Address))
                     HandleToDependentTypeMapping.Add(handle.Address, handle.DependentType.ToKeyType());
             }
         }
