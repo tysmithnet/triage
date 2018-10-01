@@ -78,6 +78,10 @@ namespace Triage.Mortician.Adapters
 
         public override void Setup()
         {
+            Architecture = Converter.Convert(DataTarget.Architecture);
+            ClrVersions = DataTarget.ClrVersions.Select(Converter.Convert).ToList();
+            DataReader = Converter.Convert(DataTarget.DataReader);
+            SymbolLocator = Converter.Convert(DataTarget.SymbolLocator);
         }
 
         /// <summary>

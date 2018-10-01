@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using Triage.Mortician.Core;
-using Triage.Mortician.Repository;
+using Triage.Mortician.Repositories;
 using Xunit;
 
 namespace Triage.Mortician.Test

@@ -14,10 +14,9 @@
 
 using System;
 using System.Collections.Generic;
-using Common.Logging;
 using Triage.Mortician.Core;
 
-namespace Triage.Mortician.Repository
+namespace Triage.Mortician.Repositories
 {
     /// <summary>
     ///     Repository for objects that were extracted from the managed heap
@@ -39,19 +38,13 @@ namespace Triage.Mortician.Repository
         ///     objectRoots
         /// </exception>
         public DumpObjectRepository(Dictionary<ulong, DumpObject> allObjects,
-            Dictionary<ulong, DumpObjectRoot> objectRoots, Dictionary<ulong, DumpObject> finalizerQueue,
+            Dictionary<ulong, DumpObjectRoot> objectRoots,
             Dictionary<ulong, DumpBlockingObject> blockingObjects)
         {
             Objects = allObjects ?? throw new ArgumentNullException(nameof(allObjects));
             ObjectRoots = objectRoots ?? throw new ArgumentNullException(nameof(objectRoots));
-            FinalizerQueueInternal = finalizerQueue;
             BlockingObjectsInternal = blockingObjects;
         }
-
-        /// <summary>
-        ///     The log
-        /// </summary>
-        internal ILog Log = LogManager.GetLogger(typeof(DumpObjectRepository));
 
         /// <summary>
         ///     The object roots that keep objects on the heap alive

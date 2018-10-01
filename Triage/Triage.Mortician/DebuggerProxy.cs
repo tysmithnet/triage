@@ -14,12 +14,10 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using Common.Logging;
 using Microsoft.Diagnostics.Runtime.Interop;
 
-namespace Triage.Mortician.Domain
+namespace Triage.Mortician
 {
     /// <summary>
     ///     https://github.com/Microsoft/clrmd/issues/79
@@ -30,7 +28,7 @@ namespace Triage.Mortician.Domain
     /// <seealso cref="T:Microsoft.Diagnostics.Runtime.Interop.IDebugOutputCallbacks" />
     /// <seealso cref="T:System.IDisposable" />
     /// <seealso cref="T:Triage.Mortician.IDebuggerProxy" />
-    public sealed class DebuggerProxy : IDebugOutputCallbacks, IDisposable
+    public sealed class DebuggerProxy : IDebugOutputCallbacks, IDisposable, IDebuggerProxy
     {
         // todo: autoresetevent to serialize access to client
 
@@ -117,12 +115,6 @@ namespace Triage.Mortician.Domain
 
             return 0;
         }
-
-        /// <summary>
-        ///     The log
-        /// </summary>
-        /// <value>The log.</value>
-        private ILog Log { get; set; } = LogManager.GetLogger(typeof(DebuggerProxy));
 
         #region IDisposable Support
 

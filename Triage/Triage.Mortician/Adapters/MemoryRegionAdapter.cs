@@ -38,8 +38,22 @@ namespace Triage.Mortician.Adapters
         public override void Setup()
         {
             AppDomain = Converter.Convert(MemoryRegion.AppDomain);
-            GcSegmentType = Converter.Convert(MemoryRegion.GCSegmentType);
-            MemoryRegionType = Converter.Convert(MemoryRegion.Type);
+            try
+            {
+                GcSegmentType = Converter.Convert(MemoryRegion.GCSegmentType);
+            }
+            catch (Exception)
+            {
+                // todo: something
+            }
+            try
+            {
+                MemoryRegionType = Converter.Convert(MemoryRegion.Type);
+            }
+            catch (Exception)
+            {
+                // todo: something
+            }
         }
 
         /// <summary>

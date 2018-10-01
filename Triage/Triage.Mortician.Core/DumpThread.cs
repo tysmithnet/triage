@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Core
 {
@@ -92,5 +93,45 @@ namespace Triage.Mortician.Core
         internal IList<DumpStackFrame> ManagedStackFramesInternal { get; set; } = new List<DumpStackFrame>();
 
         public bool IsGcThread { get; internal set; }
+        public uint LockCount { get; set; }
+        public ulong StackLimit { get; set; }
+        public ulong Address { get; set; }
+        public ulong AppDomainAddress { get; set; }
+        public GcMode GcMode { get; set; }
+        public bool IsSta { get; set; }
+        public bool IsAbortRequested { get; set; }
+        public bool IsAborted { get; set; }
+        public bool IsDebuggerHelper { get; set; }
+        public bool IsGc { get; set; }
+        public bool IsDebugSuspended { get; set; }
+        public bool IsCoinitialized { get; set; }
+        public bool IsBackground { get; set; }
+        public bool IsAlive { get; set; }
+        public ulong Teb { get; set; }
+        public bool IsUserSuspended { get; set; }
+        public bool IsFinalizer { get; set; }
+        public bool IsGcSuspendPending { get; set; }
+        public bool IsMta { get; set; }
+        public bool IsSuspendingEe { get; set; }
+        public bool IsShutdownHelper { get; set; }
+        public bool IsThreadpoolCompletionPort { get; set; }
+        public bool IsThreadpoolGate { get; set; }
+        public bool IsThreadpoolTimer { get; set; }
+        public bool IsThreadpoolWait { get; set; }
+        public bool IsThreadpoolWorker { get; set; }
+        public bool IsCreatedButNotStarted { get; set; }
+        public IList<DumpBlockingObject> BlockingObjects { get; set; } = new List<DumpBlockingObject>();
+        public IList<DumpObjectRoot> Roots { get; set; }
+        public DumpObject CurrentException { get; set; }
+
+        public void AddBlockingObject(DumpBlockingObject dumpBlockingObject)
+        {
+            BlockingObjects.Add(dumpBlockingObject);
+        }
+
+        public void AddRoot(DumpObjectRoot dumpObjectRoot)
+        {
+            Roots.Add(dumpObjectRoot);
+        }
     }
 }

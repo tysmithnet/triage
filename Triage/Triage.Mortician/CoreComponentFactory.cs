@@ -1,685 +1,755 @@
-﻿// ***********************************************************************
-// Assembly         : Triage.Mortician
-// Author           : @tysmithnet
-// Created          : 12-12-2017
-//
-// Last Modified By : @tysmithnet
-// Last Modified On : 09-26-2018
-// ***********************************************************************
-// <copyright file="CoreComponentFactory.cs" company="">
-//     Copyright ©  2017
-// </copyright>
-// <summary></summary>
-// ***********************************************************************
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using Common.Logging;
-using Microsoft.Diagnostics.Runtime;
-using Newtonsoft.Json;
 using Triage.Mortician.Core;
-using Triage.Mortician.Domain;
-using Triage.Mortician.Reports;
-using Triage.Mortician.Reports.DumpDomain;
-using Triage.Mortician.Reports.EeStack;
-using Triage.Mortician.Reports.Runaway;
-using Triage.Mortician.Repository;
+using Triage.Mortician.Core.ClrMdAbstractions;
+using Triage.Mortician.Repositories;
 
 namespace Triage.Mortician
 {
-    /// <summary>
-    ///     Factory responsible for populating the repositories and registering them with the container
-    /// </summary>
     internal class CoreComponentFactory
     {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="CoreComponentFactory" /> class.
-        /// </summary>
-        /// <param name="compositionContainer">The composition container.</param>
-        /// <param name="dumpFile">Dump file to analzye</param>
-        /// <exception cref="System.ArgumentNullException">
-        ///     compositionContainer
-        ///     or
-        ///     dumpFile
-        /// </exception>
-        /// <exception cref="System.ApplicationException">
-        /// </exception>
-        /// <exception cref="ArgumentNullException">
-        ///     compositionContainer
-        ///     or
-        ///     dumpFile
-        /// </exception>
-        /// <exception cref="ApplicationException"></exception>
+        private const string ERROR_TYPE = "ERROR";
+
+        /// <inheritdoc />
         public CoreComponentFactory(CompositionContainer compositionContainer, FileInfo dumpFile)
         {
             CompositionContainer =
                 compositionContainer ?? throw new ArgumentNullException(nameof(compositionContainer));
-            Converter = compositionContainer.GetExportedValue<IConverter>();
             DumpFile = dumpFile ?? throw new ArgumentNullException(nameof(dumpFile));
+
             try
             {
-                DataTarget = DataTarget.LoadCrashDump(dumpFile.FullName);
+                DataTarget = Converter.Convert(Microsoft.Diagnostics.Runtime.DataTarget.LoadCrashDump(dumpFile.FullName));
             }
-            catch (IOException e)
+            catch (FileNotFoundException e)
             {
-                var message =
-                    $"Unable to open crash dump: {e.Message}, Does the dump file exist?";
-                Log.Fatal(message);
-                throw new ApplicationException(message, e);
+                throw new ApplicationException("Memory dump was not found. Is the path correct? Is it read only?", e);
             }
-            catch (Exception e)
-            {
-                // todo: support x86
-                var message =
-                    $"Unable to open crash dump: {e.Message}, Do you have x64 folder of the Windows Debugging Kit in your path?";
-                Log.Fatal(message);
-                throw new ApplicationException(message, e);
-            }
-
-            DebuggerProxy = new DebuggerProxy(DataTarget.DebuggerInterface);
-            LoadPlugins();
-            ProcessReports();
+            Runtime = DataTarget.ClrVersions.Single().CreateRuntime();
+            DumpObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>();
         }
 
-        /// <summary>
-        ///     The log
-        /// </summary>
-        public ILog Log = LogManager.GetLogger(typeof(CoreComponentFactory));
+        public IEnumerable<IDumpObjectExtractor> DumpObjectExtractors { get; set; }
 
-        /// <summary>
-        ///     Registers the repositories.
-        /// </summary>
-        /// <param name="options">The options.</param>
-        /// <param name="settings">The settings.</param>
-        // todo: this is too big
-        public void RegisterRepositories(DefaultOptions options, IEnumerable<ISettings> settings = null)
+        public void ConnectHandles()
         {
-            var heapObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>().ToList();
-
-            ClrRuntime runtime;
-            
-            try
+            foreach (var kvp in HandleToAppDomainMapping)
             {
-                Log.Trace($"Attempting to create the CLRMd runtime");
-                // todo: handle multiple clrs? does anyone still do that?
-                runtime = DataTarget.ClrVersions.Single().CreateRuntime();
-            }
-            catch (Exception)
-            {
-                Log.Error($"Unable to create CLRMd runtime");
-                throw;
+                var handle = Handles[kvp.Key];
+                var appDomain = AppDomains[kvp.Value];
+                handle.AppDomain = appDomain;
+                appDomain.AddHandle(handle);
             }
 
-            // todo: do we even know if we handle mini dumps? write an integration test for it
-            if (DataTarget.IsMinidump)
-                Log.Warn(
-                    "The provided dump is a mini dump and results will not contain any heap information (objects, etc)");
+            foreach (var kvp in HandleToDependentTypeMapping)
+            {
+                var handle = Handles[kvp.Key];
+                var type = Types[kvp.Value];
+                handle.DependentType = type;
+            }
 
-            if (!runtime.Heap.CanWalkHeap)
-                Log.Warn("CLRMd reports that the heap is unwalkable, results might vary");
+            foreach (var kvp in HandleToTypeMapping)
+            {
+                var handle = Handles[kvp.Key];
+                var type = Types[kvp.Value];
+                handle.ObjectType = type;
+            }
+        }
 
-            var dumpInformationRepository = new DumpInformationRepository(DataTarget, runtime, DumpFile);
-            var eventHub = new EventHub();
-            /*
-             * IMPORTANT
-             * These are left as thread unsafe collections because they must execute on the same thread
-             * READ ONLY accessed from multiple threads
-             */
-            var objectStore = new Dictionary<ulong, DumpObject>();
-            var objectHierarchy = new Dictionary<ulong, List<ulong>>();
-            var threadStore = new Dictionary<uint, DumpThread>();
-            var appDomainStore = new Dictionary<ulong, DumpAppDomain>();
-            var moduleStore = new Dictionary<(ulong, string), DumpModule>();
-            var handleStore = new Dictionary<ulong, DumpHandle>();
-            var typeStore =
-                new Dictionary<DumpTypeKey, DumpType>(); // same type can be loaded into multiple app domains (think IIS)
-            var objectRootsStore = new Dictionary<ulong, DumpObjectRoot>();
-            var finalizerStore = new Dictionary<ulong, DumpObject>();
-            var blockingObjectStore = new Dictionary<ulong, DumpBlockingObject>();
+        public void ConnectThreads()
+        {
+            foreach (var kvp in ThreadToExceptionMapping)
+            {
+                var thread = Threads[kvp.Key];
+                var exception = Objects[kvp.Value];
+                thread.CurrentException = exception;
+            }
 
-            SetupAppDomains(appDomainStore);
-            SetupModulesAndTypes(runtime, appDomainStore, typeStore, moduleStore);
-            SetupObjects(heapObjectExtractors, runtime, objectStore, objectHierarchy, typeStore, appDomainStore,
-                objectRootsStore, finalizerStore, blockingObjectStore);
-            SetupHandles(runtime, appDomainStore, typeStore, handleStore);
-            EstablishObjectRelationships(objectHierarchy, objectStore);
-            GC.Collect();
-            SetupThreads(runtime, threadStore, objectRootsStore);
+            foreach (var kvp in ThreadToRootMapping)
+            {
+                var thread = Threads[kvp.Key];
+                var roots = Roots.Where(r => kvp.Value.Contains(r.Key)).Select(x => x.Value).ToList();
+                foreach (var dumpObjectRoot in roots)
+                {
+                    thread.AddRoot(dumpObjectRoot);
+                    dumpObjectRoot.AddThread(thread);
+                }
+            }
+        }
 
-            var dumpRepo = new DumpObjectRepository(objectStore, objectRootsStore, finalizerStore, blockingObjectStore);
-            var threadRepo = new DumpThreadRepository(threadStore);
-            var appDomainRepo = new DumpAppDomainRepository(appDomainStore);
-            var moduleRepo = new DumpModuleRepository(moduleStore);
-            var typeRepo = new DumpTypeRepository(typeStore);
-            var handleRepo = new DumpHandleRepository(handleStore);
-            CompositionContainer.ComposeExportedValue<IEventHub>(eventHub);
-            CompositionContainer.ComposeExportedValue<IDumpInformationRepository>(dumpInformationRepository);
-            CompositionContainer.ComposeExportedValue<IDumpObjectRepository>(dumpRepo);
+        public void RegisterRepositories(DefaultOptions options)
+        {
+            var objRepo = new DumpObjectRepository(Objects, Roots, BlockingObjects);
+            var typeRepo = new DumpTypeRepository(Types);
+            var threadRepo = new DumpThreadRepository(Threads);
+            var appDomainRepo = new DumpAppDomainRepository(AppDomains);
+            var moduleRepo = new DumpModuleRepository(Modules);
+            var handleRepo = new DumpHandleRepository(Handles);
+            var infoRepo = new DumpInformationRepository(DataTarget, Runtime, DumpFile);
+
+            CompositionContainer.ComposeExportedValue<IDumpObjectRepository>(objRepo);
+            CompositionContainer.ComposeExportedValue<IDumpTypeRepository>(typeRepo);
             CompositionContainer.ComposeExportedValue<IDumpThreadRepository>(threadRepo);
             CompositionContainer.ComposeExportedValue<IDumpAppDomainRepository>(appDomainRepo);
             CompositionContainer.ComposeExportedValue<IDumpModuleRepository>(moduleRepo);
-            CompositionContainer.ComposeExportedValue<IDumpTypeRepository>(typeRepo);
             CompositionContainer.ComposeExportedValue<IDumpHandleRepository>(handleRepo);
-
-            var settingsToAdd = settings ?? GetSettings(options.SettingsFile);
-            foreach (var setting in settingsToAdd) CompositionContainer.ComposeExportedValue(setting);
+            CompositionContainer.ComposeExportedValue<IDumpInformationRepository>(infoRepo);
         }
 
-        private void SetupHandles(ClrRuntime runtime, Dictionary<ulong, DumpAppDomain> appDomainStore, Dictionary<DumpTypeKey, DumpType> typeStore, Dictionary<ulong, DumpHandle> handleStore)
+        public void Setup()
         {
-            foreach (var handle in runtime.EnumerateHandles())
+            CreateObjects();
+            CreateTypes();
+            CreateAppDomains();
+            CreateClrModules();
+            CreateBlockingObjects();
+            CreateRoots();
+            CreateThreads();
+            CreateHandles();
+            CreateHeapSegments();
+            CreateDumpModuleInfo();
+            FinalizableObjectAddresses = Runtime.Heap.EnumerateFinalizableObjectAddresses().ToList();
+            ManagedWorkItems = Runtime.ThreadPool.EnumerateManagedWorkItems().Select(x => x.Object).ToList();
+            NativeWorkitems = Runtime.ThreadPool.EnumerateNativeWorkItems().ToList();
+            CreateMemoryRegions();
+            ObjectAddressesInFinalizerQueue = Runtime.EnumerateFinalizerQueueObjectAddresses().ToList();
+            GcThreads = Runtime.EnumerateGCThreads().Select(Convert.ToUInt64).ToList();
+        }
+
+        internal void ConnectAppDomainsAndModules()
+        {
+            foreach (var kvp in AppDomainToModuleMapping)
             {
-                var dependentTypeKey = new DumpTypeKey(handle?.DependentType?.MethodTable ?? 0, handle?.DependentType?.Name);
-                var objectTypeKey = new DumpTypeKey(handle?.Type?.MethodTable ?? 0, handle?.Type?.Name);
-                var dumpHandle = new DumpHandle()
+                var domain = AppDomains[kvp.Key];
+                var modules = kvp.Value.Select(x => Modules[x]).ToList();
+                modules.ForEach(domain.AddModule);
+                modules.ForEach(x => x.AddAppDomain(domain));
+            }
+        }
+
+        internal void ConnectBlockingObjects()
+        {
+            foreach (var kvp in BlockingObjectToThreadMapping)
+            {
+                var o = BlockingObjects[kvp.Key];
+                var threads = Threads.Where(x => kvp.Value.Contains(x.Key)).Select(x => x.Value).ToList();
+                o.Owners = threads;
+                foreach (var dumpThread in threads) dumpThread.AddBlockingObject(o);
+            }
+        }
+
+        internal void ConnectObjects()
+        {
+            foreach (var kvp in ObjectGraph)
+            {
+                var address = kvp.Key;
+                var references = kvp.Value;
+                var current = Objects[address];
+
+                foreach (var refAddr in references)
                 {
-                    Address = handle.Address,
-                    AppDomain = appDomainStore.Values.FirstOrDefault(a => a.Address == handle?.AppDomain?.Address),
-                    DependentTarget = handle.DependentTarget,
-                    DependentType = typeStore.ContainsKey(dependentTypeKey) ? typeStore[dependentTypeKey] : null,
-                    HandleType = Converter.Convert(handle.HandleType),
-                    IsPinned = handle.IsPinned,
-                    IsStrong = handle.IsStrong,
-                    ObjectAddress = handle.Object,
-                    ObjectType = typeStore.ContainsKey(objectTypeKey) ? typeStore[objectTypeKey] : null,
-                    RefCount = handle.RefCount
+                    var reference = Objects[refAddr];
+                    current.AddReference(reference);
+                    reference.AddReferencer(current);
+                }
+            }
+        }
+
+        internal void ConnectObjectsToTypes()
+        {
+            foreach (var kvp in ObjectToTypeMapping)
+            {
+                var o = Objects[kvp.Key];
+                var type = Types[kvp.Value];
+                o.Type = type;
+                type.ObjectsInternal.Add(o.Address, o);
+            }
+        }
+
+        internal void ConnectRoots()
+        {
+            foreach (var kvp in RootToTypeMapping)
+            {
+                var root = Roots[kvp.Key];
+                var type = Types[kvp.Value];
+                root.Type = type;
+            }
+        }
+
+        internal void ConnectTypes()
+        {
+            foreach (var kvp in TypeToBaseTypeMapping)
+            {
+                var type = Types[kvp.Key];
+                var baseType = Types[kvp.Value];
+                type.BaseType = baseType;
+                baseType.InheritingTypes.Add(type);
+            }
+
+            foreach (var kvp in TypeToComponentTypeMapping)
+            {
+                var type = Types[kvp.Key];
+                var componentType = Types[kvp.Value];
+                type.ComponentType = componentType;
+            }
+
+            foreach (var kvp in TypeToModuleMapping)
+            {
+                var type = Types[kvp.Key];
+                var module =
+                    Modules.First(x =>
+                            x.Value.Key.AssemblyId == kvp.Value.AssemblyId && x.Value.Name == kvp.Value.TypeName)
+                        .Value;
+                type.Module = module;
+                module.AddType(type);
+            }
+
+            foreach (var kvp in InstanceFieldToTypeMapping)
+            {
+                var field = kvp.Key;
+                var type = Types[kvp.Value];
+                field.Type = type;
+            }
+
+            foreach (var kvp in StaticFieldToTypeMapping)
+            {
+                var field = kvp.Key;
+                var type = Types[kvp.Value];
+                field.Type = type;
+            }
+        }
+
+        internal void CreateAppDomains()
+        {
+            AppDomains = new Dictionary<ulong, DumpAppDomain>();
+            AppDomainToModuleMapping = new Dictionary<ulong, IList<DumpModuleKey>>();
+            var runtimeAppDomains = Runtime.AppDomains.Concat(new[] {Runtime.SharedDomain, Runtime.SystemDomain});
+            foreach (var domain in runtimeAppDomains)
+            {
+                var dumpAppDomain = new DumpAppDomain
+                {
+                    Address = domain.Address,
+                    Name = domain.Name,
+                    ApplicationBase = domain.ApplicationBase,
+                    ConfigFile = domain.ConfigurationFile
                 };
-                handleStore[dumpHandle.Address] = dumpHandle;
+                AppDomains.Add(dumpAppDomain.Address, dumpAppDomain);
+                AppDomainToModuleMapping.Add(domain.Address, domain.Modules.Select(x => x.ToKeyType()).ToList());
             }
         }
 
-        /// <summary>
-        ///     Establishes the object relationships.
-        /// </summary>
-        /// <param name="objectHierarchy">The object hierarchy.</param>
-        /// <param name="objectStore">The object store.</param>
-        internal void EstablishObjectRelationships(Dictionary<ulong, List<ulong>> objectHierarchy,
-            Dictionary<ulong, DumpObject> objectStore)
+        internal void CreateBlockingObjects()
         {
-            Log.Trace("Setting relationship references on the extracted objects");
-            Parallel.ForEach(objectHierarchy, relationship =>
+            BlockingObjects = new Dictionary<ulong, DumpBlockingObject>();
+            BlockingObjectToThreadMapping = new Dictionary<ulong, IList<uint>>();
+            foreach (var blockingObject in Runtime.Heap.EnumerateBlockingObjects())
             {
-                if (!objectStore.ContainsKey(relationship.Key))
-                {
-                    Log.Error(
-                        $"Object relationship says that there is a parent-child relationship between {relationship.Key} and {relationship.Value}, but cannot find the parent");
-                    return;
-                }
-
-                var parent = objectStore[relationship.Key];
-
-                foreach (var childAddress in relationship.Value)
-                {
-                    if (!objectStore.ContainsKey(childAddress))
-                    {
-                        Log.Error(
-                            $"Object relationship says that there is a parent-child relationship between {relationship.Key} and {childAddress}, but cannot find the child");
-                        return;
-                    }
-
-                    var child = objectStore[childAddress];
-                    parent.AddReference(child);
-                    child.AddReferencer(parent);
-                }
-            });
-        }
-
-        /// <summary>
-        ///     Collects the ee stack information.
-        /// </summary>
-        /// <param name="threadStore">The thread store.</param>
-        private void ApplyEeStackInformation(Dictionary<uint, DumpThread> threadStore)
-        {
-            var report = CompositionContainer.GetExportedValue<EeStackReport>();
-            foreach (var eeStackThread in report.Threads)
-            {
-                var existing = threadStore.Values.FirstOrDefault(t => t.DebuggerIndex == eeStackThread.Index);
-                if (existing == null)
-                {
-                    Log.Error(
-                        $"!eestack indicates that there is a thread with index {eeStackThread.Index}, but it was not found in the thread store. This should not happen. Investigate dump and check why this happened -it is probably a bug.");
-                    continue;
-                }
-
-                existing.CurrentFrame = eeStackThread.CurrentLocation;
-            }
-        }
-
-        /// <summary>
-        ///     Collects the runaway information.
-        /// </summary>
-        /// <param name="threadStore">The thread store.</param>
-        private void ApplyRunawayInformation(Dictionary<uint, DumpThread> threadStore)
-        {
-            Log.Trace("Calling !runaway");
-            var runawayReport = CompositionContainer.GetExportedValue<RunawayReport>();
-            foreach (var runawayReportRunawayLine in runawayReport.RunawayLines)
-            {
-                if (!threadStore.TryGetValue(runawayReportRunawayLine.ThreadId, out var dumpThread))
-                    continue; // todo: log?
-                dumpThread.UserModeTime = runawayReportRunawayLine.UserModeTime;
-                dumpThread.KernelModeTime = runawayReportRunawayLine.KernelModeTime;
-            }
-        }
-
-        /// <summary>
-        ///     Extracts the heap objects.
-        /// </summary>
-        /// <param name="heapObjectExtractors">The heap object extractors.</param>
-        /// <param name="runtime">The rt.</param>
-        /// <param name="objectStore">The object store.</param>
-        /// <param name="objectHierarchy">The object hierarchy.</param>
-        /// <param name="typeStore">The type store.</param>
-        private void ExtractHeapObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime runtime,
-            Dictionary<ulong, DumpObject> objectStore,
-            Dictionary<ulong, List<ulong>> objectHierarchy, Dictionary<DumpTypeKey, DumpType> typeStore, Dictionary<ulong, DumpObject> finalizerQueue, Dictionary<ulong, DumpBlockingObject> blockingObjects)
-        {
-            Log.Trace("Using registered object extractors to process objects on the heap");
-            var defaultExtractor = new DefaultObjectExtractor();
-            foreach (var clrObject in runtime.Heap.EnumerateObjects()
-                .Where(o => !o.IsNull && !o.Type.IsFree))
-            {
-                var isExtracted = false;
-                var convertedClrObject = Converter.Convert(clrObject);
-                var convertedRuntime = Converter.Convert(runtime);
-                foreach (var heapObjectExtractor in heapObjectExtractors)
-                {
-                    if (!heapObjectExtractor.CanExtract(convertedClrObject, convertedRuntime))
-                        continue;
-                    var extracted = heapObjectExtractor.Extract(convertedClrObject, convertedRuntime);
-                    var dumpType = typeStore[new DumpTypeKey(clrObject.Type.MethodTable, clrObject.Type.Name)];
-                    extracted.DumpType = dumpType;
-                    dumpType.ObjectsInternal.Add(extracted.Address, extracted);
-                    objectStore.Add(clrObject.Address, extracted);
-                    isExtracted = true;
-                    break;
-                }
-
-                if (!isExtracted)
-                {
-                    var newDumpObject = defaultExtractor.Extract(convertedClrObject, convertedRuntime);
-                    objectStore.Add(newDumpObject.Address, newDumpObject);
-                }
-
-                objectHierarchy.Add(clrObject.Address, new List<ulong>());
-
-                foreach (var clrObjectRef in clrObject.EnumerateObjectReferences(true))
-                    objectHierarchy[clrObject.Address].Add(clrObjectRef.Address);
-            }
-
-            foreach (var address in runtime.EnumerateFinalizerQueueObjectAddresses())
-            {
-                if (objectStore.TryGetValue(address, out var o))
-                {
-                    o.IsInFinalizerQueue = true;
-                    finalizerQueue.Add(address, o);
-                }
-            }
-
-            foreach (var blockingObject in runtime.Heap.EnumerateBlockingObjects())
-            {
-                blockingObjects.Add(blockingObject.Object, new DumpBlockingObject()
+                var dumpBlockingObject = new DumpBlockingObject
                 {
                     Address = blockingObject.Object,
-                    BlockingReason = Converter.Convert(blockingObject.Reason),
-                    HasSingleOwner = blockingObject.HasSingleOwner,
+                    BlockingReason = blockingObject.Reason,
                     IsLocked = blockingObject.Taken,
-                    RecursionCount = blockingObject.RecursionCount,
-                    // todo: owners
-                });
-            }
-        }
-
-        /// <summary>
-        ///     Extracts the stack objects.
-        /// </summary>
-        /// <param name="rt">The rt.</param>
-        /// <param name="objectStore">The object store.</param>
-        /// <param name="appDomainStore">The application domain store.</param>
-        /// <param name="objectRootStore">The object root store.</param>
-        private void ExtractStackObjects(ClrRuntime rt, Dictionary<ulong, DumpObject> objectStore,
-            Dictionary<ulong, DumpAppDomain> appDomainStore,
-            Dictionary<ulong, DumpObjectRoot> objectRootStore)
-        {
-            Log.Trace("Extracting object roots from all threads");
-            foreach (var clrRoot in rt.Threads.SelectMany(t => t.EnumerateStackObjects()))
-            {
-                var dumpRootObject = new DumpObjectRoot
-                {
-                    Address = clrRoot.Address,
-                    Name = clrRoot.Name,
-                    IsAsyncIoPinning = clrRoot.Kind == GCRootKind.AsyncPinning,
-                    IsFinalizerQueue = clrRoot.Kind == GCRootKind.Finalizer,
-                    IsInteriorPointer = clrRoot.IsInterior,
-                    IsLocalVar = clrRoot.Kind == GCRootKind.LocalVar,
-                    IsPossibleFalsePositive = clrRoot.IsPossibleFalsePositive,
-                    IsPinned = clrRoot.IsPinned,
-                    IsStaticVariable = clrRoot.Kind == GCRootKind.StaticVar,
-                    IsStrongHandle = clrRoot.Kind == GCRootKind.Strong,
-                    IsThreadStaticVariable = clrRoot.Kind == GCRootKind.ThreadStaticVar,
-                    IsStrongPinningHandle = clrRoot.Kind == GCRootKind.Pinning,
-                    IsWeakHandle = clrRoot.Kind == GCRootKind.Weak
+                    RecursionCount = blockingObject.RecursionCount
                 };
-                var appDomainAddress = clrRoot.AppDomain?.Address;
-                if (appDomainAddress.HasValue && appDomainStore.ContainsKey(appDomainAddress.Value))
-                    dumpRootObject.AppDomain = appDomainStore[appDomainAddress.Value];
 
-                if (objectStore.ContainsKey(clrRoot.Object))
-                    dumpRootObject.RootedObject = objectStore[clrRoot.Object];
-
-                objectRootStore.Add(dumpRootObject.Address, dumpRootObject);
-            }
-        }
-
-        /// <summary>
-        ///     Gets the settings.
-        /// </summary>
-        /// <param name="settingsPath">The settings path.</param>
-        /// <returns>IEnumerable&lt;ISettings&gt;.</returns>
-        private IEnumerable<ISettings> GetSettings(string settingsPath = null)
-        {
-            string settingsText;
-            if (settingsPath != null)
-                settingsText = File.ReadAllText(settingsPath);
-            else
-                settingsText = File.ReadAllText("settings.json");
-            var converter = new SettingsJsonConverter();
-            return JsonConvert.DeserializeObject<IEnumerable<ISettings>>(settingsText, converter);
-        }
-
-        /// <summary>
-        ///     Loads the plugins.
-        /// </summary>
-        private void LoadPlugins()
-        {
-            string cwd = Environment.CurrentDirectory;
-            string extPath = DebuggerProxy.Execute(".extpath");
-            DebuggerProxy.Execute(@".sympath srv*https://msdl.microsoft.com/download/symbols");
-            string suffix = IntPtr.Size == 4 ? "32" : "64";
-            var loadSosex = DebuggerProxy.Execute($".load {cwd}\\sosex{suffix}");
-            var loadMex = DebuggerProxy.Execute($".load {cwd}\\mex{suffix}");
-            DebuggerProxy
-                .Execute("!mu"); // forces sosex to load the appropriate SOS.dll // todo: should be possible from API
-            DebuggerProxy.Execute("!eestack"); // todo: figure out a better way to force symbol loading
-        }
-
-        /// <summary>
-        /// Processes the reports.
-        /// </summary>
-        private void ProcessReports()
-        {
-            var reportFactories = CompositionContainer.GetExportedValues<IReportFactory>().ToArray();
-            var failedSetup = new List<IReportFactory>();
-            // setup must happen serially on the main thread because it uses COM
-            foreach (var reportFactory in reportFactories)
+                BlockingObjects.Add(dumpBlockingObject.Address, dumpBlockingObject);
                 try
                 {
-                    reportFactory.Setup(DebuggerProxy);
+                    BlockingObjectToThreadMapping.Add(blockingObject.Object,
+                        blockingObject.HasSingleOwner
+                            ? new List<uint> {blockingObject.Owner.OSThreadId}
+                            : blockingObject.Owners.Select(x => x.OSThreadId).ToList());
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    failedSetup.Add(reportFactory);
+                    // todo: something
                 }
-
-            var setupFactories = reportFactories.Except(failedSetup).ToArray();
-            var tasks = setupFactories.Select(f => Task.Run(() => f.Process())).ToArray();
-            try
-            {
-                Task.WaitAll(tasks);
-            }
-            catch (AggregateException e)
-            {
-                e.Flatten().Handle(exception =>
-                {
-                    Log.Error($"Error occurred during report processing");
-                    return true;
-                });
-            }
-
-            foreach (var (task, factory) in tasks.Zip(setupFactories, (task, factory) => (task, factory)))
-            {
-                if (task.IsFaulted)
-                {
-                    Log.Error(
-                        $"There was a problem processing the report for {factory.DisplayName}, it will not be available for this execution. Make sure that your report factory can correctly handle all variations of output.",
-                        task.Exception);
-                    continue;
-                }
-
-                CompositionContainer.ComposeExportedValue(task.Result);
             }
         }
 
-        /// <summary>
-        ///     Setups the application domains.
-        /// </summary>
-        /// <param name="appDomainStore">The application domain store.</param>
-        private void SetupAppDomains(Dictionary<ulong, DumpAppDomain> appDomainStore)
+        internal void CreateClrModules()
         {
-            var results = CompositionContainer.GetExportedValues<IReport>();
-            var report = results.OfType<DumpDomainReport>().First();
-            foreach (var current in report.AppDomainsInternal)
-                if (!appDomainStore.ContainsKey(current.Address))
-                    appDomainStore.Add(current.Address, new DumpAppDomain
-                    {
-                        Address = current.Address,
-                        Name = current.Name
-                    });
-        }
+            var modules = new Dictionary<DumpModuleKey, DumpModule>();
 
-        /// <summary>
-        ///     Setups the modules and types.
-        /// </summary>
-        /// <param name="rt">The rt.</param>
-        /// <param name="appDomainStore">The application domain store.</param>
-        /// <param name="typeStore">The type store.</param>
-        /// <param name="moduleStore">The module store.</param>
-        private void SetupModulesAndTypes(ClrRuntime rt, Dictionary<ulong, DumpAppDomain> appDomainStore,
-            Dictionary<DumpTypeKey, DumpType> typeStore,
-            Dictionary<(ulong, string), DumpModule> moduleStore)
-        {
-            Log.Trace("Extracting Module, AppDomain, and Type information");
-            var baseClassMapping = new Dictionary<DumpTypeKey, DumpTypeKey>();
-            ExtractModuleInformation(rt, appDomainStore, typeStore, moduleStore, baseClassMapping);
-            foreach (var pair in baseClassMapping)
-                typeStore[pair.Key].BaseDumpType = typeStore[pair.Value];
-        }
-
-        private static void ExtractModuleInformation(ClrRuntime rt, Dictionary<ulong, DumpAppDomain> appDomainStore, Dictionary<DumpTypeKey, DumpType> typeStore,
-            Dictionary<(ulong, string), DumpModule> moduleStore, Dictionary<DumpTypeKey, DumpTypeKey> baseClassMapping)
-        {
-            foreach (var clrModule in rt.Modules)
+            foreach (var module in Runtime.Modules)
             {
                 var dumpModule = new DumpModule
                 {
-                    Name = clrModule.Name,
-                    ImageBase = clrModule.ImageBase == 0 ? null : (ulong?) clrModule.ImageBase,
-                    AssemblyId = clrModule.AssemblyId,
-                    AssemblyName = clrModule.AssemblyName,
-                    DebuggingMode = clrModule.DebuggingMode,
-                    FileName = clrModule.FileName,
-                    IsDynamic = clrModule.IsDynamic
+                    Key = module.ToKeyType(),
+                    Size = module.Size,
+                    IsDynamic = module.IsDynamic,
+                    IsFile = module.IsFile,
+                    FileName = module.FileName,
+                    ImageBase = module.ImageBase,
+                    DebuggingMode = module.DebuggingMode,
+                    PdbInfo = module.PdbInfo
+                };
+                modules.Add(dumpModule.Key, dumpModule);
+            }
+
+            Modules = modules;
+        }
+
+        internal void CreateDumpModuleInfo()
+        {
+            ModuleInfos = new Dictionary<string, DumpModuleInfo>();
+
+            foreach (var info in Runtime.DataTarget.EnumerateModules())
+            {
+                var moduleInfo = new DumpModuleInfo
+                {
+                    Pdb = info.Pdb,
+                    Version = info.Version,
+                    IsManaged = info.IsManaged,
+                    FileName = info.FileName,
+                    ImageBase = info.ImageBase,
+                    FileSize = info.FileSize,
+                    PeFile = info.GetPEFile(),
+                    IsRuntime = info.IsRuntime,
+                    TimeStamp = info.TimeStamp
+                };
+                ModuleInfos.Add(info.FileName, moduleInfo);
+            }
+        }
+
+        internal void CreateHandles()
+        {
+            Handles = new Dictionary<ulong, DumpHandle>();
+            HandleToTypeMapping = new Dictionary<ulong, DumpTypeKey>();
+            HandleToDependentTypeMapping = new Dictionary<ulong, DumpTypeKey>();
+            HandleToAppDomainMapping = new Dictionary<ulong, ulong>();
+            foreach (var handle in Runtime.EnumerateHandles())
+            {
+                var newHandle = new DumpHandle
+                {
+                    Address = handle.Address,
+                    HandleType = handle.HandleType,
+                    DependentTarget = handle.DependentTarget,
+                    IsPinned = handle.IsPinned,
+                    IsStrong = handle.IsStrong,
+                    ObjectAddress = handle.Object,
+                    RefCount = handle.RefCount
                 };
 
-                UpdateAppDomains(appDomainStore, clrModule, dumpModule);
-                AddTypesToTypeStore(typeStore, clrModule, baseClassMapping, dumpModule);
-                moduleStore.Add((dumpModule.AssemblyId, dumpModule.Name),
-                    dumpModule);
+                try
+                {
+                    Handles.Add(newHandle.Address, newHandle);
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
+                    HandleToTypeMapping.Add(newHandle.Address, handle.Type.ToKeyType());
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
+                    HandleToAppDomainMapping.Add(newHandle.Address, handle.AppDomain.Address);
+                }
+                catch (Exception)
+                {
+                }
+
+                try
+                {
+                    HandleToDependentTypeMapping.Add(handle.Address, handle.DependentType.ToKeyType());
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 
-        private static void AddTypesToTypeStore(Dictionary<DumpTypeKey, DumpType> typeStore, ClrModule clrModule, Dictionary<DumpTypeKey, DumpTypeKey> baseClassMapping,
-            DumpModule dumpModule)
+        internal void CreateHeapSegments()
         {
-            foreach (var clrType in clrModule.EnumerateTypes())
-            {
-                if (clrType.MethodTable == 0 || clrType.Name == null)
-                    continue;
-                var key = new DumpTypeKey(clrType.MethodTable, clrType.Name);
-                if (typeStore.ContainsKey(key)) continue;
-                baseClassMapping.Add(key, new DumpTypeKey(clrType.MethodTable, clrType.Name));
+            var segments = new Dictionary<ulong, DumpHeapSegment>();
 
-                var newDumpType = new DumpType
+            foreach (var heapSegment in Runtime.Heap.Segments)
+            {
+                var segment = new DumpHeapSegment
                 {
-                    DumpTypeKey = key,
-                    MethodTable = clrType.MethodTable,
-                    Name = clrType.Name,
-                    Module = dumpModule,
-                    BaseSize = clrType.BaseSize,
-                    IsInternal = clrType.IsInternal,
-                    IsString = clrType.IsString,
-                    IsInterface = clrType.IsInterface,
-                    ContainsPointers = clrType.ContainsPointers,
-                    IsAbstract = clrType.IsAbstract,
-                    IsArray = clrType.IsArray,
-                    IsEnum = clrType.IsEnum,
-                    IsException = clrType.IsException,
-                    IsFinalizable = clrType.IsFinalizable,
-                    IsPointer = clrType.IsPointer,
-                    IsPrimitive = clrType.IsPrimitive,
-                    IsPrivate = clrType.IsPrivate,
-                    IsProtected = clrType.IsProtected,
-                    IsRuntimeType = clrType.IsRuntimeType,
-                    IsSealed = clrType.IsSealed
+                    ReservedEnd = heapSegment.ReservedEnd,
+                    Start = heapSegment.Start,
+                    CommittedEnd = heapSegment.CommittedEnd,
+                    End = heapSegment.End,
+                    FirstObject = heapSegment.FirstObject,
+                    Gen0Length = heapSegment.Gen0Length,
+                    Gen0Start = heapSegment.Gen0Start,
+                    Gen1Length = heapSegment.Gen1Length,
+                    Gen1Start = heapSegment.Gen1Start,
+                    Gen2Length = heapSegment.Gen2Length,
+                    Gen2Start = heapSegment.Gen2Start,
+                    Heap = heapSegment.Heap,
+                    IsEphemeral = heapSegment.IsEphemeral,
+                    IsLarge = heapSegment.IsLarge,
+                    Length = heapSegment.Length,
+                    ProcessorAffinity = heapSegment.ProcessorAffinity
                 };
-                dumpModule.TypesInternal.Add(newDumpType);
-                typeStore.Add(new DumpTypeKey(clrType.MethodTable, clrType.Name), newDumpType);
+
+                segments.Add(heapSegment.Start, segment);
             }
+
+            Segments = segments;
         }
 
-        private static void UpdateAppDomains(Dictionary<ulong, DumpAppDomain> appDomainStore, ClrModule clrModule, DumpModule dumpModule)
+        internal void CreateMemoryRegions()
         {
-            foreach (var clrAppDomain in clrModule.AppDomains)
+            var regions = new Dictionary<ulong, DumpMemoryRegion>();
+            foreach (var region in Runtime.EnumerateMemoryRegions())
             {
-                var dumpAppDomain = appDomainStore[clrAppDomain.Address];
-                dumpAppDomain.ApplicationBase = clrAppDomain.ApplicationBase;
-                dumpAppDomain.ConfigFile = clrAppDomain.ConfigurationFile;
-                dumpModule.AppDomainsInternal.Add(appDomainStore[clrAppDomain.Address]);
-                dumpAppDomain.LoadedModulesInternal.Add(dumpModule);
-            }
-        }
-
-        /// <summary>
-        ///     Setups the objects.
-        /// </summary>
-        /// <param name="heapObjectExtractors">The heap object extractors.</param>
-        /// <param name="runtime">The rt.</param>
-        /// <param name="objectStore">The object store.</param>
-        /// <param name="objectHierarchy">The object hierarchy.</param>
-        /// <param name="typeStore">The type store.</param>
-        /// <param name="appDomainStore">The application domain store.</param>
-        /// <param name="objectRootStore">The object root store.</param>
-        private void SetupObjects(List<IDumpObjectExtractor> heapObjectExtractors, ClrRuntime runtime,
-            Dictionary<ulong, DumpObject> objectStore, Dictionary<ulong, List<ulong>> objectHierarchy,
-            Dictionary<DumpTypeKey, DumpType> typeStore, Dictionary<ulong, DumpAppDomain> appDomainStore,
-            Dictionary<ulong, DumpObjectRoot> objectRootStore, Dictionary<ulong, DumpObject> finalizerQueue, Dictionary<ulong, DumpBlockingObject> blockingObjects)
-        {
-            ExtractHeapObjects(heapObjectExtractors, runtime, objectStore, objectHierarchy, typeStore, finalizerQueue, blockingObjects);
-            ExtractStackObjects(runtime, objectStore, appDomainStore, objectRootStore);
-        }
-
-        /// <summary>
-        ///     Setups the threads.
-        /// </summary>
-        /// <param name="rt">The rt.</param>
-        /// <param name="threadStore">The thread store.</param>
-        /// <param name="objectRootsStore">The object roots store.</param>
-        private void SetupThreads(ClrRuntime rt,
-            Dictionary<uint, DumpThread> threadStore, Dictionary<ulong, DumpObjectRoot> objectRootsStore)
-        {
-            // todo: priority: rewrite this garbage
-            Log.Trace("Extracting information about the threads");
-            foreach (var thread in rt.Threads)
-            {
-                var dumpThread = new DumpThread
+                var newRegion = new DumpMemoryRegion
                 {
-                    OsId = thread.OSThreadId,
-                    ManagedStackFramesInternal = thread.StackTrace.Select(f => new DumpStackFrame
-                    {
-                        IsManaged = f.Kind == ClrStackFrameType.ManagedMethod,
-                        InstructionPointer = f.InstructionPointer,
-                        ModuleName = f.ModuleName,
-                        StackPointer = f.StackPointer,
-                        DisplayString =
-                            f.ToString() // todo: I've seen where this throws a null reference exception - look out
-                    }).ToList()
+                    Address = region.Address,
+                    GcSegmentType = region.GcSegmentType,
+                    HeapNumber = region.HeapNumber,
+                    MemoryRegionType = region.MemoryRegionType,
+                    Size = region.Size
                 };
-                foreach (var extractedStackFrame in dumpThread.ManagedStackFrames)
-                    extractedStackFrame.Thread = dumpThread;
-
-                dumpThread.ObjectRoots = thread.EnumerateStackObjects()
-                    .Where(o =>
-                    {
-                        if (objectRootsStore.ContainsKey(o.Address))
-                            return true;
-                        Log.Warn(
-                            $"Thread {thread.OSThreadId} claims to have an object root at {o.Address} but there is no corresponding object at {o.Object}");
-                        return false;
-                    }).Select(o =>
-                    {
-                        var root = objectRootsStore[o.Address];
-                        root.Thread = dumpThread;
-                        root.StackFrame =
-                            dumpThread.ManagedStackFrames.FirstOrDefault(f =>
-                                f.StackPointer == o?.StackFrame?.StackPointer);
-                        return root;
-                    }).ToList();
-
-                if (!threadStore.ContainsKey(dumpThread.OsId))
-                    threadStore.Add(dumpThread.OsId, dumpThread);
-                else
-                    Log.Error(
-                        $"Extracted a thread but there is already an entry with os id: {dumpThread.OsId}, you should investigate these manually");
-            }
-
-            foreach (var gcThreadOsId in rt.EnumerateGCThreads())
-            {
-                var osId = Convert.ToUInt32(gcThreadOsId);
-                if (threadStore.ContainsKey(osId))
+                try
                 {
-                    threadStore[osId].IsGcThread = true;
+                    regions.Add(region.Address, newRegion);
+                }
+                catch (Exception)
+                {
+                    // todo: something
                 }
             }
 
-            Log.Trace("Loading debugger extensions");
-            ApplyRunawayInformation(threadStore);
-            ApplyEeStackInformation(threadStore);
+            MemoryRegions = regions;
         }
 
-        /// <summary>
-        ///     Gets or sets the composition container.
-        /// </summary>
-        /// <value>The composition container.</value>
+        internal void CreateObjects()
+        {
+            var objects = new Dictionary<ulong, DumpObject>();
+            var objectGraph = new Dictionary<ulong, IList<ulong>>();
+            ObjectToTypeMapping = new Dictionary<ulong, DumpTypeKey>();
+            foreach (var cur in Runtime.Heap.EnumerateObjects())
+            {
+                DumpObject toAdd;
+                var handler = DumpObjectExtractors.FirstOrDefault(h => h.CanExtract(cur, Runtime));
+                if (handler != null)
+                {
+                    toAdd = handler.Extract(cur, Runtime);
+                }
+                else
+                {
+                    toAdd = new DumpObject(cur.Address)
+                    {
+                        Address = cur.Address,
+                        FullTypeName = cur.Type?.Name,
+                        Size = cur.Size,
+                        IsNull = cur.IsNull,
+                        IsBoxed = cur.IsBoxed,
+                        IsArray = cur.IsArray,
+                        ContainsPointers = cur.ContainsPointers
+                    };
+                }
+                objects.Add(toAdd.Address, toAdd);
+                objectGraph.Add(toAdd.Address, cur.EnumerateObjectReferences().Select(x => x.Address).ToList());
+                ObjectToTypeMapping.Add(toAdd.Address, cur.Type.ToKeyType());
+            }
+
+            Objects = objects;
+            ObjectGraph = objectGraph;
+        }
+
+        internal void CreateRoots()
+        {
+            var roots = new Dictionary<ulong, DumpObjectRoot>();
+            RootToTypeMapping = new Dictionary<ulong, DumpTypeKey>();
+            foreach (var root in Runtime.Heap.EnumerateRoots())
+            {
+                var newRoot = new DumpObjectRoot
+                {
+                    Address = root.Address,
+                    Name = root.Name,
+                    IsPinned = root.IsPinned,
+                    IsInteriorPointer = root.IsInterior,
+                    GcRootKind = root.Kind,
+                    IsPossibleFalsePositive = root.IsPossibleFalsePositive
+                };
+
+                try
+                {
+                    roots.Add(newRoot.Address, newRoot);
+                }
+                catch (Exception)
+                {
+                    // todo: something
+                }
+
+                try
+                {
+                    RootToTypeMapping.Add(root.Address, root.Type.ToKeyType());
+                }
+                catch (Exception)
+                {
+                    // todo: do something
+                }
+            }
+
+            Roots = roots;
+        }
+
+        internal void CreateThreads()
+        {
+            Threads = new Dictionary<uint, DumpThread>();
+            ThreadToExceptionMapping = new Dictionary<uint, ulong>();
+            ThreadToRootMapping = new Dictionary<uint, IList<ulong>>();
+            foreach (var thread in Runtime.Threads)
+            {
+                var newThread = new DumpThread
+                {
+                    Address = thread.Address,
+                    AppDomainAddress = thread.AppDomain,
+                    GcMode = thread.GcMode,
+                    IsAborted = thread.IsAborted,
+                    IsAbortRequested = thread.IsAbortRequested,
+                    IsAlive = thread.IsAlive,
+                    IsBackground = thread.IsBackground,
+                    IsCoinitialized = thread.IsCoInitialized,
+                    IsCreatedButNotStarted = thread.IsUnstarted,
+                    IsDebuggerHelper = thread.IsDebuggerHelper,
+                    IsDebugSuspended = thread.IsDebugSuspended,
+                    IsFinalizer = thread.IsFinalizer,
+                    IsGc = thread.IsGC,
+                    IsGcSuspendPending = thread.IsGCSuspendPending,
+                    IsMta = thread.IsMTA,
+                    IsShutdownHelper = thread.IsShutdownHelper,
+                    IsSta = thread.IsSTA,
+                    IsSuspendingEe = thread.IsSuspendingEE,
+                    IsThreadpoolCompletionPort = thread.IsThreadpoolCompletionPort,
+                    IsThreadpoolGate = thread.IsThreadpoolGate,
+                    IsThreadpoolTimer = thread.IsThreadpoolTimer,
+                    IsThreadpoolWait = thread.IsThreadpoolWait,
+                    IsThreadpoolWorker = thread.IsThreadpoolWorker,
+                    IsUserSuspended = thread.IsUserSuspended,
+                    LockCount = thread.LockCount,
+                    StackLimit = thread.StackLimit,
+                    Teb = thread.Teb,
+                    OsId = thread.OSThreadId
+                };
+                newThread.ManagedStackFramesInternal = thread.StackTrace.Select(x => new DumpStackFrame
+                {
+                    InstructionPointer = x.InstructionPointer,
+                    Kind = x.Kind,
+                    ModuleName = x.ModuleName,
+                    StackPointer = x.StackPointer,
+                    Thread = newThread,
+                    DisplayString = x.DisplayString
+                }).ToList();
+
+                try
+                {
+                    Threads.Add(newThread.OsId, newThread);
+                }
+                catch (Exception)
+                {
+                    // todo: something
+                }
+
+                try
+                {
+                    ThreadToExceptionMapping.Add(newThread.OsId, thread.CurrentException.Address);
+                }
+                catch (Exception)
+                {
+                    // todo: something
+                }
+            }
+        }
+
+        internal void CreateTypes()
+        {
+            Types = new Dictionary<DumpTypeKey, DumpType>();
+            TypeToBaseTypeMapping = new Dictionary<DumpTypeKey, DumpTypeKey>();
+            TypeToModuleMapping = new Dictionary<DumpTypeKey, DumpTypeKey>();
+            TypeToComponentTypeMapping = new Dictionary<DumpTypeKey, DumpTypeKey>();
+            InstanceFieldToTypeMapping = new Dictionary<DumpTypeField, DumpTypeKey>();
+            StaticFieldToTypeMapping = new Dictionary<DumpTypeField, DumpTypeKey>();
+            foreach (var cur in Runtime.Heap.EnumerateTypes())
+            {
+                var t = new DumpType
+                {
+                    AssemblyId = cur.Module.AssemblyId,
+                    BaseSize = cur.BaseSize,
+                    ContainsPointers = cur.ContainsPointers,
+                    HasSimpleValue = cur.HasSimpleValue,
+                    IsAbstract = cur.IsAbstract,
+                    IsArray = cur.IsArray,
+                    IsEnum = cur.IsEnum,
+                    IsException = cur.IsException,
+                    IsFinalizable = cur.IsFinalizable,
+                    IsFree = cur.IsFree,
+                    IsInterface = cur.IsInterface,
+                    IsInternal = cur.IsInternal,
+                    IsObjectReference = cur.IsObjectReference,
+                    IsPointer = cur.IsPointer,
+                    IsPrimitive = cur.IsPrimitive,
+                    IsPrivate = cur.IsPrivate,
+                    IsProtected = cur.IsProtected,
+                    IsPublic = cur.IsPublic,
+                    IsRuntimeType = cur.IsRuntimeType,
+                    IsSealed = cur.IsSealed,
+                    IsString = cur.IsString,
+                    IsValueClass = cur.IsValueClass,
+                    Key = new DumpTypeKey(cur.Module.AssemblyId, cur.Name),
+                    MetaDataToken = cur.MetadataToken,
+                    MethodTable = cur.MethodTable,
+                    Name = cur.Name,
+                    ElementSize = cur.ElementSize,
+                    ElementType = cur.ElementType,
+                    Interfaces = cur.Interfaces.Select(x => x.Name).ToList()
+                };
+                {
+                    var key = new DumpTypeKey(t.AssemblyId, t.Name);
+                    if (!Types.ContainsKey(key))
+                        Types.Add(key, t);
+                }
+                {
+                    var key = new DumpTypeKey(t.AssemblyId, t.Name);
+                    if(cur.BaseType != null && !TypeToBaseTypeMapping.ContainsKey(key))
+                        TypeToBaseTypeMapping.Add(key, cur.BaseType.ToKeyType());
+                }
+
+                {
+                    var key = new DumpTypeKey(t.AssemblyId, t.Name);
+                    if(cur.ComponentType != null && !TypeToComponentTypeMapping.ContainsKey(key))
+                        TypeToComponentTypeMapping.Add(key,
+                            cur.ComponentType.ToKeyType());
+                }
+
+                {
+                    var key = new DumpTypeKey(t.AssemblyId, t.Name);
+                    if(cur.Module != null && !TypeToModuleMapping.ContainsKey(key))
+                        TypeToModuleMapping.Add(key,
+                            new DumpTypeKey(cur.Module.AssemblyId, cur.Module.Name));
+                }
+
+                t.InstanceFields = new List<DumpTypeField>();
+                foreach (var field in cur.Fields)
+                {
+                    var newField = new DumpTypeField
+                    {
+                        HasSimpleValue = field.HasSimpleValue,
+                        IsInternal = field.IsInternal,
+                        IsObjectReference = field.IsObjectReference,
+                        IsPrimitive = field.IsPrimitive,
+                        IsPrivate = field.IsPrivate,
+                        IsProtected = field.IsProtected,
+                        IsPublic = field.IsPublic,
+                        IsValueClass = field.IsValueClass,
+                        Name = field.Name,
+                        Offset = field.Offset,
+                        Size = field.Size,
+                        Token = field.Token,
+                        ElementType = field.ElementType
+                    };
+                    t.InstanceFields.Add(newField);
+                    if (field.Type.Name != ERROR_TYPE)
+                        InstanceFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
+                }
+
+                foreach (var field in cur.StaticFields)
+                {
+                    var newField = new DumpTypeField
+                    {
+                        HasSimpleValue = field.HasSimpleValue,
+                        IsInternal = field.IsInternal,
+                        IsObjectReference = field.IsObjectReference,
+                        IsPrimitive = field.IsPrimitive,
+                        IsPrivate = field.IsPrivate,
+                        IsProtected = field.IsProtected,
+                        IsPublic = field.IsPublic,
+                        IsValueClass = field.IsValueClass,
+                        Name = field.Name,
+                        Offset = field.Offset,
+                        Size = field.Size,
+                        Token = field.Token,
+                        ElementType = field.ElementType
+                    };
+                    t.StaticFields.Add(newField);
+                    StaticFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
+                }
+            }
+        }
+
+        public Dictionary<ulong, DumpAppDomain> AppDomains { get; set; }
+
+        public Dictionary<ulong, IList<DumpModuleKey>> AppDomainToModuleMapping { get; set; }
+        public Dictionary<ulong, DumpBlockingObject> BlockingObjects { get; set; }
+
+        public Dictionary<ulong, IList<uint>> BlockingObjectToThreadMapping { get; set; }
         public CompositionContainer CompositionContainer { get; set; }
+        public IConverter Converter { get; set; } = new Converter(); // todo: doesn't feel great
+        public IDataTarget DataTarget { get; set; }
+        public IDebuggerProxy DebuggerProxy { get; set; }
+        public FileInfo DumpFile { get; set; }
+        public List<ulong> FinalizableObjectAddresses { get; set; } // todo: cleanup
+        public List<ulong> GcThreads { get; set; }
+        public Dictionary<ulong, DumpHandle> Handles { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the data target.
-        /// </summary>
-        /// <value>The data target.</value>
-        public DataTarget DataTarget { get; set; }
+        public Dictionary<ulong, ulong> HandleToAppDomainMapping { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the debugger proxy.
-        /// </summary>
-        /// <value>The debugger proxy.</value>
-        public DebuggerProxy DebuggerProxy { get; internal set; }
+        public Dictionary<ulong, DumpTypeKey> HandleToDependentTypeMapping { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the location of the dump file
-        /// </summary>
-        /// <value>The dump file location.</value>
-        public FileInfo DumpFile { get; protected set; }
+        public Dictionary<ulong, DumpTypeKey> HandleToTypeMapping { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the converter.
-        /// </summary>
-        /// <value>The converter.</value>
-        internal IConverter Converter { get; set; }
+        public Dictionary<DumpTypeField, DumpTypeKey> InstanceFieldToTypeMapping { get; set; }
+        public List<ulong> ManagedWorkItems { get; set; }
+        public Dictionary<ulong, DumpMemoryRegion> MemoryRegions { get; set; }
+        public Dictionary<string, DumpModuleInfo> ModuleInfos { get; set; }
+        public Dictionary<DumpModuleKey, DumpModule> Modules { get; set; }
+        public List<INativeWorkItem> NativeWorkitems { get; set; }
+        public List<ulong> ObjectAddressesInFinalizerQueue { get; set; }
+        public Dictionary<ulong, IList<ulong>> ObjectGraph { get; set; }
+        public Dictionary<ulong, DumpObject> Objects { get; set; }
+
+        public Dictionary<ulong, DumpTypeKey> ObjectToTypeMapping { get; set; }
+        public Dictionary<ulong, DumpObjectRoot> Roots { get; set; }
+
+        public Dictionary<ulong, DumpTypeKey> RootToTypeMapping { get; set; }
+        public IClrRuntime Runtime { get; set; }
+        public Dictionary<ulong, DumpHeapSegment> Segments { get; set; }
+        public Dictionary<DumpTypeField, DumpTypeKey> StaticFieldToTypeMapping { get; set; }
+        public Dictionary<uint, DumpThread> Threads { get; set; }
+
+        public Dictionary<uint, ulong> ThreadToExceptionMapping { get; set; }
+
+        public Dictionary<uint, IList<ulong>> ThreadToRootMapping { get; set; }
+        public Dictionary<DumpTypeKey, DumpType> Types { get; set; }
+        public Dictionary<DumpTypeKey, DumpTypeKey> TypeToBaseTypeMapping { get; set; }
+        public Dictionary<DumpTypeKey, DumpTypeKey> TypeToComponentTypeMapping { get; set; }
+        public Dictionary<DumpTypeKey, DumpTypeKey> TypeToModuleMapping { get; set; }
+    }
+
+    public class DumpModuleInfo
+    {
+        public string FileName { get; set; }
+        public uint FileSize { get; set; }
+        public ulong ImageBase { get; set; }
+        public bool IsManaged { get; set; }
+        public bool IsRuntime { get; set; }
+        public IPdbInfo Pdb { get; set; }
+        public IPeFile PeFile { get; set; }
+        public uint TimeStamp { get; set; }
+        public VersionInfo Version { get; set; }
+    }
+
+    internal static class ClrMdExtensionMethods
+    {
+        public static DumpModuleKey ToKeyType(this IClrModule module) =>
+            new DumpModuleKey(module.AssemblyId, module.Name);
+
+        public static DumpTypeKey ToKeyType(this IClrType type) => new DumpTypeKey(type.Module?.AssemblyId ?? 0, type.Name);
     }
 }

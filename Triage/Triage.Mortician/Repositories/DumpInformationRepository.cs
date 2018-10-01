@@ -19,8 +19,9 @@ using System.IO;
 using System.Linq;
 using Microsoft.Diagnostics.Runtime;
 using Triage.Mortician.Core;
+using Triage.Mortician.Core.ClrMdAbstractions;
 
-namespace Triage.Mortician.Repository
+namespace Triage.Mortician.Repositories
 {
     /// <summary>
     ///     Represents a collection of high level information about the dump being analyzed
@@ -37,7 +38,7 @@ namespace Triage.Mortician.Repository
         /// <param name="runtime">The runtime.</param>
         /// <param name="dumpFile">The dump file.</param>
         /// <exception cref="System.ArgumentNullException">dataTarget</exception>
-        protected internal DumpInformationRepository(DataTarget dataTarget, ClrRuntime runtime, FileInfo dumpFile)
+        protected internal DumpInformationRepository(IDataTarget dataTarget, IClrRuntime runtime, FileInfo dumpFile)
         {
             StartTimeUtc = DateTime.UtcNow;
             IsMiniDump = dataTarget?.IsMinidump ?? throw new ArgumentNullException(nameof(dataTarget));
@@ -63,7 +64,7 @@ namespace Triage.Mortician.Repository
         /// <summary>
         ///     The process modules internal
         /// </summary>
-        protected internal List<ModuleInfo> ProcessModulesInternal;
+        protected internal List<IModuleInfo> ProcessModulesInternal;
 
         /// <summary>
         ///     Gets or sets the cpu utilization.

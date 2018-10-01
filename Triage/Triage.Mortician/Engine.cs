@@ -15,7 +15,7 @@
 using System.ComponentModel.Composition;
 using System.Threading;
 using System.Threading.Tasks;
-using Common.Logging;
+using Serilog;
 using Triage.Mortician.Core;
 
 namespace Triage.Mortician
@@ -32,7 +32,6 @@ namespace Triage.Mortician
         /// <summary>
         ///     The log
         /// </summary>
-        protected ILog Log = LogManager.GetLogger(typeof(Engine));
 
         /// <summary>
         ///     Processes the analyzers
@@ -50,7 +49,7 @@ namespace Triage.Mortician
                 return;
             }
 
-            Log.Trace("Engine starting...");
+            Log.Information("Engine starting...");
             var analysisObserversTask = AnalyzerTaskFactory.StartAnalyzers(AnalysisObservers, analysisToken);
             var analyzersTask = AnalyzerTaskFactory.StartAnalyzers(Analyzers, internalToken);
 
@@ -58,7 +57,7 @@ namespace Triage.Mortician
             await analyzersTask;
             EventHub.Shutdown();
             await analysisObserversTask;
-            Log.Trace("Execution complete");
+            Log.Information("Execution complete");
         }
 
         /// <summary>

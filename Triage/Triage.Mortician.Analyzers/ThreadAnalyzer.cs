@@ -18,7 +18,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Triage.Mortician.Core;
-using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.Analyzers
 {

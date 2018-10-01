@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using FluentAssertions;
+using Triage.Mortician.Core.ClrMdAbstractions;
 using Xunit;
 
 namespace Triage.Mortician.Core.Test
@@ -11,22 +12,27 @@ namespace Triage.Mortician.Core.Test
         public void Set_Member_Values_Correctly()
         {
             // arrange
-            var module = new DumpModule(0x1337, "AssemblyName", DebuggableAttribute.DebuggingModes.Default,
-                @"C:\temp\assembly.dll", 0x4000, false, true, "Assembly", @"C:\temp\assembly.pdb", Guid.Empty, 0x42);
+            var module = new DumpModule(new DumpModuleKey(0x1337, "AssemblyName"))
+            {
+                DebuggingMode = DebuggableAttribute.DebuggingModes.Default,
+                FileName = @"C:\temp\assembly.dll",
+                ImageBase = 0x4000,
+                IsFile = true,
+                IsDynamic = false,
+                Size = 0x42
+            };
 
             // act
             // assert
-            module.AssemblyId.Should().Be(0x1337);
-            module.AssemblyName.Should().Be("AssemblyName");
+            module.Key.AssemblyId.Should().Be(0x1337);
+            module.Key.Name.Should().Be("AssemblyName");
             module.DebuggingMode.Should().Be(DebuggableAttribute.DebuggingModes.Default);
             module.FileName.Should().Be(@"C:\temp\assembly.dll");
             module.ImageBase = 0x4000;
             module.IsFile = true;
             module.IsDynamic = false;
-            module.Name.Should().Be("Assembly");
-            module.PdbFile.Should().Be(@"C:\temp\assembly.pdb");
+            module.Name.Should().Be("AssemblyName");
             module.Size.Should().Be(0x42);
-            module.PdbGuid.Should().Be(Guid.Empty);
         }
 
         [Fact]

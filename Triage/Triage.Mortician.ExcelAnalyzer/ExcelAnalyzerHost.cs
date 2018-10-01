@@ -19,7 +19,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Common.Logging;
+using Serilog;
 using SpreadsheetLight;
 using Triage.Mortician.Core;
 
@@ -34,10 +34,6 @@ namespace Triage.Mortician.ExcelAnalyzer
     [Export(typeof(IAnalyzer))]
     public class ExcelAnalyzerHost : IAnalyzer
     {
-        /// <summary>
-        ///     The log
-        /// </summary>
-        protected ILog Log = LogManager.GetLogger(typeof(ExcelAnalyzerHost));
 
         /// <summary>
         ///     Performs the analysis
@@ -54,7 +50,7 @@ namespace Triage.Mortician.ExcelAnalyzer
                 return;
             }
 
-            Log.Trace("Engine starting");
+            Log.Information("Engine starting");
             var analyzerSetupTasks = new Dictionary<Task, IExcelAnalyzer>();
             foreach (var analyzer in ExcelAnalyzers)
             {
@@ -81,11 +77,11 @@ namespace Triage.Mortician.ExcelAnalyzer
                     }
                     else if (task.IsCanceled)
                     {
-                        Log.Warn($"ExcelAnalyzer {analyzer.GetType().FullName} was cancelled during setup");
+                        Log.Warning($"ExcelAnalyzer {analyzer.GetType().FullName} was cancelled during setup");
                     }
                     else
                     {
-                        Log.Trace(
+                        Log.Information(
                             $"ExcelAnalyzer {analyzer.GetType().FullName} was successfully setup, starting contribution..");
                         analyzer.Contribute(doc);
                     }
@@ -98,7 +94,7 @@ namespace Triage.Mortician.ExcelAnalyzer
                 {
                     doc.SelectWorksheet("Summary");
                     doc.SaveAs(fileName);
-                    Log.Trace($"Successfully saved report: {fileName}");
+                    Log.Information($"Successfully saved report: {fileName}");
                 }
                 catch (Exception e)
                 {
@@ -108,11 +104,11 @@ namespace Triage.Mortician.ExcelAnalyzer
 
                 if (ExcelPostProcessors == null || ExcelPostProcessors.Length == 0)
                 {
-                    Log.Warn($"There were no Excel Post Processors registered");
+                    Log.Information($"There were no Excel Post Processors registered");
                 }
                 else
                 {
-                    Log.Trace("Starting excel post processing");
+                    Log.Information("Starting excel post processing");
                     foreach (var postProcessor in ExcelPostProcessors)
                         try
                         {

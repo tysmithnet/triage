@@ -18,7 +18,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Common.Logging;
+using Serilog;
 using Triage.Mortician.Core;
 
 namespace Triage.Mortician
@@ -72,11 +72,5 @@ namespace Triage.Mortician
             }, cancellationToken));
             return Task.WhenAll(tasks);
         }
-
-        /// <summary>
-        ///     Gets the log.
-        /// </summary>
-        /// <value>The log.</value>
-        private ILog Log { get; } = LogManager.GetLogger<AnalyzerTaskFactory>();
     }
 }

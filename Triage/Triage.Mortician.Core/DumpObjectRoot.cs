@@ -13,6 +13,8 @@
 // ***********************************************************************
 
 using System;
+using System.Collections.Generic;
+using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Core
 {
@@ -34,19 +36,7 @@ namespace Triage.Mortician.Core
         /// <value>The application domain.</value>
         public DumpAppDomain AppDomain { get; protected internal set; }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether this object root is pointing to an area of memory
-        ///     used for overlapped io
-        /// </summary>
-        /// <value><c>true</c> if this instance is asynchronous io pinning; otherwise, <c>false</c>.</value>
-        public bool IsAsyncIoPinning { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether this object root is the finalizer queue
-        ///     waiting to finalize it
-        /// </summary>
-        /// <value><c>true</c> if this instance is finalizer queue; otherwise, <c>false</c>.</value>
-        public bool IsFinalizerQueue { get; protected internal set; }
+        public GcRootKind GcRootKind { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this object root points not to the
@@ -55,12 +45,6 @@ namespace Triage.Mortician.Core
         /// <value><c>true</c> if this instance is interior pointer; otherwise, <c>false</c>.</value>
         public bool IsInteriorPointer { get; protected internal set; }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether this object root is a local variable in a method
-        ///     that is still executing
-        /// </summary>
-        /// <value><c>true</c> if this instance is local variable; otherwise, <c>false</c>.</value>
-        public bool IsLocalVar { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether the object being kept in memory is
@@ -76,39 +60,7 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value><c>true</c> if this instance is possible false positive; otherwise, <c>false</c>.</value>
         public bool IsPossibleFalsePositive { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether this object root is a static variable
-        /// </summary>
-        /// <value><c>true</c> if this instance is static variable; otherwise, <c>false</c>.</value>
-        public bool IsStaticVariable { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether this gc root is a strong reference
-        ///     Strong references prevent objects from being garbage collected
-        /// </summary>
-        /// <value><c>true</c> if this instance is strong handle; otherwise, <c>false</c>.</value>
-        public bool IsStrongHandle { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether this object root is strong pinning handle.
-        /// </summary>
-        /// <value><c>true</c> if this instance is strong pinning handle; otherwise, <c>false</c>.</value>
-        public bool IsStrongPinningHandle { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether this object root is a thread static variable
-        /// </summary>
-        /// <value><c>true</c> if this instance is thread static variable; otherwise, <c>false</c>.</value>
-        public bool IsThreadStaticVariable { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether this gc root is a weak reference
-        ///     Weak references do not prevent GC, and are commonly found in caching structures
-        /// </summary>
-        /// <value><c>true</c> if this instance is weak handle; otherwise, <c>false</c>.</value>
-        public bool IsWeakHandle { get; protected internal set; }
-
+        
         /// <summary>
         ///     Gets or sets the name of this object root
         /// </summary>
@@ -128,10 +80,12 @@ namespace Triage.Mortician.Core
         /// <exception cref="NotImplementedException">You still need to implement stack frame in object root</exception>
         public DumpStackFrame StackFrame { get; protected internal set; }
 
-        /// <summary>
-        ///     Gets or sets the thread that this object root belongs to if possible, null otherwise
-        /// </summary>
-        /// <value>The thread.</value>
-        public DumpThread Thread { get; protected internal set; }
+        public IList<DumpThread> Threads { get; set; } = new List<DumpThread>();
+        public DumpType Type { get; set; }
+
+        public void AddThread(DumpThread thread)
+        {
+            Threads.Add(thread);
+        }
     }
 }

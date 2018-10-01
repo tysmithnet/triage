@@ -14,7 +14,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Triage.Mortician.Core;
-using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.WebUiAnalyzer
 {

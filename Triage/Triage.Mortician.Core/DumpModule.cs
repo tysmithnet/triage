@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Core
 {
@@ -9,27 +10,19 @@ namespace Triage.Mortician.Core
     /// </summary>
     public class DumpModule
     {
-        /// <inheritdoc />
-        public DumpModule(ulong assemblyId = 0, string assemblyName = null,
-            DebuggableAttribute.DebuggingModes debuggingMode = DebuggableAttribute.DebuggingModes.None,
-            string fileName = null, ulong? imageBase = default(ulong?), bool isDynamic = false, bool isFile = false,
-            string name = null, string pdbFile = null, Guid? pdbGuid = default(Guid?), ulong size = 0)
-        {
-            AssemblyId = assemblyId;
-            AssemblyName = assemblyName;
-            DebuggingMode = debuggingMode;
-            FileName = fileName;
-            ImageBase = imageBase;
-            IsDynamic = isDynamic;
-            IsFile = isFile;
-            Name = name;
-            PdbFile = pdbFile;
-            PdbGuid = pdbGuid;
-            Size = size;
-        }
 
         internal DumpModule()
         {
+        }
+
+        internal void AddAppDomain(DumpAppDomain domain)
+        {
+            AppDomainsInternal.Add(domain);
+        }
+
+        internal void AddType(DumpType type)
+        {
+            TypesInternal.Add(type);
         }
 
         /// <summary>
@@ -42,23 +35,17 @@ namespace Triage.Mortician.Core
         /// </summary>
         protected internal List<DumpType> TypesInternal = new List<DumpType>();
 
+        public DumpModule(DumpModuleKey dumpModuleKey)
+        {
+            Key = dumpModuleKey ?? throw new ArgumentNullException(nameof(dumpModuleKey));
+        }
+
         /// <summary>
         ///     Gets or sets the application domains.
         /// </summary>
         /// <value>The application domains.</value>
         public IEnumerable<DumpAppDomain> AppDomains => AppDomainsInternal;
 
-        /// <summary>
-        ///     Gets or sets the assembly id that this module is associated iwth
-        /// </summary>
-        /// <value>The assembly identifier.</value>
-        public ulong AssemblyId { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets the name of the assembly.
-        /// </summary>
-        /// <value>The name of the assembly.</value>
-        public string AssemblyName { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the debugging mode for this assembly (edit and continue, etc)
@@ -77,7 +64,7 @@ namespace Triage.Mortician.Core
         ///     it not backed by phsical memory
         /// </summary>
         /// <value>The image base.</value>
-        public ulong? ImageBase { get; protected internal set; }
+        public ulong ImageBase { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this module is a dynamic module
@@ -95,24 +82,22 @@ namespace Triage.Mortician.Core
         ///     Gets or sets the name of this module
         /// </summary>
         /// <value>The name.</value>
-        public string Name { get; protected internal set; }
+        public string Name => Key.Name;
 
-        /// <summary>
-        ///     Gets or sets the PDB file location if available, null otherwise
-        /// </summary>
-        /// <value>The PDB file.</value>
-        public string PdbFile { get; protected internal set; }
-
+        public ulong AssemblyId => Key.AssemblyId;
+        
         /// <summary>
         ///     Gets or sets the PDB guid if available
         /// </summary>
         /// <value>The PDB unique identifier.</value>
-        public Guid? PdbGuid { get; protected internal set; }
+        public IPdbInfo PdbInfo { get; set; }
 
         /// <summary>
         ///     Gets or sets the size of this module
         /// </summary>
         /// <value>The size.</value>
         public ulong Size { get; protected internal set; }
+
+        public DumpModuleKey Key { get; set; }
     }
 }

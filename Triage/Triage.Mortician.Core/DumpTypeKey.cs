@@ -21,29 +21,48 @@ namespace Triage.Mortician.Core
     ///     The method table alone is not sufficent to identify a type because generics
     ///     can share the same method table
     /// </summary>
-    public struct DumpTypeKey
+    public class DumpTypeKey : IEquatable<DumpTypeKey>
     {
         /// <summary>
-        ///     Gets or sets the method table.
+        ///     Gets or sets the assembly id to which this type belongs
         /// </summary>
         /// <value>The method table.</value>
-        public ulong MethodTable { get; set; }
+        public ulong AssemblyId { get; }
 
         /// <summary>
         ///     Gets or sets the name of the type.
         /// </summary>
         /// <value>The name of the type.</value>
-        public string TypeName { get; set; }
+        public string TypeName { get; }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="DumpTypeKey" /> struct.
         /// </summary>
-        /// <param name="methodTable">The method table.</param>
+        /// <param name="assemblyId">The method table.</param>
         /// <param name="typeName">Name of the type.</param>
-        public DumpTypeKey(ulong methodTable, string typeName)
+        public DumpTypeKey(ulong assemblyId, string typeName)
         {
-            MethodTable = methodTable;
+            AssemblyId = assemblyId;
             TypeName = typeName;
+        }
+
+        /// <inheritdoc />
+        public bool Equals(DumpTypeKey other) => AssemblyId == other.AssemblyId && string.Equals(TypeName, other.TypeName);
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is DumpTypeKey && Equals((DumpTypeKey) obj);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (AssemblyId.GetHashCode() * 397) ^ (TypeName != null ? TypeName.GetHashCode() : 0);
+            }
         }
     }
 }

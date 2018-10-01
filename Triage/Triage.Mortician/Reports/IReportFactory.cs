@@ -12,8 +12,6 @@
 // <summary></summary>
 // ***********************************************************************
 
-using Triage.Mortician.Domain;
-
 namespace Triage.Mortician.Reports
 {
     /// <summary>

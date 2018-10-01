@@ -1,16 +1,20 @@
-﻿using System.ComponentModel.Composition;
+﻿using System;
+using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Types;
+using Serilog;
+using Serilog.Sinks.Elasticsearch;
 using Triage.Mortician.Core;
 using Triage.Mortician.IntegrationTest.Scenarios;
 using Xunit;
 
 namespace Triage.Mortician.IntegrationTest
 {
-    public class HelloWorld_Should
+    public class HelloWorld_Should : Test
     {
         internal class TestAnalyzer : IAnalyzer
         {

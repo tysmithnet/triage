@@ -12,6 +12,8 @@
 // <summary></summary>
 // ***********************************************************************
 
+using Triage.Mortician.Core.ClrMdAbstractions;
+
 namespace Triage.Mortician.Core
 {
     /// <summary>
@@ -54,5 +56,7 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The thread.</value>
         public DumpThread Thread { get; protected internal set; }
+
+        public ClrStackFrameType Kind { get; set; }
     }
 }
