@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Composition;
+﻿using System;
+using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -6,13 +7,14 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Types;
 using Serilog;
+using Serilog.Sinks.Elasticsearch;
 using Triage.Mortician.Core;
 using Triage.Mortician.IntegrationTest.Scenarios;
 using Xunit;
 
 namespace Triage.Mortician.IntegrationTest
 {
-    public class HelloWorld_Should
+    public class HelloWorld_Should : IDisposable
     {
         internal class TestAnalyzer : IAnalyzer
         {
@@ -51,9 +53,14 @@ namespace Triage.Mortician.IntegrationTest
         public void Perform_Basic_Startup_Without_Failure()
         {
             // arrange
-            Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Trace().CreateLogger();
-            Log.Information("Hello, Serilog!");
-            Assert.True(false);
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.WithThreadId()
+                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
+                {
+                    AutoRegisterTemplate = true,
+                    AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6,
+                    QueueSizeLimit = 1,
+                }).CreateLogger();
             var dumpFile = Scenario.HelloWorld.GetDumpFile();
             var options = new DefaultOptions
             {
@@ -79,6 +86,12 @@ namespace Triage.Mortician.IntegrationTest
                 .NotBeNull();
             analyzer.ThreadRepo.Get().Any(t =>
                 t.ManagedStackFrames.Any(f => f.DisplayString.Contains("Triage.TestApplications.Console.Program.Main"))).Should().BeTrue();
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Log.CloseAndFlush();
         }
     }
 }
