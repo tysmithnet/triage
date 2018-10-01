@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Serilog;
 using Triage.Mortician.Core;
 
 namespace Triage.Mortician
@@ -49,7 +50,7 @@ namespace Triage.Mortician
                 }
                 catch (Exception e)
                 {
-                    // log?
+                    Log.Error(e, "Unable to retore settings for {@ClassName}", className);
                 }
             }
 

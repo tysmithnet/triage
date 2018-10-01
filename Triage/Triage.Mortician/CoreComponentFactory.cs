@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
+using Serilog;
 using Triage.Mortician.Core;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using Triage.Mortician.Repositories;
@@ -118,6 +119,14 @@ namespace Triage.Mortician
             CreateMemoryRegions();
             ObjectAddressesInFinalizerQueue = Runtime.EnumerateFinalizerQueueObjectAddresses().ToList();
             GcThreads = Runtime.EnumerateGCThreads().Select(Convert.ToUInt64).ToList();
+            ConnectObjects();
+            ConnectObjectsToTypes();
+            ConnectTypes();
+            ConnectThreads();
+            ConnectAppDomainsAndModules();
+            ConnectBlockingObjects();
+            ConnectHandles();
+            ConnectRoots();
         }
 
         internal void ConnectAppDomainsAndModules()
@@ -175,8 +184,8 @@ namespace Triage.Mortician
             foreach (var kvp in RootToTypeMapping)
             {
                 var root = Roots[kvp.Key];
-                var type = Types[kvp.Value];
-                root.Type = type;
+                if(Types.TryGetValue(kvp.Value, out var type))
+                    root.Type = type;
             }
         }
 
@@ -185,16 +194,19 @@ namespace Triage.Mortician
             foreach (var kvp in TypeToBaseTypeMapping)
             {
                 var type = Types[kvp.Key];
-                var baseType = Types[kvp.Value];
-                type.BaseType = baseType;
-                baseType.InheritingTypes.Add(type);
+
+                if (Types.TryGetValue(kvp.Value, out var baseType))
+                {
+                    type.BaseType = baseType;
+                    baseType.InheritingTypes.Add(type);
+                }
             }
 
             foreach (var kvp in TypeToComponentTypeMapping)
             {
                 var type = Types[kvp.Key];
-                var componentType = Types[kvp.Value];
-                type.ComponentType = componentType;
+                if(Types.TryGetValue(kvp.Value, out var componentType))
+                    type.ComponentType = componentType;
             }
 
             foreach (var kvp in TypeToModuleMapping)
@@ -211,15 +223,15 @@ namespace Triage.Mortician
             foreach (var kvp in InstanceFieldToTypeMapping)
             {
                 var field = kvp.Key;
-                var type = Types[kvp.Value];
-                field.Type = type;
+                if(Types.TryGetValue(kvp.Value, out var type))
+                    field.Type = type;
             }
 
             foreach (var kvp in StaticFieldToTypeMapping)
             {
                 var field = kvp.Key;
-                var type = Types[kvp.Value];
-                field.Type = type;
+                if (Types.TryGetValue(kvp.Value, out var type))
+                    field.Type = type;
             }
         }
 
@@ -264,7 +276,7 @@ namespace Triage.Mortician
                             ? new List<uint> {blockingObject.Owner.OSThreadId}
                             : blockingObject.Owners.Select(x => x.OSThreadId).ToList());
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     // todo: something
                 }
@@ -554,16 +566,17 @@ namespace Triage.Mortician
                 }
                 catch (Exception)
                 {
-                    // todo: something
+                    Log.Error("Duplicate exceptions for thread: {OsId}", newThread.OsId);
                 }
 
                 try
                 {
-                    ThreadToExceptionMapping.Add(newThread.OsId, thread.CurrentException.Address);
+                    if(thread.CurrentException != null)
+                        ThreadToExceptionMapping.Add(newThread.OsId, thread.CurrentException.Address);
                 }
                 catch (Exception)
                 {
-                    // todo: something
+                    Log.Error("Multiple exceptions for thread: {OsId}", newThread.OsId);
                 }
             }
         }
