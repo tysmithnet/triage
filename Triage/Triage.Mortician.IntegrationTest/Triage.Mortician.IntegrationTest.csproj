@@ -143,7 +143,6 @@
   <ItemGroup>
     <Compile Include="DumpHelper.cs" />
     <Compile Include="AppDomain_Extraction_Should.cs" />
-    <Compile Include="Test.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="HelloWorld_Should.cs" />
     <Compile Include="Scenarios\HelloWorld.cs" />
@@ -178,6 +177,10 @@
     <ProjectReference Include="..\Triage.Mortician\Triage.Mortician.csproj">
       <Project>{8AA350BC-CF5F-4302-92AB-1997357049BA}</Project>
       <Name>Triage.Mortician</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Triage.Testing.Common\Triage.Testing.Common.csproj">
+      <Project>{B89A3DC9-84B7-420A-B5F2-E622F4261906}</Project>
+      <Name>Triage.Testing.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -7,11 +7,12 @@ using FluentAssertions;
 using Triage.Mortician.Core;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using Triage.Mortician.IntegrationTest.Scenarios;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.IntegrationTest
 {
-    public class WinForms_Should : Test
+    public class WinForms_Should : BaseTest
     {
         [Export(typeof(IAnalyzer))]
         [Export]

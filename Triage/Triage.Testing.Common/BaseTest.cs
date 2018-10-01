@@ -2,11 +2,12 @@
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 
-namespace Triage.Mortician.IntegrationTest
+namespace Triage.Testing.Common
 {
-    public class Test : IDisposable
+    public class BaseTest : IDisposable
     {
-        public Test()
+        /// <inheritdoc />
+        public void Dispose()
         {
             Log.Logger = new LoggerConfiguration()
                 .Enrich.WithThreadId()
@@ -14,14 +15,8 @@ namespace Triage.Mortician.IntegrationTest
                 {
                     AutoRegisterTemplate = true,
                     AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6,
-                    QueueSizeLimit = 1,
+                    QueueSizeLimit = 1
                 }).CreateLogger();
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Log.CloseAndFlush();
         }
     }
 }
