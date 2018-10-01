@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using Serilog;
 using Triage.Mortician.Core;
+using Slog = Serilog.Log;
 
 namespace Triage.Mortician.Repositories
 {
@@ -26,6 +27,7 @@ namespace Triage.Mortician.Repositories
     /// <seealso cref="IDumpThreadRepository" />
     public class DumpThreadRepository : IDumpThreadRepository
     {
+        internal ILogger Log { get; } = Slog.ForContext<DumpThreadRepository>();
         /// <summary>
         ///     Initializes a new instance of the <see cref="DumpThreadRepository" /> class.
         /// </summary>

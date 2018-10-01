@@ -1,180 +1,14 @@
 ﻿using System.Linq;
 using FluentAssertions;
 using Triage.Mortician.Core;
-using Triage.Mortician.Reports;
 using Triage.Mortician.Reports.EeStack;
+using Triage.Testing.Common;
 using Xunit;
-using Xunit.Sdk;
 
 namespace Triage.Mortician.Test
 {
-    public class EeStackReportFactory_Should
+    public class EeStackReportFactory_Should : BaseTest
     {
-        [Fact]
-        public void Extract_The_Correct_Number_Of_Items()
-        {
-            // arrange
-            var processor = new EeStackReportFactory();
-
-            // act
-            var report = processor.ProcessOutput(HELLO_WORLD);
-
-            // assert
-            report.ThreadsInternal.Count.Should().Be(2);
-            report.Threads.ElementAt(0).StackFramesInternal.Should().HaveCount(105);
-            report.Threads.ElementAt(1).StackFramesInternal.Should().HaveCount(27);
-        }
-
-        [Fact]
-        public void Extract_The_Correct_Number_Of_Items2()
-        {
-            // arrange
-            var processor = new EeStackReportFactory();
-
-            // act
-            var report = processor.ProcessOutput(IIS_EXAMPLE);
-
-            // assert
-            report.ThreadsInternal.Count.Should().Be(17);
-        }
-
-        [Fact]
-        public void Extract_Threads_With_Errors_In_Them()
-        {
-            // arrange
-            string textWithErrors = @"Thread   6
-Current frame: ntdll!NtRemoveIoCompletion+0x14
-Child-SP         RetAddr          Caller, Callee
-000000f66b77fa40 00007fffb53c9a8f KERNELBASE!GetQueuedCompletionStatus+0x3f, calling ntdll!NtRemoveIoCompletion
-000000f66b77fa60 00007fff94c14e42 *** ERROR: Symbol file could not be found.  Defaulted to export symbols for w3dt.dll - 
-w3dt!HTTP_WRAPPER::QueryState+0x3df2, calling ntdll!LdrpDispatchUserCallTarget
-000000f66b77faa0 00007fff9d962b46 *** ERROR: Symbol file could not be found.  Defaulted to export symbols for w3tp.dll - 
-w3tp!THREAD_POOL::PostCompletion+0x86, calling kernel32!GetQueuedCompletionStatusStub
-000000f66b77fb00 00007fff9d961819 w3tp+0x1819, calling ntdll!LdrpDispatchUserCallTarget
-000000f66b77fb40 00007fffb7d92774 kernel32!BaseThreadInitThunk+0x14, calling ntdll!LdrpDispatchUserCallTarget
-000000f66b77fb70 00007fffb8180d51 ntdll!RtlUserThreadStart+0x21, calling ntdll!LdrpDispatchUserCallTarget
-";
-            var processor = new EeStackReportFactory();
-
-            // act
-            var thread = processor.ExtractThread(textWithErrors);
-
-            // assert
-            thread.Index.Should().Be(6);
-            thread.StackFrames.Should().HaveCount(6);
-        }
-        [Fact]
-        public void Extract_Managed_Calling_Native()
-        {
-            // arrange
-            var frameText = @"000000f66cabeaa0 00007fff9ef6706a (MethodDesc 00007fff9ebc6a90 +0x1a System.MulticastDelegate.CtorOpened(System.Object, IntPtr, IntPtr)), calling clr!JIT_WriteBarrier";
-            var processor = new EeStackReportFactory();
-
-            // act
-            var result = processor.ExtractFrame(frameText);
-            var caller = result.Caller as ManagedCodeLocation;
-            
-
-            // assert
-            caller.Should().NotBeNull();
-            result.ChildStackPointer.Should().Be(0x000000f66cabeaa0);
-            result.ReturnAddress.Should().Be(0x00007fff9ef6706a);
-
-            caller.MethodDescriptor.Should().Be(0x00007fff9ebc6a90);
-            caller.Method.Should().Be("System.MulticastDelegate.CtorOpened(System.Object, IntPtr, IntPtr)");
-            caller.Offset.Should().Be(0x1a);
-            
-            result.Callee.Module.Should().Be("clr");
-            result.Callee.Method.Should().Be("JIT_WriteBarrier");
-            result.Callee.Offset.Should().Be(0);
-        }
-
-        [Fact]
-        public void Extract_Native_Calling_Native()
-        {
-            // arrange
-            var frameText = @"000000056e7cc800 00007ffc330dcc3a ntdll!LdrpLoadResourceFromAlternativeModule+0x2a2, calling ntdll!_security_check_cookie";
-            var processor = new EeStackReportFactory();
-
-            // act
-            var result = processor.ExtractFrame(frameText);
-
-            // assert
-            result.ChildStackPointer.Should().Be(0x000000056e7cc800);
-            result.ReturnAddress.Should().Be(0x00007ffc330dcc3a);
-            result.Caller.Module.Should().Be("ntdll");
-            result.Caller.Method.Should().Be("LdrpLoadResourceFromAlternativeModule");
-            result.Caller.Offset.Should().Be(0x2a2);
-
-            result.Callee.Module.Should().Be("ntdll");
-            result.Callee.Method.Should().Be("_security_check_cookie");
-            result.Callee.Offset.Should().Be(0);
-        }
-
-        [Fact]
-        public void Extract_Native_No_Callee()
-        {
-            // arrange
-            var frameText = @"000000056e7cc800 00007ffc330dcc3a ntdll!LdrpLoadResourceFromAlternativeModule+0x2a2";
-            var processor = new EeStackReportFactory();
-
-            // act
-            var result = processor.ExtractFrame(frameText);
-
-            // assert
-            result.ChildStackPointer.Should().Be(0x000000056e7cc800);
-            result.ReturnAddress.Should().Be(0x00007ffc330dcc3a);
-            result.Caller.Module.Should().Be("ntdll");
-            result.Caller.Method.Should().Be("LdrpLoadResourceFromAlternativeModule");
-            result.Caller.Offset.Should().Be(0x2a2);
-
-            result.Callee.Should().BeNull();
-        }
-
-        [Fact]
-        public void Extract_Managed_With_No_Callee()
-        {
-            // arrange
-            var frameText = @"000000056e7ce810 00007ffbc079101f (MethodDesc 00007ffbc06887d0 +0x14f DomainBoundILStubClass.IL_STUB_PInvoke(IntPtr, Int32, IntPtr, _MINIDUMP_TYPE, MINIDUMP_EXCEPTION_INFORMATION ByRef, IntPtr, IntPtr))";
-            var processor = new EeStackReportFactory();
-
-            // act
-            var result = processor.ExtractFrame(frameText);
-            var codeLocation = result.Caller as ManagedCodeLocation;
-
-            // assert
-            codeLocation.Should().NotBeNull();
-            result.ChildStackPointer.Should().Be(0x000000056e7ce810);
-            result.ReturnAddress.Should().Be(0x00007ffbc079101f);
-            result.Caller.Module.Should().BeNull();
-            result.Caller.Method.Should().Be("DomainBoundILStubClass.IL_STUB_PInvoke(IntPtr, Int32, IntPtr, _MINIDUMP_TYPE, MINIDUMP_EXCEPTION_INFORMATION ByRef, IntPtr, IntPtr)");
-            result.Caller.Offset.Should().Be(0x14f);
-            codeLocation.MethodDescriptor.Should().Be(0x00007ffbc06887d0);
-
-            result.Callee.Should().BeNull();
-        }
-
-        [Fact]
-        public void Extract_Managed_Calling_Managed()
-        {
-            // arrange
-            var frameText = @"000000e49b0fedc0 00007ffbc0790a33 (MethodDesc 00007ffbc06873b0 +0x293 Triage.Mortician.IntegrationTest.DumpHelper.CreateDump(System.String)), calling 00007ffbc0790180 (stub for Triage.Mortician.IntegrationTest.DumpHelper.MiniDumpWriteDump(IntPtr, Int32, IntPtr, _MINIDUMP_TYPE, MINIDUMP_EXCEPTION_INFORMATION ByRef, IntPtr, IntPtr))";
-            var processor = new EeStackReportFactory();
-
-            // act
-            var result = processor.ExtractFrame(frameText);
-            var callerLocation = result.Caller as ManagedCodeLocation;
-            var calleeLocation = result.Callee as ManagedCodeLocation;
-
-            // assert
-            callerLocation.Should().NotBeNull();
-            calleeLocation.Should().NotBeNull();
-            result.ChildStackPointer.Should().Be(0x000000e49b0fedc0);
-            result.ReturnAddress.Should().Be(0x00007ffbc0790a33);
-
-        }
-
-        #region Sample !eestack output
         private const string HELLO_WORLD = @"---------------------------------------------
 Thread   0
 Current frame: ntdll!NtGetContextThread+0x14
@@ -797,6 +631,173 @@ Child-SP         RetAddr          Caller, Callee
 000000f66d2bf850 00007fffb8180d51 ntdll!RtlUserThreadStart+0x21, calling ntdll!LdrpDispatchUserCallTarget
 ";
 
-        #endregion
+        [Fact]
+        public void Extract_Managed_Calling_Managed()
+        {
+            // arrange
+            var frameText =
+                @"000000e49b0fedc0 00007ffbc0790a33 (MethodDesc 00007ffbc06873b0 +0x293 Triage.Mortician.IntegrationTest.DumpHelper.CreateDump(System.String)), calling 00007ffbc0790180 (stub for Triage.Mortician.IntegrationTest.DumpHelper.MiniDumpWriteDump(IntPtr, Int32, IntPtr, _MINIDUMP_TYPE, MINIDUMP_EXCEPTION_INFORMATION ByRef, IntPtr, IntPtr))";
+            var processor = new EeStackReportFactory();
+
+            // act
+            var result = processor.ExtractFrame(frameText);
+            var callerLocation = result.Caller as ManagedCodeLocation;
+            var calleeLocation = result.Callee as ManagedCodeLocation;
+
+            // assert
+            callerLocation.Should().NotBeNull();
+            calleeLocation.Should().NotBeNull();
+            result.ChildStackPointer.Should().Be(0x000000e49b0fedc0);
+            result.ReturnAddress.Should().Be(0x00007ffbc0790a33);
+        }
+
+        [Fact]
+        public void Extract_Managed_Calling_Native()
+        {
+            // arrange
+            var frameText =
+                @"000000f66cabeaa0 00007fff9ef6706a (MethodDesc 00007fff9ebc6a90 +0x1a System.MulticastDelegate.CtorOpened(System.Object, IntPtr, IntPtr)), calling clr!JIT_WriteBarrier";
+            var processor = new EeStackReportFactory();
+
+            // act
+            var result = processor.ExtractFrame(frameText);
+            var caller = result.Caller as ManagedCodeLocation;
+
+            // assert
+            caller.Should().NotBeNull();
+            result.ChildStackPointer.Should().Be(0x000000f66cabeaa0);
+            result.ReturnAddress.Should().Be(0x00007fff9ef6706a);
+
+            caller.MethodDescriptor.Should().Be(0x00007fff9ebc6a90);
+            caller.Method.Should().Be("System.MulticastDelegate.CtorOpened(System.Object, IntPtr, IntPtr)");
+            caller.Offset.Should().Be(0x1a);
+
+            result.Callee.Module.Should().Be("clr");
+            result.Callee.Method.Should().Be("JIT_WriteBarrier");
+            result.Callee.Offset.Should().Be(0);
+        }
+
+        [Fact]
+        public void Extract_Managed_With_No_Callee()
+        {
+            // arrange
+            var frameText =
+                @"000000056e7ce810 00007ffbc079101f (MethodDesc 00007ffbc06887d0 +0x14f DomainBoundILStubClass.IL_STUB_PInvoke(IntPtr, Int32, IntPtr, _MINIDUMP_TYPE, MINIDUMP_EXCEPTION_INFORMATION ByRef, IntPtr, IntPtr))";
+            var processor = new EeStackReportFactory();
+
+            // act
+            var result = processor.ExtractFrame(frameText);
+            var codeLocation = result.Caller as ManagedCodeLocation;
+
+            // assert
+            codeLocation.Should().NotBeNull();
+            result.ChildStackPointer.Should().Be(0x000000056e7ce810);
+            result.ReturnAddress.Should().Be(0x00007ffbc079101f);
+            result.Caller.Module.Should().BeNull();
+            result.Caller.Method.Should()
+                .Be(
+                    "DomainBoundILStubClass.IL_STUB_PInvoke(IntPtr, Int32, IntPtr, _MINIDUMP_TYPE, MINIDUMP_EXCEPTION_INFORMATION ByRef, IntPtr, IntPtr)");
+            result.Caller.Offset.Should().Be(0x14f);
+            codeLocation.MethodDescriptor.Should().Be(0x00007ffbc06887d0);
+
+            result.Callee.Should().BeNull();
+        }
+
+        [Fact]
+        public void Extract_Native_Calling_Native()
+        {
+            // arrange
+            var frameText =
+                @"000000056e7cc800 00007ffc330dcc3a ntdll!LdrpLoadResourceFromAlternativeModule+0x2a2, calling ntdll!_security_check_cookie";
+            var processor = new EeStackReportFactory();
+
+            // act
+            var result = processor.ExtractFrame(frameText);
+
+            // assert
+            result.ChildStackPointer.Should().Be(0x000000056e7cc800);
+            result.ReturnAddress.Should().Be(0x00007ffc330dcc3a);
+            result.Caller.Module.Should().Be("ntdll");
+            result.Caller.Method.Should().Be("LdrpLoadResourceFromAlternativeModule");
+            result.Caller.Offset.Should().Be(0x2a2);
+
+            result.Callee.Module.Should().Be("ntdll");
+            result.Callee.Method.Should().Be("_security_check_cookie");
+            result.Callee.Offset.Should().Be(0);
+        }
+
+        [Fact]
+        public void Extract_Native_No_Callee()
+        {
+            // arrange
+            var frameText = @"000000056e7cc800 00007ffc330dcc3a ntdll!LdrpLoadResourceFromAlternativeModule+0x2a2";
+            var processor = new EeStackReportFactory();
+
+            // act
+            var result = processor.ExtractFrame(frameText);
+
+            // assert
+            result.ChildStackPointer.Should().Be(0x000000056e7cc800);
+            result.ReturnAddress.Should().Be(0x00007ffc330dcc3a);
+            result.Caller.Module.Should().Be("ntdll");
+            result.Caller.Method.Should().Be("LdrpLoadResourceFromAlternativeModule");
+            result.Caller.Offset.Should().Be(0x2a2);
+
+            result.Callee.Should().BeNull();
+        }
+
+        [Fact]
+        public void Extract_The_Correct_Number_Of_Items()
+        {
+            // arrange
+            var processor = new EeStackReportFactory();
+
+            // act
+            var report = processor.ProcessOutput(HELLO_WORLD);
+
+            // assert
+            report.ThreadsInternal.Count.Should().Be(2);
+            report.Threads.ElementAt(0).StackFramesInternal.Should().HaveCount(105);
+            report.Threads.ElementAt(1).StackFramesInternal.Should().HaveCount(27);
+        }
+
+        [Fact]
+        public void Extract_The_Correct_Number_Of_Items2()
+        {
+            // arrange
+            var processor = new EeStackReportFactory();
+
+            // act
+            var report = processor.ProcessOutput(IIS_EXAMPLE);
+
+            // assert
+            report.ThreadsInternal.Count.Should().Be(17);
+        }
+
+        [Fact]
+        public void Extract_Threads_With_Errors_In_Them()
+        {
+            // arrange
+            var textWithErrors = @"Thread   6
+Current frame: ntdll!NtRemoveIoCompletion+0x14
+Child-SP         RetAddr          Caller, Callee
+000000f66b77fa40 00007fffb53c9a8f KERNELBASE!GetQueuedCompletionStatus+0x3f, calling ntdll!NtRemoveIoCompletion
+000000f66b77fa60 00007fff94c14e42 *** ERROR: Symbol file could not be found.  Defaulted to export symbols for w3dt.dll - 
+w3dt!HTTP_WRAPPER::QueryState+0x3df2, calling ntdll!LdrpDispatchUserCallTarget
+000000f66b77faa0 00007fff9d962b46 *** ERROR: Symbol file could not be found.  Defaulted to export symbols for w3tp.dll - 
+w3tp!THREAD_POOL::PostCompletion+0x86, calling kernel32!GetQueuedCompletionStatusStub
+000000f66b77fb00 00007fff9d961819 w3tp+0x1819, calling ntdll!LdrpDispatchUserCallTarget
+000000f66b77fb40 00007fffb7d92774 kernel32!BaseThreadInitThunk+0x14, calling ntdll!LdrpDispatchUserCallTarget
+000000f66b77fb70 00007fffb8180d51 ntdll!RtlUserThreadStart+0x21, calling ntdll!LdrpDispatchUserCallTarget
+";
+            var processor = new EeStackReportFactory();
+
+            // act
+            var thread = processor.ExtractThread(textWithErrors);
+
+            // assert
+            thread.Index.Should().Be(6);
+            thread.StackFrames.Should().HaveCount(6);
+        }
     }
 }

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Triage.Mortician.Core.ClrMdAbstractions;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.Core.Test
 {
-    public class VersionInfo_Should
+    public class VersionInfo_Should : BaseTest
     {
         [Fact]
         public void Return_The_Correct_Version_String()

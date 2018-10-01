@@ -7,11 +7,13 @@ using FluentAssertions;
 using Triage.Mortician.Core;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using Triage.Mortician.IntegrationTest.Scenarios;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.IntegrationTest
 {
-    public class WinForms_Should : Test
+    // ReSharper disable once InconsistentNaming
+    public class WinForms_Should : BaseTest
     {
         [Export(typeof(IAnalyzer))]
         [Export]
@@ -81,6 +83,7 @@ namespace Triage.Mortician.IntegrationTest
         public void Extract_The_Text_From_A_Button()
         {
             // arrange
+            var program = new Program();
             var dumpFile = Scenario.WinForms.GetDumpFile();
             var options = new DefaultOptions
             {
@@ -95,7 +98,7 @@ namespace Triage.Mortician.IntegrationTest
 
             // act
             CompositionContainer cc = null;
-            var result = Program.DefaultExecution(options, container => cc = container);
+            var result = program.DefaultExecution(options, container => cc = container);
             var analyzer = cc.GetExportedValue<TestAnalyzer>();
 
             // assert

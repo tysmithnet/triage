@@ -25,6 +25,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Serilog;
 using Triage.Mortician.Core;
+using Slog = Serilog.Log;
 
 namespace Triage.Mortician.ExcelAnalyzer
 {
@@ -37,6 +38,8 @@ namespace Triage.Mortician.ExcelAnalyzer
     [Export(typeof(IAnalysisObserver))]
     internal sealed class S3UploaderAnalysisObserver : IAnalysisObserver
     {
+
+        internal ILogger Log { get; } = Slog.ForContext<S3UploaderAnalysisObserver>();
         /// <summary>
         ///     The excel bucket identifier
         /// </summary>
@@ -62,7 +65,7 @@ namespace Triage.Mortician.ExcelAnalyzer
                 var shouldUpload = false; // SettingsRepository.GetBool(UploadExcelToS3, true);
                 if (!shouldUpload)
                 {
-                    Log.Information($"Skipping upload excel report to s3. Is the setting {UploadExcelToS3} set to true?");
+                    Log.Information("Skipping upload excel report to s3. Is the setting {UploadExcelToS3} set to true?", UploadExcelToS3);
                     return;
                 }
 
@@ -78,7 +81,7 @@ namespace Triage.Mortician.ExcelAnalyzer
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Unable to create credentials for S3 client: {e.Message}");
+                    Log.Error("Unable to create credentials for S3 client: {Message}", e.Message);
                     return;
                 }
 
@@ -105,7 +108,7 @@ namespace Triage.Mortician.ExcelAnalyzer
                     }
                     catch (Exception e)
                     {
-                        Log.Error($"Unable to upload {message.ReportFile} to S3: {e.Message}", e);
+                        Log.Error(e, "Unable to upload {ReportFile} to S3: {Message}", message.ReportFile, e.Message);
                     }
                 }
             }, cancellationToken);

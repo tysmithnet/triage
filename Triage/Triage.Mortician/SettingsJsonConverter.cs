@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Serilog;
 using Triage.Mortician.Core;
+using Slog = Serilog.Log;
 
 namespace Triage.Mortician
 {
@@ -13,6 +15,7 @@ namespace Triage.Mortician
     /// <seealso cref="ISettings" />
     internal class SettingsJsonConverter : JsonConverter<IEnumerable<ISettings>>
     {
+        internal ILogger Log { get; } = Slog.ForContext<SettingsJsonConverter>();
         /// <summary>
         ///     Reads the JSON representation of the object.
         /// </summary>
@@ -31,8 +34,7 @@ namespace Triage.Mortician
             IEnumerable<ISettings> existingValue, bool hasExistingValue,
             JsonSerializer serializer)
         {
-            var rootObject = JToken.ReadFrom(reader) as JObject;
-            if (rootObject == null)
+            if (!(JToken.ReadFrom(reader) is JObject rootObject))
                 throw new SerializationException(
                     "Settings file must contain a single object, which property names of the settings types");
             var settings = new List<ISettings>();
@@ -49,7 +51,7 @@ namespace Triage.Mortician
                 }
                 catch (Exception e)
                 {
-                    // log?
+                    Log.Error(e, "Unable to retore settings for {@ClassName}", className);
                 }
             }
 

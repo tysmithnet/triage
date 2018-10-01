@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.Core.Test
 {
-    public class DumpThread_Should
+    public class DumpThread_Should : BaseTest
     {
         [Fact]
         public void Return_The_Correct_StackTrace()
@@ -17,19 +13,16 @@ namespace Triage.Mortician.Core.Test
             var dumpThread = new DumpThread();
             var items = new[]
             {
-                new DumpStackFrame()
+                new DumpStackFrame
                 {
                     DisplayString = "Foo()"
                 },
-                new DumpStackFrame()
+                new DumpStackFrame
                 {
                     DisplayString = "Bar()"
                 }
             };
-            foreach (var dumpStackFrame in items)
-            {
-                dumpThread.ManagedStackFramesInternal.Add(dumpStackFrame);
-            }
+            foreach (var dumpStackFrame in items) dumpThread.ManagedStackFramesInternal.Add(dumpStackFrame);
 
             // act
             // assert

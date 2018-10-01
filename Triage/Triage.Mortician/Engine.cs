@@ -17,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
 using Triage.Mortician.Core;
+using Slog = Serilog.Log;
 
 namespace Triage.Mortician
 {
@@ -29,6 +30,7 @@ namespace Triage.Mortician
     [Export(typeof(IEngine))]
     public class Engine : IEngine
     {
+        internal ILogger Log { get; } = Slog.ForContext<Engine>();
         /// <summary>
         ///     The log
         /// </summary>

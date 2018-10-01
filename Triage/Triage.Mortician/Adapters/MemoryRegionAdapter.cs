@@ -14,8 +14,10 @@
 
 using System;
 using Microsoft.Diagnostics.Runtime;
+using Serilog;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using ClrMemoryRegionType = Triage.Mortician.Core.ClrMdAbstractions.ClrMemoryRegionType;
+using Slog = Serilog.Log;
 
 namespace Triage.Mortician.Adapters
 {
@@ -25,6 +27,8 @@ namespace Triage.Mortician.Adapters
     /// <seealso cref="Triage.Mortician.Core.ClrMdAbstractions.IClrMemoryRegion" />
     internal class MemoryRegionAdapter : BaseAdapter, IClrMemoryRegion
     {
+        internal ILogger Log { get; } = Slog.ForContext<MemoryRegionAdapter>();
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="MemoryRegionAdapter" /> class.
         /// </summary>
@@ -44,7 +48,7 @@ namespace Triage.Mortician.Adapters
             }
             catch (Exception)
             {
-                // todo: something
+                Log.ForContext<MemoryRegionAdapter>().Information("Unable to get the GcSegmentType");
             }
             try
             {
@@ -52,7 +56,7 @@ namespace Triage.Mortician.Adapters
             }
             catch (Exception)
             {
-                // todo: something
+                
             }
         }
 

@@ -1,9 +1,10 @@
 ﻿using FluentAssertions;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.Test
 {
-    public class StringExtractor_Should
+    public class StringExtractor_Should : BaseTest
     {
         [Fact]
         public void Extract_The_Correct_String_Value()

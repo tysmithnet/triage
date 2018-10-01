@@ -1,25 +1,19 @@
-﻿using System;
-using System.ComponentModel.Composition;
-using System.Diagnostics;
+﻿using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using FluentAssertions.Types;
-using Serilog;
-using Serilog.Sinks.Elasticsearch;
 using Triage.Mortician.Core;
 using Triage.Mortician.IntegrationTest.Scenarios;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.IntegrationTest
 {
-    public class HelloWorld_Should : Test
+    public class HelloWorld_Should : BaseTest
     {
         internal class TestAnalyzer : IAnalyzer
         {
-            public int AppDomainCount { get; set; }
-
             /// <inheritdoc />
             public Task Process(CancellationToken cancellationToken)
             {
@@ -29,6 +23,8 @@ namespace Triage.Mortician.IntegrationTest
 
             /// <inheritdoc />
             public Task Setup(CancellationToken cancellationToken) => Task.CompletedTask;
+
+            public int AppDomainCount { get; set; }
 
             [Import]
             public IDumpAppDomainRepository AppDomainRepo { get; set; }
@@ -53,6 +49,7 @@ namespace Triage.Mortician.IntegrationTest
         public void Perform_Basic_Startup_Without_Failure()
         {
             // arrange
+            var program = new Program();
             var dumpFile = Scenario.HelloWorld.GetDumpFile();
             var options = new DefaultOptions
             {
@@ -62,7 +59,7 @@ namespace Triage.Mortician.IntegrationTest
             var analyzer = new TestAnalyzer();
 
             // act
-            var result = Program.DefaultExecution(options, container =>
+            var result = program.DefaultExecution(options, container =>
             {
                 container.ComposeParts(analyzer);
                 container.ComposeExportedValue<IAnalyzer>(analyzer);
@@ -77,7 +74,9 @@ namespace Triage.Mortician.IntegrationTest
             analyzer.TypeRepo.Get().FirstOrDefault(t => t.Name == "Triage.TestApplications.Console.Address").Should()
                 .NotBeNull();
             analyzer.ThreadRepo.Get().Any(t =>
-                t.ManagedStackFrames.Any(f => f.DisplayString.Contains("Triage.TestApplications.Console.Program.Main"))).Should().BeTrue();
+                    t.ManagedStackFrames.Any(f =>
+                        f.DisplayString.Contains("Triage.TestApplications.Console.Program.Main")))
+                .Should().BeTrue();
         }
     }
 }

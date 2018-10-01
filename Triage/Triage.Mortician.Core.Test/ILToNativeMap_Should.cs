@@ -1,10 +1,11 @@
 ﻿using FluentAssertions;
 using Triage.Mortician.Core.ClrMdAbstractions;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.Core.Test
 {
-    public class ILToNativeMap_Should
+    public class ILToNativeMap_Should : BaseTest
     {
         [Fact]
         public void Have_The_Correct_To_String()

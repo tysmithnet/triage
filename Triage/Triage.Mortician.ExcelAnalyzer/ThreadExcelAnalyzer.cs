@@ -4,7 +4,7 @@
 // Created          : 01-15-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 10-01-2018
 // ***********************************************************************
 // <copyright file="ThreadExcelAnalyzer.cs" company="">
 //     Copyright ©  2018
@@ -22,6 +22,7 @@ using Serilog;
 using SpreadsheetLight;
 using Triage.Mortician.Analyzers;
 using Triage.Mortician.Core;
+using Slog = Serilog.Log;
 
 namespace Triage.Mortician.ExcelAnalyzer
 {
@@ -34,7 +35,6 @@ namespace Triage.Mortician.ExcelAnalyzer
     [Export(typeof(IExcelAnalyzer))]
     public class ThreadExcelAnalyzer : IExcelAnalyzer
     {
-
         /// <summary>
         ///     Contributes the specified shared document.
         /// </summary>
@@ -149,5 +149,11 @@ namespace Triage.Mortician.ExcelAnalyzer
         /// </summary>
         /// <value>The unique stacks message.</value>
         protected internal UniqueStacksMessage UniqueStacksMessage { get; set; }
+
+        /// <summary>
+        ///     Gets the log.
+        /// </summary>
+        /// <value>The log.</value>
+        internal ILogger Log { get; } = Slog.ForContext<ThreadExcelAnalyzer>();
     }
 }
