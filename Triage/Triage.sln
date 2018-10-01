@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician.Analyzers"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician", "Triage.Mortician\Triage.Mortician.csproj", "{8AA350BC-CF5F-4302-92AB-1997357049BA}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Triage.TestApplications", "Triage.TestApplications", "{2D8CD7F7-734E-4ECE-8DC0-62B6AA25B790}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Applications", "Test Applications", "{2D8CD7F7-734E-4ECE-8DC0-62B6AA25B790}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.TestApplications.Console", "Triage.TestApplications.Console\Triage.TestApplications.Console.csproj", "{9C21D660-D251-4CB0-A23C-C9039D9B52DF}"
 EndProject
