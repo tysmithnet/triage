@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using Triage.Mortician.Core;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.Test
 {
-    public class Engine_Should
+    public class Engine_Should : BaseTest
     {
         [Fact]
         public async Task Shutdown_The_Event_Hub_When_Analyzers_Have_Finished()

@@ -6,10 +6,10 @@ namespace Triage.Testing.Common
 {
     public class BaseTest : IDisposable
     {
-        /// <inheritdoc />
-        public void Dispose()
+        public BaseTest()
         {
             Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
                 .Enrich.WithThreadId()
                 .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
                 {
@@ -17,6 +17,12 @@ namespace Triage.Testing.Common
                     AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6,
                     QueueSizeLimit = 1
                 }).CreateLogger();
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Log.CloseAndFlush();
         }
     }
 }

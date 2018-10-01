@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.Core.Test
 {
-    public class DumpThread_Should
+    public class DumpThread_Should : BaseTest
     {
         [Fact]
         public void Return_The_Correct_StackTrace()

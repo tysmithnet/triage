@@ -1,9 +1,10 @@
 ﻿using FluentAssertions;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.Core.Test
 {
-    public class DumpObject_Should
+    public class DumpObject_Should : BaseTest
     {
         [Fact]
         public void Correctly_Add_A_Reference_Object()

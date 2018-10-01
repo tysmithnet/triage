@@ -2,11 +2,12 @@
 using System.Linq;
 using FluentAssertions;
 using Triage.Mortician.Reports.Runaway;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.Test
 {
-    public class RunawayReportFactory_Should
+    public class RunawayReportFactory_Should : BaseTest
     {
         private const string BASIC0 = @" User Mode Time
   Thread       Time

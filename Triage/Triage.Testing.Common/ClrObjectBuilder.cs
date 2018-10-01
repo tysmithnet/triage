@@ -1,7 +1,7 @@
 ﻿using Moq;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
-namespace Triage.Mortician.Test
+namespace Triage.Testing.Common
 {
     public class ClrObjectBuilder
     {

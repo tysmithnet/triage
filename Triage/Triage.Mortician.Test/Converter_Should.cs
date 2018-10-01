@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Moq;
+﻿using FluentAssertions;
 using Triage.Mortician.Core.ClrMdAbstractions;
+using Triage.Testing.Common;
 using Xunit;
 using ClrMd = Microsoft.Diagnostics.Runtime;
 
 namespace Triage.Mortician.Test
 {
-    public class Converter_Should
+    public class Converter_Should : BaseTest
     {
         [Fact]
         public void Convert_Architecture()
@@ -25,19 +20,6 @@ namespace Triage.Mortician.Test
             sut.Convert(ClrMd.Architecture.X86).Should().Be(Architecture.X86);
             sut.Convert(ClrMd.Architecture.Amd64).Should().Be(Architecture.Amd64);
             sut.Convert(ClrMd.Architecture.Arm).Should().Be(Architecture.Arm);
-        }
-
-        [Fact]
-        public void Convert_GCSegmentType()
-        {
-            // arrange
-            var sut = new Converter();
-            
-            // act
-            // assert
-            sut.Convert(ClrMd.GCSegmentType.Ephemeral).Should().Be(GcSegmentType.Ephemeral);
-            sut.Convert(ClrMd.GCSegmentType.LargeObject).Should().Be(GcSegmentType.LargeObject);
-            sut.Convert(ClrMd.GCSegmentType.Regular).Should().Be(GcSegmentType.Regular);
         }
 
         [Fact]
@@ -93,6 +75,67 @@ namespace Triage.Mortician.Test
         }
 
         [Fact]
+        public void Convert_Gc_Mode()
+        {
+            // arrange
+            var sut = new Converter();
+
+            // act
+            // assert
+            sut.Convert(ClrMd.GcMode.Cooperative).Should().Be(GcMode.Cooperative);
+            sut.Convert(ClrMd.GcMode.Preemptive).Should().Be(GcMode.Preemptive);
+        }
+
+        [Fact]
+        public void Convert_Gc_Root_Kind()
+        {
+            // arrange
+            var sut = new Converter();
+
+            // act
+            // assert
+            sut.Convert(ClrMd.GCRootKind.StaticVar).Should().Be(GcRootKind.StaticVar);
+            sut.Convert(ClrMd.GCRootKind.ThreadStaticVar).Should().Be(GcRootKind.ThreadStaticVar);
+            sut.Convert(ClrMd.GCRootKind.LocalVar).Should().Be(GcRootKind.LocalVar);
+            sut.Convert(ClrMd.GCRootKind.Strong).Should().Be(GcRootKind.Strong);
+            sut.Convert(ClrMd.GCRootKind.Weak).Should().Be(GcRootKind.Weak);
+            sut.Convert(ClrMd.GCRootKind.Pinning).Should().Be(GcRootKind.Pinning);
+            sut.Convert(ClrMd.GCRootKind.Finalizer).Should().Be(GcRootKind.Finalizer);
+            sut.Convert(ClrMd.GCRootKind.AsyncPinning).Should().Be(GcRootKind.AsyncPinning);
+        }
+
+        [Fact]
+        public void Convert_GCSegmentType()
+        {
+            // arrange
+            var sut = new Converter();
+
+            // act
+            // assert
+            sut.Convert(ClrMd.GCSegmentType.Ephemeral).Should().Be(GcSegmentType.Ephemeral);
+            sut.Convert(ClrMd.GCSegmentType.LargeObject).Should().Be(GcSegmentType.LargeObject);
+            sut.Convert(ClrMd.GCSegmentType.Regular).Should().Be(GcSegmentType.Regular);
+        }
+
+        [Fact]
+        public void Convert_Handle_Type()
+        {
+            // arrange
+            var sut = new Converter();
+
+            // act
+            // assert
+            sut.Convert(ClrMd.HandleType.WeakShort).Should().Be(HandleType.WeakShort);
+            sut.Convert(ClrMd.HandleType.WeakLong).Should().Be(HandleType.WeakLong);
+            sut.Convert(ClrMd.HandleType.Strong).Should().Be(HandleType.Strong);
+            sut.Convert(ClrMd.HandleType.Pinned).Should().Be(HandleType.Pinned);
+            sut.Convert(ClrMd.HandleType.RefCount).Should().Be(HandleType.RefCount);
+            sut.Convert(ClrMd.HandleType.Dependent).Should().Be(HandleType.Dependent);
+            sut.Convert(ClrMd.HandleType.AsyncPinned).Should().Be(HandleType.AsyncPinned);
+            sut.Convert(ClrMd.HandleType.SizedRef).Should().Be(HandleType.SizedRef);
+        }
+
+        [Fact]
         public void Convert_Memory_Region_Type()
         {
             // arrange
@@ -100,8 +143,10 @@ namespace Triage.Mortician.Test
 
             // act
             // assert
-            sut.Convert(ClrMd.ClrMemoryRegionType.LowFrequencyLoaderHeap).Should().Be(ClrMemoryRegionType.LowFrequencyLoaderHeap);
-            sut.Convert(ClrMd.ClrMemoryRegionType.HighFrequencyLoaderHeap).Should().Be(ClrMemoryRegionType.HighFrequencyLoaderHeap);
+            sut.Convert(ClrMd.ClrMemoryRegionType.LowFrequencyLoaderHeap).Should()
+                .Be(ClrMemoryRegionType.LowFrequencyLoaderHeap);
+            sut.Convert(ClrMd.ClrMemoryRegionType.HighFrequencyLoaderHeap).Should()
+                .Be(ClrMemoryRegionType.HighFrequencyLoaderHeap);
             sut.Convert(ClrMd.ClrMemoryRegionType.StubHeap).Should().Be(ClrMemoryRegionType.StubHeap);
             sut.Convert(ClrMd.ClrMemoryRegionType.IndcellHeap).Should().Be(ClrMemoryRegionType.IndcellHeap);
             sut.Convert(ClrMd.ClrMemoryRegionType.LookupHeap).Should().Be(ClrMemoryRegionType.LookupHeap);
@@ -111,7 +156,8 @@ namespace Triage.Mortician.Test
             sut.Convert(ClrMd.ClrMemoryRegionType.JitHostCodeHeap).Should().Be(ClrMemoryRegionType.JitHostCodeHeap);
             sut.Convert(ClrMd.ClrMemoryRegionType.JitLoaderCodeHeap).Should().Be(ClrMemoryRegionType.JitLoaderCodeHeap);
             sut.Convert(ClrMd.ClrMemoryRegionType.ModuleThunkHeap).Should().Be(ClrMemoryRegionType.ModuleThunkHeap);
-            sut.Convert(ClrMd.ClrMemoryRegionType.ModuleLookupTableHeap).Should().Be(ClrMemoryRegionType.ModuleLookupTableHeap);
+            sut.Convert(ClrMd.ClrMemoryRegionType.ModuleLookupTableHeap).Should()
+                .Be(ClrMemoryRegionType.ModuleLookupTableHeap);
             sut.Convert(ClrMd.ClrMemoryRegionType.GCSegment).Should().Be(ClrMemoryRegionType.GCSegment);
             sut.Convert(ClrMd.ClrMemoryRegionType.ReservedGCSegment).Should().Be(ClrMemoryRegionType.ReservedGCSegment);
             sut.Convert(ClrMd.ClrMemoryRegionType.HandleTableChunk).Should().Be(ClrMemoryRegionType.HandleTableChunk);
@@ -145,36 +191,6 @@ namespace Triage.Mortician.Test
         }
 
         [Fact]
-        public void Convert_Gc_Mode()
-        {
-            // arrange
-            var sut = new Converter();
-
-            // act
-            // assert
-            sut.Convert(ClrMd.GcMode.Cooperative).Should().Be(GcMode.Cooperative);
-            sut.Convert(ClrMd.GcMode.Preemptive).Should().Be(GcMode.Preemptive);
-        }
-
-        [Fact]
-        public void Convert_Gc_Root_Kind()
-        {
-            // arrange
-            var sut = new Converter();
-
-            // act
-            // assert
-            sut.Convert(ClrMd.GCRootKind.StaticVar).Should().Be(GcRootKind.StaticVar);
-            sut.Convert(ClrMd.GCRootKind.ThreadStaticVar).Should().Be(GcRootKind.ThreadStaticVar);
-            sut.Convert(ClrMd.GCRootKind.LocalVar).Should().Be(GcRootKind.LocalVar);
-            sut.Convert(ClrMd.GCRootKind.Strong).Should().Be(GcRootKind.Strong);
-            sut.Convert(ClrMd.GCRootKind.Weak).Should().Be(GcRootKind.Weak);
-            sut.Convert(ClrMd.GCRootKind.Pinning).Should().Be(GcRootKind.Pinning);
-            sut.Convert(ClrMd.GCRootKind.Finalizer).Should().Be(GcRootKind.Finalizer);
-            sut.Convert(ClrMd.GCRootKind.AsyncPinning).Should().Be(GcRootKind.AsyncPinning);
-        }
-
-        [Fact]
         public void Convert_WorkItem_Kind()
         {
             // arrange
@@ -187,24 +203,6 @@ namespace Triage.Mortician.Test
             sut.Convert(ClrMd.WorkItemKind.AsyncCallback).Should().Be(WorkItemKind.AsyncCallback);
             sut.Convert(ClrMd.WorkItemKind.QueueUserWorkItem).Should().Be(WorkItemKind.QueueUserWorkItem);
             sut.Convert(ClrMd.WorkItemKind.TimerDelete).Should().Be(WorkItemKind.TimerDelete);
-        }
-
-        [Fact]
-        public void Convert_Handle_Type()
-        {
-            // arrange
-            var sut = new Converter();
-
-            // act
-            // assert
-            sut.Convert(ClrMd.HandleType.WeakShort).Should().Be(HandleType.WeakShort);
-            sut.Convert(ClrMd.HandleType.WeakLong).Should().Be(HandleType.WeakLong);
-            sut.Convert(ClrMd.HandleType.Strong).Should().Be(HandleType.Strong);
-            sut.Convert(ClrMd.HandleType.Pinned).Should().Be(HandleType.Pinned);
-            sut.Convert(ClrMd.HandleType.RefCount).Should().Be(HandleType.RefCount);
-            sut.Convert(ClrMd.HandleType.Dependent).Should().Be(HandleType.Dependent);
-            sut.Convert(ClrMd.HandleType.AsyncPinned).Should().Be(HandleType.AsyncPinned);
-            sut.Convert(ClrMd.HandleType.SizedRef).Should().Be(HandleType.SizedRef);
         }
     }
 }

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using FluentAssertions;
 using Triage.Mortician.Core;
 using Triage.Mortician.Repositories;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.Test
 {
-    public class DumpThreadRepository_Should
+    public class DumpThreadRepository_Should : BaseTest
     {
         [Fact]
         public void Get_A_Thread_By_Os_Id()

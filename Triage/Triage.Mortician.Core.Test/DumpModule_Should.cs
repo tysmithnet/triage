@@ -2,11 +2,12 @@
 using System.Diagnostics;
 using FluentAssertions;
 using Triage.Mortician.Core.ClrMdAbstractions;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.Core.Test
 {
-    public class DumpModule_Should
+    public class DumpModule_Should : BaseTest
     {
         [Fact]
         public void Set_Member_Values_Correctly()
