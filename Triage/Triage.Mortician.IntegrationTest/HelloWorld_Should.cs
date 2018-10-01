@@ -49,6 +49,7 @@ namespace Triage.Mortician.IntegrationTest
         public void Perform_Basic_Startup_Without_Failure()
         {
             // arrange
+            var program = new Program();
             var dumpFile = Scenario.HelloWorld.GetDumpFile();
             var options = new DefaultOptions
             {
@@ -58,7 +59,7 @@ namespace Triage.Mortician.IntegrationTest
             var analyzer = new TestAnalyzer();
 
             // act
-            var result = Program.DefaultExecution(options, container =>
+            var result = program.DefaultExecution(options, container =>
             {
                 container.ComposeParts(analyzer);
                 container.ComposeExportedValue<IAnalyzer>(analyzer);

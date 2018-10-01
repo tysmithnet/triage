@@ -22,6 +22,7 @@ using Serilog;
 using Triage.Mortician.Core;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using Triage.Mortician.Repositories;
+using Slog = Serilog.Log;
 
 namespace Triage.Mortician
 {
@@ -30,6 +31,8 @@ namespace Triage.Mortician
     /// </summary>
     internal class CoreComponentFactory
     {
+        internal ILogger Log { get; } = Slog.ForContext<CoreComponentFactory>();
+
         /// <summary>
         ///     The error type
         /// </summary>

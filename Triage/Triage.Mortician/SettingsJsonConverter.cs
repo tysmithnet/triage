@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;
 using Triage.Mortician.Core;
+using Slog = Serilog.Log;
 
 namespace Triage.Mortician
 {
@@ -14,6 +15,7 @@ namespace Triage.Mortician
     /// <seealso cref="ISettings" />
     internal class SettingsJsonConverter : JsonConverter<IEnumerable<ISettings>>
     {
+        internal ILogger Log { get; } = Slog.ForContext<SettingsJsonConverter>();
         /// <summary>
         ///     Reads the JSON representation of the object.
         /// </summary>
