@@ -4,7 +4,7 @@
 // Created          : 09-18-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 10-01-2018
 // ***********************************************************************
 // <copyright file="DumpAppDomain.cs" company="">
 //     Copyright ©  2017
@@ -28,6 +28,29 @@ namespace Triage.Mortician.Core
         ///     the mutable internal version
         /// </summary>
         protected internal List<DumpModule> LoadedModulesInternal = new List<DumpModule>();
+
+        /// <summary>
+        ///     The handles
+        /// </summary>
+        internal IList<DumpHandle> Handles = new List<DumpHandle>();
+
+        /// <summary>
+        ///     Adds the handle.
+        /// </summary>
+        /// <param name="handle">The handle.</param>
+        public void AddHandle(DumpHandle handle)
+        {
+            Handles.Add(handle);
+        }
+
+        /// <summary>
+        ///     Adds the module.
+        /// </summary>
+        /// <param name="module">The module.</param>
+        public void AddModule(DumpModule module)
+        {
+            LoadedModulesInternal.Add(module);
+        }
 
         /// <summary>
         ///     Gets or sets the address of where the app domain has been loaded in memory
@@ -58,17 +81,5 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The name.</value>
         public string Name { get; protected internal set; }
-
-        public void AddModule(DumpModule module)
-        {
-            LoadedModulesInternal.Add(module);
-        }
-
-        public void AddHandle(DumpHandle handle)
-        {
-            Handles.Add(handle);
-        }
-
-        internal IList<DumpHandle> Handles = new List<DumpHandle>();
     }
 }

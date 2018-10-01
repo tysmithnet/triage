@@ -1,4 +1,18 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.Core
+// Author           : @tysmithnet
+// Created          : 09-24-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 10-01-2018
+// ***********************************************************************
+// <copyright file="DumpModule.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -10,19 +24,21 @@ namespace Triage.Mortician.Core
     /// </summary>
     public class DumpModule
     {
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DumpModule" /> class.
+        /// </summary>
+        /// <param name="dumpModuleKey">The dump module key.</param>
+        /// <exception cref="ArgumentNullException">dumpModuleKey</exception>
+        public DumpModule(DumpModuleKey dumpModuleKey)
+        {
+            Key = dumpModuleKey ?? throw new ArgumentNullException(nameof(dumpModuleKey));
+        }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DumpModule" /> class.
+        /// </summary>
         internal DumpModule()
         {
-        }
-
-        internal void AddAppDomain(DumpAppDomain domain)
-        {
-            AppDomainsInternal.Add(domain);
-        }
-
-        internal void AddType(DumpType type)
-        {
-            TypesInternal.Add(type);
         }
 
         /// <summary>
@@ -35,9 +51,22 @@ namespace Triage.Mortician.Core
         /// </summary>
         protected internal List<DumpType> TypesInternal = new List<DumpType>();
 
-        public DumpModule(DumpModuleKey dumpModuleKey)
+        /// <summary>
+        ///     Adds the application domain.
+        /// </summary>
+        /// <param name="domain">The domain.</param>
+        internal void AddAppDomain(DumpAppDomain domain)
         {
-            Key = dumpModuleKey ?? throw new ArgumentNullException(nameof(dumpModuleKey));
+            AppDomainsInternal.Add(domain);
+        }
+
+        /// <summary>
+        ///     Adds the type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        internal void AddType(DumpType type)
+        {
+            TypesInternal.Add(type);
         }
 
         /// <summary>
@@ -46,6 +75,11 @@ namespace Triage.Mortician.Core
         /// <value>The application domains.</value>
         public IEnumerable<DumpAppDomain> AppDomains => AppDomainsInternal;
 
+        /// <summary>
+        ///     Gets the assembly identifier.
+        /// </summary>
+        /// <value>The assembly identifier.</value>
+        public ulong AssemblyId => Key.AssemblyId;
 
         /// <summary>
         ///     Gets or sets the debugging mode for this assembly (edit and continue, etc)
@@ -79,13 +113,17 @@ namespace Triage.Mortician.Core
         public bool IsFile { get; protected internal set; }
 
         /// <summary>
+        ///     Gets or sets the key.
+        /// </summary>
+        /// <value>The key.</value>
+        public DumpModuleKey Key { get; set; }
+
+        /// <summary>
         ///     Gets or sets the name of this module
         /// </summary>
         /// <value>The name.</value>
         public string Name => Key.Name;
 
-        public ulong AssemblyId => Key.AssemblyId;
-        
         /// <summary>
         ///     Gets or sets the PDB guid if available
         /// </summary>
@@ -97,7 +135,5 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The size.</value>
         public ulong Size { get; protected internal set; }
-
-        public DumpModuleKey Key { get; set; }
     }
 }

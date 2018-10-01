@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 10-01-2018
 // ***********************************************************************
 // <copyright file="DumpObjectRoot.cs" company="">
 //     Copyright ©  2017
@@ -25,6 +25,15 @@ namespace Triage.Mortician.Core
     public class DumpObjectRoot
     {
         /// <summary>
+        ///     Adds the thread.
+        /// </summary>
+        /// <param name="thread">The thread.</param>
+        public void AddThread(DumpThread thread)
+        {
+            Threads.Add(thread);
+        }
+
+        /// <summary>
         ///     Gets or sets the address of this object root
         /// </summary>
         /// <value>The address.</value>
@@ -36,6 +45,10 @@ namespace Triage.Mortician.Core
         /// <value>The application domain.</value>
         public DumpAppDomain AppDomain { get; protected internal set; }
 
+        /// <summary>
+        ///     Gets or sets the kind of the gc root.
+        /// </summary>
+        /// <value>The kind of the gc root.</value>
         public GcRootKind GcRootKind { get; set; }
 
         /// <summary>
@@ -44,7 +57,6 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value><c>true</c> if this instance is interior pointer; otherwise, <c>false</c>.</value>
         public bool IsInteriorPointer { get; protected internal set; }
-
 
         /// <summary>
         ///     Gets or sets a value indicating whether the object being kept in memory is
@@ -60,7 +72,7 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value><c>true</c> if this instance is possible false positive; otherwise, <c>false</c>.</value>
         public bool IsPossibleFalsePositive { get; protected internal set; }
-        
+
         /// <summary>
         ///     Gets or sets the name of this object root
         /// </summary>
@@ -80,12 +92,16 @@ namespace Triage.Mortician.Core
         /// <exception cref="NotImplementedException">You still need to implement stack frame in object root</exception>
         public DumpStackFrame StackFrame { get; protected internal set; }
 
+        /// <summary>
+        ///     Gets or sets the threads.
+        /// </summary>
+        /// <value>The threads.</value>
         public IList<DumpThread> Threads { get; set; } = new List<DumpThread>();
-        public DumpType Type { get; set; }
 
-        public void AddThread(DumpThread thread)
-        {
-            Threads.Add(thread);
-        }
+        /// <summary>
+        ///     Gets or sets the type.
+        /// </summary>
+        /// <value>The type.</value>
+        public DumpType Type { get; set; }
     }
 }

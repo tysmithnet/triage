@@ -4,7 +4,7 @@
 // Created          : 09-17-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 10-01-2018
 // ***********************************************************************
 // <copyright file="IDumpObjectRepository.cs" company="">
 //     Copyright ©  2017
@@ -12,7 +12,6 @@
 // <summary></summary>
 // ***********************************************************************
 
-using System;
 using System.Collections.Generic;
 
 namespace Triage.Mortician.Core
@@ -22,6 +21,18 @@ namespace Triage.Mortician.Core
     /// </summary>
     public interface IDumpObjectRepository
     {
+        /// <summary>
+        ///     Blockings the objects.
+        /// </summary>
+        /// <returns>IEnumerable&lt;DumpBlockingObject&gt;.</returns>
+        IEnumerable<DumpBlockingObject> BlockingObjects();
+
+        /// <summary>
+        ///     Finalizers the queue.
+        /// </summary>
+        /// <returns>IEnumerable&lt;DumpObject&gt;.</returns>
+        IEnumerable<DumpObject> FinalizerQueue();
+
         /// <summary>
         ///     Gets the object at the specified address
         /// </summary>
@@ -35,9 +46,5 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <returns>All dump objects extracted from the heap</returns>
         IEnumerable<DumpObject> Get();
-
-        IEnumerable<DumpObject> FinalizerQueue();
-
-        IEnumerable<DumpBlockingObject> BlockingObjects();
     }
 }

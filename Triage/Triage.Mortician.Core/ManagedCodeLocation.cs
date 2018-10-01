@@ -1,4 +1,18 @@
-﻿namespace Triage.Mortician.Core
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.Core
+// Author           : @tysmithnet
+// Created          : 09-27-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 10-01-2018
+// ***********************************************************************
+// <copyright file="ManagedCodeLocation.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+namespace Triage.Mortician.Core
 {
     /// <summary>
     ///     Class ManagedCodeLocation.

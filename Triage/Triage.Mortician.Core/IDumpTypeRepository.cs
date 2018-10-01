@@ -4,7 +4,7 @@
 // Created          : 09-17-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-24-2018
 // ***********************************************************************
 // <copyright file="IDumpTypeRepository.cs" company="">
 //     Copyright ©  2017
@@ -21,6 +21,10 @@ namespace Triage.Mortician.Core
     /// </summary>
     public interface IDumpTypeRepository
     {
+        /// <summary>
+        ///     Gets this instance.
+        /// </summary>
+        /// <returns>IEnumerable&lt;DumpType&gt;.</returns>
         IEnumerable<DumpType> Get();
     }
 }

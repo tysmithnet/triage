@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-27-2018
+// Last Modified On : 10-01-2018
 // ***********************************************************************
 // <copyright file="DumpObject.cs" company="">
 //     Copyright ©  2017
@@ -34,6 +34,13 @@ namespace Triage.Mortician.Core
             Address = address;
         }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DumpObject" /> class.
+        /// </summary>
+        /// <param name="address">The address.</param>
+        /// <param name="name">The name.</param>
+        /// <param name="size">The size.</param>
+        /// <param name="gen">The gen.</param>
         public DumpObject(ulong address, string name, ulong size, int gen)
         {
             Address = address;
@@ -116,10 +123,22 @@ namespace Triage.Mortician.Core
         public bool IsBoxed { get; set; }
 
         /// <summary>
+        ///     Gets or sets a value indicating whether this instance is finalizable.
+        /// </summary>
+        /// <value><c>true</c> if this instance is finalizable; otherwise, <c>false</c>.</value>
+        public bool IsFinalizable { get; set; }
+
+        /// <summary>
         ///     Gets a value indicating whether this instance is in finalizer queue.
         /// </summary>
         /// <value><c>true</c> if this instance is in finalizer queue; otherwise, <c>false</c>.</value>
         public bool IsInFinalizerQueue { get; internal set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is managed work item.
+        /// </summary>
+        /// <value><c>true</c> if this instance is managed work item; otherwise, <c>false</c>.</value>
+        public bool IsManagedWorkItem { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is null.
@@ -151,8 +170,5 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The type of the dump.</value>
         public DumpType Type { get; protected internal set; }
-
-        public bool IsFinalizable { get; set; }
-        public bool IsManagedWorkItem { get; set; }
     }
 }

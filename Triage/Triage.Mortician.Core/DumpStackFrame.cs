@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 10-01-2018
 // ***********************************************************************
 // <copyright file="DumpStackFrame.cs" company="">
 //     Copyright ©  2017
@@ -40,6 +40,12 @@ namespace Triage.Mortician.Core
         public bool IsManaged { get; protected internal set; }
 
         /// <summary>
+        ///     Gets or sets the kind.
+        /// </summary>
+        /// <value>The kind.</value>
+        public ClrStackFrameType Kind { get; set; }
+
+        /// <summary>
         ///     Gets or sets the name of the module that contains the code for this frame (can be null)
         /// </summary>
         /// <value>The name of the module.</value>
@@ -56,7 +62,5 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The thread.</value>
         public DumpThread Thread { get; protected internal set; }
-
-        public ClrStackFrameType Kind { get; set; }
     }
 }

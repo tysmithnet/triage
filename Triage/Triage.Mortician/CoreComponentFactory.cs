@@ -31,8 +31,6 @@ namespace Triage.Mortician
     /// </summary>
     internal class CoreComponentFactory
     {
-        internal ILogger Log { get; } = Slog.ForContext<CoreComponentFactory>();
-
         /// <summary>
         ///     The error type
         /// </summary>
@@ -43,6 +41,12 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="compositionContainer">The composition container.</param>
         /// <param name="dumpFile">The dump file.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     compositionContainer
+        ///     or
+        ///     dumpFile
+        /// </exception>
+        /// <exception cref="ApplicationException">Memory dump was not found. Is the path correct? Is it read only?</exception>
         /// <exception cref="System.ArgumentNullException">
         ///     compositionContainer
         ///     or
@@ -997,6 +1001,12 @@ namespace Triage.Mortician
         /// </summary>
         /// <value>The type to module mapping.</value>
         public Dictionary<DumpTypeKey, DumpTypeKey> TypeToModuleMapping { get; set; }
+
+        /// <summary>
+        ///     Gets the log.
+        /// </summary>
+        /// <value>The log.</value>
+        internal ILogger Log { get; } = Slog.ForContext<CoreComponentFactory>();
     }
 
     /// <summary>

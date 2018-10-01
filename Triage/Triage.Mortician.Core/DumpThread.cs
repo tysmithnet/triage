@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-26-2018
+// Last Modified On : 10-01-2018
 // ***********************************************************************
 // <copyright file="DumpThread.cs" company="">
 //     Copyright ©  2017
@@ -30,6 +30,48 @@ namespace Triage.Mortician.Core
         private string _stackTrace;
 
         /// <summary>
+        ///     Adds the blocking object.
+        /// </summary>
+        /// <param name="dumpBlockingObject">The dump blocking object.</param>
+        public void AddBlockingObject(DumpBlockingObject dumpBlockingObject)
+        {
+            BlockingObjects.Add(dumpBlockingObject);
+        }
+
+        /// <summary>
+        ///     Adds the root.
+        /// </summary>
+        /// <param name="dumpObjectRoot">The dump object root.</param>
+        public void AddRoot(DumpObjectRoot dumpObjectRoot)
+        {
+            Roots.Add(dumpObjectRoot);
+        }
+
+        /// <summary>
+        ///     Gets or sets the address.
+        /// </summary>
+        /// <value>The address.</value>
+        public ulong Address { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the application domain address.
+        /// </summary>
+        /// <value>The application domain address.</value>
+        public ulong AppDomainAddress { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the blocking objects.
+        /// </summary>
+        /// <value>The blocking objects.</value>
+        public IList<DumpBlockingObject> BlockingObjects { get; set; } = new List<DumpBlockingObject>();
+
+        /// <summary>
+        ///     Gets or sets the current exception.
+        /// </summary>
+        /// <value>The current exception.</value>
+        public DumpObject CurrentException { get; set; }
+
+        /// <summary>
         ///     Gets or sets the current frame of the thread
         /// </summary>
         /// <value>The current frame.</value>
@@ -43,10 +85,154 @@ namespace Triage.Mortician.Core
         public uint DebuggerIndex { get; protected internal set; }
 
         /// <summary>
+        ///     Gets or sets the gc mode.
+        /// </summary>
+        /// <value>The gc mode.</value>
+        public GcMode GcMode { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is aborted.
+        /// </summary>
+        /// <value><c>true</c> if this instance is aborted; otherwise, <c>false</c>.</value>
+        public bool IsAborted { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is abort requested.
+        /// </summary>
+        /// <value><c>true</c> if this instance is abort requested; otherwise, <c>false</c>.</value>
+        public bool IsAbortRequested { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is alive.
+        /// </summary>
+        /// <value><c>true</c> if this instance is alive; otherwise, <c>false</c>.</value>
+        public bool IsAlive { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is background.
+        /// </summary>
+        /// <value><c>true</c> if this instance is background; otherwise, <c>false</c>.</value>
+        public bool IsBackground { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is coinitialized.
+        /// </summary>
+        /// <value><c>true</c> if this instance is coinitialized; otherwise, <c>false</c>.</value>
+        public bool IsCoinitialized { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is created but not started.
+        /// </summary>
+        /// <value><c>true</c> if this instance is created but not started; otherwise, <c>false</c>.</value>
+        public bool IsCreatedButNotStarted { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is debugger helper.
+        /// </summary>
+        /// <value><c>true</c> if this instance is debugger helper; otherwise, <c>false</c>.</value>
+        public bool IsDebuggerHelper { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is debug suspended.
+        /// </summary>
+        /// <value><c>true</c> if this instance is debug suspended; otherwise, <c>false</c>.</value>
+        public bool IsDebugSuspended { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is finalizer.
+        /// </summary>
+        /// <value><c>true</c> if this instance is finalizer; otherwise, <c>false</c>.</value>
+        public bool IsFinalizer { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is gc.
+        /// </summary>
+        /// <value><c>true</c> if this instance is gc; otherwise, <c>false</c>.</value>
+        public bool IsGc { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is gc suspend pending.
+        /// </summary>
+        /// <value><c>true</c> if this instance is gc suspend pending; otherwise, <c>false</c>.</value>
+        public bool IsGcSuspendPending { get; set; }
+
+        /// <summary>
+        ///     Gets a value indicating whether this instance is gc thread.
+        /// </summary>
+        /// <value><c>true</c> if this instance is gc thread; otherwise, <c>false</c>.</value>
+        public bool IsGcThread { get; internal set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is MTA.
+        /// </summary>
+        /// <value><c>true</c> if this instance is MTA; otherwise, <c>false</c>.</value>
+        public bool IsMta { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is shutdown helper.
+        /// </summary>
+        /// <value><c>true</c> if this instance is shutdown helper; otherwise, <c>false</c>.</value>
+        public bool IsShutdownHelper { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is sta.
+        /// </summary>
+        /// <value><c>true</c> if this instance is sta; otherwise, <c>false</c>.</value>
+        public bool IsSta { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is suspending ee.
+        /// </summary>
+        /// <value><c>true</c> if this instance is suspending ee; otherwise, <c>false</c>.</value>
+        public bool IsSuspendingEe { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is threadpool completion port.
+        /// </summary>
+        /// <value><c>true</c> if this instance is threadpool completion port; otherwise, <c>false</c>.</value>
+        public bool IsThreadpoolCompletionPort { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is threadpool gate.
+        /// </summary>
+        /// <value><c>true</c> if this instance is threadpool gate; otherwise, <c>false</c>.</value>
+        public bool IsThreadpoolGate { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is threadpool timer.
+        /// </summary>
+        /// <value><c>true</c> if this instance is threadpool timer; otherwise, <c>false</c>.</value>
+        public bool IsThreadpoolTimer { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is threadpool wait.
+        /// </summary>
+        /// <value><c>true</c> if this instance is threadpool wait; otherwise, <c>false</c>.</value>
+        public bool IsThreadpoolWait { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is threadpool worker.
+        /// </summary>
+        /// <value><c>true</c> if this instance is threadpool worker; otherwise, <c>false</c>.</value>
+        public bool IsThreadpoolWorker { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is user suspended.
+        /// </summary>
+        /// <value><c>true</c> if this instance is user suspended; otherwise, <c>false</c>.</value>
+        public bool IsUserSuspended { get; set; }
+
+        /// <summary>
         ///     Gets or sets the kernel mode time.
         /// </summary>
         /// <value>The kernel mode time.</value>
         public TimeSpan KernelModeTime { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets the lock count.
+        /// </summary>
+        /// <value>The lock count.</value>
+        public uint LockCount { get; set; }
 
         // todo: don't expose writable collection
         /// <summary>
@@ -68,11 +254,29 @@ namespace Triage.Mortician.Core
         public uint OsId { get; protected internal set; }
 
         /// <summary>
+        ///     Gets or sets the roots.
+        /// </summary>
+        /// <value>The roots.</value>
+        public IList<DumpObjectRoot> Roots { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the stack limit.
+        /// </summary>
+        /// <value>The stack limit.</value>
+        public ulong StackLimit { get; set; }
+
+        /// <summary>
         ///     Gets the stack trace.
         /// </summary>
         /// <value>The stack trace.</value>
         public string StackTrace =>
             _stackTrace ?? (_stackTrace = string.Join("\n", ManagedStackFrames.Select(s => s.DisplayString)));
+
+        /// <summary>
+        ///     Gets or sets the teb.
+        /// </summary>
+        /// <value>The teb.</value>
+        public ulong Teb { get; set; }
 
         /// <summary>
         ///     Gets or sets the total time.
@@ -91,47 +295,5 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The managed stack frames internal.</value>
         internal IList<DumpStackFrame> ManagedStackFramesInternal { get; set; } = new List<DumpStackFrame>();
-
-        public bool IsGcThread { get; internal set; }
-        public uint LockCount { get; set; }
-        public ulong StackLimit { get; set; }
-        public ulong Address { get; set; }
-        public ulong AppDomainAddress { get; set; }
-        public GcMode GcMode { get; set; }
-        public bool IsSta { get; set; }
-        public bool IsAbortRequested { get; set; }
-        public bool IsAborted { get; set; }
-        public bool IsDebuggerHelper { get; set; }
-        public bool IsGc { get; set; }
-        public bool IsDebugSuspended { get; set; }
-        public bool IsCoinitialized { get; set; }
-        public bool IsBackground { get; set; }
-        public bool IsAlive { get; set; }
-        public ulong Teb { get; set; }
-        public bool IsUserSuspended { get; set; }
-        public bool IsFinalizer { get; set; }
-        public bool IsGcSuspendPending { get; set; }
-        public bool IsMta { get; set; }
-        public bool IsSuspendingEe { get; set; }
-        public bool IsShutdownHelper { get; set; }
-        public bool IsThreadpoolCompletionPort { get; set; }
-        public bool IsThreadpoolGate { get; set; }
-        public bool IsThreadpoolTimer { get; set; }
-        public bool IsThreadpoolWait { get; set; }
-        public bool IsThreadpoolWorker { get; set; }
-        public bool IsCreatedButNotStarted { get; set; }
-        public IList<DumpBlockingObject> BlockingObjects { get; set; } = new List<DumpBlockingObject>();
-        public IList<DumpObjectRoot> Roots { get; set; }
-        public DumpObject CurrentException { get; set; }
-
-        public void AddBlockingObject(DumpBlockingObject dumpBlockingObject)
-        {
-            BlockingObjects.Add(dumpBlockingObject);
-        }
-
-        public void AddRoot(DumpObjectRoot dumpObjectRoot)
-        {
-            Roots.Add(dumpObjectRoot);
-        }
     }
 }
