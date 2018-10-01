@@ -20,6 +20,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
 using Triage.Mortician.Core;
+using Slog = Serilog.Log;
 
 namespace Triage.Mortician
 {
@@ -31,6 +32,7 @@ namespace Triage.Mortician
     [Export(typeof(IAnalyzerTaskFactory))]
     public class AnalyzerTaskFactory : IAnalyzerTaskFactory
     {
+        internal ILogger Log { get; } = Slog.ForContext<AnalyzerTaskFactory>();
         /// <summary>
         ///     Starts the analyzers.
         /// </summary>

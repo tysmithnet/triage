@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using Serilog;
 using SpreadsheetLight;
 using Triage.Mortician.Core;
+using Slog = Serilog.Log;
 
 namespace Triage.Mortician.ExcelAnalyzer
 {
@@ -32,6 +33,8 @@ namespace Triage.Mortician.ExcelAnalyzer
     [Export(typeof(IExcelAnalyzer))]
     public class HeapExcelAnalyzer : IExcelAnalyzer
     {
+
+        internal ILogger Log { get; } = Slog.ForContext<HeapExcelAnalyzer>();
         /// <summary>
         ///     Contributes the specified shared document.
         /// </summary>
@@ -65,7 +68,7 @@ namespace Triage.Mortician.ExcelAnalyzer
                         stats[obj.FullTypeName].LohSize += obj.Size;
                         break;
                     default:
-                        Log.Warning($"Found obj with invalid gc gen: {obj.FullTypeName}({obj.Address}) - gen{obj.Gen}");
+                        Log.Warning("Found obj with invalid gc gen: {FullTypeName}({Address}) - gen{Gen}", obj.FullTypeName, obj.Address, obj.Gen);
                         continue;
                 }
             }

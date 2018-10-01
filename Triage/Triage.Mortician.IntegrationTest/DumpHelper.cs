@@ -16,7 +16,7 @@ namespace Triage.Mortician.IntegrationTest
 
         public static void CreateDump(string fileName = null)
         {
-            string dumpName = fileName ?? Assembly.GetEntryAssembly().GetName().Name + ".dmp";
+            var dumpName = fileName ?? Assembly.GetEntryAssembly().GetName().Name + ".dmp";
             if (File.Exists(dumpName))
                 return;
             var hFile = CreateFile(dumpName,
@@ -33,22 +33,20 @@ namespace Triage.Mortician.IntegrationTest
 
             var process = Process.GetCurrentProcess();
             if (!process.Is32BitProcess() && IntPtr.Size == 4)
-            {
                 throw new InvalidOperationException(
                     "Can't create 32 bit dump of 64 bit process"
                 );
-            }
 
-            var exceptInfo = new DumpHelper.MINIDUMP_EXCEPTION_INFORMATION();
-            var result = DumpHelper.MiniDumpWriteDump(
+            var exceptInfo = new MINIDUMP_EXCEPTION_INFORMATION();
+            var result = MiniDumpWriteDump(
                 process.Handle,
                 process.Id,
                 hFile,
-                _MINIDUMP_TYPE.MiniDumpWithFullMemory | _MINIDUMP_TYPE.MiniDumpWithProcessThreadData  |_MINIDUMP_TYPE.MiniDumpWithThreadInfo,
-
-        ref exceptInfo,
-                UserStreamParam: IntPtr.Zero,
-                CallbackParam: IntPtr.Zero
+                _MINIDUMP_TYPE.MiniDumpWithFullMemory | _MINIDUMP_TYPE.MiniDumpWithProcessThreadData |
+                _MINIDUMP_TYPE.MiniDumpWithThreadInfo,
+                ref exceptInfo,
+                IntPtr.Zero,
+                IntPtr.Zero
             );
             if (result == false)
             {
@@ -56,7 +54,7 @@ namespace Triage.Mortician.IntegrationTest
                 var ex = Marshal.GetExceptionForHR(hr);
                 throw ex;
             }
-            
+
             CloseHandle(hFile);
         }
 

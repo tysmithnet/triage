@@ -3,11 +3,12 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using FluentAssertions;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.Test
 {
-    public class CoreComponentFactory_Should
+    public class CoreComponentFactory_Should : BaseTest
     {
         [Fact]
         public void Throw_If_Crash_Dump_Cannot_Be_Loaded()

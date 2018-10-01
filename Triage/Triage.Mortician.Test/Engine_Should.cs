@@ -7,12 +7,59 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using Triage.Mortician.Core;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.Test
 {
-    public class Engine_Should
+    public class Engine_Should : BaseTest
     {
+        private class DummyAnalyzer : IAnalyzer
+        {
+            /// <inheritdoc />
+            public async Task Process(CancellationToken cancellationToken)
+            {
+                EventHub.Broadcast(new DummyMessage
+                {
+                    Amount = 5
+                });
+                Thread.Sleep(333);
+                await Task.Delay(333);
+                Thread.Sleep(333);
+                EventHub.Broadcast(new DummyMessage
+                {
+                    Amount = 5
+                });
+            }
+
+            /// <inheritdoc />
+            public Task Setup(CancellationToken cancellationToken) => Task.CompletedTask;
+
+            public IEventHub EventHub { get; internal set; }
+        }
+
+        private class DummyMessage : Message
+        {
+            public int Amount { get; set; }
+        }
+
+        private class DummyAnalysisObserver : IAnalysisObserver
+        {
+            /// <inheritdoc />
+            public Task Process(CancellationToken cancellationToken)
+            {
+                var messages = EventHub.Get<DummyMessage>();
+                var task = messages.Select(x => x.Amount).Sum().ToTask(cancellationToken);
+                Thread.Sleep(1000);
+                return task;
+            }
+
+            /// <inheritdoc />
+            public Task Setup(CancellationToken cancellationToken) => Task.CompletedTask;
+
+            public IEventHub EventHub { get; internal set; }
+        }
+
         [Fact]
         public async Task Shutdown_The_Event_Hub_When_Analyzers_Have_Finished()
         {
@@ -74,62 +121,6 @@ namespace Triage.Mortician.Test
             sw.ElapsedMilliseconds.Should().BeLessThan(2000);
             task.IsCompleted.Should().BeTrue();
             task.IsFaulted.Should().BeFalse();
-        }
-
-        private class DummyAnalyzer : IAnalyzer
-        {
-            public IEventHub EventHub { get; internal set; }
-
-            /// <inheritdoc />
-            public async Task Process(CancellationToken cancellationToken)
-            {
-                EventHub.Broadcast(new DummyMessage()
-                {
-                    Amount = 5
-                });
-                Thread.Sleep(333);
-                await Task.Delay(333);
-                Thread.Sleep(333);
-                EventHub.Broadcast(new DummyMessage()
-                {
-                    Amount = 5
-                });
-            }
-
-            /// <inheritdoc />
-            public Task Setup(CancellationToken cancellationToken)
-            {
-                return Task.CompletedTask;
-            }
-        }
-
-        private class DummyMessage : Message
-        {
-            public int Amount { get; set; }
-
-            public DummyMessage()
-            {
-            }
-        }
-
-        private class DummyAnalysisObserver : IAnalysisObserver
-        {
-            public IEventHub EventHub { get; internal set; }
-
-            /// <inheritdoc />
-            public Task Process(CancellationToken cancellationToken)
-            {
-                var messages = EventHub.Get<DummyMessage>();
-                var task = messages.Select(x => x.Amount).Sum().ToTask(cancellationToken);
-                Thread.Sleep(1000);
-                return task;
-            }
-
-            /// <inheritdoc />
-            public Task Setup(CancellationToken cancellationToken)
-            {
-                return Task.CompletedTask;
-            }
         }
     }
 }

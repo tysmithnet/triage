@@ -20,6 +20,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using CommandLine;
 using Serilog;
+using Serilog.Sinks.Elasticsearch;
 using Triage.Mortician.Core;
 
 namespace Triage.Mortician
@@ -38,7 +39,7 @@ namespace Triage.Mortician
         /// <param name="options">The options.</param>
         /// <param name="dependencyInjectionTransformer">The dependency injection transformer.</param>
         /// <returns>Program status code</returns>
-        internal static int DefaultExecution(DefaultOptions options,
+        internal int DefaultExecution(DefaultOptions options,
             Func<CompositionContainer, CompositionContainer> dependencyInjectionTransformer = null)
         {
             // todo: this feels like an awkward interface, it can probably be better
@@ -68,7 +69,7 @@ namespace Triage.Mortician
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Unable to load {assembly.FullName}, it will not be available because {e.Message}");
+                    Log.Error("Unable to load {FullName}, it will not be available because {Message}", assembly.FullName, e.Message);
                 }
 
             aggregateCatalog.Catalogs.Add(new AssemblyCatalog(Assembly.GetExecutingAssembly()));
@@ -89,11 +90,25 @@ namespace Triage.Mortician
         /// <param name="args">The arguments.</param>
         internal static void Main(string[] args)
         {
-            Log.Information($"Starting mortician at {DateTime.UtcNow} UTC");
-            WarnIfNoDebuggingKitOnPath();
+            var program = new Program();
 
+            // todo: better way to configure logging
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .Enrich.WithThreadId()
+                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
+                {
+                    AutoRegisterTemplate = true,
+                    AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6,
+                    QueueSizeLimit = 1
+                }).CreateLogger();
+
+
+            Log.Information("Starting mortician at {UtcNow} UTC", DateTime.UtcNow);
+
+            program.WarnIfNoDebuggingKitOnPath();
             Parser.Default.ParseArguments<DefaultOptions>(args).MapResult(
-                options => DefaultExecution(options),
+                options => program.DefaultExecution(options),
                 errs => -1
             );
         }
@@ -105,7 +120,7 @@ namespace Triage.Mortician
         ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64
         ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\winext
         /// </summary>
-        internal static void WarnIfNoDebuggingKitOnPath()
+        internal void WarnIfNoDebuggingKitOnPath()
         {
             var path = Environment.GetEnvironmentVariable("PATH") ?? "";
             if (!Regex.IsMatch(path, @"[Dd]ebuggers[/\\]x64"))

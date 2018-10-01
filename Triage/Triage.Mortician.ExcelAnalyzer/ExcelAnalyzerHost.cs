@@ -4,7 +4,7 @@
 // Created          : 01-14-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 10-01-2018
 // ***********************************************************************
 // <copyright file="ExcelAnalyzerHost.cs" company="">
 //     Copyright ©  2018
@@ -22,19 +22,20 @@ using System.Threading.Tasks;
 using Serilog;
 using SpreadsheetLight;
 using Triage.Mortician.Core;
+using Slog = Serilog.Log;
 
 namespace Triage.Mortician.ExcelAnalyzer
 {
     /// <summary>
     ///     Represents an analyzer that provides an environment for other excel analyzers to work
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Core.IAnalyzer" />
     /// <seealso cref="IAnalyzer" />
     /// <inheritdoc />
     /// <seealso cref="T:Triage.Mortician.Abstraction.IAnalyzer" />
     [Export(typeof(IAnalyzer))]
     public class ExcelAnalyzerHost : IAnalyzer
     {
-
         /// <summary>
         ///     Performs the analysis
         /// </summary>
@@ -69,20 +70,20 @@ namespace Triage.Mortician.ExcelAnalyzer
                     {
                         task.Exception?.Handle(exception =>
                         {
-                            Log.Error(
-                                $"ExcelAnalyzer {analyzer.GetType().FullName} failed during setup: {exception.GetType().FullName} - {exception.Message}",
-                                exception);
+                            Log.Error(exception,
+                                "ExcelAnalyzer {FullName} failed during setup: {FullName1} - {Message}",
+                                analyzer.GetType().FullName, exception.GetType().FullName, exception.Message);
                             return true;
                         });
                     }
                     else if (task.IsCanceled)
                     {
-                        Log.Warning($"ExcelAnalyzer {analyzer.GetType().FullName} was cancelled during setup");
+                        Log.Warning("ExcelAnalyzer {FullName} was cancelled during setup", analyzer.GetType().FullName);
                     }
                     else
                     {
-                        Log.Information(
-                            $"ExcelAnalyzer {analyzer.GetType().FullName} was successfully setup, starting contribution..");
+                        Log.Information("ExcelAnalyzer {FullName} was successfully setup, starting contribution..",
+                            analyzer.GetType().FullName);
                         analyzer.Contribute(doc);
                     }
 
@@ -94,17 +95,18 @@ namespace Triage.Mortician.ExcelAnalyzer
                 {
                     doc.SelectWorksheet("Summary");
                     doc.SaveAs(fileName);
-                    Log.Information($"Successfully saved report: {fileName}");
+                    Log.Information("Successfully saved report: {FileName}", fileName);
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Unable to save excel report: {e.GetType().FullName} - {e.Message}", e);
+                    Log.Error(e, "Unable to save excel report: {FullName} - {Message}", e.GetType().FullName,
+                        e.Message);
                     throw;
                 }
 
                 if (ExcelPostProcessors == null || ExcelPostProcessors.Length == 0)
                 {
-                    Log.Information($"There were no Excel Post Processors registered");
+                    Log.Information("There were no Excel Post Processors registered");
                 }
                 else
                 {
@@ -117,8 +119,8 @@ namespace Triage.Mortician.ExcelAnalyzer
                         }
                         catch (Exception e)
                         {
-                            Log.Error($"Excel Post Processor failed: {postProcessor.GetType().FullName} - {e.Message}",
-                                e);
+                            Log.Error(e, "Excel Post Processor failed: {FullName} - {Message}",
+                                postProcessor.GetType().FullName, e.Message);
                         }
                 }
 
@@ -135,10 +137,7 @@ namespace Triage.Mortician.ExcelAnalyzer
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A Task that when complete will signal the completion of the setup procedure</returns>
         /// <inheritdoc />
-        public Task Setup(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
+        public Task Setup(CancellationToken cancellationToken) => Task.CompletedTask;
 
         /// <summary>
         ///     Gets or sets the event hub.
@@ -160,5 +159,11 @@ namespace Triage.Mortician.ExcelAnalyzer
         /// <value>The excel post processors.</value>
         [ImportMany]
         protected internal IExcelPostProcessor[] ExcelPostProcessors { get; set; }
+
+        /// <summary>
+        ///     Gets the log.
+        /// </summary>
+        /// <value>The log.</value>
+        internal ILogger Log { get; } = Slog.ForContext<ExcelAnalyzerHost>();
     }
 }

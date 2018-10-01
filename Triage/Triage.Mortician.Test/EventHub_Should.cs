@@ -2,11 +2,12 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using Triage.Mortician.Core;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.Test
 {
-    public class EventHub_Should
+    public class EventHub_Should : BaseTest
     {
         private class A : Message
         {

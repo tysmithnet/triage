@@ -4,7 +4,7 @@
 // Created          : 09-17-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 10-01-2018
 // ***********************************************************************
 // <copyright file="WebUiAnalyzer.cs" company="">
 //     Copyright ©  2018
@@ -20,12 +20,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Serilog;
 using Triage.Mortician.Core;
+using Slog = Serilog.Log;
 
 namespace Triage.Mortician.WebUiAnalyzer
 {
     /// <summary>
     ///     Class WebUiAnalyzer.
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Core.IAnalyzer" />
     /// <seealso cref="IAnalyzer" />
     [Export(typeof(IAnalyzer))]
     public class WebUiAnalyzer : IAnalyzer
@@ -43,7 +45,7 @@ namespace Triage.Mortician.WebUiAnalyzer
             }
             catch (Exception e)
             {
-                Log.Error($"Error running web server: {e.Message}");
+                Log.Error(e, "Error running web server: {Message}", e.Message);
                 throw;
             }
         }
@@ -73,7 +75,7 @@ namespace Triage.Mortician.WebUiAnalyzer
             }
             catch (Exception e)
             {
-                Log.Error($"Error setting up web server: {e.Message}");
+                Log.Error(e, "Error setting up web server: {Message}", e.Message);
                 throw;
             }
 
@@ -130,10 +132,15 @@ namespace Triage.Mortician.WebUiAnalyzer
         internal IEventHub EventHub { get; set; }
 
         /// <summary>
+        ///     Gets the log.
+        /// </summary>
+        /// <value>The log.</value>
+        internal ILogger Log { get; } = Slog.ForContext<WebUiAnalyzer>();
+
+        /// <summary>
         ///     Gets or sets the host.
         /// </summary>
         /// <value>The host.</value>
         private IWebHost Host { get; set; }
-
     }
 }

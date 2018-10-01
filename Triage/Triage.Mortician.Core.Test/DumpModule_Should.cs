@@ -1,13 +1,26 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using FluentAssertions;
-using Triage.Mortician.Core.ClrMdAbstractions;
+using Triage.Testing.Common;
 using Xunit;
 
 namespace Triage.Mortician.Core.Test
 {
-    public class DumpModule_Should
+    public class DumpModule_Should : BaseTest
     {
+        [Fact]
+        public void Return_The_Correct_AppDomains()
+        {
+            // arrange
+            var module = new DumpModule();
+            var domain = new DumpAppDomain();
+
+            // act
+            module.AppDomainsInternal.Add(domain);
+
+            // assert
+            module.AppDomains.Should().HaveCount(1);
+        }
+
         [Fact]
         public void Set_Member_Values_Correctly()
         {
@@ -33,20 +46,6 @@ namespace Triage.Mortician.Core.Test
             module.IsDynamic = false;
             module.Name.Should().Be("AssemblyName");
             module.Size.Should().Be(0x42);
-        }
-
-        [Fact]
-        public void Return_The_Correct_AppDomains()
-        {
-            // arrange
-            var module = new DumpModule();
-            var domain = new DumpAppDomain();
-
-            // act
-            module.AppDomainsInternal.Add(domain);
-
-            // assert
-            module.AppDomains.Should().HaveCount(1);
         }
     }
 }
