@@ -143,6 +143,7 @@
   <ItemGroup>
     <Compile Include="DumpHelper.cs" />
     <Compile Include="AppDomain_Extraction_Should.cs" />
+    <Compile Include="Test.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="HelloWorld_Should.cs" />
     <Compile Include="Scenarios\HelloWorld.cs" />

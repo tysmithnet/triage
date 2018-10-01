@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Triage.Mortician.IntegrationTest
 {
-    public class HelloWorld_Should : IDisposable
+    public class HelloWorld_Should : Test
     {
         internal class TestAnalyzer : IAnalyzer
         {
@@ -53,14 +53,6 @@ namespace Triage.Mortician.IntegrationTest
         public void Perform_Basic_Startup_Without_Failure()
         {
             // arrange
-            Log.Logger = new LoggerConfiguration()
-                .Enrich.WithThreadId()
-                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
-                {
-                    AutoRegisterTemplate = true,
-                    AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6,
-                    QueueSizeLimit = 1,
-                }).CreateLogger();
             var dumpFile = Scenario.HelloWorld.GetDumpFile();
             var options = new DefaultOptions
             {
@@ -86,12 +78,6 @@ namespace Triage.Mortician.IntegrationTest
                 .NotBeNull();
             analyzer.ThreadRepo.Get().Any(t =>
                 t.ManagedStackFrames.Any(f => f.DisplayString.Contains("Triage.TestApplications.Console.Program.Main"))).Should().BeTrue();
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Log.CloseAndFlush();
         }
     }
 }
