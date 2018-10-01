@@ -35,5 +35,9 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <returns>All dump objects extracted from the heap</returns>
         IEnumerable<DumpObject> Get();
+
+        IEnumerable<DumpObject> FinalizerQueue();
+
+        IEnumerable<DumpBlockingObject> BlockingObjects();
     }
 }

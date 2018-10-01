@@ -57,6 +57,30 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugFast|x64'">
+    <OutputPath>bin\x64\DebugFast\</OutputPath>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\packages\AWSSDK.Core.3.3.21.1\lib\net45\AWSSDK.Core.dll</HintPath>
@@ -67,20 +91,29 @@
     <Reference Include="CommandLine, Version=2.0.275.0, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
       <HintPath>..\packages\CommandLineParser.2.1.1-beta\lib\net45\CommandLine.dll</HintPath>
     </Reference>
-    <Reference Include="Common.Logging, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Common.Logging.3.4.1\lib\net40\Common.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging.Core, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Common.Logging.Core.3.4.1\lib\net40\Common.Logging.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Common.Logging.NLog444, Version=3.4.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Common.Logging.NLog444.3.4.1\lib\net40\Common.Logging.NLog444.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.4.4\lib\net45\NLog.dll</HintPath>
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.2.7.1\lib\net46\Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Enrichers.Environment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Enrichers.Environment.2.1.2\lib\net45\Serilog.Enrichers.Environment.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Enrichers.Thread, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Enrichers.Thread.3.0.0\lib\net45\Serilog.Enrichers.Thread.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.Console, Version=3.1.1.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.Console.3.1.1\lib\net45\Serilog.Sinks.Console.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.File.4.0.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.PeriodicBatching, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.PeriodicBatching.2.1.1\lib\net45\Serilog.Sinks.PeriodicBatching.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.Trace, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.Trace.2.1.0\lib\net45\Serilog.Sinks.Trace.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -116,6 +149,7 @@
     <Reference Include="System.Runtime.Extensions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.Extensions.4.3.0\lib\net462\System.Runtime.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -156,19 +190,21 @@
     <Compile Include="Adapters\DacInfoAdapter.cs" />
     <Compile Include="Adapters\DataReaderAdapter.cs" />
     <Compile Include="Adapters\DataTargetAdapter.cs" />
+    <Compile Include="CoreComponentFactory.cs" />
     <Compile Include="DefaultConverterCache.cs" />
     <Compile Include="DefaultOptions.cs" />
-    <Compile Include="Domain\DebuggerProxy.cs" />
-    <Compile Include="Domain\DefaultObjectExtractor.cs" />
-    <Compile Include="Reports\DumpDomainAppDomain.cs" />
-    <Compile Include="Reports\DumpDomainAssembly.cs" />
-    <Compile Include="Reports\DumpDomainModule.cs" />
-    <Compile Include="Reports\DumpDomainOutputProcessor.cs" />
-    <Compile Include="Reports\DumpDomainReport.cs" />
-    <Compile Include="Reports\EeStackFrame.cs" />
-    <Compile Include="Reports\EeStackOutputProcessor.cs" />
-    <Compile Include="Reports\EeStackReport.cs" />
-    <Compile Include="Reports\EeStackThread.cs" />
+    <Compile Include="DebuggerProxy.cs" />
+    <Compile Include="DefaultObjectExtractor.cs" />
+    <Compile Include="IDebuggerProxy.cs" />
+    <Compile Include="Reports\DumpDomain\DumpDomainAppDomain.cs" />
+    <Compile Include="Reports\DumpDomain\DumpDomainAssembly.cs" />
+    <Compile Include="Reports\DumpDomain\DumpDomainModule.cs" />
+    <Compile Include="Reports\DumpDomain\DumpDomainReportFactory.cs" />
+    <Compile Include="Reports\DumpDomain\DumpDomainReport.cs" />
+    <Compile Include="Reports\EeStack\EeStackFrame.cs" />
+    <Compile Include="Reports\EeStack\EeStackReportFactory.cs" />
+    <Compile Include="Reports\EeStack\EeStackReport.cs" />
+    <Compile Include="Reports\EeStack\EeStackThread.cs" />
     <Compile Include="EngineSettings.cs" />
     <Compile Include="EventHub.cs" />
     <Compile Include="Adapters\FileVersionInfoAdapter.cs" />
@@ -185,21 +221,21 @@
     <Compile Include="Adapters\PeFileAdapter.cs" />
     <Compile Include="Adapters\RcwDataAdapter.cs" />
     <Compile Include="Adapters\MemoryRegionAdapter.cs" />
-    <Compile Include="Reports\IDumpDomainOutputProcessor.cs" />
-    <Compile Include="Reports\IEeStackOutputProcessor.cs" />
     <Compile Include="Reports\IReport.cs" />
-    <Compile Include="Reports\IStandardReportOutputProcessor.cs" />
-    <Compile Include="Repository\DumpAppDomainRepository.cs" />
-    <Compile Include="Repository\DumpModuleRepository.cs" />
-    <Compile Include="Repository\DumpThreadRepository.cs" />
-    <Compile Include="Repository\DumpTypeRepository.cs" />
+    <Compile Include="Reports\IReportFactory.cs" />
+    <Compile Include="Reports\Runaway\RunawayLine.cs" />
+    <Compile Include="Reports\Runaway\RunawayReportFactory.cs" />
+    <Compile Include="Reports\Runaway\RunawayReport.cs" />
+    <Compile Include="Repositories\DumpAppDomainRepository.cs" />
+    <Compile Include="Repositories\DumpModuleRepository.cs" />
+    <Compile Include="Repositories\DumpThreadRepository.cs" />
+    <Compile Include="Repositories\DumpTypeRepository.cs" />
     <Compile Include="Engine.cs" />
-    <Compile Include="Repository\DumpObjectRepository.cs" />
+    <Compile Include="Repositories\DumpObjectRepository.cs" />
     <Compile Include="Adapters\RootPathAdapter.cs" />
-    <Compile Include="Repository\DumpInformationRepository.cs" />
+    <Compile Include="Repositories\DumpInformationRepository.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CoreComponentFactory.cs" />
     <Compile Include="SettingsJsonConverter.cs" />
     <Compile Include="StringExtractor.cs" />
     <Compile Include="StringDumpObject.cs" />
@@ -214,18 +250,19 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="mex.dll">
+    <Content Include="mex64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="NetExt.dll">
+    <Content Include="sosex64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="psscor4.dll">
+    <Content Include="mex32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="sosex.dll">
+    <Content Include="sosex32.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -25,12 +25,12 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         /// <summary>
         ///     The base address of the allocation.
         /// </summary>
-        public ulong BaseAddress;
+        public ulong BaseAddress { get; set; }
 
         /// <summary>
         ///     The size of the allocation.
         /// </summary>
-        public ulong Size;
+        public ulong Size { get; set; }
 
         /// <summary>
         ///     Constructor.

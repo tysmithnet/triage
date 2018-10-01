@@ -45,7 +45,7 @@ namespace Triage.Mortician
         /// <returns>A short description of this object</returns>
         /// <inheritdoc />
         /// <remarks>The return value is intended to be shown on a single line</remarks>
-        protected override string ToShortDescription() => base.ToShortDescription() + $" - {Value}";
+        public override string ToShortDescription() => base.ToShortDescription() + $" - {Value}";
 
         /// <summary>
         ///     The string value from this heap object

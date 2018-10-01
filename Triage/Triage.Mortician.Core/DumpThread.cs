@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-26-2018
 // ***********************************************************************
 // <copyright file="DumpThread.cs" company="">
 //     Copyright ©  2017
@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Core
 {
@@ -32,7 +33,7 @@ namespace Triage.Mortician.Core
         ///     Gets or sets the current frame of the thread
         /// </summary>
         /// <value>The current frame.</value>
-        public string CurrentFrame { get; protected internal set; }
+        public CodeLocation CurrentFrame { get; protected internal set; }
 
         /// <summary>
         ///     Gets or sets the index of the thread in the debugger. This is a low integer value used by the debugging interface
@@ -40,12 +41,6 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The index of the thread in the debugger.</value>
         public uint DebuggerIndex { get; protected internal set; }
-
-        /// <summary>
-        ///     Gets or sets the stack frames according to !eestack
-        /// </summary>
-        /// <value>The ee stack frames.</value>
-        public IEnumerable<string> EEStackFrames { get; protected internal set; } = new List<string>();
 
         /// <summary>
         ///     Gets or sets the kernel mode time.
@@ -58,7 +53,7 @@ namespace Triage.Mortician.Core
         ///     Gets or sets the stack frames.
         /// </summary>
         /// <value>The stack frames.</value>
-        public IEnumerable<DumpStackFrame> ManagedStackFrames { get; protected internal set; }
+        public IEnumerable<DumpStackFrame> ManagedStackFrames => ManagedStackFramesInternal;
 
         /// <summary>
         ///     Gets or sets the object roots associated with this thread
@@ -90,5 +85,53 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The user mode time.</value>
         public TimeSpan UserModeTime { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets the managed stack frames internal.
+        /// </summary>
+        /// <value>The managed stack frames internal.</value>
+        internal IList<DumpStackFrame> ManagedStackFramesInternal { get; set; } = new List<DumpStackFrame>();
+
+        public bool IsGcThread { get; internal set; }
+        public uint LockCount { get; set; }
+        public ulong StackLimit { get; set; }
+        public ulong Address { get; set; }
+        public ulong AppDomainAddress { get; set; }
+        public GcMode GcMode { get; set; }
+        public bool IsSta { get; set; }
+        public bool IsAbortRequested { get; set; }
+        public bool IsAborted { get; set; }
+        public bool IsDebuggerHelper { get; set; }
+        public bool IsGc { get; set; }
+        public bool IsDebugSuspended { get; set; }
+        public bool IsCoinitialized { get; set; }
+        public bool IsBackground { get; set; }
+        public bool IsAlive { get; set; }
+        public ulong Teb { get; set; }
+        public bool IsUserSuspended { get; set; }
+        public bool IsFinalizer { get; set; }
+        public bool IsGcSuspendPending { get; set; }
+        public bool IsMta { get; set; }
+        public bool IsSuspendingEe { get; set; }
+        public bool IsShutdownHelper { get; set; }
+        public bool IsThreadpoolCompletionPort { get; set; }
+        public bool IsThreadpoolGate { get; set; }
+        public bool IsThreadpoolTimer { get; set; }
+        public bool IsThreadpoolWait { get; set; }
+        public bool IsThreadpoolWorker { get; set; }
+        public bool IsCreatedButNotStarted { get; set; }
+        public IList<DumpBlockingObject> BlockingObjects { get; set; } = new List<DumpBlockingObject>();
+        public IList<DumpObjectRoot> Roots { get; set; }
+        public DumpObject CurrentException { get; set; }
+
+        public void AddBlockingObject(DumpBlockingObject dumpBlockingObject)
+        {
+            BlockingObjects.Add(dumpBlockingObject);
+        }
+
+        public void AddRoot(DumpObjectRoot dumpObjectRoot)
+        {
+            Roots.Add(dumpObjectRoot);
+        }
     }
 }

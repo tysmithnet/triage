@@ -58,5 +58,17 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The name.</value>
         public string Name { get; protected internal set; }
+
+        public void AddModule(DumpModule module)
+        {
+            LoadedModulesInternal.Add(module);
+        }
+
+        public void AddHandle(DumpHandle handle)
+        {
+            Handles.Add(handle);
+        }
+
+        internal IList<DumpHandle> Handles = new List<DumpHandle>();
     }
 }

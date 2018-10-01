@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-27-2018
 // ***********************************************************************
 // <copyright file="DumpObject.cs" company="">
 //     Copyright ©  2017
@@ -28,13 +28,16 @@ namespace Triage.Mortician.Core
         ///     Initializes a new instance of the <see cref="DumpObject" /> class.
         /// </summary>
         /// <param name="address">The address.</param>
-        /// <param name="fullTypeName">Full name of the type.</param>
-        /// <param name="size">The size.</param>
-        /// <param name="gen">The gc generation 0,1,2,3 (3 is large object heap)</param>
-        public DumpObject(ulong address, string fullTypeName, ulong size, int gen)
+        // todo: this should be created from a factory, lock down ctor
+        public DumpObject(ulong address)
         {
             Address = address;
-            FullTypeName = fullTypeName;
+        }
+
+        public DumpObject(ulong address, string name, ulong size, int gen)
+        {
+            Address = address;
+            FullTypeName = name;
             Size = size;
             Gen = gen;
         }
@@ -43,13 +46,20 @@ namespace Triage.Mortician.Core
         ///     The objects that reference this object
         /// </summary>
         protected internal ConcurrentDictionary<ulong, DumpObject> ReferencersInternal =
-            new ConcurrentDictionary<ulong, DumpObject>();
+            new ConcurrentDictionary<ulong, DumpObject>(); // todo: don't use concurrent dictionary.. write happens single threaded and reads happen read only
 
         /// <summary>
         ///     The references that this object has
         /// </summary>
         protected internal ConcurrentDictionary<ulong, DumpObject> ReferencesInternal =
             new ConcurrentDictionary<ulong, DumpObject>();
+
+        /// <summary>
+        ///     Get a short description of the object.
+        /// </summary>
+        /// <returns>A short description of this object</returns>
+        /// <remarks>The return value is intended to be shown on a single line</remarks>
+        public virtual string ToShortDescription() => $"{FullTypeName} : {Size} : 0x{Address:x16}";
 
         /// <summary>
         ///     Adds a reference to the list of objects that this object has
@@ -70,23 +80,16 @@ namespace Triage.Mortician.Core
         }
 
         /// <summary>
-        ///     Get a short description of the object.
-        /// </summary>
-        /// <returns>A short description of this object</returns>
-        /// <remarks>The return value is intended to be shown on a single line</remarks>
-        protected virtual string ToShortDescription() => $"{FullTypeName} : {Size} : {Address:x8} ({Address})";
-
-        /// <summary>
         ///     Gets the address of this object
         /// </summary>
         /// <value>The address of this object</value>
         public ulong Address { get; protected internal set; }
 
         /// <summary>
-        ///     Gets or sets the type of the object
+        ///     Gets or sets a value indicating whether [contains pointers].
         /// </summary>
-        /// <value>The type of the dump.</value>
-        public DumpType DumpType { get; protected internal set; }
+        /// <value><c>true</c> if [contains pointers]; otherwise, <c>false</c>.</value>
+        public bool ContainsPointers { get; set; }
 
         /// <summary>
         ///     Gets the full name of the type of this object.
@@ -99,6 +102,30 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The gc generation for this object</value>
         public int Gen { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is array.
+        /// </summary>
+        /// <value><c>true</c> if this instance is array; otherwise, <c>false</c>.</value>
+        public bool IsArray { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is boxed.
+        /// </summary>
+        /// <value><c>true</c> if this instance is boxed; otherwise, <c>false</c>.</value>
+        public bool IsBoxed { get; set; }
+
+        /// <summary>
+        ///     Gets a value indicating whether this instance is in finalizer queue.
+        /// </summary>
+        /// <value><c>true</c> if this instance is in finalizer queue; otherwise, <c>false</c>.</value>
+        public bool IsInFinalizerQueue { get; internal set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is null.
+        /// </summary>
+        /// <value><c>true</c> if this instance is null; otherwise, <c>false</c>.</value>
+        public bool IsNull { get; set; }
 
         /// <summary>
         ///     Gets the objects that reference this object
@@ -118,5 +145,14 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The size of this object</value>
         public ulong Size { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets the type of the object
+        /// </summary>
+        /// <value>The type of the dump.</value>
+        public DumpType Type { get; protected internal set; }
+
+        public bool IsFinalizable { get; set; }
+        public bool IsManagedWorkItem { get; set; }
     }
 }

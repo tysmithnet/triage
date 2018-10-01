@@ -4,7 +4,7 @@
 // Created          : 12-17-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 09-24-2018
 // ***********************************************************************
 // <copyright file="Engine.cs" company="">
 //     Copyright ©  2017
@@ -15,7 +15,7 @@
 using System.ComponentModel.Composition;
 using System.Threading;
 using System.Threading.Tasks;
-using Common.Logging;
+using Serilog;
 using Triage.Mortician.Core;
 
 namespace Triage.Mortician
@@ -24,6 +24,7 @@ namespace Triage.Mortician
     ///     Represents the core execution component of the application. It is responsible for executing the analyzers
     ///     in concert with each other.
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Core.IEngine" />
     /// <seealso cref="IEngine" />
     [Export(typeof(IEngine))]
     public class Engine : IEngine
@@ -31,7 +32,6 @@ namespace Triage.Mortician
         /// <summary>
         ///     The log
         /// </summary>
-        protected ILog Log = LogManager.GetLogger(typeof(Engine));
 
         /// <summary>
         ///     Processes the analyzers
@@ -49,23 +49,15 @@ namespace Triage.Mortician
                 return;
             }
 
-            Log.Trace("Engine starting...");
+            Log.Information("Engine starting...");
             var analysisObserversTask = AnalyzerTaskFactory.StartAnalyzers(AnalysisObservers, analysisToken);
             var analyzersTask = AnalyzerTaskFactory.StartAnalyzers(Analyzers, internalToken);
 
             // analyzer tasks handle the exceptions internally
             await analyzersTask;
             EventHub.Shutdown();
-            try
-            {
-                await analysisObserversTask;
-            }
-            catch (TaskCanceledException)
-            {
-                // todo: this is a mistake, analysis observers should be awaited the same
-            }
-
-            Log.Trace("Execution complete");
+            await analysisObserversTask;
+            Log.Information("Execution complete");
         }
 
         /// <summary>

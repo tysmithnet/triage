@@ -23,7 +23,7 @@ namespace Triage.Mortician.IntegrationTest.Scenarios
     /// <summary>
     ///     Class Scenario.
     /// </summary>
-    public abstract class Scenario
+    public abstract partial class Scenario
     {
         /// <summary>
         ///     Ensures the dump file exists.

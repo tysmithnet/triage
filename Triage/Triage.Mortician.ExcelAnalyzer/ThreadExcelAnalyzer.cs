@@ -18,7 +18,7 @@ using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
-using Common.Logging;
+using Serilog;
 using SpreadsheetLight;
 using Triage.Mortician.Analyzers;
 using Triage.Mortician.Core;
@@ -34,10 +34,6 @@ namespace Triage.Mortician.ExcelAnalyzer
     [Export(typeof(IExcelAnalyzer))]
     public class ThreadExcelAnalyzer : IExcelAnalyzer
     {
-        /// <summary>
-        ///     The log
-        /// </summary>
-        protected ILog Log = LogManager.GetLogger(typeof(ThreadExcelAnalyzer));
 
         /// <summary>
         ///     Contributes the specified shared document.
@@ -49,12 +45,12 @@ namespace Triage.Mortician.ExcelAnalyzer
             if (UniqueStacksMessage != null)
                 PopulateUniqueStacks(sharedDocument);
             else
-                Log.Trace("No unique stack message received");
+                Log.Information("No unique stack message received");
 
             if (StackFrameBreakdownMessage != null)
                 PopulateManagedStackFrames(sharedDocument);
             else
-                Log.Trace("No stack frame breakdown message received");
+                Log.Information("No stack frame breakdown message received");
         }
 
         /// <summary>

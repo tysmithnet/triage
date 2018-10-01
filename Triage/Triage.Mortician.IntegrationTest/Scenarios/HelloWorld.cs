@@ -1,14 +1,14 @@
 ﻿using System.Configuration;
 
 // ReSharper disable once CheckNamespace
-namespace Triage.Mortician.IntegrationTest.IntegrationTests.Scenarios
+namespace Triage.Mortician.IntegrationTest.Scenarios
 {
-    public class Scenario
+    public abstract partial class Scenario
     {
-        public static readonly HelloWorldScenario HelloWorld = new HelloWorldScenario();
+        public static HelloWorldScenario HelloWorld {get;} = new HelloWorldScenario();
 
         // ReSharper disable once InconsistentNaming
-        public class HelloWorldScenario : IntegrationTest.Scenarios.Scenario
+        public class HelloWorldScenario : Scenario
         {
             /// <inheritdoc />
             public override bool IsLibrary { get; } = false;

@@ -38,13 +38,15 @@ namespace Triage.Mortician.IntegrationTest
                     "Can't create 32 bit dump of 64 bit process"
                 );
             }
+
             var exceptInfo = new DumpHelper.MINIDUMP_EXCEPTION_INFORMATION();
             var result = DumpHelper.MiniDumpWriteDump(
                 process.Handle,
                 process.Id,
                 hFile,
-                _MINIDUMP_TYPE.MiniDumpWithFullMemory,
-                ref exceptInfo,
+                _MINIDUMP_TYPE.MiniDumpWithFullMemory | _MINIDUMP_TYPE.MiniDumpWithProcessThreadData  |_MINIDUMP_TYPE.MiniDumpWithThreadInfo,
+
+        ref exceptInfo,
                 UserStreamParam: IntPtr.Zero,
                 CallbackParam: IntPtr.Zero
             );

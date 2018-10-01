@@ -17,10 +17,9 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Common.Logging;
+using Serilog;
 using SpreadsheetLight;
 using Triage.Mortician.Core;
-using Triage.Mortician.Repository;
 
 namespace Triage.Mortician.ExcelAnalyzer
 {
@@ -66,7 +65,7 @@ namespace Triage.Mortician.ExcelAnalyzer
                         stats[obj.FullTypeName].LohSize += obj.Size;
                         break;
                     default:
-                        Log.Warn($"Found obj with invalid gc gen: {obj.FullTypeName}({obj.Address}) - gen{obj.Gen}");
+                        Log.Warning($"Found obj with invalid gc gen: {obj.FullTypeName}({obj.Address}) - gen{obj.Gen}");
                         continue;
                 }
             }
@@ -116,11 +115,6 @@ namespace Triage.Mortician.ExcelAnalyzer
         [Import]
         protected internal IDumpObjectRepository DumpObjectRepository { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the log.
-        /// </summary>
-        /// <value>The log.</value>
-        protected ILog Log { get; set; } = LogManager.GetLogger(typeof(HeapExcelAnalyzer));
 
         /// <summary>
         ///     DTO for the running totals
