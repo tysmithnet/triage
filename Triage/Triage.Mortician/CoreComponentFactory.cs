@@ -86,7 +86,7 @@ namespace Triage.Mortician
             }
 
             Runtime = DataTarget.ClrVersions.Single().CreateRuntime();
-            DumpObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>();
+            DumpObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>().Concat(new [] {new DefaultObjectExtractor(), });
         }
 
         /// <summary>
