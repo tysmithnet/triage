@@ -36,6 +36,17 @@ namespace Triage.Mortician.Adapters
         public ClrModuleAdapter(IConverter converter, ClrModule module) : base(converter)
         {
             Module = module ?? throw new ArgumentNullException(nameof(module));
+            AssemblyId = Module.AssemblyId;
+            AssemblyName = Module.AssemblyName;
+            FileName = Module.FileName;
+            ImageBase = Module.ImageBase;
+            IsDynamic = Module.IsDynamic;
+            IsFile = Module.IsFile;
+            MetadataAddress = Module.MetadataAddress;
+            MetadataImport = Module.MetadataImport;
+            MetadataLength = Module.MetadataLength;
+            Name = Module.Name;
+            Size = Module.Size;
         }
 
         /// <summary>
@@ -87,14 +98,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The assembly identifier.</value>
         /// <inheritdoc />
-        public ulong AssemblyId => Module.AssemblyId;
+        public ulong AssemblyId { get; internal set; }
 
         /// <summary>
         ///     Returns the name of the assembly that this module is defined in.
         /// </summary>
         /// <value>The name of the assembly.</value>
         /// <inheritdoc />
-        public string AssemblyName => Module.AssemblyName;
+        public string AssemblyName { get; internal set; }
 
         /// <summary>
         ///     The debugging attributes for this module.
@@ -109,7 +120,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The name of the file.</value>
         /// <inheritdoc />
-        public string FileName => Module.FileName;
+        public string FileName { get; internal set; }
 
         /// <summary>
         ///     Returns the base of the image loaded into memory.  This may be 0 if there is not a physical
@@ -117,7 +128,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The image base.</value>
         /// <inheritdoc />
-        public ulong ImageBase => Module.ImageBase;
+        public ulong ImageBase { get; internal set; }
 
         /// <summary>
         ///     Returns true if this module was created through Reflection.Emit (and thus has no associated
@@ -125,14 +136,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance is dynamic; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsDynamic => Module.IsDynamic;
+        public bool IsDynamic { get; internal set; }
 
         /// <summary>
         ///     Returns true if this module is an actual PEFile on disk.
         /// </summary>
         /// <value><c>true</c> if this instance is file; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsFile => Module.IsFile;
+        public bool IsFile { get; internal set; }
 
         /// <summary>
         ///     The location of metadata for this module in the process's memory.  This is useful if you
@@ -140,7 +151,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The metadata address.</value>
         /// <inheritdoc />
-        public ulong MetadataAddress => Module.MetadataAddress;
+        public ulong MetadataAddress { get; internal set; }
 
         /// <summary>
         ///     The IMetaDataImport interface for this module.  Note that this API does not provide a
@@ -148,21 +159,21 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The metadata import.</value>
         /// <inheritdoc />
-        public object MetadataImport => Module.MetadataImport;
+        public object MetadataImport { get; internal set; }
 
         /// <summary>
         ///     The length of the metadata for this module.
         /// </summary>
         /// <value>The length of the metadata.</value>
         /// <inheritdoc />
-        public ulong MetadataLength => Module.MetadataLength;
+        public ulong MetadataLength { get; internal set; }
 
         /// <summary>
         ///     Returns the name of the module.
         /// </summary>
         /// <value>The name.</value>
         /// <inheritdoc />
-        public string Name => Module.Name;
+        public string Name { get; internal set; }
 
         /// <summary>
         ///     Returns the pdb information for this module.
@@ -183,6 +194,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The size.</value>
         /// <inheritdoc />
-        public ulong Size => Module.Size;
+        public ulong Size { get; internal set; }
     }
 }

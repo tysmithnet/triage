@@ -18,9 +18,11 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using Triage.Mortician.Core;
 using Triage.Mortician.Core.ClrMdAbstractions;
+using Triage.Mortician.Reports;
 using Triage.Mortician.Repositories;
 using Slog = Serilog.Log;
 
@@ -31,8 +33,6 @@ namespace Triage.Mortician
     /// </summary>
     internal class CoreComponentFactory
     {
-        internal ILogger Log { get; } = Slog.ForContext<CoreComponentFactory>();
-
         /// <summary>
         ///     The error type
         /// </summary>
@@ -43,6 +43,12 @@ namespace Triage.Mortician
         /// </summary>
         /// <param name="compositionContainer">The composition container.</param>
         /// <param name="dumpFile">The dump file.</param>
+        /// <exception cref="ArgumentNullException">
+        ///     compositionContainer
+        ///     or
+        ///     dumpFile
+        /// </exception>
+        /// <exception cref="ApplicationException">Memory dump was not found. Is the path correct? Is it read only?</exception>
         /// <exception cref="System.ArgumentNullException">
         ///     compositionContainer
         ///     or
@@ -58,8 +64,19 @@ namespace Triage.Mortician
 
             try
             {
+                var dt = Microsoft.Diagnostics.Runtime.DataTarget.LoadCrashDump(dumpFile.FullName);
                 DataTarget =
-                    Converter.Convert(Microsoft.Diagnostics.Runtime.DataTarget.LoadCrashDump(dumpFile.FullName));
+                    Converter.Convert(dt);
+                DebuggerProxy = new DebuggerProxy(dt.DebuggerInterface);
+                try
+                {
+                    CompositionContainer.ComposeExportedValue(DebuggerProxy);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Could not create DebuggerProxy. Verify the dump file can be opened in windbg.");
+                    throw;
+                }
             }
             catch (FileNotFoundException e)
             {
@@ -67,7 +84,8 @@ namespace Triage.Mortician
             }
 
             Runtime = DataTarget.ClrVersions.Single().CreateRuntime();
-            DumpObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>();
+            DumpObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>()
+                .Concat(new[] {new DefaultObjectExtractor()});
         }
 
         /// <summary>
@@ -120,6 +138,21 @@ namespace Triage.Mortician
                     dumpObjectRoot.AddThread(thread);
                 }
             }
+
+            foreach (var kvp in ThreadToObjectMapping)
+            {
+                var thread = Threads[kvp.Key];
+                foreach (var addr in kvp.Value)
+                    if (Roots.TryGetValue(addr, out var o))
+                    {
+                        thread.AddRoot(o);
+                        o.AddThread(thread);
+                    }
+                    else
+                    {
+                        ;
+                    }
+            }
         }
 
         /// <summary>
@@ -150,6 +183,7 @@ namespace Triage.Mortician
         /// </summary>
         public void Setup()
         {
+            CreateReports();
             CreateObjects();
             CreateTypes();
             CreateAppDomains();
@@ -339,18 +373,17 @@ namespace Triage.Mortician
                     RecursionCount = blockingObject.RecursionCount
                 };
 
-                BlockingObjects.Add(dumpBlockingObject.Address, dumpBlockingObject);
-                try
-                {
-                    BlockingObjectToThreadMapping.Add(blockingObject.Object,
-                        blockingObject.HasSingleOwner
-                            ? new List<uint> {blockingObject.Owner.OSThreadId}
-                            : blockingObject.Owners.Select(x => x.OSThreadId).ToList());
-                }
-                catch (Exception e)
-                {
-                    // todo: something
-                }
+                if (!BlockingObjects.ContainsKey(dumpBlockingObject.Address))
+                    BlockingObjects.Add(dumpBlockingObject.Address, dumpBlockingObject);
+
+                if (BlockingObjectToThreadMapping.ContainsKey(blockingObject.Object)) continue;
+                var owners = new List<uint>();
+                if (blockingObject.Owner != null) owners.Add(blockingObject.Owner.OSThreadId);
+
+                if (blockingObject.Owners != null)
+                    owners.AddRange(blockingObject.Owners.Where(x => x != null).Select(x => x.OSThreadId));
+
+                BlockingObjectToThreadMapping.Add(blockingObject.Object, owners);
             }
         }
 
@@ -492,17 +525,26 @@ namespace Triage.Mortician
                     MemoryRegionType = region.MemoryRegionType,
                     Size = region.Size
                 };
-                try
-                {
+                if (!regions.ContainsKey(region.Address))
                     regions.Add(region.Address, newRegion);
-                }
-                catch (Exception)
-                {
-                    // todo: something
-                }
             }
 
             MemoryRegions = regions;
+        }
+
+        /// <summary>
+        ///     Creates the object.
+        /// </summary>
+        /// <param name="cur">The current.</param>
+        internal void CreateObject(IClrObject cur)
+        {
+            var handler = DumpObjectExtractors.FirstOrDefault(h => h.CanExtract(cur, Runtime));
+            if (handler == null)
+                return;
+            var toAdd = handler.Extract(cur, Runtime);
+            Objects.Add(toAdd.Address, toAdd);
+            ObjectGraph.Add(toAdd.Address, cur.EnumerateObjectReferences().Select(x => x.Address).ToList());
+            ObjectToTypeMapping.Add(toAdd.Address, cur.Type.ToKeyType());
         }
 
         /// <summary>
@@ -510,33 +552,44 @@ namespace Triage.Mortician
         /// </summary>
         internal void CreateObjects()
         {
-            var objects = new Dictionary<ulong, DumpObject>();
-            var objectGraph = new Dictionary<ulong, IList<ulong>>();
+            Objects = new Dictionary<ulong, DumpObject>();
+            ObjectGraph = new Dictionary<ulong, IList<ulong>>();
             ObjectToTypeMapping = new Dictionary<ulong, DumpTypeKey>();
-            foreach (var cur in Runtime.Heap.EnumerateObjects())
+            foreach (var cur in Runtime.Heap.EnumerateObjects()) CreateObject(cur);
+
+            foreach (var addr in Runtime.Threads.SelectMany(t => t.EnumerateStackObjects()))
             {
-                DumpObject toAdd;
-                var handler = DumpObjectExtractors.FirstOrDefault(h => h.CanExtract(cur, Runtime));
-                if (handler != null)
-                    toAdd = handler.Extract(cur, Runtime);
-                else
-                    toAdd = new DumpObject(cur.Address)
-                    {
-                        Address = cur.Address,
-                        FullTypeName = cur.Type?.Name,
-                        Size = cur.Size,
-                        IsNull = cur.IsNull,
-                        IsBoxed = cur.IsBoxed,
-                        IsArray = cur.IsArray,
-                        ContainsPointers = cur.ContainsPointers
-                    };
-                objects.Add(toAdd.Address, toAdd);
-                objectGraph.Add(toAdd.Address, cur.EnumerateObjectReferences().Select(x => x.Address).ToList());
-                ObjectToTypeMapping.Add(toAdd.Address, cur.Type.ToKeyType());
+            }
+        }
+
+        /// <summary>
+        ///     Creates the reports.
+        /// </summary>
+        internal void CreateReports()
+        {
+            var factories = CompositionContainer.GetExportedValues<IReportFactory>().ToList();
+            if (!factories.Any())
+                return;
+
+            foreach (var reportFactory in factories) reportFactory.Setup(DebuggerProxy);
+
+            var tasks = factories.Select(x => Task.Run(() => x.Process())).ToList();
+            var batch = new CompositionBatch();
+
+            for (var i = 0; i < tasks.Count; i++)
+            {
+                var task = tasks[i];
+                try
+                {
+                    batch.AddPart(task.Result);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Unable to process report for {ReportFactory}", factories[i].GetType().FullName);
+                }
             }
 
-            Objects = objects;
-            ObjectGraph = objectGraph;
+            CompositionContainer.Compose(batch);
         }
 
         /// <summary>
@@ -558,23 +611,11 @@ namespace Triage.Mortician
                     IsPossibleFalsePositive = root.IsPossibleFalsePositive
                 };
 
-                try
-                {
+                if (!roots.ContainsKey(newRoot.Address))
                     roots.Add(newRoot.Address, newRoot);
-                }
-                catch (Exception)
-                {
-                    // todo: something
-                }
 
-                try
-                {
+                if (!RootToTypeMapping.ContainsKey(root.Address) && root.Type != null)
                     RootToTypeMapping.Add(root.Address, root.Type.ToKeyType());
-                }
-                catch (Exception)
-                {
-                    // todo: do something
-                }
             }
 
             Roots = roots;
@@ -588,6 +629,7 @@ namespace Triage.Mortician
             Threads = new Dictionary<uint, DumpThread>();
             ThreadToExceptionMapping = new Dictionary<uint, ulong>();
             ThreadToRootMapping = new Dictionary<uint, IList<ulong>>();
+            ThreadToObjectMapping = new Dictionary<uint, IList<ulong>>();
             foreach (var thread in Runtime.Threads)
             {
                 var newThread = new DumpThread
@@ -631,23 +673,16 @@ namespace Triage.Mortician
                     DisplayString = x.DisplayString
                 }).ToList();
 
-                try
-                {
+                if (!Threads.ContainsKey(newThread.OsId))
                     Threads.Add(newThread.OsId, newThread);
-                }
-                catch (Exception)
-                {
-                    Log.Error("Duplicate exceptions for thread: {OsId}", newThread.OsId);
-                }
 
-                try
+                if (thread.CurrentException != null && !ThreadToExceptionMapping.ContainsKey(newThread.OsId))
+                    ThreadToExceptionMapping.Add(newThread.OsId, thread.CurrentException.Address);
+
+                if (!ThreadToObjectMapping.ContainsKey(newThread.OsId))
                 {
-                    if (thread.CurrentException != null)
-                        ThreadToExceptionMapping.Add(newThread.OsId, thread.CurrentException.Address);
-                }
-                catch (Exception)
-                {
-                    Log.Error("Multiple exceptions for thread: {OsId}", newThread.OsId);
+                    var objects = thread.EnumerateStackObjects().Select(x => x.Address).ToList();
+                    ThreadToObjectMapping.Add(newThread.OsId, objects);
                 }
             }
         }
@@ -742,7 +777,7 @@ namespace Triage.Mortician
                         ElementType = field.ElementType
                     };
                     t.InstanceFields.Add(newField);
-                    if (field.Type.Name != ERROR_TYPE)
+                    if (field.Type != null && field.Type?.Name != ERROR_TYPE && !InstanceFieldToTypeMapping.ContainsKey(newField))
                         InstanceFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
                 }
 
@@ -765,7 +800,8 @@ namespace Triage.Mortician
                         ElementType = field.ElementType
                     };
                     t.StaticFields.Add(newField);
-                    StaticFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
+                    if (field.Type != null && !StaticFieldToTypeMapping.ContainsKey(newField))
+                        StaticFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
                 }
             }
         }
@@ -969,6 +1005,12 @@ namespace Triage.Mortician
         public Dictionary<uint, ulong> ThreadToExceptionMapping { get; set; }
 
         /// <summary>
+        ///     Gets or sets the thread to object mapping.
+        /// </summary>
+        /// <value>The thread to object mapping.</value>
+        public Dictionary<uint, IList<ulong>> ThreadToObjectMapping { get; set; }
+
+        /// <summary>
         ///     Gets or sets the thread to root mapping.
         /// </summary>
         /// <value>The thread to root mapping.</value>
@@ -997,87 +1039,11 @@ namespace Triage.Mortician
         /// </summary>
         /// <value>The type to module mapping.</value>
         public Dictionary<DumpTypeKey, DumpTypeKey> TypeToModuleMapping { get; set; }
-    }
-
-    /// <summary>
-    ///     Class DumpModuleInfo.
-    /// </summary>
-    public class DumpModuleInfo
-    {
-        /// <summary>
-        ///     Gets or sets the name of the file.
-        /// </summary>
-        /// <value>The name of the file.</value>
-        public string FileName { get; set; }
 
         /// <summary>
-        ///     Gets or sets the size of the file.
+        ///     Gets the log.
         /// </summary>
-        /// <value>The size of the file.</value>
-        public uint FileSize { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the image base.
-        /// </summary>
-        /// <value>The image base.</value>
-        public ulong ImageBase { get; set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether this instance is managed.
-        /// </summary>
-        /// <value><c>true</c> if this instance is managed; otherwise, <c>false</c>.</value>
-        public bool IsManaged { get; set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether this instance is runtime.
-        /// </summary>
-        /// <value><c>true</c> if this instance is runtime; otherwise, <c>false</c>.</value>
-        public bool IsRuntime { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the PDB.
-        /// </summary>
-        /// <value>The PDB.</value>
-        public IPdbInfo Pdb { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the pe file.
-        /// </summary>
-        /// <value>The pe file.</value>
-        public IPeFile PeFile { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the time stamp.
-        /// </summary>
-        /// <value>The time stamp.</value>
-        public uint TimeStamp { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the version.
-        /// </summary>
-        /// <value>The version.</value>
-        public VersionInfo Version { get; set; }
-    }
-
-    /// <summary>
-    ///     Class ClrMdExtensionMethods.
-    /// </summary>
-    internal static class ClrMdExtensionMethods
-    {
-        /// <summary>
-        ///     To the type of the key.
-        /// </summary>
-        /// <param name="module">The module.</param>
-        /// <returns>DumpModuleKey.</returns>
-        public static DumpModuleKey ToKeyType(this IClrModule module) =>
-            new DumpModuleKey(module.AssemblyId, module.Name);
-
-        /// <summary>
-        ///     To the type of the key.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>DumpTypeKey.</returns>
-        public static DumpTypeKey ToKeyType(this IClrType type) =>
-            new DumpTypeKey(type.Module?.AssemblyId ?? 0, type.Name);
+        /// <value>The log.</value>
+        internal ILogger Log { get; } = Slog.ForContext<CoreComponentFactory>();
     }
 }

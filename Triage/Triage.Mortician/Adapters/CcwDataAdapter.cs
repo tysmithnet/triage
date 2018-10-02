@@ -35,6 +35,10 @@ namespace Triage.Mortician.Adapters
         public CcwDataAdapter(IConverter converter, CcwData data) : base(converter)
         {
             CcwData = data ?? throw new ArgumentNullException(nameof(data));
+            Handle = CcwData.Handle;
+            IUnknown = CcwData.IUnknown;
+            Object = CcwData.Object;
+            RefCount = CcwData.RefCount;
         }
 
         /// <summary>
@@ -53,7 +57,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The handle.</value>
         /// <inheritdoc />
-        public ulong Handle => CcwData.Handle;
+        public ulong Handle { get; internal set; }
 
         /// <summary>
         ///     Returns the interfaces that this CCW implements.
@@ -67,20 +71,20 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The i unknown.</value>
         /// <inheritdoc />
-        public ulong IUnknown => CcwData.IUnknown;
+        public ulong IUnknown { get; internal set; }
 
         /// <summary>
         ///     Returns the pointer to the managed object representing this CCW.
         /// </summary>
         /// <value>The object.</value>
         /// <inheritdoc />
-        public ulong Object => CcwData.Object;
+        public ulong Object { get; internal set; }
 
         /// <summary>
         ///     Returns the refcount of this CCW.
         /// </summary>
         /// <value>The reference count.</value>
         /// <inheritdoc />
-        public int RefCount => CcwData.RefCount;
+        public int RefCount { get; internal set; }
     }
 }

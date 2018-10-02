@@ -34,6 +34,17 @@ namespace Triage.Mortician.Adapters
         public ClrInstanceFieldAdapter(IConverter converter, ClrInstanceField instanceField) : base(converter)
         {
             InstanceField = instanceField ?? throw new ArgumentNullException(nameof(instanceField));
+            HasSimpleValue = InstanceField.HasSimpleValue;
+            IsInternal = InstanceField.IsInternal;
+            IsObjectReference = InstanceField.IsObjectReference;
+            IsPrimitive = InstanceField.IsPrimitive;
+            IsPrivate = InstanceField.IsPrivate;
+            IsProtected = InstanceField.IsProtected;
+            IsPublic = InstanceField.IsPublic;
+            IsValueClass = InstanceField.IsValueClass;
+            Name = InstanceField.Name;
+            Offset = InstanceField.Offset;
+            Token = InstanceField.Token;
         }
 
         /// <summary>
@@ -124,70 +135,70 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance has simple value; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool HasSimpleValue => InstanceField.HasSimpleValue;
+        public bool HasSimpleValue { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is internal.
         /// </summary>
         /// <value><c>true</c> if this instance is internal; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsInternal => InstanceField.IsInternal;
+        public bool IsInternal { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is an object reference, false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is object reference; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsObjectReference => InstanceField.IsObjectReference;
+        public bool IsObjectReference { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is a primitive (int, float, etc), false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is primitive; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPrimitive => InstanceField.IsPrimitive;
+        public bool IsPrimitive { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is private.
         /// </summary>
         /// <value><c>true</c> if this instance is private; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPrivate => InstanceField.IsPrivate;
+        public bool IsPrivate { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is protected.
         /// </summary>
         /// <value><c>true</c> if this instance is protected; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsProtected => InstanceField.IsProtected;
+        public bool IsProtected { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is public.
         /// </summary>
         /// <value><c>true</c> if this instance is public; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPublic => InstanceField.IsPublic;
+        public bool IsPublic { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is a ValueClass (struct), false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is value class; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsValueClass => InstanceField.IsValueClass;
+        public bool IsValueClass { get; internal set; }
 
         /// <summary>
         ///     The name of the field.
         /// </summary>
         /// <value>The name.</value>
         /// <inheritdoc />
-        public string Name => InstanceField.Name;
+        public string Name { get; internal set; }
 
         /// <summary>
         ///     If the field has a well defined offset from the base of the object, return it (otherwise -1).
         /// </summary>
         /// <value>The offset.</value>
         /// <inheritdoc />
-        public int Offset => InstanceField.Offset;
+        public int Offset { get; internal set; }
 
         /// <summary>
         ///     Gets the size of this field. Returns -1 if the size cannot be determined.
@@ -214,8 +225,8 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The token.</value>
         /// <inheritdoc />
-        public uint Token => InstanceField.Token;
-        
+        public uint Token { get; internal set; }
+
         /// <summary>
         ///     The type of the field.  Note this property may return null on error.  There is a bug in several versions
         ///     of our debugging layer which causes this.  You should always null-check the return value of this field.

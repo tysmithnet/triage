@@ -33,6 +33,7 @@ namespace Triage.Mortician.Adapters
         public ObjectSetAdapter(IConverter converter, ObjectSet objectSet) : base(converter)
         {
             ObjectSet = objectSet ?? throw new ArgumentNullException(nameof(objectSet));
+            Count = ObjectSet.Count;
         }
 
         /// <summary>
@@ -82,6 +83,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The count.</value>
         /// <inheritdoc />
-        public int Count => ObjectSet.Count;
+        public int Count { get; internal set; }
     }
 }

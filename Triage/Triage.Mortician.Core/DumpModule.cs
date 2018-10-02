@@ -1,4 +1,18 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.Core
+// Author           : @tysmithnet
+// Created          : 09-24-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 10-02-2018
+// ***********************************************************************
+// <copyright file="DumpModule.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Triage.Mortician.Core.ClrMdAbstractions;
@@ -8,37 +22,153 @@ namespace Triage.Mortician.Core
     /// <summary>
     ///     A module that was discovered in the memory dump
     /// </summary>
-    public class DumpModule
+    /// <seealso cref="System.IEquatable{Triage.Mortician.Core.DumpModule}" />
+    /// <seealso cref="System.IComparable{Triage.Mortician.Core.DumpModule}" />
+    /// <seealso cref="System.IComparable" />
+    public class DumpModule : IEquatable<DumpModule>, IComparable<DumpModule>, IComparable
     {
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DumpModule" /> class.
+        /// </summary>
+        /// <param name="dumpModuleKey">The dump module key.</param>
+        /// <exception cref="ArgumentNullException">dumpModuleKey</exception>
+        public DumpModule(DumpModuleKey dumpModuleKey)
+        {
+            Key = dumpModuleKey ?? throw new ArgumentNullException(nameof(dumpModuleKey));
+        }
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DumpModule" /> class.
+        /// </summary>
         internal DumpModule()
         {
         }
 
+        /// <summary>
+        ///     The app domains for which this module is loaded
+        /// </summary>
+        protected internal ISet<DumpAppDomain> AppDomainsInternal = new SortedSet<DumpAppDomain>();
+
+        /// <summary>
+        ///     The types defined in this module
+        /// </summary>
+        protected internal ISet<DumpType> TypesInternal = new SortedSet<DumpType>();
+
+        /// <summary>
+        ///     Compares to.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns>System.Int32.</returns>
+        /// <inheritdoc />
+        public int CompareTo(DumpModule other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            return Comparer<DumpModuleKey>.Default.Compare(Key, other.Key);
+        }
+
+        /// <summary>
+        ///     Compares to.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <returns>System.Int32.</returns>
+        /// <exception cref="ArgumentException">DumpModule</exception>
+        /// <inheritdoc />
+        public int CompareTo(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return 1;
+            if (ReferenceEquals(this, obj)) return 0;
+            if (!(obj is DumpModule)) throw new ArgumentException($"Object must be of type {nameof(DumpModule)}");
+            return CompareTo((DumpModule) obj);
+        }
+
+        /// <summary>
+        ///     Equalses the specified other.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        /// <inheritdoc />
+        public bool Equals(DumpModule other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(Key, other.Key);
+        }
+
+        /// <summary>
+        ///     Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns><c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((DumpModule) obj);
+        }
+
+        /// <summary>
+        ///     Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        /// <inheritdoc />
+        public override int GetHashCode() => Key != null ? Key.GetHashCode() : 0;
+
+        /// <summary>
+        ///     Adds the application domain.
+        /// </summary>
+        /// <param name="domain">The domain.</param>
         internal void AddAppDomain(DumpAppDomain domain)
         {
             AppDomainsInternal.Add(domain);
         }
 
+        /// <summary>
+        ///     Adds the type.
+        /// </summary>
+        /// <param name="type">The type.</param>
         internal void AddType(DumpType type)
         {
             TypesInternal.Add(type);
         }
 
         /// <summary>
-        ///     The app domains for which this module is loaded
+        ///     Implements the &gt; operator.
         /// </summary>
-        protected internal List<DumpAppDomain> AppDomainsInternal = new List<DumpAppDomain>();
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >(DumpModule left, DumpModule right) =>
+            Comparer<DumpModule>.Default.Compare(left, right) > 0;
 
         /// <summary>
-        ///     The types defined in this module
+        ///     Implements the &gt;= operator.
         /// </summary>
-        protected internal List<DumpType> TypesInternal = new List<DumpType>();
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >=(DumpModule left, DumpModule right) =>
+            Comparer<DumpModule>.Default.Compare(left, right) >= 0;
 
-        public DumpModule(DumpModuleKey dumpModuleKey)
-        {
-            Key = dumpModuleKey ?? throw new ArgumentNullException(nameof(dumpModuleKey));
-        }
+        /// <summary>
+        ///     Implements the &lt; operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <(DumpModule left, DumpModule right) =>
+            Comparer<DumpModule>.Default.Compare(left, right) < 0;
+
+        /// <summary>
+        ///     Implements the &lt;= operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <=(DumpModule left, DumpModule right) =>
+            Comparer<DumpModule>.Default.Compare(left, right) <= 0;
 
         /// <summary>
         ///     Gets or sets the application domains.
@@ -46,6 +176,11 @@ namespace Triage.Mortician.Core
         /// <value>The application domains.</value>
         public IEnumerable<DumpAppDomain> AppDomains => AppDomainsInternal;
 
+        /// <summary>
+        ///     Gets the assembly identifier.
+        /// </summary>
+        /// <value>The assembly identifier.</value>
+        public ulong AssemblyId => Key.AssemblyId;
 
         /// <summary>
         ///     Gets or sets the debugging mode for this assembly (edit and continue, etc)
@@ -79,13 +214,17 @@ namespace Triage.Mortician.Core
         public bool IsFile { get; protected internal set; }
 
         /// <summary>
+        ///     Gets or sets the key.
+        /// </summary>
+        /// <value>The key.</value>
+        public DumpModuleKey Key { get; set; }
+
+        /// <summary>
         ///     Gets or sets the name of this module
         /// </summary>
         /// <value>The name.</value>
         public string Name => Key.Name;
 
-        public ulong AssemblyId => Key.AssemblyId;
-        
         /// <summary>
         ///     Gets or sets the PDB guid if available
         /// </summary>
@@ -98,6 +237,10 @@ namespace Triage.Mortician.Core
         /// <value>The size.</value>
         public ulong Size { get; protected internal set; }
 
-        public DumpModuleKey Key { get; set; }
+        /// <summary>
+        ///     Gets the types.
+        /// </summary>
+        /// <value>The types.</value>
+        public IEnumerable<DumpType> Types => TypesInternal;
     }
 }

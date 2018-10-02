@@ -37,6 +37,12 @@ namespace Triage.Mortician.Adapters
         public HeapAdapter(IConverter converter, ClrHeap heap) : base(converter)
         {
             Heap = heap ?? throw new ArgumentNullException(nameof(heap));
+            AreRootsCached = Heap.AreRootsCached;
+            CanWalkHeap = Heap.CanWalkHeap;
+            HasComponentMethodTables = Heap.HasComponentMethodTables;
+            IsHeapCached = Heap.IsHeapCached;
+            PointerSize = Heap.PointerSize;
+            TotalHeapSize = Heap.TotalHeapSize;
         }
 
         /// <summary>
@@ -313,7 +319,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if [are roots cached]; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool AreRootsCached => Heap.AreRootsCached;
+        public bool AreRootsCached { get; internal set; }
 
         /// <summary>
         ///     Returns true if the GC heap is in a consistent state for heap enumeration.  This will return false
@@ -323,7 +329,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance can walk heap; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool CanWalkHeap => Heap.CanWalkHeap;
+        public bool CanWalkHeap { get; internal set; }
 
         /// <summary>
         ///     Returns the ClrType representing free space on the GC heap.
@@ -339,21 +345,21 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance has component method tables; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool HasComponentMethodTables => Heap.HasComponentMethodTables;
+        public bool HasComponentMethodTables { get; internal set; }
 
         /// <summary>
         ///     Returns true if the heap is cached, false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is heap cached; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsHeapCached => Heap.IsHeapCached;
+        public bool IsHeapCached { get; internal set; }
 
         /// <summary>
         ///     Pointer size of on the machine (4 or 8 bytes).
         /// </summary>
         /// <value>The size of the pointer.</value>
         /// <inheritdoc />
-        public int PointerSize => Heap.PointerSize;
+        public int PointerSize { get; internal set; }
 
         /// <summary>
         ///     Returns the runtime associated with this heap.
@@ -384,6 +390,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The total size of the heap.</value>
         /// <inheritdoc />
-        public ulong TotalHeapSize => Heap.TotalHeapSize;
+        public ulong TotalHeapSize { get; internal set; }
     }
 }

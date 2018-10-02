@@ -34,6 +34,12 @@ namespace Triage.Mortician.Adapters
         public HandleAdapter(IConverter converter, ClrHandle handle) : base(converter)
         {
             Handle = handle ?? throw new ArgumentNullException(nameof(handle));
+            Address = Handle.Address;
+            DependentTarget = Handle.DependentTarget;
+            IsPinned = Handle.IsPinned;
+            IsStrong = Handle.IsStrong;
+            Object = Handle.Object;
+            RefCount = Handle.RefCount;
         }
 
         /// <summary>
@@ -54,7 +60,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The address.</value>
         /// <inheritdoc />
-        public ulong Address => Handle.Address;
+        public ulong Address { get; internal set; }
 
         /// <summary>
         ///     The AppDomain the handle resides in.
@@ -72,7 +78,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The dependent target.</value>
         /// <inheritdoc />
-        public ulong DependentTarget => Handle.DependentTarget;
+        public ulong DependentTarget { get; internal set; }
 
         /// <summary>
         ///     The type of the dependent target, if non 0.
@@ -94,21 +100,21 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance is pinned; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPinned => Handle.IsPinned;
+        public bool IsPinned { get; internal set; }
 
         /// <summary>
         ///     Whether the handle is strong (roots the object) or not.
         /// </summary>
         /// <value><c>true</c> if this instance is strong; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsStrong => Handle.IsStrong;
+        public bool IsStrong { get; internal set; }
 
         /// <summary>
         ///     The Object the handle roots.
         /// </summary>
         /// <value>The object.</value>
         /// <inheritdoc />
-        public ulong Object => Handle.Object;
+        public ulong Object { get; internal set; }
 
         /// <summary>
         ///     If this handle is a RefCount handle, this returns the reference count.
@@ -118,7 +124,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The reference count.</value>
         /// <inheritdoc />
-        public uint RefCount => Handle.RefCount;
+        public uint RefCount { get; internal set; }
 
         /// <summary>
         ///     The the type of the Object.

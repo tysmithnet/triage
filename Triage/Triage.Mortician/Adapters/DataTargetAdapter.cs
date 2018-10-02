@@ -38,6 +38,8 @@ namespace Triage.Mortician.Adapters
         public DataTargetAdapter(IConverter converter, DataTarget dataTarget) : base(converter)
         {
             DataTarget = dataTarget ?? throw new ArgumentNullException(nameof(dataTarget));
+            IsMinidump = DataTarget.IsMinidump;
+            PointerSize = DataTarget.PointerSize;
         }
 
         /// <summary>
@@ -112,14 +114,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance is minidump; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsMinidump => DataTarget.IsMinidump;
+        public bool IsMinidump { get; internal set; }
 
         /// <summary>
         ///     Returns the pointer size for the target process.
         /// </summary>
         /// <value>The size of the pointer.</value>
         /// <inheritdoc />
-        public uint PointerSize => DataTarget.PointerSize;
+        public uint PointerSize { get; internal set; }
 
         /// <summary>
         ///     Instance to manage the symbol path(s)

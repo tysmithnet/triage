@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Triage.Mortician.Core;
 using Triage.Mortician.IntegrationTest.Scenarios;
+using Triage.Mortician.Reports.Runaway;
 using Triage.Testing.Common;
 using Xunit;
 
@@ -25,6 +26,12 @@ namespace Triage.Mortician.IntegrationTest
             public Task Setup(CancellationToken cancellationToken) => Task.CompletedTask;
 
             public int AppDomainCount { get; set; }
+
+            [Import]
+            public RunawayReport RunawayReport { get; set; }
+
+            [Import]
+            public EngineSettings EngineSettings { get; set; }
 
             [Import]
             public IDumpAppDomainRepository AppDomainRepo { get; set; }
@@ -77,6 +84,8 @@ namespace Triage.Mortician.IntegrationTest
                     t.ManagedStackFrames.Any(f =>
                         f.DisplayString.Contains("Triage.TestApplications.Console.Program.Main")))
                 .Should().BeTrue();
+            analyzer.EngineSettings.TestString.Should().Be("This is a test string");
+            analyzer.RunawayReport.Should().NotBeNull();
         }
     }
 }

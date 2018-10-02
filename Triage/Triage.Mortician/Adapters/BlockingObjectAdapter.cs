@@ -55,6 +55,10 @@ namespace Triage.Mortician.Adapters
             Owners = BlockingObject.Owners.Select(Converter.Convert).ToList();
             Reason = Converter.Convert(BlockingObject.Reason);
             Waiters = BlockingObject.Waiters.Select(Converter.Convert).ToList();
+            HasSingleOwner = BlockingObject.HasSingleOwner;
+            Object = BlockingObject.Object;
+            RecursionCount = BlockingObject.RecursionCount;
+            Taken = BlockingObject.Taken;
         }
 
         /// <summary>
@@ -63,14 +67,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance has single owner; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool HasSingleOwner => BlockingObject.HasSingleOwner;
+        public bool HasSingleOwner { get; internal set; }
 
         /// <summary>
         ///     The object associated with the lock.
         /// </summary>
         /// <value>The object.</value>
         /// <inheritdoc />
-        public ulong Object => BlockingObject.Object;
+        public ulong Object { get; internal set; }
 
         /// <summary>
         ///     The thread which currently owns the lock.  This is only valid if Taken is true and
@@ -99,14 +103,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The recursion count.</value>
         /// <inheritdoc />
-        public int RecursionCount => BlockingObject.RecursionCount;
+        public int RecursionCount { get; internal set; }
 
         /// <summary>
         ///     Whether or not the object is currently locked.
         /// </summary>
         /// <value><c>true</c> if taken; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool Taken => BlockingObject.Taken;
+        public bool Taken { get; internal set; }
 
         /// <summary>
         ///     Returns the list of threads waiting on this object.

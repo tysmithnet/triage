@@ -36,6 +36,37 @@ namespace Triage.Mortician.Adapters
         public ClrTypeAdapter(IConverter converter, ClrType type) : base(converter)
         {
             ClrType = type ?? throw new ArgumentNullException(nameof(type));
+            BaseSize = ClrType.BaseSize;
+            ContainsPointers = ClrType.ContainsPointers;
+            try
+            {
+                ElementSize = ClrType.ElementSize;
+            }
+            catch (Exception)
+            {
+                ; // this is from a buggy CLRMd
+            }
+            IsAbstract = ClrType.IsAbstract;
+            IsArray = ClrType.IsArray;
+            IsEnum = ClrType.IsEnum;
+            IsException = ClrType.IsException;
+            IsFinalizable = ClrType.IsFinalizable;
+            IsFree = ClrType.IsFree;
+            IsInterface = ClrType.IsInterface;
+            IsInternal = ClrType.IsInternal;
+            IsObjectReference = ClrType.IsObjectReference;
+            IsPointer = ClrType.IsPointer;
+            IsPrimitive = ClrType.IsPrimitive;
+            IsPrivate = ClrType.IsPrivate;
+            IsProtected = ClrType.IsProtected;
+            IsPublic = ClrType.IsPublic;
+            IsRuntimeType = ClrType.IsRuntimeType;
+            IsSealed = ClrType.IsSealed;
+            IsString = ClrType.IsString;
+            IsValueClass = ClrType.IsValueClass;
+            MetadataToken = ClrType.MetadataToken;
+            MethodTable = ClrType.MethodTable;
+            Name = ClrType.Name;
         }
 
         /// <summary>
@@ -287,7 +318,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The size of the base.</value>
         /// <inheritdoc />
-        public int BaseSize => ClrType.BaseSize;
+        public int BaseSize { get; internal set; }
 
         /// <summary>
         ///     If this type inherits from another type, this is that type.  Can return null if it does not inherit (or is unknown)
@@ -309,14 +340,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if [contains pointers]; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool ContainsPointers => ClrType.ContainsPointers;
+        public bool ContainsPointers { get; internal set; }
 
         /// <summary>
         ///     Returns the size of individual elements of an array.
         /// </summary>
         /// <value>The size of the element.</value>
         /// <inheritdoc />
-        public int ElementSize => ClrType.ElementSize;
+        public int ElementSize { get; internal set; }
 
         /// <summary>
         ///     Returns the ElementType of this Type.  Can return ELEMENT_TYPE_VOID on error.
@@ -359,7 +390,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance is abstract; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsAbstract => ClrType.IsAbstract;
+        public bool IsAbstract { get; internal set; }
 
         /// <summary>
         ///     A type is an array if you can use the array operators below, Abstractly arrays are objects
@@ -367,56 +398,56 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance is array; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsArray => ClrType.IsArray;
+        public bool IsArray { get; internal set; }
 
         /// <summary>
         ///     Returns true if this type is an enum.
         /// </summary>
         /// <value><c>true</c> if this instance is enum; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsEnum => ClrType.IsEnum;
+        public bool IsEnum { get; internal set; }
 
         /// <summary>
         ///     Returns true if this type is an exception (that is, it derives from System.Exception).
         /// </summary>
         /// <value><c>true</c> if this instance is exception; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsException => ClrType.IsException;
+        public bool IsException { get; internal set; }
 
         /// <summary>
         ///     Returns whether objects of this type are finalizable.
         /// </summary>
         /// <value><c>true</c> if this instance is finalizable; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsFinalizable => ClrType.IsFinalizable;
+        public bool IsFinalizable { get; internal set; }
 
         /// <summary>
         ///     Returns true if this type represents free space on the heap.
         /// </summary>
         /// <value><c>true</c> if this instance is free; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsFree => ClrType.IsFree;
+        public bool IsFree { get; internal set; }
 
         /// <summary>
         ///     Returns true if this type is an interface.
         /// </summary>
         /// <value><c>true</c> if this instance is interface; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsInterface => ClrType.IsInterface;
+        public bool IsInterface { get; internal set; }
 
         /// <summary>
         ///     Returns true if this type is accessable only by items in its own assembly.
         /// </summary>
         /// <value><c>true</c> if this instance is internal; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsInternal => ClrType.IsInternal;
+        public bool IsInternal { get; internal set; }
 
         /// <summary>
         ///     Returns true if this type is an object reference, false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is object reference; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsObjectReference => ClrType.IsObjectReference;
+        public bool IsObjectReference { get; internal set; }
 
         /// <summary>
         ///     Indicates if the type is in fact a pointer. If so, the pointer operators
@@ -424,35 +455,35 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance is pointer; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPointer => ClrType.IsPointer;
+        public bool IsPointer { get; internal set; }
 
         /// <summary>
         ///     Returns true if this type is a primitive (int, float, etc), false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is primitive; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPrimitive => ClrType.IsPrimitive;
+        public bool IsPrimitive { get; internal set; }
 
         /// <summary>
         ///     returns true if this type is marked Private.
         /// </summary>
         /// <value><c>true</c> if this instance is private; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPrivate => ClrType.IsPrivate;
+        public bool IsPrivate { get; internal set; }
 
         /// <summary>
         ///     Returns true if this nested type is accessable only by subtypes of its outer type.
         /// </summary>
         /// <value><c>true</c> if this instance is protected; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsProtected => ClrType.IsProtected;
+        public bool IsProtected { get; internal set; }
 
         /// <summary>
         ///     Returns true if this type is marked Public.
         /// </summary>
         /// <value><c>true</c> if this instance is public; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPublic => ClrType.IsPublic;
+        public bool IsPublic { get; internal set; }
 
         /// <summary>
         ///     Returns true if this object is a 'RuntimeType' (that is, the concrete System.RuntimeType class
@@ -460,35 +491,35 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance is runtime type; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsRuntimeType => ClrType.IsRuntimeType;
+        public bool IsRuntimeType { get; internal set; }
 
         /// <summary>
         ///     Returns true if this class is sealed.
         /// </summary>
         /// <value><c>true</c> if this instance is sealed; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsSealed => ClrType.IsSealed;
+        public bool IsSealed { get; internal set; }
 
         /// <summary>
         ///     Returns true if this type is System.String.
         /// </summary>
         /// <value><c>true</c> if this instance is string; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsString => ClrType.IsString;
+        public bool IsString { get; internal set; }
 
         /// <summary>
         ///     Returns true if this type is a ValueClass (struct), false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is value class; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsValueClass => ClrType.IsValueClass;
+        public bool IsValueClass { get; internal set; }
 
         /// <summary>
         ///     Returns the metadata token of this type.
         /// </summary>
         /// <value>The metadata token.</value>
         /// <inheritdoc />
-        public uint MetadataToken => ClrType.MetadataToken;
+        public uint MetadataToken { get; internal set; }
 
         /// <summary>
         ///     Gets the list of methods this type implements.
@@ -504,7 +535,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The method table.</value>
         /// <inheritdoc />
-        public ulong MethodTable => ClrType.MethodTable;
+        public ulong MethodTable { get; internal set; }
 
         /// <summary>
         ///     Returns the module this type is defined in.
@@ -518,7 +549,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The name.</value>
         /// <inheritdoc />
-        public string Name => ClrType.Name;
+        public string Name { get; internal set; }
 
         /// <summary>
         ///     Returns a list of static fields on this type.  Returns an empty list if there are no fields.

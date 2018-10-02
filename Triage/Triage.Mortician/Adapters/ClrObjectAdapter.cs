@@ -33,6 +33,14 @@ namespace Triage.Mortician.Adapters
         public ClrObjectAdapter(IConverter converter, ClrObject o) : base(converter)
         {
             Object = o;
+            Address = Object.Address;
+            ContainsPointers = Object.ContainsPointers;
+            HexAddress = Object.HexAddress;
+            IsArray = Object.IsArray;
+            IsBoxed = Object.IsBoxed;
+            IsNull = Object.IsNull;
+            Length = Object.IsArray ? Object.Length : 0;
+            Size = Object.Size;
         }
 
         /// <summary>
@@ -112,56 +120,56 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The address.</value>
         /// <inheritdoc />
-        public ulong Address => Object.Address;
+        public ulong Address { get; internal set; }
 
         /// <summary>
         ///     Returns true if this object possibly contians GC pointers.
         /// </summary>
         /// <value><c>true</c> if [contains pointers]; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool ContainsPointers => Object.ContainsPointers;
+        public bool ContainsPointers { get; internal set; }
 
         /// <summary>
         ///     The address of the object in Hex format.
         /// </summary>
         /// <value>The hexadecimal address.</value>
         /// <inheritdoc />
-        public string HexAddress => Object.HexAddress;
+        public string HexAddress { get; internal set; }
 
         /// <summary>
         ///     Returns whether this object is an array or not.
         /// </summary>
         /// <value><c>true</c> if this instance is array; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsArray => Object.IsArray;
+        public bool IsArray { get; internal set; }
 
         /// <summary>
         ///     Returns whether this object is actually a boxed primitive or struct.
         /// </summary>
         /// <value><c>true</c> if this instance is boxed; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsBoxed => Object.IsBoxed;
+        public bool IsBoxed { get; internal set; }
 
         /// <summary>
         ///     Returns if the object value is null.
         /// </summary>
         /// <value><c>true</c> if this instance is null; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsNull => Object.IsNull;
+        public bool IsNull { get; internal set; }
 
         /// <summary>
         ///     Returns the count of elements in this array, or throws InvalidOperatonException if this object is not an array.
         /// </summary>
         /// <value>The length.</value>
         /// <inheritdoc />
-        public int Length => Object.Length;
+        public int Length { get; internal set; }
 
         /// <summary>
         ///     Gets the size of the object.
         /// </summary>
         /// <value>The size.</value>
         /// <inheritdoc />
-        public ulong Size => Object.Size;
+        public ulong Size { get; internal set; }
 
         /// <summary>
         ///     The type of the object.

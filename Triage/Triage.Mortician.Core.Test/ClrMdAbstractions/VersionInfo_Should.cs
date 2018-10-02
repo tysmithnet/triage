@@ -1,12 +1,24 @@
-﻿using FluentAssertions;
+using System;
+using FluentAssertions;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using Triage.Testing.Common;
 using Xunit;
 
-namespace Triage.Mortician.Core.Test
+namespace Triage.Mortician.Core.Test.ClrMdAbstractions
 {
     public class VersionInfo_Should : BaseTest
     {
+        [Fact]
+        public void Should_Construct_Without_Error()
+        {
+            // arrange
+            Action sut = () => new VersionInfo();
+
+            // act
+            // assert
+            sut.Should().NotThrow();
+		}
+
         [Fact]
         public void Return_The_Correct_Version_String()
         {

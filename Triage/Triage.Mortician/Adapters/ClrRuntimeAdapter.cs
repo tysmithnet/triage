@@ -35,6 +35,10 @@ namespace Triage.Mortician.Adapters
         public ClrRuntimeAdapter(IConverter converter, ClrRuntime runtime) : base(converter)
         {
             Runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
+            HeapCount = Runtime.HeapCount;
+            PointerSize = Runtime.PointerSize;
+            ServerGC = Runtime.ServerGC; PointerSize = Runtime.PointerSize;
+            ServerGC = Runtime.ServerGC;
         }
 
         /// <summary>
@@ -218,7 +222,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The heap count.</value>
         /// <inheritdoc />
-        public int HeapCount => Runtime.HeapCount;
+        public int HeapCount { get; internal set; }
 
         /// <summary>
         ///     A list of all modules loaded into the process.
@@ -232,14 +236,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The size of the pointer.</value>
         /// <inheritdoc />
-        public int PointerSize => Runtime.PointerSize;
+        public int PointerSize { get; internal set; }
 
         /// <summary>
         ///     Whether or not the process is running in server GC mode or not.
         /// </summary>
         /// <value><c>true</c> if [server gc]; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool ServerGC => Runtime.ServerGC;
+        public bool ServerGC { get; internal set; }
 
         /// <summary>
         ///     Give access to the Shared AppDomain

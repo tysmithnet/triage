@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 10-02-2018
 // ***********************************************************************
 // <copyright file="DumpType.cs" company="">
 //     Copyright ©  2017
@@ -12,6 +12,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System;
 using System.Collections.Generic;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -20,18 +21,138 @@ namespace Triage.Mortician.Core
     /// <summary>
     ///     An object that represents a type that was extracted from the memory dump
     /// </summary>
-    public class DumpType
+    /// <seealso cref="System.IEquatable{Triage.Mortician.Core.DumpType}" />
+    /// <seealso cref="System.IComparable{Triage.Mortician.Core.DumpType}" />
+    /// <seealso cref="System.IComparable" />
+    public class DumpType : IEquatable<DumpType>, IComparable<DumpType>, IComparable
     {
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DumpType" /> class.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <exception cref="ArgumentNullException">key</exception>
+        /// <inheritdoc />
+        public DumpType(DumpTypeKey key)
+        {
+            Key = key ?? throw new ArgumentNullException(nameof(key));
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DumpType" /> class.
+        /// </summary>
+        internal DumpType()
+        {
+            Key = new DumpTypeKey(0, null);
+        }
+
         /// <summary>
         ///     The objects of this type
         /// </summary>
         protected internal Dictionary<ulong, DumpObject> ObjectsInternal = new Dictionary<ulong, DumpObject>();
 
         /// <summary>
-        ///     Gets or sets the type of base type
+        ///     Compares to.
         /// </summary>
-        /// <value>The type of the base</value>
-        public DumpType BaseType { get; protected internal set; }
+        /// <param name="other">The other.</param>
+        /// <returns>System.Int32.</returns>
+        /// <inheritdoc />
+        public int CompareTo(DumpType other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            return Comparer<DumpTypeKey>.Default.Compare(Key, other.Key);
+        }
+
+        /// <summary>
+        ///     Compares to.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <returns>System.Int32.</returns>
+        /// <exception cref="ArgumentException">DumpType</exception>
+        /// <inheritdoc />
+        public int CompareTo(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return 1;
+            if (ReferenceEquals(this, obj)) return 0;
+            if (!(obj is DumpType)) throw new ArgumentException($"Object must be of type {nameof(DumpType)}");
+            return CompareTo((DumpType) obj);
+        }
+
+        /// <summary>
+        ///     Equalses the specified other.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        /// <inheritdoc />
+        public bool Equals(DumpType other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(Key, other.Key);
+        }
+
+        /// <summary>
+        ///     Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns><c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((DumpType) obj);
+        }
+
+        /// <summary>
+        ///     Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        /// <inheritdoc />
+        public override int GetHashCode() => Key != null ? Key.GetHashCode() : 0;
+
+        /// <summary>
+        ///     Implements the &gt; operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >(DumpType left, DumpType right) =>
+            Comparer<DumpType>.Default.Compare(left, right) > 0;
+
+        /// <summary>
+        ///     Implements the &gt;= operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >=(DumpType left, DumpType right) =>
+            Comparer<DumpType>.Default.Compare(left, right) >= 0;
+
+        /// <summary>
+        ///     Implements the &lt; operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <(DumpType left, DumpType right) =>
+            Comparer<DumpType>.Default.Compare(left, right) < 0;
+
+        /// <summary>
+        ///     Implements the &lt;= operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <=(DumpType left, DumpType right) =>
+            Comparer<DumpType>.Default.Compare(left, right) <= 0;
+
+        /// <summary>
+        ///     Gets or sets the assembly identifier.
+        /// </summary>
+        /// <value>The assembly identifier.</value>
+        public ulong AssemblyId { get; set; }
 
         /// <summary>
         ///     Gets or sets the size of the type fields
@@ -40,16 +161,58 @@ namespace Triage.Mortician.Core
         public int BaseSize { get; protected internal set; }
 
         /// <summary>
+        ///     Gets or sets the type of base type
+        /// </summary>
+        /// <value>The type of the base</value>
+        public DumpType BaseType { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets the type of the component.
+        /// </summary>
+        /// <value>The type of the component.</value>
+        public DumpType ComponentType { get; set; }
+
+        /// <summary>
         ///     Gets or sets a value indicating whether [contains pointers].
         /// </summary>
         /// <value><c>true</c> if [contains pointers]; otherwise, <c>false</c>.</value>
         public bool ContainsPointers { get; protected internal set; }
 
         /// <summary>
-        ///     Gets or sets the key to uniquely identify this type
+        ///     Gets or sets the size of the element.
         /// </summary>
-        /// <value>The dump type key.</value>
-        public DumpTypeKey Key { get; protected internal set; }
+        /// <value>The size of the element.</value>
+        public int ElementSize { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the type of the element.
+        /// </summary>
+        /// <value>The type of the element.</value>
+        public ClrElementType ElementType { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance has simple value.
+        /// </summary>
+        /// <value><c>true</c> if this instance has simple value; otherwise, <c>false</c>.</value>
+        public bool HasSimpleValue { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the inheriting types.
+        /// </summary>
+        /// <value>The inheriting types.</value>
+        public List<DumpType> InheritingTypes { get; set; } = new List<DumpType>();
+
+        /// <summary>
+        ///     Gets or sets the instance fields.
+        /// </summary>
+        /// <value>The instance fields.</value>
+        public List<DumpTypeField> InstanceFields { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the interfaces.
+        /// </summary>
+        /// <value>The interfaces.</value>
+        public List<string> Interfaces { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is abstract.
@@ -82,6 +245,12 @@ namespace Triage.Mortician.Core
         public bool IsFinalizable { get; protected internal set; }
 
         /// <summary>
+        ///     Gets or sets a value indicating whether this instance is free.
+        /// </summary>
+        /// <value><c>true</c> if this instance is free; otherwise, <c>false</c>.</value>
+        public bool IsFree { get; set; }
+
+        /// <summary>
         ///     Gets or sets a value indicating whether this instance is an interface.
         /// </summary>
         /// <value><c>true</c> if this instance is interface; otherwise, <c>false</c>.</value>
@@ -92,6 +261,12 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value><c>true</c> if this instance is internal; otherwise, <c>false</c>.</value>
         public bool IsInternal { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is object reference.
+        /// </summary>
+        /// <value><c>true</c> if this instance is object reference; otherwise, <c>false</c>.</value>
+        public bool IsObjectReference { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is pointer.
@@ -118,6 +293,12 @@ namespace Triage.Mortician.Core
         public bool IsProtected { get; protected internal set; }
 
         /// <summary>
+        ///     Gets or sets a value indicating whether this instance is public.
+        /// </summary>
+        /// <value><c>true</c> if this instance is public; otherwise, <c>false</c>.</value>
+        public bool IsPublic { get; set; }
+
+        /// <summary>
         ///     Gets or sets a value indicating whether this instance is runtime type.
         /// </summary>
         /// <value><c>true</c> if this instance is runtime type; otherwise, <c>false</c>.</value>
@@ -134,6 +315,24 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value><c>true</c> if this instance is string; otherwise, <c>false</c>.</value>
         public bool IsString { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether this instance is value class.
+        /// </summary>
+        /// <value><c>true</c> if this instance is value class; otherwise, <c>false</c>.</value>
+        public bool IsValueClass { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the key to uniquely identify this type
+        /// </summary>
+        /// <value>The dump type key.</value>
+        public DumpTypeKey Key { get; protected internal set; }
+
+        /// <summary>
+        ///     Gets or sets the meta data token.
+        /// </summary>
+        /// <value>The meta data token.</value>
+        public uint MetaDataToken { get; set; }
 
         /// <summary>
         ///     Gets or sets the method table.
@@ -159,66 +358,10 @@ namespace Triage.Mortician.Core
         /// <value>The objects.</value>
         public IEnumerable<DumpObject> Objects { get; protected internal set; }
 
-        public bool IsPublic { get; set; }
-        public ulong AssemblyId { get; set; }
-        public uint MetaDataToken { get; set; }
-        public bool IsValueClass { get; set; }
-        public bool IsObjectReference { get; set; }
-        public bool IsFree { get; set; }
-        public bool HasSimpleValue { get; set; }
-        public int ElementSize { get; set; }
-        public ClrElementType ElementType { get; set; }
-        public List<DumpTypeField> InstanceFields { get; set; }
-        public List<DumpType> InheritingTypes { get; set; } = new List<DumpType>();
-        public DumpType ComponentType { get; set; }
-        public List<string> Interfaces { get; set; }
+        /// <summary>
+        ///     Gets or sets the static fields.
+        /// </summary>
+        /// <value>The static fields.</value>
         public List<DumpTypeField> StaticFields { get; set; } = new List<DumpTypeField>();
-    }
-
-    public class DumpHeapSegment
-    {
-        public ulong CommittedEnd { get; set; }
-        public ulong End { get; set; }
-        public ulong FirstObject { get; set; }
-        public ulong Gen0Length { get; set; }
-        public ulong Gen0Start { get; set; }
-        public ulong Gen1Length { get; set; }
-        public ulong Gen1Start { get; set; }
-        public ulong Gen2Length { get; set; }
-        public ulong Gen2Start { get; set; }
-        public IClrHeap Heap { get; set; }
-        public bool IsEphemeral { get; set; }
-        public bool IsLarge { get; set; }
-        public ulong Length { get; set; }
-        public int ProcessorAffinity { get; set; }
-        public ulong ReservedEnd { get; set; }
-        public ulong Start { get; set; }
-    }
-
-    public class DumpMemoryRegion
-    {
-        public ulong Address { get; set; }
-        public GcSegmentType GcSegmentType { get; set; }
-        public int HeapNumber { get; set; }
-        public ClrMemoryRegionType MemoryRegionType { get; set; }
-        public ulong Size { get; set; }
-    }
-
-    public class DumpTypeField
-    {
-        public bool HasSimpleValue { get; set; }
-        public bool IsInternal { get; set; }
-        public bool IsObjectReference { get; set; }
-        public bool IsPrimitive { get; set; }
-        public bool IsPrivate { get; set; }
-        public bool IsProtected { get; set; }
-        public bool IsPublic { get; set; }
-        public bool IsValueClass { get; set; }
-        public string Name { get; set; }
-        public int Offset { get; set; }
-        public int Size { get; set; }
-        public uint Token { get; set; }
-        public ClrElementType ElementType { get; set; }
-        public DumpType Type { get; set; }
     }
 }

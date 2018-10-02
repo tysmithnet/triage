@@ -1,26 +1,30 @@
-﻿using System;
+﻿// ***********************************************************************
+// Assembly         : Triage.Mortician.Core
+// Author           : @tysmithnet
+// Created          : 09-26-2018
+//
+// Last Modified By : @tysmithnet
+// Last Modified On : 10-01-2018
+// ***********************************************************************
+// <copyright file="IDumpHandleRepository.cs" company="">
+//     Copyright ©  2018
+// </copyright>
+// <summary></summary>
+// ***********************************************************************
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Triage.Mortician.Core
 {
+    /// <summary>
+    ///     Interface IDumpHandleRepository
+    /// </summary>
     public interface IDumpHandleRepository
     {
+        /// <summary>
+        ///     Gets this instance.
+        /// </summary>
+        /// <returns>IEnumerable&lt;DumpHandle&gt;.</returns>
         IEnumerable<DumpHandle> Get();
-    }
-
-    public class DumpHandleRepository : IDumpHandleRepository
-    {
-        public DumpHandleRepository(Dictionary<ulong, DumpHandle> handleStore)
-        {
-            HandlesInternal = handleStore.Values.ToList();
-        }
-
-        internal IList<DumpHandle> HandlesInternal { get; set; }
-
-        /// <inheritdoc />
-        public IEnumerable<DumpHandle> Get() => HandlesInternal;
     }
 }

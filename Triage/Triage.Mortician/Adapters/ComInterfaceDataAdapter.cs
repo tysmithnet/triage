@@ -33,6 +33,7 @@ namespace Triage.Mortician.Adapters
             base(converter)
         {
             Data = data ?? throw new ArgumentNullException(nameof(data));
+            InterfacePointer = Data.InterfacePointer;
         }
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The interface pointer.</value>
         /// <inheritdoc />
-        public ulong InterfacePointer => Data.InterfacePointer;
+        public ulong InterfacePointer { get; internal set; }
 
         /// <summary>
         ///     The CLR type this represents.

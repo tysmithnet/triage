@@ -35,6 +35,11 @@ namespace Triage.Mortician.Adapters
         public ClrAppDomainAdapter(IConverter converter, ClrMd.ClrAppDomain appDomain) : base(converter)
         {
             AppDomain = appDomain ?? throw new ArgumentNullException(nameof(appDomain));
+            Address = AppDomain.Address;
+            ApplicationBase = AppDomain.ApplicationBase;
+            ConfigurationFile = AppDomain.ConfigurationFile;
+            Id = AppDomain.Id;
+            Name = AppDomain.Name;
         }
 
         /// <summary>
@@ -54,7 +59,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The address.</value>
         /// <inheritdoc />
-        public ulong Address => AppDomain.Address;
+        public ulong Address { get; internal set; }
 
         /// <summary>
         ///     Returns the base directory for this AppDomain.  This may return null if the targeted runtime does
@@ -62,7 +67,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The application base.</value>
         /// <inheritdoc />
-        public string ApplicationBase => AppDomain.ApplicationBase;
+        public string ApplicationBase { get; internal set; }
 
         /// <summary>
         ///     Returns the config file used for the AppDomain.  This may be null if there was no config file
@@ -70,14 +75,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The configuration file.</value>
         /// <inheritdoc />
-        public string ConfigurationFile => AppDomain.ConfigurationFile;
+        public string ConfigurationFile { get; internal set; }
 
         /// <summary>
         ///     The AppDomain's ID.
         /// </summary>
         /// <value>The identifier.</value>
         /// <inheritdoc />
-        public int Id => AppDomain.Id;
+        public int Id { get; internal set; }
 
         /// <summary>
         ///     Returns a list of modules loaded into this AppDomain.
@@ -91,7 +96,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The name.</value>
         /// <inheritdoc />
-        public string Name => AppDomain.Name;
+        public string Name { get; internal set; }
 
         /// <summary>
         ///     Gets the runtime associated with this ClrAppDomain.

@@ -35,6 +35,11 @@ namespace Triage.Mortician.Adapters
         public IlInfoAdapter(IConverter converter, ILInfo info) : base(converter)
         {
             Info = info ?? throw new ArgumentNullException(nameof(info));
+            Address = Info.Address;
+            Flags = Info.Flags;
+            Length = Info.Length;
+            LocalVarSignatureToken = Info.LocalVarSignatureToken;
+            MaxStack = Info.MaxStack;
         }
 
         /// <summary>
@@ -55,34 +60,34 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The address.</value>
         /// <inheritdoc />
-        public ulong Address => Info.Address;
+        public ulong Address { get; internal set; }
 
         /// <summary>
         ///     The flags associated with the IL code.
         /// </summary>
         /// <value>The flags.</value>
         /// <inheritdoc />
-        public uint Flags => Info.Flags;
+        public uint Flags { get; internal set; }
 
         /// <summary>
         ///     The length (in bytes) of the IL method body.
         /// </summary>
         /// <value>The length.</value>
         /// <inheritdoc />
-        public int Length => Info.Length;
+        public int Length { get; internal set; }
 
         /// <summary>
         ///     The local variable signature token for this IL method.
         /// </summary>
         /// <value>The local variable signature token.</value>
         /// <inheritdoc />
-        public uint LocalVarSignatureToken => Info.LocalVarSignatureToken;
+        public uint LocalVarSignatureToken { get; internal set; }
 
         /// <summary>
         ///     The maximum IL stack size in this method.
         /// </summary>
         /// <value>The maximum stack.</value>
         /// <inheritdoc />
-        public int MaxStack => Info.MaxStack;
+        public int MaxStack { get; internal set; }
     }
 }

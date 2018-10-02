@@ -35,6 +35,31 @@ namespace Triage.Mortician.Adapters
         public ClrMethodAdapter(IConverter converter, ClrMd.ClrMethod method) : base(converter)
         {
             Method = method ?? throw new ArgumentNullException(nameof(method));
+            GCInfo = Method.GCInfo;
+            IsAbstract = Method.IsAbstract;
+            IsClassConstructor = Method.IsClassConstructor;
+            IsConstructor = Method.IsConstructor;
+            IsFinal = Method.IsFinal;
+            IsInternal = Method.IsInternal;
+            IsPInvoke = Method.IsPInvoke;
+            IsPrivate = Method.IsPrivate;
+            IsProtected = Method.IsProtected;
+            IsPublic = Method.IsPublic;
+            IsRTSpecialName = Method.IsRTSpecialName;
+            IsSpecialName = Method.IsSpecialName;
+            IsStatic = Method.IsStatic;
+            IsVirtual = Method.IsVirtual;
+            MetadataToken = Method.MetadataToken;
+            try
+            {
+                MethodDesc = Method.MethodDesc;
+            }
+            catch (Exception)
+            {
+                ; // CLRMd bug
+            }
+            Name = Method.Name;
+            NativeCode = Method.NativeCode;
         }
 
         /// <summary>
@@ -86,7 +111,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The gc information.</value>
         /// <inheritdoc />
-        public ulong GCInfo => Method.GCInfo;
+        public ulong GCInfo { get; internal set; }
 
         /// <summary>
         ///     Returns the regions of memory that
@@ -114,98 +139,98 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance is abstract; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsAbstract => Method.IsAbstract;
+        public bool IsAbstract { get; internal set; }
 
         /// <summary>
         ///     Returns whether this method is a static constructor.
         /// </summary>
         /// <value><c>true</c> if this instance is class constructor; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsClassConstructor => Method.IsClassConstructor;
+        public bool IsClassConstructor { get; internal set; }
 
         /// <summary>
         ///     Returns whether this method is an instance constructor.
         /// </summary>
         /// <value><c>true</c> if this instance is constructor; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsConstructor => Method.IsConstructor;
+        public bool IsConstructor { get; internal set; }
 
         /// <summary>
         ///     Returns if this method is final.
         /// </summary>
         /// <value><c>true</c> if this instance is final; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsFinal => Method.IsFinal;
+        public bool IsFinal { get; internal set; }
 
         /// <summary>
         ///     Returns if this method is internal.
         /// </summary>
         /// <value><c>true</c> if this instance is internal; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsInternal => Method.IsInternal;
+        public bool IsInternal { get; internal set; }
 
         /// <summary>
         ///     Returns if this method is a PInvoke.
         /// </summary>
         /// <value><c>true</c> if this instance is p invoke; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPInvoke => Method.IsPInvoke;
+        public bool IsPInvoke { get; internal set; }
 
         /// <summary>
         ///     Returns if this method is private.
         /// </summary>
         /// <value><c>true</c> if this instance is private; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPrivate => Method.IsPrivate;
+        public bool IsPrivate { get; internal set; }
 
         /// <summary>
         ///     Returns if this method is protected.
         /// </summary>
         /// <value><c>true</c> if this instance is protected; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsProtected => Method.IsProtected;
+        public bool IsProtected { get; internal set; }
 
         /// <summary>
         ///     Returns if this method is public.
         /// </summary>
         /// <value><c>true</c> if this instance is public; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPublic => Method.IsPublic;
+        public bool IsPublic { get; internal set; }
 
         /// <summary>
         ///     Returns if this method is runtime special method.
         /// </summary>
         /// <value><c>true</c> if this instance is rt special name; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsRTSpecialName => Method.IsRTSpecialName;
+        public bool IsRTSpecialName { get; internal set; }
 
         /// <summary>
         ///     Returns if this method is a special method.
         /// </summary>
         /// <value><c>true</c> if this instance is special name; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsSpecialName => Method.IsSpecialName;
+        public bool IsSpecialName { get; internal set; }
 
         /// <summary>
         ///     Returns if this method is static.
         /// </summary>
         /// <value><c>true</c> if this instance is static; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsStatic => Method.IsStatic;
+        public bool IsStatic { get; internal set; }
 
         /// <summary>
         ///     Returns if this method is virtual.
         /// </summary>
         /// <value><c>true</c> if this instance is virtual; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsVirtual => Method.IsVirtual;
+        public bool IsVirtual { get; internal set; }
 
         /// <summary>
         ///     Returns the metadata token of the current method.
         /// </summary>
         /// <value>The metadata token.</value>
         /// <inheritdoc />
-        public uint MetadataToken => Method.MetadataToken;
+        public uint MetadataToken { get; internal set; }
 
         /// <summary>
         ///     Retrieves the first MethodDesc in EnumerateMethodDescs().  For single
@@ -215,21 +240,21 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The method desc.</value>
         /// <inheritdoc />
-        public ulong MethodDesc => Method.MethodDesc;
+        public ulong MethodDesc { get; internal set; }
 
         /// <summary>
         ///     The name of the method.  For example, "void System.Foo.Bar(object o, int i)" would return "Bar".
         /// </summary>
         /// <value>The name.</value>
         /// <inheritdoc />
-        public string Name => Method.Name;
+        public string Name { get; internal set; }
 
         /// <summary>
         ///     Returns the instruction pointer in the target process for the start of the method's assembly.
         /// </summary>
         /// <value>The native code.</value>
         /// <inheritdoc />
-        public ulong NativeCode => Method.NativeCode;
+        public ulong NativeCode { get; internal set; }
 
         /// <summary>
         ///     Returns the enclosing type of this method.

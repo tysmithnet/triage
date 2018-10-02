@@ -35,6 +35,7 @@ namespace Triage.Mortician.Adapters
             base(converter)
         {
             DataReader = dataReader ?? throw new ArgumentNullException(nameof(dataReader));
+            IsMinidump = DataReader.IsMinidump;
         }
 
         /// <summary>
@@ -193,6 +194,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance is minidump; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsMinidump => DataReader.IsMinidump;
+        public bool IsMinidump { get; internal set; }
     }
 }
