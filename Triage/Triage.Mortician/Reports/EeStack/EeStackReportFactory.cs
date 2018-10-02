@@ -123,7 +123,7 @@ namespace Triage.Mortician.Reports.EeStack
         /// </summary>
         /// <param name="debugger">The debugger.</param>
         /// <returns>IReport.</returns>
-        public void Setup(DebuggerProxy debugger)
+        public void Setup(IDebuggerProxy debugger)
         {
             RawOutput = debugger.Execute("!eestack");
         }

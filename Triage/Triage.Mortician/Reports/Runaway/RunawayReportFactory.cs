@@ -38,7 +38,7 @@ namespace Triage.Mortician.Reports.Runaway
         /// </summary>
         /// <param name="debugger">The debugger.</param>
         /// <returns>IReport.</returns>
-        public IReport CreateReport(DebuggerProxy debugger)
+        public IReport CreateReport(IDebuggerProxy debugger)
         {
             var output = debugger.Execute("!runaway 3");
             return ProcessOutput(output);
@@ -103,7 +103,7 @@ namespace Triage.Mortician.Reports.Runaway
         /// <param name="debugger">The debugger.</param>
         /// <returns>IReport.</returns>
         /// <inheritdoc />
-        public void Setup(DebuggerProxy debugger)
+        public void Setup(IDebuggerProxy debugger)
         {
             RawOutput = debugger.Execute("!runaway 3");
         }

@@ -18,9 +18,12 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Serilog;
 using Triage.Mortician.Core;
 using Triage.Mortician.Core.ClrMdAbstractions;
+using Triage.Mortician.Reports;
+using Triage.Mortician.Reports.Runaway;
 using Triage.Mortician.Repositories;
 using Slog = Serilog.Log;
 
@@ -62,8 +65,20 @@ namespace Triage.Mortician
 
             try
             {
+                var dt = Microsoft.Diagnostics.Runtime.DataTarget.LoadCrashDump(dumpFile.FullName);
                 DataTarget =
-                    Converter.Convert(Microsoft.Diagnostics.Runtime.DataTarget.LoadCrashDump(dumpFile.FullName));
+                    Converter.Convert(dt);
+                DebuggerProxy = new DebuggerProxy(dt.DebuggerInterface);
+                try
+                {
+                    CompositionContainer.ComposeExportedValue(DebuggerProxy);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Could not create DebuggerProxy. Verify the dump file can be opened in windbg.");
+                    throw;
+                }
+
             }
             catch (FileNotFoundException e)
             {
@@ -154,6 +169,7 @@ namespace Triage.Mortician
         /// </summary>
         public void Setup()
         {
+            CreateReports();
             CreateObjects();
             CreateTypes();
             CreateAppDomains();
@@ -178,6 +194,35 @@ namespace Triage.Mortician
             ConnectBlockingObjects();
             ConnectHandles();
             ConnectRoots();
+        }
+
+        internal void CreateReports()
+        {
+            var factories = CompositionContainer.GetExportedValues<IReportFactory>().ToList();
+            if (!factories.Any())
+                return;
+
+            foreach (var reportFactory in factories)
+            {
+                reportFactory.Setup(DebuggerProxy);
+            }
+
+            var tasks = factories.Select(x => Task.Run(() => x.Process())).ToList();
+            var batch = new CompositionBatch();
+
+            for(int i = 0; i < tasks.Count; i++)
+            {
+                var task = tasks[i];
+                try
+                {
+                    batch.AddPart(task.Result);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Unable to process report for {ReportFactory}", factories[i].GetType().FullName);
+                }
+            }
+            CompositionContainer.Compose(batch);
         }
 
         /// <summary>
@@ -500,14 +545,9 @@ namespace Triage.Mortician
                     MemoryRegionType = region.MemoryRegionType,
                     Size = region.Size
                 };
-                try
-                {
+                if(!regions.ContainsKey(region.Address))
                     regions.Add(region.Address, newRegion);
-                }
-                catch (Exception)
-                {
-                    // todo: something
-                }
+              
             }
 
             MemoryRegions = regions;
