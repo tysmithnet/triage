@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 10-01-2018
+// Last Modified On : 10-02-2018
 // ***********************************************************************
 // <copyright file="DumpObject.cs" company="">
 //     Copyright ©  2017
@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -22,21 +21,12 @@ namespace Triage.Mortician.Core
     /// <summary>
     ///     Represents a managed object on the managed heap
     /// </summary>
+    /// <seealso cref="System.IEquatable{Triage.Mortician.Core.DumpObject}" />
     /// <seealso cref="System.IComparable{Triage.Mortician.Core.DumpObject}" />
     /// <seealso cref="System.IComparable" />
     [DebuggerDisplay("{FullTypeName} : {Size} : {Address}")]
-    public class DumpObject : IComparable<DumpObject>, IComparable
+    public class DumpObject : IComparable<DumpObject>, IComparable, IEquatable<DumpObject>
     {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="DumpObject" /> class.
-        /// </summary>
-        /// <param name="address">The address.</param>
-        // todo: this should be created from a factory, lock down ctor
-        public DumpObject(ulong address)
-        {
-            Address = address;
-        }
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="DumpObject" /> class.
         /// </summary>
@@ -53,16 +43,33 @@ namespace Triage.Mortician.Core
         }
 
         /// <summary>
+        ///     Initializes a new instance of the <see cref="DumpObject" /> class.
+        /// </summary>
+        /// <inheritdoc />
+        internal DumpObject()
+        {
+        }
+
+        /// <summary>
         ///     The objects that reference this object
         /// </summary>
-        protected internal ConcurrentDictionary<ulong, DumpObject> ReferencersInternal =
-            new ConcurrentDictionary<ulong, DumpObject>(); // todo: don't use concurrent dictionary.. write happens single threaded and reads happen read only
+        protected internal Dictionary<ulong, DumpObject> ReferencersInternal =
+            new Dictionary<ulong, DumpObject>(); // todo: don't use concurrent dictionary.. write happens single threaded and reads happen read only
 
         /// <summary>
         ///     The references that this object has
         /// </summary>
-        protected internal ConcurrentDictionary<ulong, DumpObject> ReferencesInternal =
-            new ConcurrentDictionary<ulong, DumpObject>();
+        protected internal Dictionary<ulong, DumpObject> ReferencesInternal =
+            new Dictionary<ulong, DumpObject>();
+
+        /// <summary>
+        ///     Adds the thread.
+        /// </summary>
+        /// <param name="thread">The thread.</param>
+        public void AddThread(DumpThread thread)
+        {
+            ThreadsInternal.Add(thread);
+        }
 
         /// <summary>
         ///     Compares to.
@@ -93,6 +100,40 @@ namespace Triage.Mortician.Core
         }
 
         /// <summary>
+        ///     Equalses the specified other.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        /// <inheritdoc />
+        public bool Equals(DumpObject other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Address == other.Address;
+        }
+
+        /// <summary>
+        ///     Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns><c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((DumpObject) obj);
+        }
+
+        /// <summary>
+        ///     Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        /// <inheritdoc />
+        public override int GetHashCode() => Address.GetHashCode();
+
+        /// <summary>
         ///     Get a short description of the object.
         /// </summary>
         /// <returns>A short description of this object</returns>
@@ -105,7 +146,8 @@ namespace Triage.Mortician.Core
         /// <param name="obj">The object to add.</param>
         protected internal void AddReference(DumpObject obj)
         {
-            ReferencesInternal.TryAdd(obj.Address, obj);
+            if (!ReferencesInternal.ContainsKey(obj.Address))
+                ReferencesInternal.Add(obj.Address, obj);
         }
 
         /// <summary>
@@ -114,7 +156,8 @@ namespace Triage.Mortician.Core
         /// <param name="obj">The object.</param>
         protected internal void AddReferencer(DumpObject obj)
         {
-            ReferencersInternal.TryAdd(obj.Address, obj);
+            if (!ReferencersInternal.ContainsKey(obj.Address))
+                ReferencersInternal.Add(obj.Address, obj);
         }
 
         /// <summary>
@@ -238,11 +281,12 @@ namespace Triage.Mortician.Core
         /// <value>The type of the dump.</value>
         public DumpType Type { get; protected internal set; }
 
-        internal ISet<DumpThread> Threads { get; set; } = new SortedSet<DumpThread>();
+        /// <summary>
+        ///     Gets or sets the threads.
+        /// </summary>
+        /// <value>The threads.</value>
+        internal ISet<DumpThread> ThreadsInternal { get; set; } = new SortedSet<DumpThread>();
 
-        public void AddThread(DumpThread thread)
-        {
-            Threads.Add(thread);
-        }
+        public IEnumerable<DumpThread> Threads => ThreadsInternal;
     }
 }
