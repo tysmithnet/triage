@@ -142,15 +142,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClrMdAbstractions\VersionInfo_Should.cs" />
+    <Compile Include="CodeLocation_Should.cs" />
     <Compile Include="DumpAppDomain_Should.cs" />
+    <Compile Include="DumpBlockingObject_Should.cs" />
+    <Compile Include="DumpHandleRepository_Should.cs" />
+    <Compile Include="DumpHandle_Should.cs" />
+    <Compile Include="DumpHeapSegment_Should.cs" />
+    <Compile Include="DumpMemoryRegion_Should.cs" />
+    <Compile Include="DumpModuleKey_Should.cs" />
     <Compile Include="DumpModule_Should.cs" />
+    <Compile Include="DumpObjectRoot_Should.cs" />
     <Compile Include="DumpObject_Should.cs" />
+    <Compile Include="DumpStackFrame_Should.cs" />
     <Compile Include="DumpThread_Should.cs" />
+    <Compile Include="DumpTypeField_Should.cs" />
     <Compile Include="DumpTypeKey_Should.cs" />
+    <Compile Include="DumpType_Should.cs" />
     <Compile Include="ILToNativeMap_Should.cs" />
+    <Compile Include="ManagedCodeLocation_Should.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VersionInfo_Should.cs" />
-    <Compile Include="VirtualQueryData_Should.cs" />
+    <Compile Include="ClrMdAbstractions\VirtualQueryData_Should.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Triage.Mortician.Core\Triage.Mortician.Core.csproj">
@@ -168,6 +180,7 @@
   <ItemGroup>
     <Analyzer Include="..\packages\xunit.analyzers.0.10.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
