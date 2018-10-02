@@ -22,7 +22,10 @@ namespace Triage.Mortician.Core
     /// <summary>
     ///     Represents a thread that was extracted from the memory dump
     /// </summary>
-    public class DumpThread
+    /// <seealso cref="System.IEquatable{Triage.Mortician.Core.DumpThread}" />
+    /// <seealso cref="System.IComparable{Triage.Mortician.Core.DumpThread}" />
+    /// <seealso cref="System.IComparable" />
+    public class DumpThread : IEquatable<DumpThread>, IComparable<DumpThread>, IComparable
     {
         /// <summary>
         ///     Backing field for the lazy loaded stack trace
@@ -46,6 +49,104 @@ namespace Triage.Mortician.Core
         {
             Roots.Add(dumpObjectRoot);
         }
+
+        /// <summary>
+        ///     Compares to.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns>System.Int32.</returns>
+        /// <inheritdoc />
+        public int CompareTo(DumpThread other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            return OsId.CompareTo(other.OsId);
+        }
+
+        /// <summary>
+        ///     Compares to.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <returns>System.Int32.</returns>
+        /// <exception cref="ArgumentException">DumpThread</exception>
+        /// <inheritdoc />
+        public int CompareTo(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return 1;
+            if (ReferenceEquals(this, obj)) return 0;
+            if (!(obj is DumpThread)) throw new ArgumentException($"Object must be of type {nameof(DumpThread)}");
+            return CompareTo((DumpThread) obj);
+        }
+
+        /// <summary>
+        ///     Equalses the specified other.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        /// <inheritdoc />
+        public bool Equals(DumpThread other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return OsId == other.OsId;
+        }
+
+        /// <summary>
+        ///     Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns><c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((DumpThread) obj);
+        }
+
+        /// <summary>
+        ///     Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        /// <inheritdoc />
+        public override int GetHashCode() => (int) OsId;
+
+        /// <summary>
+        ///     Implements the &gt; operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >(DumpThread left, DumpThread right) =>
+            Comparer<DumpThread>.Default.Compare(left, right) > 0;
+
+        /// <summary>
+        ///     Implements the &gt;= operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >=(DumpThread left, DumpThread right) =>
+            Comparer<DumpThread>.Default.Compare(left, right) >= 0;
+
+        /// <summary>
+        ///     Implements the &lt; operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <(DumpThread left, DumpThread right) =>
+            Comparer<DumpThread>.Default.Compare(left, right) < 0;
+
+        /// <summary>
+        ///     Implements the &lt;= operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <=(DumpThread left, DumpThread right) =>
+            Comparer<DumpThread>.Default.Compare(left, right) <= 0;
 
         /// <summary>
         ///     Gets or sets the address.

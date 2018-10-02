@@ -194,6 +194,7 @@
     <Compile Include="Adapters\ClrThreadStaticFieldAdapter.cs" />
     <Compile Include="Adapters\ClrTypeAdapter.cs" />
     <Compile Include="Adapters\ClrValueClassAdapter.cs" />
+    <Compile Include="ClrMdExtensionMethods.cs" />
     <Compile Include="ComInterfaceData.cs" />
     <Compile Include="Converter.cs" />
     <Compile Include="Adapters\DacInfoAdapter.cs" />
@@ -204,6 +205,7 @@
     <Compile Include="DefaultOptions.cs" />
     <Compile Include="DebuggerProxy.cs" />
     <Compile Include="DefaultObjectExtractor.cs" />
+    <Compile Include="DumpModuleInfo.cs" />
     <Compile Include="IDebuggerProxy.cs" />
     <Compile Include="Reports\DumpDomain\DumpDomainAppDomain.cs" />
     <Compile Include="Reports\DumpDomain\DumpDomainAssembly.cs" />

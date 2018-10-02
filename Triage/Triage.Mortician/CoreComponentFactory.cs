@@ -777,7 +777,7 @@ namespace Triage.Mortician
                         ElementType = field.ElementType
                     };
                     t.InstanceFields.Add(newField);
-                    if (field.Type != null && field.Type?.Name != ERROR_TYPE)
+                    if (field.Type != null && field.Type?.Name != ERROR_TYPE && !InstanceFieldToTypeMapping.ContainsKey(newField))
                         InstanceFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
                 }
 
@@ -800,7 +800,7 @@ namespace Triage.Mortician
                         ElementType = field.ElementType
                     };
                     t.StaticFields.Add(newField);
-                    if (field.Type != null)
+                    if (field.Type != null && !StaticFieldToTypeMapping.ContainsKey(newField))
                         StaticFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
                 }
             }
@@ -1045,87 +1045,5 @@ namespace Triage.Mortician
         /// </summary>
         /// <value>The log.</value>
         internal ILogger Log { get; } = Slog.ForContext<CoreComponentFactory>();
-    }
-
-    /// <summary>
-    ///     Class DumpModuleInfo.
-    /// </summary>
-    public class DumpModuleInfo
-    {
-        /// <summary>
-        ///     Gets or sets the name of the file.
-        /// </summary>
-        /// <value>The name of the file.</value>
-        public string FileName { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the size of the file.
-        /// </summary>
-        /// <value>The size of the file.</value>
-        public uint FileSize { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the image base.
-        /// </summary>
-        /// <value>The image base.</value>
-        public ulong ImageBase { get; set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether this instance is managed.
-        /// </summary>
-        /// <value><c>true</c> if this instance is managed; otherwise, <c>false</c>.</value>
-        public bool IsManaged { get; set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether this instance is runtime.
-        /// </summary>
-        /// <value><c>true</c> if this instance is runtime; otherwise, <c>false</c>.</value>
-        public bool IsRuntime { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the PDB.
-        /// </summary>
-        /// <value>The PDB.</value>
-        public IPdbInfo Pdb { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the pe file.
-        /// </summary>
-        /// <value>The pe file.</value>
-        public IPeFile PeFile { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the time stamp.
-        /// </summary>
-        /// <value>The time stamp.</value>
-        public uint TimeStamp { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the version.
-        /// </summary>
-        /// <value>The version.</value>
-        public VersionInfo Version { get; set; }
-    }
-
-    /// <summary>
-    ///     Class ClrMdExtensionMethods.
-    /// </summary>
-    internal static class ClrMdExtensionMethods
-    {
-        /// <summary>
-        ///     To the type of the key.
-        /// </summary>
-        /// <param name="module">The module.</param>
-        /// <returns>DumpModuleKey.</returns>
-        public static DumpModuleKey ToKeyType(this IClrModule module) =>
-            new DumpModuleKey(module.AssemblyId, module.Name);
-
-        /// <summary>
-        ///     To the type of the key.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>DumpTypeKey.</returns>
-        public static DumpTypeKey ToKeyType(this IClrType type) =>
-            new DumpTypeKey(type.Module?.AssemblyId ?? 0, type.Name);
     }
 }
