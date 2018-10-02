@@ -12,6 +12,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,8 +22,10 @@ namespace Triage.Mortician.Core
     /// <summary>
     ///     Represents a managed object on the managed heap
     /// </summary>
+    /// <seealso cref="System.IComparable{Triage.Mortician.Core.DumpObject}" />
+    /// <seealso cref="System.IComparable" />
     [DebuggerDisplay("{FullTypeName} : {Size} : {Address}")]
-    public class DumpObject
+    public class DumpObject : IComparable<DumpObject>, IComparable
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="DumpObject" /> class.
@@ -62,6 +65,34 @@ namespace Triage.Mortician.Core
             new ConcurrentDictionary<ulong, DumpObject>();
 
         /// <summary>
+        ///     Compares to.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns>System.Int32.</returns>
+        /// <inheritdoc />
+        public int CompareTo(DumpObject other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            return Address.CompareTo(other.Address);
+        }
+
+        /// <summary>
+        ///     Compares to.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <returns>System.Int32.</returns>
+        /// <exception cref="ArgumentException">DumpObject</exception>
+        /// <inheritdoc />
+        public int CompareTo(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return 1;
+            if (ReferenceEquals(this, obj)) return 0;
+            if (!(obj is DumpObject)) throw new ArgumentException($"Object must be of type {nameof(DumpObject)}");
+            return CompareTo((DumpObject) obj);
+        }
+
+        /// <summary>
         ///     Get a short description of the object.
         /// </summary>
         /// <returns>A short description of this object</returns>
@@ -85,6 +116,42 @@ namespace Triage.Mortician.Core
         {
             ReferencersInternal.TryAdd(obj.Address, obj);
         }
+
+        /// <summary>
+        ///     Implements the &gt; operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >(DumpObject left, DumpObject right) =>
+            Comparer<DumpObject>.Default.Compare(left, right) > 0;
+
+        /// <summary>
+        ///     Implements the &gt;= operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >=(DumpObject left, DumpObject right) =>
+            Comparer<DumpObject>.Default.Compare(left, right) >= 0;
+
+        /// <summary>
+        ///     Implements the &lt; operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <(DumpObject left, DumpObject right) =>
+            Comparer<DumpObject>.Default.Compare(left, right) < 0;
+
+        /// <summary>
+        ///     Implements the &lt;= operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <=(DumpObject left, DumpObject right) =>
+            Comparer<DumpObject>.Default.Compare(left, right) <= 0;
 
         /// <summary>
         ///     Gets the address of this object
@@ -170,5 +237,12 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The type of the dump.</value>
         public DumpType Type { get; protected internal set; }
+
+        internal ISet<DumpThread> Threads { get; set; } = new SortedSet<DumpThread>();
+
+        public void AddThread(DumpThread thread)
+        {
+            Threads.Add(thread);
+        }
     }
 }

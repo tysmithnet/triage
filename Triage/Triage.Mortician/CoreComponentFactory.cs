@@ -139,8 +139,24 @@ namespace Triage.Mortician
                     dumpObjectRoot.AddThread(thread);
                 }
             }
-        }
 
+            foreach (var kvp in ThreadToObjectMapping)
+            {
+                var thread = Threads[kvp.Key];
+                foreach (var addr in kvp.Value)
+                {
+                    if (Roots.TryGetValue(addr, out var o))
+                    {
+                        thread.AddRoot(o);
+                        o.AddThread(thread);
+                    }
+                    else
+                    {
+                        ;
+                    }
+                }
+            }
+        }
         /// <summary>
         ///     Registers the repositories.
         /// </summary>
@@ -558,33 +574,29 @@ namespace Triage.Mortician
         /// </summary>
         internal void CreateObjects()
         {
-            var objects = new Dictionary<ulong, DumpObject>();
-            var objectGraph = new Dictionary<ulong, IList<ulong>>();
+            Objects = new Dictionary<ulong, DumpObject>();
+            ObjectGraph = new Dictionary<ulong, IList<ulong>>();
             ObjectToTypeMapping = new Dictionary<ulong, DumpTypeKey>();
             foreach (var cur in Runtime.Heap.EnumerateObjects())
             {
-                DumpObject toAdd;
-                var handler = DumpObjectExtractors.FirstOrDefault(h => h.CanExtract(cur, Runtime));
-                if (handler != null)
-                    toAdd = handler.Extract(cur, Runtime);
-                else
-                    toAdd = new DumpObject(cur.Address)
-                    {
-                        Address = cur.Address,
-                        FullTypeName = cur.Type?.Name,
-                        Size = cur.Size,
-                        IsNull = cur.IsNull,
-                        IsBoxed = cur.IsBoxed,
-                        IsArray = cur.IsArray,
-                        ContainsPointers = cur.ContainsPointers
-                    };
-                objects.Add(toAdd.Address, toAdd);
-                objectGraph.Add(toAdd.Address, cur.EnumerateObjectReferences().Select(x => x.Address).ToList());
-                ObjectToTypeMapping.Add(toAdd.Address, cur.Type.ToKeyType());
+                CreateObject(cur);
             }
 
-            Objects = objects;
-            ObjectGraph = objectGraph;
+            foreach (var addr in Runtime.Threads.SelectMany(t => t.EnumerateStackObjects()))
+            {
+
+            }
+        }
+
+        internal void CreateObject(IClrObject cur)
+        {
+            var handler = DumpObjectExtractors.FirstOrDefault(h => h.CanExtract(cur, Runtime));
+            if (handler == null)
+                return;
+            var toAdd = handler.Extract(cur, Runtime);
+            Objects.Add(toAdd.Address, toAdd);
+            ObjectGraph.Add(toAdd.Address, cur.EnumerateObjectReferences().Select(x => x.Address).ToList());
+            ObjectToTypeMapping.Add(toAdd.Address, cur.Type.ToKeyType());
         }
 
         /// <summary>
@@ -624,6 +636,7 @@ namespace Triage.Mortician
             Threads = new Dictionary<uint, DumpThread>();
             ThreadToExceptionMapping = new Dictionary<uint, ulong>();
             ThreadToRootMapping = new Dictionary<uint, IList<ulong>>();
+            ThreadToObjectMapping = new Dictionary<uint, IList<ulong>>();
             foreach (var thread in Runtime.Threads)
             {
                 var newThread = new DumpThread
@@ -667,26 +680,22 @@ namespace Triage.Mortician
                     DisplayString = x.DisplayString
                 }).ToList();
 
-                try
-                {
+                if(!Threads.ContainsKey(newThread.OsId))
                     Threads.Add(newThread.OsId, newThread);
-                }
-                catch (Exception)
-                {
-                    Log.Error("Duplicate exceptions for thread: {OsId}", newThread.OsId);
-                }
+                
+                if (thread.CurrentException != null && !ThreadToExceptionMapping.ContainsKey(newThread.OsId))
+                    ThreadToExceptionMapping.Add(newThread.OsId, thread.CurrentException.Address);
 
-                try
+                if (!ThreadToObjectMapping.ContainsKey(newThread.OsId))
                 {
-                    if (thread.CurrentException != null)
-                        ThreadToExceptionMapping.Add(newThread.OsId, thread.CurrentException.Address);
+                    var objects = thread.EnumerateStackObjects().Select(x => x.Address).ToList();
+                    ThreadToObjectMapping.Add(newThread.OsId, objects);
                 }
-                catch (Exception)
-                {
-                    Log.Error("Multiple exceptions for thread: {OsId}", newThread.OsId);
-                }
+                
             }
         }
+
+        public Dictionary<uint, IList<ulong>> ThreadToObjectMapping { get; set; }
 
         /// <summary>
         ///     Creates the types.

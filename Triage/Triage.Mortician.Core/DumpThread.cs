@@ -257,7 +257,7 @@ namespace Triage.Mortician.Core
         ///     Gets or sets the roots.
         /// </summary>
         /// <value>The roots.</value>
-        public IList<DumpObjectRoot> Roots { get; set; }
+        public ISet<DumpObjectRoot> Roots { get; set; } = new SortedSet<DumpObjectRoot>();
 
         /// <summary>
         ///     Gets or sets the stack limit.
