@@ -36,6 +36,9 @@ namespace Triage.Mortician.Adapters
         public GcRootAdapter(IConverter converter, GCRoot root) : base(converter)
         {
             Root = root ?? throw new ArgumentNullException(nameof(root));
+            AllowParallelSearch = Root.AllowParallelSearch;
+            IsFullyCached = Root.IsFullyCached;
+            MaximumTasksAllowed = Root.MaximumTasksAllowed;
         }
 
         /// <summary>
@@ -137,7 +140,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if [allow parallel search]; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool AllowParallelSearch => Root.AllowParallelSearch;
+        public bool AllowParallelSearch { get; internal set; }
 
         /// <summary>
         ///     Returns the heap that's associated with this GCRoot instance.
@@ -151,13 +154,13 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance is fully cached; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsFullyCached => Root.IsFullyCached;
+        public bool IsFullyCached { get; internal set; }
 
         /// <summary>
         ///     The maximum number of tasks allowed to run in parallel, if GCRoot does a parallel search.
         /// </summary>
         /// <value>The maximum tasks allowed.</value>
         /// <inheritdoc />
-        public int MaximumTasksAllowed => Root.MaximumTasksAllowed;
+        public int MaximumTasksAllowed { get; internal set; }
     }
 }

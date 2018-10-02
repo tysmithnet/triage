@@ -33,6 +33,12 @@ namespace Triage.Mortician.Adapters
         public ClrRootAdapter(IConverter converter, ClrRoot root) : base(converter)
         {
             Root = root ?? throw new ArgumentNullException(nameof(root));
+            Address = Root.Address;
+            IsInterior = Root.IsInterior;
+            IsPinned = Root.IsPinned;
+            IsPossibleFalsePositive = Root.IsPossibleFalsePositive;
+            Name = Root.Name;
+            Object = Root.Object;
         }
 
         /// <summary>
@@ -54,7 +60,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The address.</value>
         /// <inheritdoc />
-        public ulong Address => Root.Address;
+        public ulong Address { get; internal set; }
 
         /// <summary>
         ///     If the root can be identified as belonging to a particular AppDomain this is that AppDomain.
@@ -70,14 +76,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance is interior; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsInterior => Root.IsInterior;
+        public bool IsInterior { get; internal set; }
 
         /// <summary>
         ///     Returns true if the root "pins" the object, preventing the GC from relocating it.
         /// </summary>
         /// <value><c>true</c> if this instance is pinned; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPinned => Root.IsPinned;
+        public bool IsPinned { get; internal set; }
 
         /// <summary>
         ///     Unfortunately some versions of the APIs we consume do not give us perfect information.  If
@@ -86,7 +92,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance is possible false positive; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPossibleFalsePositive => Root.IsPossibleFalsePositive;
+        public bool IsPossibleFalsePositive { get; internal set; }
 
         /// <summary>
         ///     A GC Root also has a Kind, which says if it is a strong or weak root
@@ -100,14 +106,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The name.</value>
         /// <inheritdoc />
-        public string Name => Root.Name;
+        public string Name { get; internal set; }
 
         /// <summary>
         ///     The object on the GC heap that this root keeps alive.
         /// </summary>
         /// <value>The object.</value>
         /// <inheritdoc />
-        public ulong Object => Root.Object;
+        public ulong Object { get; internal set; }
 
         /// <summary>
         ///     Returns the stack frame associated with this stack root.

@@ -34,6 +34,9 @@ namespace Triage.Mortician.Adapters
         public SymbolLocatorAdapter(IConverter converter, SymbolLocator locator) : base(converter)
         {
             Locator = locator ?? throw new ArgumentNullException(nameof(locator));
+            SymbolCache = Locator.SymbolCache;
+            SymbolPath = Locator.SymbolPath;
+            Timeout = Locator.Timeout;
         }
 
         /// <summary>
@@ -202,14 +205,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The symbol cache.</value>
         /// <inheritdoc />
-        public string SymbolCache => Locator.SymbolCache;
+        public string SymbolCache { get; internal set; }
 
         /// <summary>
         ///     Gets or sets the SymbolPath this object uses to attempt to find PDBs and binaries.
         /// </summary>
         /// <value>The symbol path.</value>
         /// <inheritdoc />
-        public string SymbolPath => Locator.SymbolPath;
+        public string SymbolPath { get; internal set; }
 
         /// <summary>
         ///     The timeout (in milliseconds) used when contacting each individual server.  This is not a total timeout for the
@@ -218,6 +221,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The timeout.</value>
         /// <inheritdoc />
-        public int Timeout => Locator.Timeout;
+        public int Timeout { get; internal set; }
     }
 }

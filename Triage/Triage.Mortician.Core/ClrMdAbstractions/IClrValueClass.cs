@@ -60,13 +60,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         /// </summary>
         /// <value>The address.</value>
         ulong Address { get; }
-
-        /// <summary>
-        ///     The address of the object in Hex format.
-        /// </summary>
-        /// <value>The hexadecimal address.</value>
-        string HexAddress { get; }
-
+        
         /// <summary>
         ///     The type of the object.
         /// </summary>

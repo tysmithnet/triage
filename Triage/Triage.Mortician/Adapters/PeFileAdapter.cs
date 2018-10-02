@@ -33,7 +33,7 @@ namespace Triage.Mortician.Adapters
         public PeFileAdapter(IConverter converter, PEFile peFile) : base(converter)
         {
             PeFile = peFile ?? throw new ArgumentNullException(nameof(peFile));
-            PdbInfo = Converter.Convert(peFile.PdbInfo);
+            Disposed = PeFile.Disposed;
         }
 
         /// <summary>
@@ -81,6 +81,7 @@ namespace Triage.Mortician.Adapters
 
         public override void Setup()
         {
+            PdbInfo = Converter.Convert(PeFile.PdbInfo);
         }
 
         /// <summary>
@@ -88,7 +89,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if disposed; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool Disposed => PeFile.Disposed;
+        public bool Disposed { get; internal set; }
 
         /// <summary>
         ///     Holds information about the pdb for the current PEFile

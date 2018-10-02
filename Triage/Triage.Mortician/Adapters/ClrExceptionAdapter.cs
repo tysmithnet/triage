@@ -35,6 +35,9 @@ namespace Triage.Mortician.Adapters
         public ClrExceptionAdapter(IConverter converter, ClrException exception) : base(converter)
         {
             Exception = exception ?? throw new ArgumentNullException(nameof(exception));
+            Address = Exception.Address;
+            HResult = Exception.HResult;
+            Message = Exception.Message;
         }
 
         /// <summary>
@@ -54,14 +57,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The address.</value>
         /// <inheritdoc />
-        public ulong Address => Exception.Address;
+        public ulong Address { get; internal set; }
 
         /// <summary>
         ///     Returns the HRESULT associated with this exception (or S_OK if there isn't one).
         /// </summary>
         /// <value>The h result.</value>
         /// <inheritdoc />
-        public int HResult => Exception.HResult;
+        public int HResult { get; internal set; }
 
         /// <summary>
         ///     Returns the inner exception, if one exists, null otherwise.
@@ -75,7 +78,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The message.</value>
         /// <inheritdoc />
-        public string Message => Exception.Message;
+        public string Message { get; internal set; }
 
         /// <summary>
         ///     Returns the StackTrace for this exception.  Note that this may be empty or partial depending

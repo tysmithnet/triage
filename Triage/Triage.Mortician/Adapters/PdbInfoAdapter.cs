@@ -33,6 +33,9 @@ namespace Triage.Mortician.Adapters
         public PdbInfoAdapter(IConverter converter, PdbInfo pdbInfo) : base(converter)
         {
             PdbInfo = pdbInfo ?? throw new ArgumentNullException(nameof(pdbInfo));
+            FileName = PdbInfo.FileName;
+            Guid = PdbInfo.Guid;
+            Revision = PdbInfo.Revision;
         }
 
         /// <summary>
@@ -49,20 +52,20 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The name of the file.</value>
         /// <inheritdoc />
-        public string FileName => PdbInfo.FileName;
+        public string FileName { get; internal set; }
 
         /// <summary>
         ///     The Guid of the PDB.
         /// </summary>
         /// <value>The unique identifier.</value>
         /// <inheritdoc />
-        public Guid Guid => PdbInfo.Guid;
+        public Guid Guid { get; internal set; }
 
         /// <summary>
         ///     The pdb revision.
         /// </summary>
         /// <value>The revision.</value>
         /// <inheritdoc />
-        public int Revision => PdbInfo.Revision;
+        public int Revision { get; internal set; }
     }
 }

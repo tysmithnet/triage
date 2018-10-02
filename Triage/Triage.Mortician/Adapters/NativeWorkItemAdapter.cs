@@ -36,6 +36,8 @@ namespace Triage.Mortician.Adapters
         public NativeWorkItemAdapter(IConverter converter, NativeWorkItem nativeWorkItem) : base(converter)
         {
             NativeWorkItem = nativeWorkItem ?? throw new ArgumentNullException(nameof(nativeWorkItem));
+            Callback = NativeWorkItem.Callback;
+            Data = NativeWorkItem.Data;
         }
 
         /// <summary>
@@ -56,14 +58,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The callback.</value>
         /// <inheritdoc />
-        public ulong Callback => NativeWorkItem.Callback;
+        public ulong Callback { get; internal set; }
 
         /// <summary>
         ///     Returns the pointer to the user's data.
         /// </summary>
         /// <value>The data.</value>
         /// <inheritdoc />
-        public ulong Data => NativeWorkItem.Data;
+        public ulong Data { get; internal set; }
 
         /// <summary>
         ///     The type of work item this is.

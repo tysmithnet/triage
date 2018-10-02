@@ -33,6 +33,8 @@ namespace Triage.Mortician.Adapters
         public FileVersionInfoAdapter(IConverter converter, FileVersionInfo fileVersionInfo) : base(converter)
         {
             FileVersionInfo = fileVersionInfo ?? throw new ArgumentNullException(nameof(fileVersionInfo));
+            Comments = FileVersionInfo.Comments;
+            FileVersion = FileVersionInfo.FileVersion;
         }
 
         /// <summary>
@@ -49,13 +51,13 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The comments.</value>
         /// <inheritdoc />
-        public string Comments => FileVersionInfo.Comments;
+        public string Comments { get; internal set; }
 
         /// <summary>
         ///     The verison string
         /// </summary>
         /// <value>The file version.</value>
         /// <inheritdoc />
-        public string FileVersion => FileVersionInfo.FileVersion;
+        public string FileVersion { get; internal set; }
     }
 }

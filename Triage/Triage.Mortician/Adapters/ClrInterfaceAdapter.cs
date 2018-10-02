@@ -33,6 +33,7 @@ namespace Triage.Mortician.Adapters
         public ClrInterfaceAdapter(IConverter converter, ClrInterface @interface) : base(converter)
         {
             Interface = @interface ?? throw new ArgumentNullException(nameof(@interface));
+            Name = Interface.Name;
         }
 
         /// <summary>
@@ -57,6 +58,6 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The name.</value>
         /// <inheritdoc />
-        public string Name => Interface.Name;
+        public string Name { get; internal set; }
     }
 }

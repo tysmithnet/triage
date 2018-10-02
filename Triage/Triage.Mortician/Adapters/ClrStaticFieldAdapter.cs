@@ -35,6 +35,19 @@ namespace Triage.Mortician.Adapters
         public ClrStaticFieldAdapter(IConverter converter, ClrStaticField staticField) : base(converter)
         {
             StaticField = staticField ?? throw new ArgumentNullException(nameof(staticField));
+            HasDefaultValue = StaticField.HasDefaultValue;
+            HasSimpleValue = StaticField.HasSimpleValue;
+            IsInternal = StaticField.IsInternal;
+            IsObjectReference = StaticField.IsObjectReference;
+            IsPrimitive = StaticField.IsPrimitive;
+            IsPrivate = StaticField.IsPrivate;
+            IsProtected = StaticField.IsProtected;
+            IsPublic = StaticField.IsPublic;
+            IsValueClass = StaticField.IsValueClass;
+            Name = StaticField.Name;
+            Offset = StaticField.Offset;
+            Size = StaticField.Size;
+            Token = StaticField.Token;
         }
 
         /// <summary>
@@ -114,7 +127,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance has default value; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool HasDefaultValue => StaticField.HasDefaultValue;
+        public bool HasDefaultValue { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field has a simple value (meaning you may call "GetFieldValue" in one of the subtypes
@@ -122,84 +135,84 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance has simple value; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool HasSimpleValue => StaticField.HasSimpleValue;
+        public bool HasSimpleValue { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is internal.
         /// </summary>
         /// <value><c>true</c> if this instance is internal; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsInternal => StaticField.IsInternal;
+        public bool IsInternal { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is an object reference, false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is object reference; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsObjectReference => StaticField.IsObjectReference;
+        public bool IsObjectReference { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is a primitive (int, float, etc), false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is primitive; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPrimitive => StaticField.IsPrimitive;
+        public bool IsPrimitive { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is private.
         /// </summary>
         /// <value><c>true</c> if this instance is private; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPrivate => StaticField.IsPrivate;
+        public bool IsPrivate { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is protected.
         /// </summary>
         /// <value><c>true</c> if this instance is protected; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsProtected => StaticField.IsProtected;
+        public bool IsProtected { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is public.
         /// </summary>
         /// <value><c>true</c> if this instance is public; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPublic => StaticField.IsPublic;
+        public bool IsPublic { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is a ValueClass (struct), false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is value class; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsValueClass => StaticField.IsValueClass;
+        public bool IsValueClass { get; internal set; }
 
         /// <summary>
         ///     The name of the field.
         /// </summary>
         /// <value>The name.</value>
         /// <inheritdoc />
-        public string Name => StaticField.Name;
+        public string Name { get; internal set; }
 
         /// <summary>
         ///     If the field has a well defined offset from the base of the object, return it (otherwise -1).
         /// </summary>
         /// <value>The offset.</value>
         /// <inheritdoc />
-        public int Offset => StaticField.Offset;
+        public int Offset { get; internal set; }
 
         /// <summary>
         ///     Gets the size of this field.
         /// </summary>
         /// <value>The size.</value>
         /// <inheritdoc />
-        public int Size => StaticField.Size;
+        public int Size { get; internal set; }
 
         /// <summary>
         ///     Returns the type token of this field.
         /// </summary>
         /// <value>The token.</value>
         /// <inheritdoc />
-        public uint Token => StaticField.Token;
+        public uint Token { get; internal set; }
 
         /// <summary>
         ///     The type of the field.  Note this property may return null on error.  There is a bug in several versions

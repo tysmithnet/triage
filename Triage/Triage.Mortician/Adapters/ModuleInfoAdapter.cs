@@ -34,6 +34,12 @@ namespace Triage.Mortician.Adapters
         public ModuleInfoAdapter(IConverter converter, ModuleInfo moduleInfo) : base(converter)
         {
             ModuleInfo = moduleInfo ?? throw new ArgumentNullException(nameof(moduleInfo));
+            FileName = ModuleInfo.FileName;
+            FileSize = ModuleInfo.FileSize;
+            ImageBase = ModuleInfo.ImageBase;
+            IsManaged = ModuleInfo.IsManaged;
+            IsRuntime = ModuleInfo.IsRuntime;
+            TimeStamp = ModuleInfo.TimeStamp;
         }
 
         /// <summary>
@@ -60,35 +66,35 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The name of the file.</value>
         /// <inheritdoc />
-        public string FileName => ModuleInfo.FileName;
+        public string FileName { get; internal set; }
 
         /// <summary>
         ///     The filesize of the image.
         /// </summary>
         /// <value>The size of the file.</value>
         /// <inheritdoc />
-        public uint FileSize => ModuleInfo.FileSize;
+        public uint FileSize { get; internal set; }
 
         /// <summary>
         ///     The base address of the object.
         /// </summary>
         /// <value>The image base.</value>
         /// <inheritdoc />
-        public ulong ImageBase => ModuleInfo.ImageBase;
+        public ulong ImageBase { get; internal set; }
 
         /// <summary>
         ///     Whether the module is managed or not.
         /// </summary>
         /// <value><c>true</c> if this instance is managed; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsManaged => ModuleInfo.IsManaged;
+        public bool IsManaged { get; internal set; }
 
         /// <summary>
         ///     Returns true if this module is a native (non-managed) .Net runtime module.
         /// </summary>
         /// <value><c>true</c> if this instance is runtime; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsRuntime => ModuleInfo.IsRuntime;
+        public bool IsRuntime { get; internal set; }
 
         /// <summary>
         ///     The PDB associated with this module.
@@ -102,7 +108,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The time stamp.</value>
         /// <inheritdoc />
-        public uint TimeStamp => ModuleInfo.TimeStamp;
+        public uint TimeStamp { get; internal set; }
 
         /// <summary>
         ///     The version information for this file.

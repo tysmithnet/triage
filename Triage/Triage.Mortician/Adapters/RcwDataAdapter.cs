@@ -35,6 +35,13 @@ namespace Triage.Mortician.Adapters
         public RcwDataAdapter(IConverter converter, RcwData rcwData) : base(converter)
         {
             RcwData = rcwData ?? throw new ArgumentNullException(nameof(rcwData));
+            CreatorThread = RcwData.CreatorThread;
+            Disconnected = RcwData.Disconnected;
+            IUnknown = RcwData.IUnknown;
+            Object = RcwData.Object;
+            RefCount = RcwData.RefCount;
+            VTablePointer = RcwData.VTablePointer;
+            WinRTObject = RcwData.WinRTObject;
         }
 
         /// <summary>
@@ -52,14 +59,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The creator thread.</value>
         /// <inheritdoc />
-        public uint CreatorThread => RcwData.CreatorThread;
+        public uint CreatorThread { get; internal set; }
 
         /// <summary>
         ///     Returns true if the RCW is disconnected from the underlying COM type.
         /// </summary>
         /// <value><c>true</c> if disconnected; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool Disconnected => RcwData.Disconnected;
+        public bool Disconnected { get; internal set; }
 
         /// <summary>
         ///     Returns the list of interfaces this RCW implements.
@@ -73,21 +80,21 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The i unknown.</value>
         /// <inheritdoc />
-        public ulong IUnknown => RcwData.IUnknown;
+        public ulong IUnknown { get; internal set; }
 
         /// <summary>
         ///     Returns the managed object associated with this of RCW.
         /// </summary>
         /// <value>The object.</value>
         /// <inheritdoc />
-        public ulong Object => RcwData.Object;
+        public ulong Object { get; internal set; }
 
         /// <summary>
         ///     Returns the RefCount of the RCW.
         /// </summary>
         /// <value>The reference count.</value>
         /// <inheritdoc />
-        public int RefCount => RcwData.RefCount;
+        public int RefCount { get; internal set; }
 
         /// <summary>
         ///     Returns the external VTable associated with this RCW.  (It's useful to resolve the VTable as a symbol
@@ -95,13 +102,13 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The v table pointer.</value>
         /// <inheritdoc />
-        public ulong VTablePointer => RcwData.VTablePointer;
+        public ulong VTablePointer { get; internal set; }
 
         /// <summary>
         ///     Returns the internal WinRT object associated with this RCW (if one exists).
         /// </summary>
         /// <value>The win rt object.</value>
         /// <inheritdoc />
-        public ulong WinRTObject => RcwData.WinRTObject;
+        public ulong WinRTObject { get; internal set; }
     }
 }
