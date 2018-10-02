@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 10-01-2018
+// Last Modified On : 10-02-2018
 // ***********************************************************************
 // <copyright file="DumpTypeKey.cs" company="">
 //     Copyright ©  2017
@@ -13,6 +13,7 @@
 // ***********************************************************************
 
 using System;
+using System.Collections.Generic;
 
 namespace Triage.Mortician.Core
 {
@@ -21,8 +22,10 @@ namespace Triage.Mortician.Core
     ///     The method table alone is not sufficent to identify a type because generics
     ///     can share the same method table
     /// </summary>
+    /// <seealso cref="System.IComparable{Triage.Mortician.Core.DumpTypeKey}" />
+    /// <seealso cref="System.IComparable" />
     /// <seealso cref="System.IEquatable{Triage.Mortician.Core.DumpTypeKey}" />
-    public class DumpTypeKey : IEquatable<DumpTypeKey>
+    public class DumpTypeKey : IEquatable<DumpTypeKey>, IComparable<DumpTypeKey>, IComparable
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="DumpTypeKey" /> struct.
@@ -33,6 +36,36 @@ namespace Triage.Mortician.Core
         {
             AssemblyId = assemblyId;
             TypeName = typeName;
+        }
+
+        /// <summary>
+        ///     Compares to.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns>System.Int32.</returns>
+        /// <inheritdoc />
+        public int CompareTo(DumpTypeKey other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            var assemblyIdComparison = AssemblyId.CompareTo(other.AssemblyId);
+            if (assemblyIdComparison != 0) return assemblyIdComparison;
+            return string.Compare(TypeName, other.TypeName, StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        ///     Compares to.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <returns>System.Int32.</returns>
+        /// <exception cref="ArgumentException">DumpTypeKey</exception>
+        /// <inheritdoc />
+        public int CompareTo(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return 1;
+            if (ReferenceEquals(this, obj)) return 0;
+            if (!(obj is DumpTypeKey)) throw new ArgumentException($"Object must be of type {nameof(DumpTypeKey)}");
+            return CompareTo((DumpTypeKey) obj);
         }
 
         /// <summary>
@@ -68,6 +101,42 @@ namespace Triage.Mortician.Core
                 return (AssemblyId.GetHashCode() * 397) ^ (TypeName != null ? TypeName.GetHashCode() : 0);
             }
         }
+
+        /// <summary>
+        ///     Implements the &gt; operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >(DumpTypeKey left, DumpTypeKey right) =>
+            Comparer<DumpTypeKey>.Default.Compare(left, right) > 0;
+
+        /// <summary>
+        ///     Implements the &gt;= operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >=(DumpTypeKey left, DumpTypeKey right) =>
+            Comparer<DumpTypeKey>.Default.Compare(left, right) >= 0;
+
+        /// <summary>
+        ///     Implements the &lt; operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <(DumpTypeKey left, DumpTypeKey right) =>
+            Comparer<DumpTypeKey>.Default.Compare(left, right) < 0;
+
+        /// <summary>
+        ///     Implements the &lt;= operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <=(DumpTypeKey left, DumpTypeKey right) =>
+            Comparer<DumpTypeKey>.Default.Compare(left, right) <= 0;
 
         /// <summary>
         ///     Gets or sets the assembly id to which this type belongs

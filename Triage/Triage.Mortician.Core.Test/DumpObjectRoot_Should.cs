@@ -67,6 +67,10 @@ namespace Triage.Mortician.Core.Test
             a.CompareTo((object) b).Should().Be(0);
             a.CompareTo((object) c).Should().Be(-1);
             a.CompareTo((object) null).Should().Be(1);
+            (a < b).Should().BeFalse();
+            (a <= b).Should().BeTrue();
+            (c > a).Should().BeTrue();
+            (c >= a).Should().BeTrue();
             Action throws = () => a.CompareTo("");
             throws.Should().Throw<ArgumentException>();
         }

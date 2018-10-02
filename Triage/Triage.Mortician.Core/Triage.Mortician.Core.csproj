@@ -127,7 +127,6 @@
     <Compile Include="DumpAppDomain.cs" />
     <Compile Include="DumpBlockingObject.cs" />
     <Compile Include="DumpHandle.cs" />
-    <Compile Include="DumpHandleRepository.cs" />
     <Compile Include="DumpHeapSegment.cs" />
     <Compile Include="DumpMemoryRegion.cs" />
     <Compile Include="DumpModule.cs" />

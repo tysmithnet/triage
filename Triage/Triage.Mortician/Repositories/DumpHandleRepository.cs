@@ -14,8 +14,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Triage.Mortician.Core;
 
-namespace Triage.Mortician.Core
+namespace Triage.Mortician.Repositories
 {
     /// <summary>
     ///     Class DumpHandleRepository.

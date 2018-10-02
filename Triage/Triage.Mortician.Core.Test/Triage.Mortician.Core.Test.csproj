@@ -146,7 +146,6 @@
     <Compile Include="CodeLocation_Should.cs" />
     <Compile Include="DumpAppDomain_Should.cs" />
     <Compile Include="DumpBlockingObject_Should.cs" />
-    <Compile Include="DumpHandleRepository_Should.cs" />
     <Compile Include="DumpHandle_Should.cs" />
     <Compile Include="DumpHeapSegment_Should.cs" />
     <Compile Include="DumpMemoryRegion_Should.cs" />

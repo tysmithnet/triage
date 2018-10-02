@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 10-01-2018
+// Last Modified On : 10-02-2018
 // ***********************************************************************
 // <copyright file="DumpType.cs" company="">
 //     Copyright ©  2017
@@ -12,6 +12,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System;
 using System.Collections.Generic;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
@@ -20,12 +21,113 @@ namespace Triage.Mortician.Core
     /// <summary>
     ///     An object that represents a type that was extracted from the memory dump
     /// </summary>
-    public class DumpType
+    /// <seealso cref="System.IEquatable{Triage.Mortician.Core.DumpType}" />
+    /// <seealso cref="System.IComparable{Triage.Mortician.Core.DumpType}" />
+    /// <seealso cref="System.IComparable" />
+    public class DumpType : IEquatable<DumpType>, IComparable<DumpType>, IComparable
     {
         /// <summary>
         ///     The objects of this type
         /// </summary>
         protected internal Dictionary<ulong, DumpObject> ObjectsInternal = new Dictionary<ulong, DumpObject>();
+
+        /// <summary>
+        ///     Compares to.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns>System.Int32.</returns>
+        /// <inheritdoc />
+        public int CompareTo(DumpType other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            return Comparer<DumpTypeKey>.Default.Compare(Key, other.Key);
+        }
+
+        /// <summary>
+        ///     Compares to.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <returns>System.Int32.</returns>
+        /// <exception cref="ArgumentException">DumpType</exception>
+        /// <inheritdoc />
+        public int CompareTo(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return 1;
+            if (ReferenceEquals(this, obj)) return 0;
+            if (!(obj is DumpType)) throw new ArgumentException($"Object must be of type {nameof(DumpType)}");
+            return CompareTo((DumpType) obj);
+        }
+
+        /// <summary>
+        ///     Equalses the specified other.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
+        /// <inheritdoc />
+        public bool Equals(DumpType other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(Key, other.Key);
+        }
+
+        /// <summary>
+        ///     Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns><c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((DumpType) obj);
+        }
+
+        /// <summary>
+        ///     Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+        /// <inheritdoc />
+        public override int GetHashCode() => Key != null ? Key.GetHashCode() : 0;
+
+        /// <summary>
+        ///     Implements the &gt; operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >(DumpType left, DumpType right) =>
+            Comparer<DumpType>.Default.Compare(left, right) > 0;
+
+        /// <summary>
+        ///     Implements the &gt;= operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >=(DumpType left, DumpType right) =>
+            Comparer<DumpType>.Default.Compare(left, right) >= 0;
+
+        /// <summary>
+        ///     Implements the &lt; operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <(DumpType left, DumpType right) =>
+            Comparer<DumpType>.Default.Compare(left, right) < 0;
+
+        /// <summary>
+        ///     Implements the &lt;= operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <=(DumpType left, DumpType right) =>
+            Comparer<DumpType>.Default.Compare(left, right) <= 0;
 
         /// <summary>
         ///     Gets or sets the assembly identifier.

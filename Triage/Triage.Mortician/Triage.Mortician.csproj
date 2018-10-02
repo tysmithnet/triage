@@ -236,6 +236,7 @@
     <Compile Include="Reports\Runaway\RunawayReportFactory.cs" />
     <Compile Include="Reports\Runaway\RunawayReport.cs" />
     <Compile Include="Repositories\DumpAppDomainRepository.cs" />
+    <Compile Include="Repositories\DumpHandleRepository.cs" />
     <Compile Include="Repositories\DumpModuleRepository.cs" />
     <Compile Include="Repositories\DumpThreadRepository.cs" />
     <Compile Include="Repositories\DumpTypeRepository.cs" />
