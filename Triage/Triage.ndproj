@@ -4,9 +4,6 @@
   <Assemblies>
     <Name>Triage.Mortician.Analyzers</Name>
     <Name>Triage.Mortician</Name>
-    <Name>Triage.TestApplications.Console</Name>
-    <Name>Triage.Mortician.ExcelAnalyzer</Name>
-    <Name>Triage.Mortician.WebUiAnalyzer</Name>
     <Name>Triage.Mortician.Core</Name>
   </Assemblies>
   <FrameworkAssemblies>
@@ -19,27 +16,6 @@
     <Name>Newtonsoft.Json</Name>
     <Name>System</Name>
     <Name>Common.Logging</Name>
-    <Name>System.Configuration</Name>
-    <Name>SpreadsheetLight</Name>
-    <Name>AWSSDK.Core</Name>
-    <Name>AWSSDK.S3</Name>
-    <Name>Microsoft.AspNetCore.Mvc.ViewFeatures</Name>
-    <Name>Microsoft.Extensions.Configuration.Abstractions</Name>
-    <Name>Microsoft.AspNetCore.Hosting.Abstractions</Name>
-    <Name>Microsoft.AspNetCore.Http.Abstractions</Name>
-    <Name>Microsoft.Extensions.DependencyInjection.Abstractions</Name>
-    <Name>Microsoft.AspNetCore.Routing</Name>
-    <Name>Microsoft.CodeAnalysis</Name>
-    <Name>Microsoft.AspNetCore.Mvc.Razor</Name>
-    <Name>Microsoft.AspNetCore.Mvc.Core</Name>
-    <Name>Microsoft.Extensions.Configuration</Name>
-    <Name>Microsoft.Extensions.Configuration.FileExtensions</Name>
-    <Name>Microsoft.Extensions.Configuration.EnvironmentVariables</Name>
-    <Name>Microsoft.AspNetCore.StaticFiles</Name>
-    <Name>Microsoft.AspNetCore.Mvc</Name>
-    <Name>Microsoft.AspNetCore.Hosting</Name>
-    <Name>Microsoft.AspNetCore.Server.Kestrel</Name>
-    <Name>Microsoft.CodeAnalysis.CSharp</Name>
     <Name>Microsoft.Diagnostics.Runtime</Name>
   </FrameworkAssemblies>
   <Dirs>

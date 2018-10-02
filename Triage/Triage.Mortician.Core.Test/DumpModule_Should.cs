@@ -83,10 +83,13 @@ namespace Triage.Mortician.Core.Test
         [Fact]
         public void Exhibit_Entity_Equality()
         {
+            // arrange
             var a = new DumpModule(new DumpModuleKey(0, "0"));
             var b = new DumpModule(new DumpModuleKey(0, "0"));
             var c = new DumpModule(new DumpModuleKey(1, "0"));
 
+            // act
+            // assert
             a.GetHashCode().Should().Be(b.GetHashCode());
             a.GetHashCode().Should().NotBe(c.GetHashCode());
 

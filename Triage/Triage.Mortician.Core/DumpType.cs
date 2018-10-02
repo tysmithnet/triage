@@ -27,6 +27,25 @@ namespace Triage.Mortician.Core
     public class DumpType : IEquatable<DumpType>, IComparable<DumpType>, IComparable
     {
         /// <summary>
+        ///     Initializes a new instance of the <see cref="DumpType" /> class.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <exception cref="ArgumentNullException">key</exception>
+        /// <inheritdoc />
+        public DumpType(DumpTypeKey key)
+        {
+            Key = key ?? throw new ArgumentNullException(nameof(key));
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DumpType" /> class.
+        /// </summary>
+        internal DumpType()
+        {
+            Key = new DumpTypeKey(0, null);
+        }
+
+        /// <summary>
         ///     The objects of this type
         /// </summary>
         protected internal Dictionary<ulong, DumpObject> ObjectsInternal = new Dictionary<ulong, DumpObject>();

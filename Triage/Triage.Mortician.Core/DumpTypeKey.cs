@@ -74,8 +74,12 @@ namespace Triage.Mortician.Core
         /// <param name="other">The other.</param>
         /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         /// <inheritdoc />
-        public bool Equals(DumpTypeKey other) =>
-            AssemblyId == other.AssemblyId && string.Equals(TypeName, other.TypeName);
+        public bool Equals(DumpTypeKey other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return AssemblyId == other.AssemblyId && string.Equals(TypeName, other.TypeName);
+        }
 
         /// <summary>
         ///     Determines whether the specified <see cref="System.Object" /> is equal to this instance.
@@ -86,7 +90,9 @@ namespace Triage.Mortician.Core
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            return obj is DumpTypeKey && Equals((DumpTypeKey) obj);
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((DumpTypeKey) obj);
         }
 
         /// <summary>
