@@ -80,7 +80,7 @@ namespace Triage.Mortician.IntegrationTest
                     t.ManagedStackFrames.Any(f =>
                         f.DisplayString.Contains("Triage.TestApplications.Console.Program.Main")))
                 .Should().BeTrue();
-            analyzer.EngineSettings.TestString.Should().Be("hello");
+            analyzer.EngineSettings.TestString.Should().Be("This is a test string");
         }
     }
 }

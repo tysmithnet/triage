@@ -343,18 +343,22 @@ namespace Triage.Mortician
                     RecursionCount = blockingObject.RecursionCount
                 };
 
-                BlockingObjects.Add(dumpBlockingObject.Address, dumpBlockingObject);
-                try
+                if(!BlockingObjects.ContainsKey(dumpBlockingObject.Address))
+                    BlockingObjects.Add(dumpBlockingObject.Address, dumpBlockingObject);
+
+                if (BlockingObjectToThreadMapping.ContainsKey(blockingObject.Object)) continue;
+                var owners = new List<uint>();
+                if (blockingObject.Owner != null)
                 {
-                    BlockingObjectToThreadMapping.Add(blockingObject.Object,
-                        blockingObject.HasSingleOwner
-                            ? new List<uint> {blockingObject.Owner.OSThreadId}
-                            : blockingObject.Owners.Select(x => x.OSThreadId).ToList());
+                    owners.Add(blockingObject.Owner.OSThreadId);
                 }
-                catch (Exception e)
+
+                if (blockingObject.Owners != null)
                 {
-                    // todo: something
+                    owners.AddRange(blockingObject.Owners.Where(x => x != null).Select(x => x.OSThreadId));
                 }
+
+                BlockingObjectToThreadMapping.Add(blockingObject.Object, owners);
             }
         }
 
@@ -562,23 +566,11 @@ namespace Triage.Mortician
                     IsPossibleFalsePositive = root.IsPossibleFalsePositive
                 };
 
-                try
-                {
+                if(!roots.ContainsKey(newRoot.Address))
                     roots.Add(newRoot.Address, newRoot);
-                }
-                catch (Exception)
-                {
-                    // todo: something
-                }
 
-                try
-                {
+                if(!RootToTypeMapping.ContainsKey(root.Address) && root.Type != null)
                     RootToTypeMapping.Add(root.Address, root.Type.ToKeyType());
-                }
-                catch (Exception)
-                {
-                    // todo: do something
-                }
             }
 
             Roots = roots;

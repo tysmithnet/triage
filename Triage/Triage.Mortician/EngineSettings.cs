@@ -22,7 +22,7 @@ namespace Triage.Mortician
     /// </summary>
     /// <seealso cref="Triage.Mortician.Core.ISettings" />
     [Export(typeof(ISettings))]
-    [Export(typeof(EngineSettings))]
+    [Export]
     public class EngineSettings : ISettings
     {
         /// <summary>
