@@ -787,7 +787,7 @@ namespace Triage.Mortician
                         ElementType = field.ElementType
                     };
                     t.InstanceFields.Add(newField);
-                    if (field.Type.Name != ERROR_TYPE)
+                    if (field.Type != null && field.Type?.Name != ERROR_TYPE)
                         InstanceFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
                 }
 
@@ -810,7 +810,8 @@ namespace Triage.Mortician
                         ElementType = field.ElementType
                     };
                     t.StaticFields.Add(newField);
-                    StaticFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
+                    if(field.Type != null)
+                        StaticFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
                 }
             }
         }
