@@ -27,6 +27,9 @@ namespace Triage.Mortician.IntegrationTest
             public int AppDomainCount { get; set; }
 
             [Import]
+            public EngineSettings EngineSettings { get; set; }
+
+            [Import]
             public IDumpAppDomainRepository AppDomainRepo { get; set; }
 
             [Import]
@@ -77,6 +80,7 @@ namespace Triage.Mortician.IntegrationTest
                     t.ManagedStackFrames.Any(f =>
                         f.DisplayString.Contains("Triage.TestApplications.Console.Program.Main")))
                 .Should().BeTrue();
+            analyzer.EngineSettings.TestString.Should().Be("hello");
         }
     }
 }
