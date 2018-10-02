@@ -35,6 +35,16 @@ namespace Triage.Mortician.Adapters
         public ClrThreadPoolAdapter(IConverter converter, ClrThreadPool threadPool) : base(converter)
         {
             ThreadPool = threadPool ?? throw new ArgumentNullException(nameof(threadPool));
+            CpuUtilization = ThreadPool.CpuUtilization;
+            FreeCompletionPortCount = ThreadPool.FreeCompletionPortCount;
+            IdleThreads = ThreadPool.IdleThreads;
+            MaxCompletionPorts = ThreadPool.MaxCompletionPorts;
+            MaxFreeCompletionPorts = ThreadPool.MaxFreeCompletionPorts;
+            MaxThreads = ThreadPool.MaxThreads;
+            MinCompletionPorts = ThreadPool.MinCompletionPorts;
+            MinThreads = ThreadPool.MinThreads;
+            RunningThreads = ThreadPool.RunningThreads;
+            TotalThreads = ThreadPool.TotalThreads;
         }
 
         /// <summary>
@@ -67,69 +77,69 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The cpu utilization.</value>
         /// <inheritdoc />
-        public int CpuUtilization => ThreadPool.CpuUtilization;
+        public int CpuUtilization { get; internal set; }
 
         /// <summary>
         ///     The number of free completion port threads.
         /// </summary>
         /// <value>The free completion port count.</value>
         /// <inheritdoc />
-        public int FreeCompletionPortCount => ThreadPool.FreeCompletionPortCount;
+        public int FreeCompletionPortCount { get; internal set; }
 
         /// <summary>
         ///     The number of idle threadpool threads in the process.
         /// </summary>
         /// <value>The idle threads.</value>
         /// <inheritdoc />
-        public int IdleThreads => ThreadPool.IdleThreads;
+        public int IdleThreads { get; internal set; }
 
         /// <summary>
         ///     Returns the maximum number of completion ports.
         /// </summary>
         /// <value>The maximum completion ports.</value>
         /// <inheritdoc />
-        public int MaxCompletionPorts => ThreadPool.MaxCompletionPorts;
+        public int MaxCompletionPorts { get; internal set; }
 
         /// <summary>
         ///     The maximum number of free completion port threads.
         /// </summary>
         /// <value>The maximum free completion ports.</value>
         /// <inheritdoc />
-        public int MaxFreeCompletionPorts => ThreadPool.MaxFreeCompletionPorts;
+        public int MaxFreeCompletionPorts { get; internal set; }
 
         /// <summary>
         ///     The maximum number of threadpool threads allowable.
         /// </summary>
         /// <value>The maximum threads.</value>
         /// <inheritdoc />
-        public int MaxThreads => ThreadPool.MaxThreads;
+        public int MaxThreads { get; internal set; }
 
         /// <summary>
         ///     Returns the minimum number of completion ports (if any).
         /// </summary>
         /// <value>The minimum completion ports.</value>
         /// <inheritdoc />
-        public int MinCompletionPorts => ThreadPool.MinCompletionPorts;
+        public int MinCompletionPorts { get; internal set; }
 
         /// <summary>
         ///     The minimum number of threadpool threads allowable.
         /// </summary>
         /// <value>The minimum threads.</value>
         /// <inheritdoc />
-        public int MinThreads => ThreadPool.MinThreads;
+        public int MinThreads { get; internal set; }
 
         /// <summary>
         ///     The number of running threadpool threads in the process.
         /// </summary>
         /// <value>The running threads.</value>
         /// <inheritdoc />
-        public int RunningThreads => ThreadPool.RunningThreads;
+        public int RunningThreads { get; internal set; }
 
         /// <summary>
         ///     The total number of threadpool worker threads in the process.
         /// </summary>
         /// <value>The total threads.</value>
         /// <inheritdoc />
-        public int TotalThreads => ThreadPool.TotalThreads;
+        public int TotalThreads { get; internal set; }
     }
 }

@@ -4,7 +4,7 @@
 // Created          : 09-29-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-29-2018
+// Last Modified On : 10-02-2018
 // ***********************************************************************
 // <copyright file="DumpModuleKey.cs" company="">
 //     Copyright ©  2018
@@ -13,14 +13,17 @@
 // ***********************************************************************
 
 using System;
+using System.Collections.Generic;
 
 namespace Triage.Mortician.Core
 {
     /// <summary>
     ///     Class DumpModuleKey.
     /// </summary>
+    /// <seealso cref="System.IComparable{Triage.Mortician.Core.DumpModuleKey}" />
+    /// <seealso cref="System.IComparable" />
     /// <seealso cref="System.IEquatable{Triage.Mortician.Core.DumpModuleKey}" />
-    public class DumpModuleKey : IEquatable<DumpModuleKey>
+    public class DumpModuleKey : IEquatable<DumpModuleKey>, IComparable<DumpModuleKey>, IComparable
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="DumpModuleKey" /> class.
@@ -33,6 +36,36 @@ namespace Triage.Mortician.Core
         {
             AssemblyId = assemblyId;
             Name = name ?? throw new ArgumentNullException(nameof(name));
+        }
+
+        /// <summary>
+        ///     Compares to.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns>System.Int32.</returns>
+        /// <inheritdoc />
+        public int CompareTo(DumpModuleKey other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            var assemblyIdComparison = AssemblyId.CompareTo(other.AssemblyId);
+            if (assemblyIdComparison != 0) return assemblyIdComparison;
+            return string.Compare(Name, other.Name, StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        ///     Compares to.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <returns>System.Int32.</returns>
+        /// <exception cref="ArgumentException">DumpModuleKey</exception>
+        /// <inheritdoc />
+        public int CompareTo(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return 1;
+            if (ReferenceEquals(this, obj)) return 0;
+            if (!(obj is DumpModuleKey)) throw new ArgumentException($"Object must be of type {nameof(DumpModuleKey)}");
+            return CompareTo((DumpModuleKey) obj);
         }
 
         /// <summary>
@@ -74,6 +107,42 @@ namespace Triage.Mortician.Core
                 return (AssemblyId.GetHashCode() * 397) ^ (Name != null ? Name.GetHashCode() : 0);
             }
         }
+
+        /// <summary>
+        ///     Implements the &gt; operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >(DumpModuleKey left, DumpModuleKey right) =>
+            Comparer<DumpModuleKey>.Default.Compare(left, right) > 0;
+
+        /// <summary>
+        ///     Implements the &gt;= operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >=(DumpModuleKey left, DumpModuleKey right) =>
+            Comparer<DumpModuleKey>.Default.Compare(left, right) >= 0;
+
+        /// <summary>
+        ///     Implements the &lt; operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <(DumpModuleKey left, DumpModuleKey right) =>
+            Comparer<DumpModuleKey>.Default.Compare(left, right) < 0;
+
+        /// <summary>
+        ///     Implements the &lt;= operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <=(DumpModuleKey left, DumpModuleKey right) =>
+            Comparer<DumpModuleKey>.Default.Compare(left, right) <= 0;
 
         /// <summary>
         ///     Gets the assembly identifier.

@@ -59,11 +59,28 @@ namespace Triage.Mortician.IntegrationTest
                 clrObject.Type.Name == "System.Windows.Forms.Button";
 
             /// <inheritdoc />
+            public bool CanExtract(ulong address, IClrRuntime clrRuntime)
+            {
+                var type = clrRuntime.Heap.GetObjectType(address);
+                return type.Name == "System.Windows.Forms.Button";
+            }
+
+            /// <inheritdoc />
             public DumpObject Extract(IClrObject clrObject, IClrRuntime clrRuntime)
             {
                 var text = clrObject.GetStringField("text");
                 return new ButtonDumpObject(clrObject.Address, clrObject.Type.Name, clrObject.Size,
                     clrRuntime.Heap.GetGeneration(clrObject.Address), text);
+            }
+
+            /// <inheritdoc />
+            public DumpObject Extract(ulong address, IClrRuntime clrRuntime)
+            {
+                var type = clrRuntime.Heap.GetObjectType(address);
+                var textField = type.GetFieldByName("text");
+                var text = (string)textField.GetValue(address);
+                return new ButtonDumpObject(address, type.Name, type.GetSize(address),
+                    clrRuntime.Heap.GetGeneration(address), text);
             }
         }
 

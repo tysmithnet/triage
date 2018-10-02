@@ -31,6 +31,7 @@ namespace Triage.Mortician.Adapters
         public ClrValueClassAdapter(IConverter converter, ClrValueClass valueClass) : base(converter)
         {
             ValueClass = valueClass;
+            Address = ValueClass.Address;
         }
 
         /// <summary>
@@ -89,14 +90,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The address.</value>
         /// <inheritdoc />
-        public ulong Address => ValueClass.Address;
-
-        /// <summary>
-        ///     The address of the object in Hex format.
-        /// </summary>
-        /// <value>The hexadecimal address.</value>
-        /// <inheritdoc />
-        public string HexAddress => ValueClass.HexAddress;
+        public ulong Address { get; internal set; }
 
         /// <summary>
         ///     The type of the object.

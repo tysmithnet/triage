@@ -4,7 +4,7 @@
 // Created          : 12-10-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-20-2018
+// Last Modified On : 10-01-2018
 // ***********************************************************************
 // <copyright file="Program.cs" company="">
 //     Copyright ©  2017
@@ -13,12 +13,16 @@
 // ***********************************************************************
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using CommandLine;
+using Newtonsoft.Json;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using Triage.Mortician.Core;
@@ -32,9 +36,6 @@ namespace Triage.Mortician
     {
         /// <summary>
         ///     The log
-        /// </summary>
-        /// <summary>
-        ///     Perform the default execution
         /// </summary>
         /// <param name="options">The options.</param>
         /// <param name="dependencyInjectionTransformer">The dependency injection transformer.</param>
@@ -54,8 +55,12 @@ namespace Triage.Mortician
                         RegexOptions.IgnoreCase)); // todo: not ideal to require assembly name
             var toLoad =
                 morticianAssemblyFiles
-                    .Except(AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic).Select(x => x.Location))
-                    .Select(x => new FileInfo(x)).Where(x => !blacklistedAssemblies.Contains(x.Name));
+                    .Except(AppDomain.CurrentDomain.GetAssemblies()
+                        .Where(a => !a.IsDynamic)
+                        .Select(x => x.Location))
+                    .Select(x => new FileInfo(x))
+                    .Where(x => !blacklistedAssemblies.Contains(x.Name));
+
             aggregateCatalog.Catalogs.Add(new TypeCatalog(options.AdditionalTypes));
             foreach (var assembly in toLoad)
                 try
@@ -69,23 +74,68 @@ namespace Triage.Mortician
                 }
                 catch (Exception e)
                 {
-                    Log.Error("Unable to load {FullName}, it will not be available because {Message}", assembly.FullName, e.Message);
+                    Log.Error("Unable to load {FullName}, it will not be available because {Message}",
+                        assembly.FullName, e.Message);
                 }
 
-            aggregateCatalog.Catalogs.Add(new AssemblyCatalog(Assembly.GetExecutingAssembly()));
+            var typesToLoad = Assembly.GetExecutingAssembly().DefinedTypes;
+            aggregateCatalog.Catalogs.Add(new TypeCatalog(typesToLoad));
+            var batch = new CompositionBatch();
+            foreach (var setting in InflateSettings(options)) batch.AddPart(setting);
+
             var compositionContainer = new CompositionContainer(aggregateCatalog);
+            compositionContainer.Compose(batch);
             var componentFactory = new CoreComponentFactory(compositionContainer, new FileInfo(options.DumpFile));
             componentFactory.Setup();
             componentFactory.RegisterRepositories(options);
             compositionContainer = dependencyInjectionTransformer?.Invoke(compositionContainer) ?? compositionContainer;
-
             var engine = compositionContainer.GetExportedValue<IEngine>();
             engine.Process().Wait();
             return 0;
         }
 
         /// <summary>
-        ///     Entry point to the application
+        ///     Inflates the settings.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <returns>IEnumerable&lt;ISettings&gt;.</returns>
+        internal IEnumerable<ISettings> InflateSettings(DefaultOptions options)
+        {
+            var serializer = new SettingsJsonConverter();
+
+            if (!string.IsNullOrWhiteSpace(options.SettingsFile))
+            {
+                try
+                {
+                    var text = File.ReadAllText(options.SettingsFile);
+                    return JsonConvert.DeserializeObject<IEnumerable<ISettings>>(text, serializer);
+                }
+                catch (FileNotFoundException e)
+                {
+                    Log.Error(e, "Could not find settings file at {SettingsFileLocation}", options.SettingsFile);
+                }
+            }
+            else if (File.Exists("settings.json"))
+            {
+                Log.Information("Settings file was not provided, but found one at the default path");
+                var text = File.ReadAllText("settings.json");
+                return JsonConvert.DeserializeObject<IEnumerable<ISettings>>(text, serializer);
+            }
+            else
+            {
+                Log.Information(
+                    "No settings file was provided, and no default settings file exists -creating one using the discovered plugins");
+                var settings = AppDomain.CurrentDomain.GetAssemblies()
+                    ?.SelectMany(x => x.DefinedTypes.Where(t => typeof(ISettings).IsAssignableFrom(t)));
+                var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
+                File.WriteAllText("settings.json", json, Encoding.UTF8);
+            }
+
+            return new ISettings[0];
+        }
+
+        /// <summary>
+        ///     Defines the entry point of the application.
         /// </summary>
         /// <param name="args">The arguments.</param>
         internal static void Main(string[] args)
@@ -102,7 +152,6 @@ namespace Triage.Mortician
                     AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6,
                     QueueSizeLimit = 1
                 }).CreateLogger();
-
 
             Log.Information("Starting mortician at {UtcNow} UTC", DateTime.UtcNow);
 

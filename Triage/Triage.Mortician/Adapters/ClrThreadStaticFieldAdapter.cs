@@ -35,6 +35,18 @@ namespace Triage.Mortician.Adapters
             base(converter)
         {
             ThreadStaticField = threadStaticField ?? throw new ArgumentNullException(nameof(threadStaticField));
+            HasSimpleValue = ThreadStaticField.HasSimpleValue;
+            IsInternal = ThreadStaticField.IsInternal;
+            IsObjectReference = ThreadStaticField.IsObjectReference;
+            IsPrimitive = ThreadStaticField.IsPrimitive;
+            IsPrivate = ThreadStaticField.IsPrivate;
+            IsProtected = ThreadStaticField.IsProtected;
+            IsPublic = ThreadStaticField.IsPublic;
+            IsValueClass = ThreadStaticField.IsValueClass;
+            Name = ThreadStaticField.Name;
+            Offset = ThreadStaticField.Offset;
+            Size = ThreadStaticField.Size;
+            Token = ThreadStaticField.Token;
         }
 
         /// <summary>
@@ -108,84 +120,84 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance has simple value; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool HasSimpleValue => ThreadStaticField.HasSimpleValue;
+        public bool HasSimpleValue { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is internal.
         /// </summary>
         /// <value><c>true</c> if this instance is internal; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsInternal => ThreadStaticField.IsInternal;
+        public bool IsInternal { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is an object reference, false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is object reference; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsObjectReference => ThreadStaticField.IsObjectReference;
+        public bool IsObjectReference { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is a primitive (int, float, etc), false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is primitive; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPrimitive => ThreadStaticField.IsPrimitive;
+        public bool IsPrimitive { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is private.
         /// </summary>
         /// <value><c>true</c> if this instance is private; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPrivate => ThreadStaticField.IsPrivate;
+        public bool IsPrivate { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is protected.
         /// </summary>
         /// <value><c>true</c> if this instance is protected; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsProtected => ThreadStaticField.IsProtected;
+        public bool IsProtected { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is public.
         /// </summary>
         /// <value><c>true</c> if this instance is public; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsPublic => ThreadStaticField.IsPublic;
+        public bool IsPublic { get; internal set; }
 
         /// <summary>
         ///     Returns true if this field is a ValueClass (struct), false otherwise.
         /// </summary>
         /// <value><c>true</c> if this instance is value class; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsValueClass => ThreadStaticField.IsValueClass;
+        public bool IsValueClass { get; internal set; }
 
         /// <summary>
         ///     The name of the field.
         /// </summary>
         /// <value>The name.</value>
         /// <inheritdoc />
-        public string Name => ThreadStaticField.Name;
+        public string Name { get; internal set; }
 
         /// <summary>
         ///     If the field has a well defined offset from the base of the object, return it (otherwise -1).
         /// </summary>
         /// <value>The offset.</value>
         /// <inheritdoc />
-        public int Offset => ThreadStaticField.Offset;
+        public int Offset { get; internal set; }
 
         /// <summary>
         ///     Gets the size of this field.
         /// </summary>
         /// <value>The size.</value>
         /// <inheritdoc />
-        public int Size => ThreadStaticField.Size;
+        public int Size { get; internal set; }
 
         /// <summary>
         ///     Returns the type token of this field.
         /// </summary>
         /// <value>The token.</value>
         /// <inheritdoc />
-        public uint Token => ThreadStaticField.Token;
+        public uint Token { get; internal set; }
 
         /// <summary>
         ///     The type of the field.  Note this property may return null on error.  There is a bug in several versions

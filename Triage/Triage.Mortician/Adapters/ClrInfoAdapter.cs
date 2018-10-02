@@ -35,6 +35,7 @@ namespace Triage.Mortician.Adapters
         public ClrInfoAdapter(IConverter converter, ClrInfo info) : base(converter)
         {
             Info = info ?? throw new ArgumentNullException(nameof(info));
+            LocalMatchingDac = Info.LocalMatchingDac;
         }
 
         /// <summary>
@@ -104,7 +105,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The local matching dac.</value>
         /// <inheritdoc />
-        public string LocalMatchingDac => Info.LocalMatchingDac;
+        public string LocalMatchingDac { get; internal set; }
 
         /// <summary>
         ///     Returns module information about the ClrInstance.

@@ -127,6 +127,8 @@
     <Compile Include="DumpAppDomain.cs" />
     <Compile Include="DumpBlockingObject.cs" />
     <Compile Include="DumpHandle.cs" />
+    <Compile Include="DumpHeapSegment.cs" />
+    <Compile Include="DumpMemoryRegion.cs" />
     <Compile Include="DumpModule.cs" />
     <Compile Include="DumpModuleKey.cs" />
     <Compile Include="DumpObject.cs" />
@@ -134,6 +136,7 @@
     <Compile Include="DumpStackFrame.cs" />
     <Compile Include="DumpThread.cs" />
     <Compile Include="DumpType.cs" />
+    <Compile Include="DumpTypeField.cs" />
     <Compile Include="DumpTypeKey.cs" />
     <Compile Include="ClrMdAbstractions\GcMode.cs" />
     <Compile Include="ClrMdAbstractions\GcSegmentType.cs" />

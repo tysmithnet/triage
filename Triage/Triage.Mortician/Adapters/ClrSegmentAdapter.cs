@@ -34,6 +34,21 @@ namespace Triage.Mortician.Adapters
         public ClrSegmentAdapter(IConverter converter, ClrSegment segment) : base(converter)
         {
             Segment = segment ?? throw new ArgumentNullException(nameof(segment));
+            CommittedEnd = Segment.CommittedEnd;
+            End = Segment.End;
+            FirstObject = Segment.FirstObject;
+            Gen0Length = Segment.Gen0Length;
+            Gen0Start = Segment.Gen0Start;
+            Gen1Length = Segment.Gen1Length;
+            Gen1Start = Segment.Gen1Start;
+            Gen2Length = Segment.Gen2Length;
+            Gen2Start = Segment.Gen2Start;
+            IsEphemeral = Segment.IsEphemeral;
+            IsLarge = Segment.IsLarge;
+            Length = Segment.Length;
+            ProcessorAffinity = Segment.ProcessorAffinity;
+            ReservedEnd = Segment.ReservedEnd;
+            Start = Segment.Start;
         }
 
         /// <summary>
@@ -106,28 +121,28 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The committed end.</value>
         /// <inheritdoc />
-        public ulong CommittedEnd => Segment.CommittedEnd;
+        public ulong CommittedEnd { get; internal set; }
 
         /// <summary>
         ///     The end address of the segment.  All objects in this segment fall within Start &lt;= object &lt; End.
         /// </summary>
         /// <value>The end.</value>
         /// <inheritdoc />
-        public ulong End => Segment.End;
+        public ulong End { get; internal set; }
 
         /// <summary>
         ///     FirstObject returns the first object on this segment or 0 if this segment contains no objects.
         /// </summary>
         /// <value>The first object.</value>
         /// <inheritdoc />
-        public ulong FirstObject => Segment.FirstObject;
+        public ulong FirstObject { get; internal set; }
 
         /// <summary>
         ///     The length of the gen0 portion of this segment.
         /// </summary>
         /// <value>The length of the gen0.</value>
         /// <inheritdoc />
-        public ulong Gen0Length => Segment.Gen0Length;
+        public ulong Gen0Length { get; internal set; }
 
         /// <summary>
         ///     Ephemeral heap sements have geneation 0 and 1 in them.  Gen 1 is always above Gen 2 and
@@ -137,35 +152,35 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The gen0 start.</value>
         /// <inheritdoc />
-        public ulong Gen0Start => Segment.Gen0Start;
+        public ulong Gen0Start { get; internal set; }
 
         /// <summary>
         ///     The length of the gen1 portion of this segment.
         /// </summary>
         /// <value>The length of the gen1.</value>
         /// <inheritdoc />
-        public ulong Gen1Length => Segment.Gen1Length;
+        public ulong Gen1Length { get; internal set; }
 
         /// <summary>
         ///     The start of the gen1 portion of this segment.
         /// </summary>
         /// <value>The gen1 start.</value>
         /// <inheritdoc />
-        public ulong Gen1Start => Segment.Gen1Start;
+        public ulong Gen1Start { get; internal set; }
 
         /// <summary>
         ///     The length of the gen2 portion of this segment.
         /// </summary>
         /// <value>The length of the gen2.</value>
         /// <inheritdoc />
-        public ulong Gen2Length => Segment.Gen2Length;
+        public ulong Gen2Length { get; internal set; }
 
         /// <summary>
         ///     The start of the gen2 portion of this segment.
         /// </summary>
         /// <value>The gen2 start.</value>
         /// <inheritdoc />
-        public ulong Gen2Start => Segment.Gen2Start;
+        public ulong Gen2Start { get; internal set; }
 
         /// <summary>
         ///     The GC heap associated with this segment.  There's only one GCHeap per process, so this is
@@ -181,7 +196,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance is ephemeral; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsEphemeral => Segment.IsEphemeral;
+        public bool IsEphemeral { get; internal set; }
 
         /// <summary>
         ///     Returns true if this is a segment for the Large Object Heap.  False otherwise.
@@ -190,14 +205,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if this instance is large; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool IsLarge => Segment.IsLarge;
+        public bool IsLarge { get; internal set; }
 
         /// <summary>
         ///     The number of bytes in the segment.
         /// </summary>
         /// <value>The length.</value>
         /// <inheritdoc />
-        public ulong Length => Segment.Length;
+        public ulong Length { get; internal set; }
 
         /// <summary>
         ///     The processor that this heap is affinitized with.  In a workstation GC, there is no processor
@@ -207,20 +222,20 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The processor affinity.</value>
         /// <inheritdoc />
-        public int ProcessorAffinity => Segment.ProcessorAffinity;
+        public int ProcessorAffinity { get; internal set; }
 
         /// <summary>
         ///     The address of the end of memory reserved for the segment, but not committed.
         /// </summary>
         /// <value>The reserved end.</value>
         /// <inheritdoc />
-        public ulong ReservedEnd => Segment.ReservedEnd;
+        public ulong ReservedEnd { get; internal set; }
 
         /// <summary>
         ///     The start address of the segment.  All objects in this segment fall within Start &lt;= object &lt; End.
         /// </summary>
         /// <value>The start.</value>
         /// <inheritdoc />
-        public ulong Start => Segment.Start;
+        public ulong Start { get; internal set; }
     }
 }

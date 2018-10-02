@@ -4,7 +4,7 @@
 // Created          : 12-12-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 12-19-2017
+// Last Modified On : 10-01-2018
 // ***********************************************************************
 // <copyright file="StringExtractor.cs" company="">
 //     Copyright ©  2017
@@ -21,6 +21,7 @@ namespace Triage.Mortician
     /// <summary>
     ///     DumpObjectExtractor capable of parsing System.String objects
     /// </summary>
+    /// <seealso cref="Triage.Mortician.Core.IDumpObjectExtractor" />
     /// <seealso cref="IDumpObjectExtractor" />
     /// <inheritdoc />
     /// <seealso cref="T:Triage.Mortician.IDumpObjectExtractor" />
@@ -37,6 +38,20 @@ namespace Triage.Mortician
         public bool CanExtract(IClrObject clrObject, IClrRuntime clrRuntime) => clrObject.Type?.Name == "System.String";
 
         /// <summary>
+        ///     Determines whether this instance can extract the specified address.
+        /// </summary>
+        /// <param name="address">The address.</param>
+        /// <param name="clrRuntime">The color runtime.</param>
+        /// <returns><c>true</c> if this instance can extract the specified address; otherwise, <c>false</c>.</returns>
+        /// <inheritdoc />
+        public bool CanExtract(ulong address, IClrRuntime clrRuntime)
+        {
+            var type = clrRuntime.Heap.GetObjectType(address);
+            if (type == null) return false;
+            return type.Name == "System.String";
+        }
+
+        /// <summary>
         ///     Extracts data from the provided object
         /// </summary>
         /// <param name="clrObject">The object.</param>
@@ -50,6 +65,21 @@ namespace Triage.Mortician
                 clrRuntime.Heap.GetGeneration(clrObject.Address));
 
             return heapObject;
+        }
+
+        /// <summary>
+        ///     Extracts the specified address.
+        /// </summary>
+        /// <param name="address">The address.</param>
+        /// <param name="clrRuntime">The color runtime.</param>
+        /// <returns>DumpObject.</returns>
+        /// <inheritdoc />
+        public DumpObject Extract(ulong address, IClrRuntime clrRuntime)
+        {
+            var type = clrRuntime.Heap.GetObjectType(address);
+            var val = (string) type.GetValue(address);
+            var gen = clrRuntime.Heap.GetGeneration(address);
+            return new StringDumpObject(address, "System.String", type.GetSize(address), val, gen);
         }
     }
 }

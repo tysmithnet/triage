@@ -33,6 +33,10 @@ namespace Triage.Mortician.Adapters
         public StackFrameAdapter(IConverter converter, ClrMd.ClrStackFrame frame) : base(converter)
         {
             Frame = frame ?? throw new ArgumentNullException(nameof(frame));
+            DisplayString = Frame.DisplayString;
+            InstructionPointer = Frame.InstructionPointer;
+            ModuleName = Frame.ModuleName;
+            StackPointer = Frame.StackPointer;
         }
 
         /// <summary>
@@ -52,14 +56,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The display string.</value>
         /// <inheritdoc />
-        public string DisplayString => Frame.DisplayString;
+        public string DisplayString { get; internal set; }
 
         /// <summary>
         ///     The instruction pointer of this frame.
         /// </summary>
         /// <value>The instruction pointer.</value>
         /// <inheritdoc />
-        public ulong InstructionPointer => Frame.InstructionPointer;
+        public ulong InstructionPointer { get; internal set; }
 
         /// <summary>
         ///     The type of frame (managed or internal).
@@ -82,14 +86,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The name of the module.</value>
         /// <inheritdoc />
-        public string ModuleName => Frame.ModuleName;
+        public string ModuleName { get; internal set; }
 
         /// <summary>
         ///     The stack pointer of this frame.
         /// </summary>
         /// <value>The stack pointer.</value>
         /// <inheritdoc />
-        public ulong StackPointer => Frame.StackPointer;
+        public ulong StackPointer { get; internal set; }
 
         /// <summary>
         ///     Returns the thread this stack frame came from.

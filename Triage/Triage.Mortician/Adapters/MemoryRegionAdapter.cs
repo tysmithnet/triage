@@ -37,6 +37,10 @@ namespace Triage.Mortician.Adapters
         public MemoryRegionAdapter(IConverter converter, ClrMemoryRegion memoryRegion) : base(converter)
         {
             MemoryRegion = memoryRegion ?? throw new ArgumentNullException(nameof(memoryRegion));
+            Address = MemoryRegion.Address;
+            HeapNumber = MemoryRegion.HeapNumber;
+            Module = MemoryRegion.Module;
+            Size = MemoryRegion.Size;
         }
 
         public override void Setup()
@@ -56,7 +60,7 @@ namespace Triage.Mortician.Adapters
             }
             catch (Exception)
             {
-                
+
             }
         }
 
@@ -76,7 +80,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The address.</value>
         /// <inheritdoc />
-        public ulong Address => MemoryRegion.Address;
+        public ulong Address { get; internal set; }
 
         /// <summary>
         ///     The AppDomain pointer that corresponds to this heap.  You can obtain the
@@ -102,7 +106,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The heap number.</value>
         /// <inheritdoc />
-        public int HeapNumber => MemoryRegion.HeapNumber;
+        public int HeapNumber { get; internal set; }
 
         /// <summary>
         ///     The type of heap/memory that the region contains.
@@ -118,14 +122,14 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The module.</value>
         /// <inheritdoc />
-        public string Module => MemoryRegion.Module;
+        public string Module { get; internal set; }
 
         /// <summary>
         ///     The size of the memory region in bytes.
         /// </summary>
         /// <value>The size.</value>
         /// <inheritdoc />
-        public ulong Size => MemoryRegion.Size;
+        public ulong Size { get; internal set; }
 
         /// <summary>
         ///     Gets or sets the memory region.

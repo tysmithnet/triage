@@ -33,6 +33,7 @@ namespace Triage.Mortician.Adapters
         public ManagedWorkItemAdapter(IConverter converter, ManagedWorkItem workItem) : base(converter)
         {
             WorkItem = workItem ?? throw new ArgumentNullException(nameof(workItem));
+            Object = WorkItem.Object;
         }
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value>The object.</value>
         /// <inheritdoc />
-        public ulong Object => WorkItem.Object;
+        public ulong Object { get; internal set; }
 
         /// <summary>
         ///     The type of Object.

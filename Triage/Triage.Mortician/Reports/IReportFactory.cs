@@ -34,6 +34,6 @@ namespace Triage.Mortician.Reports
         /// </summary>
         /// <param name="debugger">The debugger.</param>
         /// <returns>IReport.</returns>
-        void Setup(DebuggerProxy debugger);
+        void Setup(IDebuggerProxy debugger);
     }
 }

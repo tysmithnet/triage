@@ -3,7 +3,7 @@ using Triage.Mortician.Core.ClrMdAbstractions;
 using Triage.Testing.Common;
 using Xunit;
 
-namespace Triage.Mortician.Core.Test
+namespace Triage.Mortician.Core.Test.ClrMdAbstractions
 {
     public class VirtualQueryData_Should : BaseTest
     {
