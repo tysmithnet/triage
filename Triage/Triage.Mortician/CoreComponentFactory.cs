@@ -23,7 +23,6 @@ using Serilog;
 using Triage.Mortician.Core;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using Triage.Mortician.Reports;
-using Triage.Mortician.Reports.Runaway;
 using Triage.Mortician.Repositories;
 using Slog = Serilog.Log;
 
@@ -78,7 +77,6 @@ namespace Triage.Mortician
                     Log.Error(e, "Could not create DebuggerProxy. Verify the dump file can be opened in windbg.");
                     throw;
                 }
-
             }
             catch (FileNotFoundException e)
             {
@@ -86,7 +84,8 @@ namespace Triage.Mortician
             }
 
             Runtime = DataTarget.ClrVersions.Single().CreateRuntime();
-            DumpObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>().Concat(new [] {new DefaultObjectExtractor(), });
+            DumpObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>()
+                .Concat(new[] {new DefaultObjectExtractor()});
         }
 
         /// <summary>
@@ -144,7 +143,6 @@ namespace Triage.Mortician
             {
                 var thread = Threads[kvp.Key];
                 foreach (var addr in kvp.Value)
-                {
                     if (Roots.TryGetValue(addr, out var o))
                     {
                         thread.AddRoot(o);
@@ -154,9 +152,9 @@ namespace Triage.Mortician
                     {
                         ;
                     }
-                }
             }
         }
+
         /// <summary>
         ///     Registers the repositories.
         /// </summary>
@@ -210,35 +208,6 @@ namespace Triage.Mortician
             ConnectBlockingObjects();
             ConnectHandles();
             ConnectRoots();
-        }
-
-        internal void CreateReports()
-        {
-            var factories = CompositionContainer.GetExportedValues<IReportFactory>().ToList();
-            if (!factories.Any())
-                return;
-
-            foreach (var reportFactory in factories)
-            {
-                reportFactory.Setup(DebuggerProxy);
-            }
-
-            var tasks = factories.Select(x => Task.Run(() => x.Process())).ToList();
-            var batch = new CompositionBatch();
-
-            for(int i = 0; i < tasks.Count; i++)
-            {
-                var task = tasks[i];
-                try
-                {
-                    batch.AddPart(task.Result);
-                }
-                catch (Exception e)
-                {
-                    Log.Error(e, "Unable to process report for {ReportFactory}", factories[i].GetType().FullName);
-                }
-            }
-            CompositionContainer.Compose(batch);
         }
 
         /// <summary>
@@ -404,20 +373,15 @@ namespace Triage.Mortician
                     RecursionCount = blockingObject.RecursionCount
                 };
 
-                if(!BlockingObjects.ContainsKey(dumpBlockingObject.Address))
+                if (!BlockingObjects.ContainsKey(dumpBlockingObject.Address))
                     BlockingObjects.Add(dumpBlockingObject.Address, dumpBlockingObject);
 
                 if (BlockingObjectToThreadMapping.ContainsKey(blockingObject.Object)) continue;
                 var owners = new List<uint>();
-                if (blockingObject.Owner != null)
-                {
-                    owners.Add(blockingObject.Owner.OSThreadId);
-                }
+                if (blockingObject.Owner != null) owners.Add(blockingObject.Owner.OSThreadId);
 
                 if (blockingObject.Owners != null)
-                {
                     owners.AddRange(blockingObject.Owners.Where(x => x != null).Select(x => x.OSThreadId));
-                }
 
                 BlockingObjectToThreadMapping.Add(blockingObject.Object, owners);
             }
@@ -561,12 +525,26 @@ namespace Triage.Mortician
                     MemoryRegionType = region.MemoryRegionType,
                     Size = region.Size
                 };
-                if(!regions.ContainsKey(region.Address))
+                if (!regions.ContainsKey(region.Address))
                     regions.Add(region.Address, newRegion);
-              
             }
 
             MemoryRegions = regions;
+        }
+
+        /// <summary>
+        ///     Creates the object.
+        /// </summary>
+        /// <param name="cur">The current.</param>
+        internal void CreateObject(IClrObject cur)
+        {
+            var handler = DumpObjectExtractors.FirstOrDefault(h => h.CanExtract(cur, Runtime));
+            if (handler == null)
+                return;
+            var toAdd = handler.Extract(cur, Runtime);
+            Objects.Add(toAdd.Address, toAdd);
+            ObjectGraph.Add(toAdd.Address, cur.EnumerateObjectReferences().Select(x => x.Address).ToList());
+            ObjectToTypeMapping.Add(toAdd.Address, cur.Type.ToKeyType());
         }
 
         /// <summary>
@@ -577,26 +555,41 @@ namespace Triage.Mortician
             Objects = new Dictionary<ulong, DumpObject>();
             ObjectGraph = new Dictionary<ulong, IList<ulong>>();
             ObjectToTypeMapping = new Dictionary<ulong, DumpTypeKey>();
-            foreach (var cur in Runtime.Heap.EnumerateObjects())
-            {
-                CreateObject(cur);
-            }
+            foreach (var cur in Runtime.Heap.EnumerateObjects()) CreateObject(cur);
 
             foreach (var addr in Runtime.Threads.SelectMany(t => t.EnumerateStackObjects()))
             {
-
             }
         }
 
-        internal void CreateObject(IClrObject cur)
+        /// <summary>
+        ///     Creates the reports.
+        /// </summary>
+        internal void CreateReports()
         {
-            var handler = DumpObjectExtractors.FirstOrDefault(h => h.CanExtract(cur, Runtime));
-            if (handler == null)
+            var factories = CompositionContainer.GetExportedValues<IReportFactory>().ToList();
+            if (!factories.Any())
                 return;
-            var toAdd = handler.Extract(cur, Runtime);
-            Objects.Add(toAdd.Address, toAdd);
-            ObjectGraph.Add(toAdd.Address, cur.EnumerateObjectReferences().Select(x => x.Address).ToList());
-            ObjectToTypeMapping.Add(toAdd.Address, cur.Type.ToKeyType());
+
+            foreach (var reportFactory in factories) reportFactory.Setup(DebuggerProxy);
+
+            var tasks = factories.Select(x => Task.Run(() => x.Process())).ToList();
+            var batch = new CompositionBatch();
+
+            for (var i = 0; i < tasks.Count; i++)
+            {
+                var task = tasks[i];
+                try
+                {
+                    batch.AddPart(task.Result);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Unable to process report for {ReportFactory}", factories[i].GetType().FullName);
+                }
+            }
+
+            CompositionContainer.Compose(batch);
         }
 
         /// <summary>
@@ -618,10 +611,10 @@ namespace Triage.Mortician
                     IsPossibleFalsePositive = root.IsPossibleFalsePositive
                 };
 
-                if(!roots.ContainsKey(newRoot.Address))
+                if (!roots.ContainsKey(newRoot.Address))
                     roots.Add(newRoot.Address, newRoot);
 
-                if(!RootToTypeMapping.ContainsKey(root.Address) && root.Type != null)
+                if (!RootToTypeMapping.ContainsKey(root.Address) && root.Type != null)
                     RootToTypeMapping.Add(root.Address, root.Type.ToKeyType());
             }
 
@@ -680,9 +673,9 @@ namespace Triage.Mortician
                     DisplayString = x.DisplayString
                 }).ToList();
 
-                if(!Threads.ContainsKey(newThread.OsId))
+                if (!Threads.ContainsKey(newThread.OsId))
                     Threads.Add(newThread.OsId, newThread);
-                
+
                 if (thread.CurrentException != null && !ThreadToExceptionMapping.ContainsKey(newThread.OsId))
                     ThreadToExceptionMapping.Add(newThread.OsId, thread.CurrentException.Address);
 
@@ -691,11 +684,8 @@ namespace Triage.Mortician
                     var objects = thread.EnumerateStackObjects().Select(x => x.Address).ToList();
                     ThreadToObjectMapping.Add(newThread.OsId, objects);
                 }
-                
             }
         }
-
-        public Dictionary<uint, IList<ulong>> ThreadToObjectMapping { get; set; }
 
         /// <summary>
         ///     Creates the types.
@@ -810,7 +800,7 @@ namespace Triage.Mortician
                         ElementType = field.ElementType
                     };
                     t.StaticFields.Add(newField);
-                    if(field.Type != null)
+                    if (field.Type != null)
                         StaticFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
                 }
             }
@@ -1013,6 +1003,12 @@ namespace Triage.Mortician
         /// </summary>
         /// <value>The thread to exception mapping.</value>
         public Dictionary<uint, ulong> ThreadToExceptionMapping { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the thread to object mapping.
+        /// </summary>
+        /// <value>The thread to object mapping.</value>
+        public Dictionary<uint, IList<ulong>> ThreadToObjectMapping { get; set; }
 
         /// <summary>
         ///     Gets or sets the thread to root mapping.
