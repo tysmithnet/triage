@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using FluentAssertions;
+using Moq;
 using Triage.Mortician.Reports.DumpDomain;
 using Triage.Testing.Common;
 using Xunit;
@@ -8,7 +9,7 @@ namespace Triage.Mortician.Test
 {
     public class DumpDomainReportFactory_Should : BaseTest
     {
-        public const string HELLO_WORLD = @"PDB symbol for clr.dll not loaded
+        private const string HAPPY_PATH = @"PDB symbol for clr.dll not loaded
 --------------------------------------
 System Domain:      00007ffc206d04d0
 LowFrequencyHeap:   00007ffc206d0a48
@@ -73,15 +74,34 @@ SecurityDescriptor: 0000014c430c1850
 00007ffbccea1000            C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Xml\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.dll";
 
         [Fact]
+        public void Save_The_Report_Output_On_Setup()
+        {
+            // arrange
+            var sut = new DumpDomainReportFactory();
+            var proxy = new Mock<IDebuggerProxy>();
+            proxy.Setup(debuggerProxy => debuggerProxy.Execute("!dumpdomain")).Returns(HAPPY_PATH);
+
+            // act
+            sut.Setup(proxy.Object);
+
+            // assert
+            sut.RawOutput.Should().Be(HAPPY_PATH);
+        }
+
+        [Fact]
         public void Correctly_Identify_The_Default_Domain()
         {
             // arrange
-            var processor = new DumpDomainReportFactory();
+            var sut = new DumpDomainReportFactory();
+            var proxy = new Mock<IDebuggerProxy>();
+            proxy.Setup(debuggerProxy => debuggerProxy.Execute("!dumpdomain")).Returns(HAPPY_PATH);
 
             // act
-            var report = processor.ProcessOutput(HELLO_WORLD);
+            sut.Setup(proxy.Object);
+            var report = (DumpDomainReport)sut.Process();
 
             // assert
+            report.AppDomains.Should().HaveCount(3);
             report.DefaultDomain.Address.Should().Be(0x0000014c4303a470);
             report.DefaultDomain.LowFrequencyHeap.Should().Be(0x0000014c4303ac68);
             report.DefaultDomain.HighFrequencyHeap.Should().Be(0x0000014c4303acf8);
@@ -116,7 +136,7 @@ SecurityDescriptor: 0000014c430c1850
             var processor = new DumpDomainReportFactory();
 
             // act
-            var report = processor.ProcessOutput(HELLO_WORLD);
+            var report = processor.ProcessOutput(HAPPY_PATH);
 
             // assert
             report.SharedDomain.Address.Should().Be(0x00007ffc206cff00);
@@ -143,7 +163,7 @@ SecurityDescriptor: 0000014c430c1850
             var processor = new DumpDomainReportFactory();
 
             // act
-            var report = processor.ProcessOutput(HELLO_WORLD);
+            var report = processor.ProcessOutput(HAPPY_PATH);
 
             // assert
             report.AppDomainsInternal.Count.Should().Be(3);

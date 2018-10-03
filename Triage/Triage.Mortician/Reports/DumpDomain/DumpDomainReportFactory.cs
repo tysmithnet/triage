@@ -115,13 +115,6 @@ namespace Triage.Mortician.Reports.DumpDomain
             new Regex(@"^System Domain:\s*(?<addr>[a-fA-F0-9]+)\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
 
         /// <summary>
-        ///     Creates the report.
-        /// </summary>
-        /// <param name="debugger">The debugger.</param>
-        /// <returns>IReport.</returns>
-        public IReport CreateReport(DebuggerProxy debugger) => ProcessOutput(debugger.Execute("!dumpdomain"));
-
-        /// <summary>
         ///     Generate the report artifact
         /// </summary>
         /// <returns>IReport.</returns>
@@ -132,7 +125,7 @@ namespace Triage.Mortician.Reports.DumpDomain
         /// </summary>
         /// <param name="output">The output.</param>
         /// <returns>DumpDomainReport.</returns>
-        public DumpDomainReport ProcessOutput(string output)
+        internal DumpDomainReport ProcessOutput(string output)
         {
             // todo: break up
             var returnVal = new DumpDomainReport
