@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using Triage.Mortician.Core.ClrMdAbstractions;
 using Triage.Testing.Common;
 using Xunit;
@@ -9,10 +10,33 @@ namespace Triage.Mortician.Test
     public class Converter_Should : BaseTest
     {
         [Fact]
+        public void Convert_VersionInfo()
+        {
+            // arrange
+            var sut = new Converter();
+            var versionInfo = new ClrMd.VersionInfo()
+            {
+                Major = 1,
+                Minor = 2,
+                Revision = 3,
+                Patch = 4
+            };
+
+            // act
+            // assert
+            var res = sut.Convert(versionInfo);
+            res.Major.Should().Be(1);
+            res.Minor.Should().Be(2);
+            res.Revision.Should().Be(3);
+            res.Patch.Should().Be(4);
+        }
+
+        [Fact]
         public void Convert_Architecture()
         {
             // arrange
             var sut = new Converter();
+            Action throws = () => sut.Convert((ClrMd.Architecture)12312312);
 
             // act
             // assert
@@ -20,13 +44,15 @@ namespace Triage.Mortician.Test
             sut.Convert(ClrMd.Architecture.X86).Should().Be(Architecture.X86);
             sut.Convert(ClrMd.Architecture.Amd64).Should().Be(Architecture.Amd64);
             sut.Convert(ClrMd.Architecture.Arm).Should().Be(Architecture.Arm);
+            throws.Should().Throw<ArgumentOutOfRangeException>();
         }
-
+        
         [Fact]
         public void Convert_Blocking_Reason()
         {
             // arrange
             var sut = new Converter();
+            Action throws = () => sut.Convert((ClrMd.BlockingReason)12312312);
 
             // act
             // assert
@@ -37,8 +63,10 @@ namespace Triage.Mortician.Test
             sut.Convert(ClrMd.BlockingReason.ReaderAcquired).Should().Be(BlockingReason.ReaderAcquired);
             sut.Convert(ClrMd.BlockingReason.ThreadJoin).Should().Be(BlockingReason.ThreadJoin);
             sut.Convert(ClrMd.BlockingReason.WaitAll).Should().Be(BlockingReason.WaitAll);
+            sut.Convert(ClrMd.BlockingReason.WaitAny).Should().Be(BlockingReason.WaitAny);
             sut.Convert(ClrMd.BlockingReason.WaitOne).Should().Be(BlockingReason.WaitOne);
             sut.Convert(ClrMd.BlockingReason.WriterAcquired).Should().Be(BlockingReason.WriterAcquired);
+            throws.Should().Throw<ArgumentOutOfRangeException>();
         }
 
         [Fact]
@@ -46,6 +74,7 @@ namespace Triage.Mortician.Test
         {
             // arrange
             var sut = new Converter();
+            Action throws = () => sut.Convert((ClrMd.ClrElementType) 11231231);
 
             // act
             // assert
@@ -72,6 +101,7 @@ namespace Triage.Mortician.Test
             sut.Convert(ClrMd.ClrElementType.FunctionPointer).Should().Be(ClrElementType.FunctionPointer);
             sut.Convert(ClrMd.ClrElementType.Object).Should().Be(ClrElementType.Object);
             sut.Convert(ClrMd.ClrElementType.SZArray).Should().Be(ClrElementType.SZArray);
+            throws.Should().Throw<ArgumentOutOfRangeException>();
         }
 
         [Fact]
@@ -79,11 +109,13 @@ namespace Triage.Mortician.Test
         {
             // arrange
             var sut = new Converter();
+            Action throws = () => sut.Convert((ClrMd.GcMode)12312312);
 
             // act
             // assert
             sut.Convert(ClrMd.GcMode.Cooperative).Should().Be(GcMode.Cooperative);
             sut.Convert(ClrMd.GcMode.Preemptive).Should().Be(GcMode.Preemptive);
+            throws.Should().Throw<ArgumentOutOfRangeException>();
         }
 
         [Fact]
@@ -91,6 +123,7 @@ namespace Triage.Mortician.Test
         {
             // arrange
             var sut = new Converter();
+            Action throws = () => sut.Convert((ClrMd.GCRootKind) 123123);
 
             // act
             // assert
@@ -102,6 +135,7 @@ namespace Triage.Mortician.Test
             sut.Convert(ClrMd.GCRootKind.Pinning).Should().Be(GcRootKind.Pinning);
             sut.Convert(ClrMd.GCRootKind.Finalizer).Should().Be(GcRootKind.Finalizer);
             sut.Convert(ClrMd.GCRootKind.AsyncPinning).Should().Be(GcRootKind.AsyncPinning);
+            throws.Should().Throw<ArgumentOutOfRangeException>();
         }
 
         [Fact]
@@ -109,12 +143,14 @@ namespace Triage.Mortician.Test
         {
             // arrange
             var sut = new Converter();
+            Action throws = () => sut.Convert((ClrMd.GCSegmentType)123123123);
 
             // act
             // assert
             sut.Convert(ClrMd.GCSegmentType.Ephemeral).Should().Be(GcSegmentType.Ephemeral);
             sut.Convert(ClrMd.GCSegmentType.LargeObject).Should().Be(GcSegmentType.LargeObject);
             sut.Convert(ClrMd.GCSegmentType.Regular).Should().Be(GcSegmentType.Regular);
+            throws.Should().Throw<ArgumentOutOfRangeException>();
         }
 
         [Fact]
@@ -122,6 +158,7 @@ namespace Triage.Mortician.Test
         {
             // arrange
             var sut = new Converter();
+            Action throws = () => sut.Convert((ClrMd.HandleType) 123123123);
 
             // act
             // assert
@@ -133,6 +170,7 @@ namespace Triage.Mortician.Test
             sut.Convert(ClrMd.HandleType.Dependent).Should().Be(HandleType.Dependent);
             sut.Convert(ClrMd.HandleType.AsyncPinned).Should().Be(HandleType.AsyncPinned);
             sut.Convert(ClrMd.HandleType.SizedRef).Should().Be(HandleType.SizedRef);
+            throws.Should().Throw<ArgumentOutOfRangeException>();
         }
 
         [Fact]
@@ -140,6 +178,7 @@ namespace Triage.Mortician.Test
         {
             // arrange
             var sut = new Converter();
+            Action throws = () => sut.Convert((ClrMd.ClrMemoryRegionType) 123123123);
 
             // act
             // assert
@@ -161,6 +200,7 @@ namespace Triage.Mortician.Test
             sut.Convert(ClrMd.ClrMemoryRegionType.GCSegment).Should().Be(ClrMemoryRegionType.GCSegment);
             sut.Convert(ClrMd.ClrMemoryRegionType.ReservedGCSegment).Should().Be(ClrMemoryRegionType.ReservedGCSegment);
             sut.Convert(ClrMd.ClrMemoryRegionType.HandleTableChunk).Should().Be(ClrMemoryRegionType.HandleTableChunk);
+            throws.Should().Throw<ArgumentOutOfRangeException>();
         }
 
         [Fact]
@@ -168,6 +208,7 @@ namespace Triage.Mortician.Test
         {
             // arrange
             var sut = new Converter();
+            Action throws = () => sut.Convert((ClrMd.ClrRootStackwalkPolicy) 123123123);
 
             // act
             // assert
@@ -175,6 +216,7 @@ namespace Triage.Mortician.Test
             sut.Convert(ClrMd.ClrRootStackwalkPolicy.Exact).Should().Be(ClrRootStackwalkPolicy.Exact);
             sut.Convert(ClrMd.ClrRootStackwalkPolicy.Fast).Should().Be(ClrRootStackwalkPolicy.Fast);
             sut.Convert(ClrMd.ClrRootStackwalkPolicy.SkipStack).Should().Be(ClrRootStackwalkPolicy.SkipStack);
+            throws.Should().Throw<ArgumentOutOfRangeException>();
         }
 
         [Fact]
@@ -182,12 +224,14 @@ namespace Triage.Mortician.Test
         {
             // arrange
             var sut = new Converter();
+            Action throws = () => sut.Convert((ClrMd.ClrStackFrameType)12312312);
 
             // act
             // assert
             sut.Convert(ClrMd.ClrStackFrameType.Unknown).Should().Be(ClrStackFrameType.Unknown);
             sut.Convert(ClrMd.ClrStackFrameType.ManagedMethod).Should().Be(ClrStackFrameType.ManagedMethod);
             sut.Convert(ClrMd.ClrStackFrameType.Runtime).Should().Be(ClrStackFrameType.Runtime);
+            throws.Should().Throw<ArgumentOutOfRangeException>();
         }
 
         [Fact]
@@ -195,6 +239,7 @@ namespace Triage.Mortician.Test
         {
             // arrange
             var sut = new Converter();
+            Action throws = () => sut.Convert((ClrMd.WorkItemKind) 12312312);
 
             // act
             // assert
@@ -203,6 +248,7 @@ namespace Triage.Mortician.Test
             sut.Convert(ClrMd.WorkItemKind.AsyncCallback).Should().Be(WorkItemKind.AsyncCallback);
             sut.Convert(ClrMd.WorkItemKind.QueueUserWorkItem).Should().Be(WorkItemKind.QueueUserWorkItem);
             sut.Convert(ClrMd.WorkItemKind.TimerDelete).Should().Be(WorkItemKind.TimerDelete);
+            throws.Should().Throw<ArgumentOutOfRangeException>();
         }
     }
 }

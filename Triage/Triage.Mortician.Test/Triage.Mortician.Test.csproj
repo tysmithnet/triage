@@ -155,6 +155,7 @@
     <Compile Include="Builders\AnalyzerBuilder.cs" />
     <Compile Include="Converter_Should.cs" />
     <Compile Include="CoreComponentFactory_Should.cs" />
+    <Compile Include="DefaultConverterCache_Should.cs" />
     <Compile Include="DumpDomainReportFactory_Should.cs" />
     <Compile Include="DumpThreadRepository_Should.cs" />
     <Compile Include="EeStackReportFactory_Should.cs" />

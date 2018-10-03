@@ -130,6 +130,7 @@
     <Compile Include="DumpHeapSegment.cs" />
     <Compile Include="DumpMemoryRegion.cs" />
     <Compile Include="DumpModule.cs" />
+    <Compile Include="DumpModuleInfo.cs" />
     <Compile Include="DumpModuleKey.cs" />
     <Compile Include="DumpObject.cs" />
     <Compile Include="DumpObjectRoot.cs" />
