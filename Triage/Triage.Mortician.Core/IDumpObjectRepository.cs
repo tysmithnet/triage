@@ -4,7 +4,7 @@
 // Created          : 09-17-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 10-01-2018
+// Last Modified On : 10-03-2018
 // ***********************************************************************
 // <copyright file="IDumpObjectRepository.cs" company="">
 //     Copyright ©  2017
@@ -18,34 +18,62 @@ using System.Collections.Generic;
 namespace Triage.Mortician.Core
 {
     /// <summary>
-    ///     Interface IDumpObjectRepository
+    /// Interface IDumpObjectRepository
     /// </summary>
     public interface IDumpObjectRepository
     {
         /// <summary>
-        ///     Blockings the objects.
+        /// Gets the blocking object.
         /// </summary>
-        /// <returns>IEnumerable&lt;DumpBlockingObject&gt;.</returns>
-        IEnumerable<DumpBlockingObject> BlockingObjects();
+        /// <param name="address">The address.</param>
+        /// <returns>DumpBlockingObject.</returns>
+        DumpBlockingObject GetBlockingObject(ulong address);
 
         /// <summary>
-        ///     Finalizers the queue.
-        /// </summary>
-        /// <returns>IEnumerable&lt;DumpObject&gt;.</returns>
-        IEnumerable<DumpObject> FinalizerQueue();
-
-        /// <summary>
-        ///     Gets the object at the specified address
+        /// Gets the object at the specified address
         /// </summary>
         /// <param name="address">The address.</param>
         /// <returns>The object at the specified address</returns>
         /// <exception cref="IndexOutOfRangeException">The provided address is not a valid object address</exception>
-        DumpObject Get(ulong address);
+        DumpObject GetObject(ulong address);
+
 
         /// <summary>
-        ///     Get all dump objects extracted from the heap
+        /// Gets the object root.
         /// </summary>
-        /// <returns>All dump objects extracted from the heap</returns>
-        IEnumerable<DumpObject> Get();
+        /// <param name="address">The address.</param>
+        /// <returns>DumpObjectRoot.</returns>
+        DumpObjectRoot GetObjectRoot(ulong address);
+
+        /// <summary>
+        /// Gets the finalize queue object.
+        /// </summary>
+        /// <param name="address">The address.</param>
+        /// <returns>DumpObject.</returns>
+        DumpObject GetFinalizeQueueObject(ulong address);
+
+        /// <summary>
+        /// Gets the object roots.
+        /// </summary>
+        /// <value>The object roots.</value>
+        IEnumerable<DumpObjectRoot> ObjectRoots { get; }
+
+        /// <summary>
+        /// Blockings the objects.
+        /// </summary>
+        /// <value>The blocking objects.</value>
+        IEnumerable<DumpBlockingObject> BlockingObjects { get; }
+
+        /// <summary>
+        /// Finalizers the queue.
+        /// </summary>
+        /// <value>The finalizer queue.</value>
+        IEnumerable<DumpObject> FinalizerQueue { get; }
+
+        /// <summary>
+        /// Gets the objects.
+        /// </summary>
+        /// <value>The objects.</value>
+        IEnumerable<DumpObject> Objects { get; }
     }
 }

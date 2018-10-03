@@ -80,7 +80,7 @@ namespace Triage.Mortician.IntegrationTest
                 .NotBeNull();
             analyzer.TypeRepo.Get().FirstOrDefault(t => t.Name == "Triage.TestApplications.Console.Address").Should()
                 .NotBeNull();
-            analyzer.ThreadRepo.Get().Any(t =>
+            analyzer.ThreadRepo.Threads.Any(t =>
                     t.ManagedStackFrames.Any(f =>
                         f.DisplayString.Contains("Triage.TestApplications.Console.Program.Main")))
                 .Should().BeTrue();

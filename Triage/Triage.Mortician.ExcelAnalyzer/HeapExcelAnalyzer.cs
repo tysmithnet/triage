@@ -44,7 +44,7 @@ namespace Triage.Mortician.ExcelAnalyzer
         {
             var stats = new Dictionary<string, StatsLine>();
 
-            foreach (var obj in DumpObjectRepository.Get())
+            foreach (var obj in DumpObjectRepository.Objects)
             {
                 if (!stats.ContainsKey(obj.FullTypeName))
                     stats.Add(obj.FullTypeName, new StatsLine());

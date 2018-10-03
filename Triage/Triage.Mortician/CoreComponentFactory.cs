@@ -161,7 +161,7 @@ namespace Triage.Mortician
         /// <param name="options">The options.</param>
         public void RegisterRepositories(DefaultOptions options)
         {
-            var objRepo = new DumpObjectRepository(Objects, Roots, BlockingObjects);
+            var objRepo = new DumpObjectRepository(Objects, Roots, BlockingObjects, FinalizerQueueObjects);
             var typeRepo = new DumpTypeRepository(Types);
             var threadRepo = new DumpThreadRepository(Threads);
             var appDomainRepo = new DumpAppDomainRepository(AppDomains);
@@ -194,11 +194,12 @@ namespace Triage.Mortician
             CreateHandles();
             CreateHeapSegments();
             CreateDumpModuleInfo();
-            FinalizableObjectAddresses = Runtime.Heap.EnumerateFinalizableObjectAddresses().ToList();
+            FinalizableObjectAddresses = new HashSet<ulong>(Runtime.Heap.EnumerateFinalizableObjectAddresses());
+            ObjectAddressesInFinalizerQueue = new HashSet<ulong>();
             ManagedWorkItems = Runtime.ThreadPool.EnumerateManagedWorkItems().Select(x => x.Object).ToList();
             NativeWorkitems = Runtime.ThreadPool.EnumerateNativeWorkItems().ToList();
             CreateMemoryRegions();
-            ObjectAddressesInFinalizerQueue = Runtime.EnumerateFinalizerQueueObjectAddresses().ToList();
+            ObjectAddressesInFinalizerQueue = new HashSet<ulong>(Runtime.EnumerateFinalizerQueueObjectAddresses());
             GcThreads = Runtime.EnumerateGCThreads().Select(Convert.ToUInt64).ToList();
             ConnectObjects();
             ConnectObjectsToTypes();
@@ -555,12 +556,20 @@ namespace Triage.Mortician
             Objects = new Dictionary<ulong, DumpObject>();
             ObjectGraph = new Dictionary<ulong, IList<ulong>>();
             ObjectToTypeMapping = new Dictionary<ulong, DumpTypeKey>();
-            foreach (var cur in Runtime.Heap.EnumerateObjects()) CreateObject(cur);
-
-            foreach (var addr in Runtime.Threads.SelectMany(t => t.EnumerateStackObjects()))
+            FinalizerQueueObjects = new Dictionary<ulong, DumpObject>();
+            foreach (var cur in Runtime.Heap.EnumerateObjects())
             {
-            }
+                CreateObject(cur);
+                if (!ObjectAddressesInFinalizerQueue.Contains(cur.Address) ||
+                    FinalizerQueueObjects.ContainsKey(cur.Address)) continue;
+                if (Objects.TryGetValue(cur.Address, out var o))
+                {
+                    FinalizerQueueObjects.Add(cur.Address, o);
+                }
+            };
         }
+
+        public Dictionary<ulong, DumpObject> FinalizerQueueObjects { get; set; }
 
         /// <summary>
         ///     Creates the reports.
@@ -870,7 +879,7 @@ namespace Triage.Mortician
         ///     Gets or sets the finalizable object addresses.
         /// </summary>
         /// <value>The finalizable object addresses.</value>
-        public List<ulong> FinalizableObjectAddresses { get; set; } // todo: cleanup
+        public ISet<ulong> FinalizableObjectAddresses { get; set; } // todo: cleanup
 
         /// <summary>
         ///     Gets or sets the gc threads.
@@ -942,7 +951,7 @@ namespace Triage.Mortician
         ///     Gets or sets the object addresses in finalizer queue.
         /// </summary>
         /// <value>The object addresses in finalizer queue.</value>
-        public List<ulong> ObjectAddressesInFinalizerQueue { get; set; }
+        public ISet<ulong> ObjectAddressesInFinalizerQueue { get; set; }
 
         /// <summary>
         ///     Gets or sets the object graph.

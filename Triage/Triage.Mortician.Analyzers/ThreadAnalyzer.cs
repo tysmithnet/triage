@@ -74,7 +74,7 @@ namespace Triage.Mortician.Analyzers
         {
             var task1 = Task.Run(() =>
             {
-                var result = DumpThreadRepository.Get()
+                var result = DumpThreadRepository.Threads
                     .Where(t => t.ManagedStackFrames != null)
                     .GroupBy(t => string.Join("\n", t.ManagedStackFrames.Select(f => f.DisplayString)))
                     .Where(g => !string.IsNullOrWhiteSpace(g.Key))
@@ -90,7 +90,7 @@ namespace Triage.Mortician.Analyzers
 
             var task2 = Task.Run(() =>
             {
-                var results = DumpThreadRepository.Get().Where(t => t.ManagedStackFrames != null)
+                var results = DumpThreadRepository.Threads.Where(t => t.ManagedStackFrames != null)
                     .SelectMany(t => t.ManagedStackFrames)
                     .GroupBy(f => f.DisplayString)
                     .Select(g => new StackFrameRollupRecord

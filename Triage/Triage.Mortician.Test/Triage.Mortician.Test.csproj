@@ -157,11 +157,13 @@
     <Compile Include="CoreComponentFactory_Should.cs" />
     <Compile Include="DefaultConverterCache_Should.cs" />
     <Compile Include="DumpDomainReportFactory_Should.cs" />
-    <Compile Include="DumpThreadRepository_Should.cs" />
+    <Compile Include="Repositories\DumpInformationRepository_Should.cs" />
+    <Compile Include="Repositories\DumpThreadRepository_Should.cs" />
     <Compile Include="EeStackReportFactory_Should.cs" />
     <Compile Include="Engine_Should.cs" />
     <Compile Include="EventHub_Should.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\DumpObjectRepository_Should.cs" />
     <Compile Include="RunawayReportFactory_Should.cs" />
     <Compile Include="Sanity_Should.cs" />
     <Compile Include="StringDumpObject_Should.cs" />
