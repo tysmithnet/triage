@@ -12,6 +12,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System.Linq;
 using Triage.Mortician.Core;
 
 namespace Triage.Mortician
@@ -45,7 +46,7 @@ namespace Triage.Mortician
         /// <returns>A short description of this object</returns>
         /// <inheritdoc />
         /// <remarks>The return value is intended to be shown on a single line</remarks>
-        public override string ToShortDescription() => base.ToShortDescription() + $" - {Value}";
+        public override string ToShortDescription() => base.ToShortDescription() + $" - {new string(Value.Take(24).ToArray())}";
 
         /// <summary>
         ///     The string value from this heap object
