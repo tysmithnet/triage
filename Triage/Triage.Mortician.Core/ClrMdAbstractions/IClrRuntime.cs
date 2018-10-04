@@ -171,7 +171,7 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     Whether or not the process is running in server GC mode or not.
         /// </summary>
         /// <value><c>true</c> if [server gc]; otherwise, <c>false</c>.</value>
-        bool ServerGC { get; }
+        bool IsServerGc { get; }
 
         /// <summary>
         ///     Give access to the Shared AppDomain

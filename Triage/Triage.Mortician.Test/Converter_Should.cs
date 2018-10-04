@@ -36,7 +36,7 @@ namespace Triage.Mortician.Test
         {
             // arrange
             var sut = new Converter();
-            Action throws = () => sut.Convert((ClrMd.Architecture)12312312);
+            Action mightThrow = () => sut.Convert((ClrMd.Architecture)12312312);
 
             // act
             // assert
@@ -44,7 +44,7 @@ namespace Triage.Mortician.Test
             sut.Convert(ClrMd.Architecture.X86).Should().Be(Architecture.X86);
             sut.Convert(ClrMd.Architecture.Amd64).Should().Be(Architecture.Amd64);
             sut.Convert(ClrMd.Architecture.Arm).Should().Be(Architecture.Arm);
-            throws.Should().Throw<ArgumentOutOfRangeException>();
+            mightThrow.Should().Throw<ArgumentOutOfRangeException>();
         }
         
         [Fact]

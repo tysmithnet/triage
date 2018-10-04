@@ -53,10 +53,10 @@ namespace Triage.Mortician.Test.Repositories
             var sut = new DumpObjectRepository(dumpObjects,
                 dumpObjectRoots, dumpBlockingObjects, finalizerQueue);
 
-            Action throws0 = () => sut.GetObject(0x1234);
-            Action throws1 = () => sut.GetBlockingObject(0x1234);
-            Action throws2 = () => sut.GetFinalizeQueueObject(0x2123);
-            Action throws3 = () => sut.GetObjectRoot(0x2123);
+            Action mightThrow0 = () => sut.GetObject(0x1234);
+            Action mightThrow1 = () => sut.GetBlockingObject(0x1234);
+            Action mightThrow2 = () => sut.GetFinalizeQueueObject(0x2123);
+            Action mightThrow3 = () => sut.GetObjectRoot(0x2123);
 
             // act
             // assert
@@ -68,10 +68,10 @@ namespace Triage.Mortician.Test.Repositories
             sut.ObjectRoots.Should().HaveCount(2);
             sut.GetFinalizeQueueObject(4).Should().BeSameAs(finalizerQueue[4]);
             sut.FinalizerQueue.Should().HaveCount(2);
-            throws0.Should().Throw<IndexOutOfRangeException>();
-            throws1.Should().Throw<IndexOutOfRangeException>();
-            throws2.Should().Throw<IndexOutOfRangeException>();
-            throws3.Should().Throw<IndexOutOfRangeException>();
+            mightThrow0.Should().Throw<IndexOutOfRangeException>();
+            mightThrow1.Should().Throw<IndexOutOfRangeException>();
+            mightThrow2.Should().Throw<IndexOutOfRangeException>();
+            mightThrow3.Should().Throw<IndexOutOfRangeException>();
         }
     }
 }

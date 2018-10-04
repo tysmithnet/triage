@@ -43,12 +43,12 @@ namespace Triage.Mortician.Test
             var sut = new AnalyzerTaskFactory();
             var badAnalyzer = new Mock<IAnalyzer>();
             badAnalyzer.Setup(analyzer => analyzer.Setup(CancellationToken.None)).Throws<FileNotFoundException>();
-            Action throws = () => sut.StartAnalyzers(new[] {badAnalyzer.Object}, CancellationToken.None);
+            Action mightThrow = () => sut.StartAnalyzers(new[] {badAnalyzer.Object}, CancellationToken.None);
 
             // act
             
             // assert
-            throws.Should().NotThrow();
+            mightThrow.Should().NotThrow();
         }
 
         [Fact]

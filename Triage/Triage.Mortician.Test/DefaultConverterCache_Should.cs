@@ -33,11 +33,11 @@ namespace Triage.Mortician.Test
         {
             // arrange
             var sut = new DefaultConverterCache();
-            Action throws = () => sut.GetOrAdd<object>(null, () => 1);
+            Action mightThrow = () => sut.GetOrAdd<object>(null, () => 1);
 
             // act
             // assert
-            throws.Should().Throw<ArgumentNullException>();
+            mightThrow.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]

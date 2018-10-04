@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-25-2018
+// Last Modified On : 10-04-2018
 // ***********************************************************************
 // <copyright file="DumpModuleRepository.cs" company="">
 //     Copyright ©  2017
@@ -29,8 +29,8 @@ namespace Triage.Mortician.Repositories
         ///     Initializes a new instance of the <see cref="DumpModuleRepository" /> class.
         /// </summary>
         /// <param name="dumpModules">The dump modules.</param>
-        /// <exception cref="System.ArgumentNullException">dumpModules</exception>
         /// <exception cref="ArgumentNullException">dumpModules</exception>
+        /// <exception cref="System.ArgumentNullException">dumpModules</exception>
         protected internal DumpModuleRepository(Dictionary<DumpModuleKey, DumpModule> dumpModules)
         {
             DumpModules = dumpModules ?? throw new ArgumentNullException(nameof(dumpModules));
@@ -48,12 +48,13 @@ namespace Triage.Mortician.Repositories
         /// <param name="assemblyId">The assembly identifier.</param>
         /// <param name="moduleName">Name of the module.</param>
         /// <returns>DumpModule.</returns>
-        public DumpModule Get(ulong assemblyId, string moduleName) => DumpModules[new DumpModuleKey(assemblyId, moduleName)];
+        public DumpModule Get(ulong assemblyId, string moduleName) =>
+            DumpModules[new DumpModuleKey(assemblyId, moduleName)];
 
         /// <summary>
         ///     Gets this instance.
         /// </summary>
-        /// <returns>IEnumerable&lt;DumpModule&gt;.</returns>
-        public IEnumerable<DumpModule> Get() => DumpModules.Values;
+        /// <value>The modules.</value>
+        public IEnumerable<DumpModule> Modules => DumpModules.Values;
     }
 }

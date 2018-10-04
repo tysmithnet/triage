@@ -20,7 +20,7 @@ namespace Triage.Testing.Common
     /// <summary>
     ///     Class ClrRuntimeBuilder.
     /// </summary>
-    public class ClrRuntimeBuilder
+    public class ClrRuntimeBuilder : Builder<IClrRuntime>
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrRuntimeBuilder" /> class.
@@ -31,13 +31,7 @@ namespace Triage.Testing.Common
             HeapMock.SetupAllProperties();
             Mock.Setup(runtime => runtime.Heap).Returns(HeapMock.Object);
         }
-
-        /// <summary>
-        ///     Builds this instance.
-        /// </summary>
-        /// <returns>IClrRuntime.</returns>
-        public IClrRuntime Build() => Mock.Object;
-
+        
         /// <summary>
         ///     Withes the heap.
         /// </summary>
@@ -54,11 +48,24 @@ namespace Triage.Testing.Common
         /// </summary>
         /// <value>The heap mock.</value>
         public Mock<IClrHeap> HeapMock { get; } = new Mock<IClrHeap>();
+        
 
-        /// <summary>
-        ///     Gets the mock.
-        /// </summary>
-        /// <value>The mock.</value>
-        public Mock<IClrRuntime> Mock { get; } = new Mock<IClrRuntime>();
+        public ClrRuntimeBuilder WithHeapCount(int count)
+        {
+            Mock.Setup(runtime => runtime.HeapCount).Returns(count);
+            return this;
+        }
+
+        public ClrRuntimeBuilder WithServerGc(bool isServerGc)
+        {
+            Mock.Setup(runtime => runtime.IsServerGc).Returns(isServerGc);
+            return this;
+        }
+
+        public ClrRuntimeBuilder WithThreadPool(IClrThreadPool pool)
+        {
+            Mock.Setup(runtime => runtime.ThreadPool).Returns(pool);
+            return this;
+        }
     }
 }

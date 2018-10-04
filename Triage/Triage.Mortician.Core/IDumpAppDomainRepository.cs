@@ -32,6 +32,6 @@ namespace Triage.Mortician.Core
         ///     Gets all the extracted appd domains
         /// </summary>
         /// <returns>IEnumerable&lt;DumpAppDomain&gt;.</returns>
-        IEnumerable<DumpAppDomain> Get();
+        IEnumerable<DumpAppDomain> AppDomains { get; }
     }
 }

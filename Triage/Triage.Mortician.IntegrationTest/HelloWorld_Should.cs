@@ -18,7 +18,7 @@ namespace Triage.Mortician.IntegrationTest
             /// <inheritdoc />
             public Task Process(CancellationToken cancellationToken)
             {
-                AppDomainCount = AppDomainRepo.Get().Count();
+                AppDomainCount = AppDomainRepo.AppDomains.Count();
                 return Task.CompletedTask;
             }
 

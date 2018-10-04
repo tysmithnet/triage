@@ -33,7 +33,7 @@ namespace Triage.Mortician.Test.Repositories
             sut.Get(0x42).Should().Be(threads[0x42]);
             sut.Get(0x1337).Should().Be(threads[0x1337]);
             sut.Threads.Should().HaveCount(2);
-            throws.Should().Throw<IndexOutOfRangeException>();
+            throws.Should().Throw<KeyNotFoundException>();
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace Triage.Mortician.Test.Repositories
 
             // act
             // assert
-            throws.Should().Throw<IndexOutOfRangeException>();
+            throws.Should().Throw<KeyNotFoundException>();
         }
     }
 }
