@@ -25,6 +25,8 @@ namespace Triage.Mortician.Core
         ///     Gets this instance.
         /// </summary>
         /// <returns>IEnumerable&lt;DumpHandle&gt;.</returns>
-        IEnumerable<DumpHandle> Get();
+        IEnumerable<DumpHandle> Handles { get; }
+
+        DumpHandle Get(ulong address);
     }
 }

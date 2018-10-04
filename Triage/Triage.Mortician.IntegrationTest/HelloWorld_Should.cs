@@ -76,9 +76,9 @@ namespace Triage.Mortician.IntegrationTest
             // assert
             result.Should().Be(0);
             analyzer.AppDomainCount.Should().Be(3);
-            analyzer.TypeRepo.Get().FirstOrDefault(t => t.Name == "Triage.TestApplications.Console.Person").Should()
+            analyzer.TypeRepo.Types.FirstOrDefault(t => t.Name == "Triage.TestApplications.Console.Person").Should()
                 .NotBeNull();
-            analyzer.TypeRepo.Get().FirstOrDefault(t => t.Name == "Triage.TestApplications.Console.Address").Should()
+            analyzer.TypeRepo.Types.FirstOrDefault(t => t.Name == "Triage.TestApplications.Console.Address").Should()
                 .NotBeNull();
             analyzer.ThreadRepo.Threads.Any(t =>
                     t.ManagedStackFrames.Any(f =>

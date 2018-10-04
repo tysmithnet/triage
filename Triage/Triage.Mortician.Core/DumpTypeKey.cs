@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Triage.Mortician.Core
 {
@@ -25,6 +26,7 @@ namespace Triage.Mortician.Core
     /// <seealso cref="System.IComparable{Triage.Mortician.Core.DumpTypeKey}" />
     /// <seealso cref="System.IComparable" />
     /// <seealso cref="System.IEquatable{Triage.Mortician.Core.DumpTypeKey}" />
+    [DebuggerDisplay("{AssemblyId} - {TypeName}")]
     public class DumpTypeKey : IEquatable<DumpTypeKey>, IComparable<DumpTypeKey>, IComparable
     {
         /// <summary>
@@ -79,6 +81,12 @@ namespace Triage.Mortician.Core
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return AssemblyId == other.AssemblyId && string.Equals(TypeName, other.TypeName);
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"{TypeName} : {AssemblyId}";
         }
 
         /// <summary>

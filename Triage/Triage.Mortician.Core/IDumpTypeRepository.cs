@@ -25,6 +25,8 @@ namespace Triage.Mortician.Core
         ///     Gets this instance.
         /// </summary>
         /// <returns>IEnumerable&lt;DumpType&gt;.</returns>
-        IEnumerable<DumpType> Get();
+        IEnumerable<DumpType> Types { get; }
+
+        DumpType Get(DumpTypeKey type);
     }
 }
