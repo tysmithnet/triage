@@ -3,41 +3,41 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician.Analyzers", "Triage.Mortician.Analyzers\Triage.Mortician.Analyzers.csproj", "{0FD5BD27-A0CB-4253-ADD0-1386EF6026BB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mortician.Analyzers", "Triage.Mortician.Analyzers\Mortician.Analyzers.csproj", "{0FD5BD27-A0CB-4253-ADD0-1386EF6026BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician", "Triage.Mortician\Triage.Mortician.csproj", "{8AA350BC-CF5F-4302-92AB-1997357049BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mortician", "Triage.Mortician\Mortician.csproj", "{8AA350BC-CF5F-4302-92AB-1997357049BA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Applications", "Test Applications", "{2D8CD7F7-734E-4ECE-8DC0-62B6AA25B790}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.TestApplications.Console", "Triage.TestApplications.Console\Triage.TestApplications.Console.csproj", "{9C21D660-D251-4CB0-A23C-C9039D9B52DF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplications.Console", "Triage.TestApplications.Console\TestApplications.Console.csproj", "{9C21D660-D251-4CB0-A23C-C9039D9B52DF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Diagnostics.Runtime", "clrmd\src\Microsoft.Diagnostics.Runtime\Microsoft.Diagnostics.Runtime.csproj", "{A82126CA-23AA-41F1-8586-A5938D44D0A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician.ExcelAnalyzer", "Triage.Mortician.ExcelAnalyzer\Triage.Mortician.ExcelAnalyzer.csproj", "{BCC4FFC3-94A3-4107-A866-F3302382A8D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mortician.ExcelAnalyzer", "Triage.Mortician.ExcelAnalyzer\Mortician.ExcelAnalyzer.csproj", "{BCC4FFC3-94A3-4107-A866-F3302382A8D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician.WebUiAnalyzer", "Triage.Mortician.WebUiAnalyzer\Triage.Mortician.WebUiAnalyzer.csproj", "{DDCFDAA0-49D9-4B8A-9926-FD1F4DB0BAC4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mortician.WebUiAnalyzer", "Triage.Mortician.WebUiAnalyzer\Mortician.WebUiAnalyzer.csproj", "{DDCFDAA0-49D9-4B8A-9926-FD1F4DB0BAC4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mortician", "Mortician", "{12D5DDFC-1EA7-44A5-AC53-0759DF4CCD05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician.Test", "Triage.Mortician.Test\Triage.Mortician.Test.csproj", "{E7EE02E5-1C85-423C-8CAB-C19F92A3D0EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mortician.Test", "Triage.Mortician.Test\Mortician.Test.csproj", "{E7EE02E5-1C85-423C-8CAB-C19F92A3D0EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician.Core", "Triage.Mortician.Core\Triage.Mortician.Core.csproj", "{2F433D34-BAC1-4A64-AEC9-46EB112946EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mortician.Core", "Triage.Mortician.Core\Mortician.Core.csproj", "{2F433D34-BAC1-4A64-AEC9-46EB112946EA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{65611A0C-7B62-4BE0-91F9-C7E6E71A9B34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician.ExcelAnalyzer.Test", "Triage.Mortician.ExcelAnalyzer.Test\Triage.Mortician.ExcelAnalyzer.Test.csproj", "{DD0E14E6-D512-4856-B9CF-4C352B89E88A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mortician.ExcelAnalyzer.Test", "Triage.Mortician.ExcelAnalyzer.Test\Mortician.ExcelAnalyzer.Test.csproj", "{DD0E14E6-D512-4856-B9CF-4C352B89E88A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician.IntegrationTest", "Triage.Mortician.IntegrationTest\Triage.Mortician.IntegrationTest.csproj", "{13629203-B6C9-490C-8593-404BB8E50B67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mortician.IntegrationTest", "Triage.Mortician.IntegrationTest\Mortician.IntegrationTest.csproj", "{13629203-B6C9-490C-8593-404BB8E50B67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Mortician.Core.Test", "Triage.Mortician.Core.Test\Triage.Mortician.Core.Test.csproj", "{2667FD6A-8BB3-4098-BF69-37CD1B3C5E9B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mortician.Core.Test", "Triage.Mortician.Core.Test\Mortician.Core.Test.csproj", "{2667FD6A-8BB3-4098-BF69-37CD1B3C5E9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.TestApplications.WinForms", "Triage.TestApplications.WinForms\Triage.TestApplications.WinForms.csproj", "{5A3B0CB9-BFB7-4EFA-99FB-4C9613218A47}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplications.WinForms", "Triage.TestApplications.WinForms\TestApplications.WinForms.csproj", "{5A3B0CB9-BFB7-4EFA-99FB-4C9613218A47}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B6A96491-5477-4A11-A982-F94C39315EE9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{861CDEE1-261C-409A-8FFC-4EDA5A224561}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triage.Testing.Common", "Triage.Testing.Common\Triage.Testing.Common.csproj", "{B89A3DC9-84B7-420A-B5F2-E622F4261906}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing.Common", "Triage.Testing.Common\Testing.Common.csproj", "{B89A3DC9-84B7-420A-B5F2-E622F4261906}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

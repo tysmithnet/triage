@@ -84,9 +84,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Triage.Mortician.Core\Triage.Mortician.Core.csproj">
+    <ProjectReference Include="..\Triage.Mortician.Core\Mortician.Core.csproj">
       <Project>{2F433D34-BAC1-4A64-AEC9-46EB112946EA}</Project>
-      <Name>Triage.Mortician.Core</Name>
+      <Name>Mortician.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
