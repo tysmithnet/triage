@@ -2,3 +2,6 @@
 	path = Mortician/clrmd
 	url = https://github.com/tysmithnet/clrmd
 	branch = develop
+[submodule "src/clrmd"]
+	path = src/clrmd
+	url = ../clrmd
