@@ -183,6 +183,10 @@ namespace Triage.Mortician
         /// </summary>
         public void Setup()
         {
+            ObjectAddressesInFinalizerQueue = new HashSet<ulong>(Runtime.EnumerateFinalizerQueueObjectAddresses());
+            FinalizableObjectAddresses = new HashSet<ulong>(Runtime.Heap.EnumerateFinalizableObjectAddresses());
+            GcThreads = Runtime.EnumerateGCThreads().Select(Convert.ToUInt64).ToList();
+
             CreateReports();
             CreateObjects();
             CreateTypes();
@@ -194,13 +198,9 @@ namespace Triage.Mortician
             CreateHandles();
             CreateHeapSegments();
             CreateDumpModuleInfo();
-            FinalizableObjectAddresses = new HashSet<ulong>(Runtime.Heap.EnumerateFinalizableObjectAddresses());
-            ObjectAddressesInFinalizerQueue = new HashSet<ulong>();
             ManagedWorkItems = Runtime.ThreadPool.EnumerateManagedWorkItems().Select(x => x.Object).ToList();
             NativeWorkitems = Runtime.ThreadPool.EnumerateNativeWorkItems().ToList();
             CreateMemoryRegions();
-            ObjectAddressesInFinalizerQueue = new HashSet<ulong>(Runtime.EnumerateFinalizerQueueObjectAddresses());
-            GcThreads = Runtime.EnumerateGCThreads().Select(Convert.ToUInt64).ToList();
             ConnectObjects();
             ConnectObjectsToTypes();
             ConnectTypes();

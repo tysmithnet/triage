@@ -46,5 +46,11 @@ namespace Triage.Testing.Common
             Mock.Setup(heap => heap.TotalHeapSize).Returns(size);
             return this;
         }
+
+        public ClrHeapBuilder WithGetObjectType(IClrType objType)
+        {
+            Mock.Setup(heap => heap.GetObjectType(It.IsAny<ulong>())).Returns(objType);
+            return this;
+        }
     }
 }

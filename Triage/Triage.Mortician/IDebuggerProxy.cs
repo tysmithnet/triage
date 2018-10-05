@@ -22,8 +22,8 @@ namespace Triage.Mortician
         /// <summary>
         ///     Executes the specified command.
         /// </summary>
-        /// <param name="cmd">The command.</param>
+        /// <param name="command">The command.</param>
         /// <returns>System.String.</returns>
-        string Execute(string cmd);
+        string Execute(string command);
     }
 }

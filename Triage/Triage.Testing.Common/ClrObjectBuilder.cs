@@ -84,5 +84,11 @@ namespace Triage.Testing.Common
         /// </summary>
         /// <value>The type mock.</value>
         private Mock<IClrType> TypeMock { get; } = new Mock<IClrType>();
+
+        public ClrObjectBuilder WithType(IClrType typeName)
+        {
+            Mock.Setup(o => o.Type).Returns(typeName);
+            return this;
+        }
     }
 }
