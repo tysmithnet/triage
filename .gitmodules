@@ -1,4 +1,4 @@
-[submodule "Triage/clrmd"]
-	path = Triage/clrmd
+[submodule "Mortician/clrmd"]
+	path = Mortician/clrmd
 	url = https://github.com/tysmithnet/clrmd
 	branch = develop
