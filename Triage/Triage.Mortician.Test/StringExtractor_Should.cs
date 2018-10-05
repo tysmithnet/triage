@@ -35,6 +35,7 @@ namespace Triage.Mortician.Test
             result.Value.Should().Be("Duke the corgi");
         }
 
+
         [Fact]
         public void Indicate_It_Can_Extract_Only_Strings()
         {

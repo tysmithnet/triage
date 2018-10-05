@@ -37,8 +37,8 @@ namespace Triage.Mortician.Adapters
             Runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
             HeapCount = Runtime.HeapCount;
             PointerSize = Runtime.PointerSize;
-            ServerGC = Runtime.ServerGC; PointerSize = Runtime.PointerSize;
-            ServerGC = Runtime.ServerGC;
+            IsServerGc = Runtime.ServerGC; PointerSize = Runtime.PointerSize;
+            IsServerGc = Runtime.ServerGC;
         }
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace Triage.Mortician.Adapters
         /// </summary>
         /// <value><c>true</c> if [server gc]; otherwise, <c>false</c>.</value>
         /// <inheritdoc />
-        public bool ServerGC { get; internal set; }
+        public bool IsServerGc { get; internal set; }
 
         /// <summary>
         ///     Give access to the Shared AppDomain

@@ -14,6 +14,7 @@
 
 using System;
 using Triage.Mortician.Core.ClrMdAbstractions;
+using ClrMd = Microsoft.Diagnostics.Runtime;
 
 namespace Triage.Mortician
 {
@@ -29,7 +30,7 @@ namespace Triage.Mortician
         /// <param name="comInterfaceData">The COM interface data.</param>
         /// <exception cref="System.ArgumentNullException">comInterfaceData</exception>
         /// <inheritdoc />
-        public ComInterfaceData(Microsoft.Diagnostics.Runtime.ComInterfaceData comInterfaceData)
+        public ComInterfaceData(ClrMd.ComInterfaceData comInterfaceData)
         {
             _comInterfaceData = comInterfaceData ?? throw new ArgumentNullException(nameof(comInterfaceData));
         }
@@ -37,7 +38,7 @@ namespace Triage.Mortician
         /// <summary>
         ///     The COM interface data
         /// </summary>
-        internal Microsoft.Diagnostics.Runtime.ComInterfaceData _comInterfaceData;
+        internal ClrMd.ComInterfaceData _comInterfaceData;
 
         /// <summary>
         ///     The interface pointer of Type.

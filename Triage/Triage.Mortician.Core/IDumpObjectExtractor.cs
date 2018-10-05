@@ -30,27 +30,11 @@ namespace Triage.Mortician.Core
         bool CanExtract(IClrObject clrObject, IClrRuntime clrRuntime);
 
         /// <summary>
-        ///     Determines whether this instance can extract the specified address.
-        /// </summary>
-        /// <param name="address">The address.</param>
-        /// <param name="clrRuntime">The color runtime.</param>
-        /// <returns><c>true</c> if this instance can extract the specified address; otherwise, <c>false</c>.</returns>
-        bool CanExtract(ulong address, IClrRuntime clrRuntime);
-
-        /// <summary>
         ///     Extracts data from the provided object
         /// </summary>
         /// <param name="clrObject">The object.</param>
         /// <param name="clrRuntime">The runtime.</param>
         /// <returns>Extracted dump object</returns>
         DumpObject Extract(IClrObject clrObject, IClrRuntime clrRuntime);
-
-        /// <summary>
-        ///     Extracts the specified address.
-        /// </summary>
-        /// <param name="address">The address.</param>
-        /// <param name="clrRuntime">The color runtime.</param>
-        /// <returns>DumpObject.</returns>
-        DumpObject Extract(ulong address, IClrRuntime clrRuntime);
     }
 }

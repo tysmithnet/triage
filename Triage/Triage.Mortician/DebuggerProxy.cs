@@ -4,7 +4,7 @@
 // Created          : 12-19-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-18-2018
+// Last Modified On : 10-05-2018
 // ***********************************************************************
 // <copyright file="DebuggerProxy.cs" company="">
 //     Copyright ©  2017
@@ -14,8 +14,11 @@
 
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using Microsoft.Diagnostics.Runtime.Interop;
+using Serilog;
 
 namespace Triage.Mortician
 {
@@ -23,25 +26,24 @@ namespace Triage.Mortician
     ///     https://github.com/Microsoft/clrmd/issues/79
     ///     Uses the debugger interface to execute arbitrary commands on the target
     /// </summary>
+    /// <seealso cref="Triage.Mortician.IDebuggerProxy" />
     /// <seealso cref="Microsoft.Diagnostics.Runtime.Interop.IDebugOutputCallbacks" />
     /// <seealso cref="System.IDisposable" />
     /// <seealso cref="T:Microsoft.Diagnostics.Runtime.Interop.IDebugOutputCallbacks" />
     /// <seealso cref="T:System.IDisposable" />
     /// <seealso cref="T:Triage.Mortician.IDebuggerProxy" />
-    public sealed class DebuggerProxy : IDebugOutputCallbacks, IDisposable, IDebuggerProxy
+    public sealed class DebuggerProxy : IDebugOutputCallbacks, IDebuggerProxy
     {
-        // todo: autoresetevent to serialize access to client
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="DebuggerProxy" /> class.
         /// </summary>
         /// <param name="client">The debugging client provided by the OS</param>
         internal DebuggerProxy(IDebugClient client)
         {
-            _client = client;
-            _control = (IDebugControl) client;
+            Client = client;
+            Control = (IDebugControl) client;
 
-            var hr = client.GetOutputCallbacks(out _oldCallbacks);
+            var hr = client.GetOutputCallbacks(out OldCallbacks);
             Debug.Assert(hr == 0);
 
             hr = client.SetOutputCallbacks(this);
@@ -51,50 +53,65 @@ namespace Triage.Mortician
         /// <summary>
         ///     String builder for the output string
         /// </summary>
-        private readonly StringBuilder _builder = new StringBuilder();
+        internal StringBuilder Builder = new StringBuilder();
 
         /// <summary>
         ///     The debug client
         /// </summary>
-        private readonly IDebugClient _client;
+        internal IDebugClient Client;
 
         /// <summary>
         ///     The debug control
         /// </summary>
-        private readonly IDebugControl _control;
+        internal IDebugControl Control;
 
         /// <summary>
         ///     The disposed flag
         /// </summary>
-        private bool _disposed;
+        internal bool Disposed;
+
+        /// <summary>
+        ///     The log
+        /// </summary>
+        internal ILogger Log = Serilog.Log.ForContext<DebuggerProxy>();
 
         /// <summary>
         ///     The old callbacks
         /// </summary>
-        private readonly IDebugOutputCallbacks _oldCallbacks;
+        internal IDebugOutputCallbacks OldCallbacks;
+
+        /// <summary>
+        ///     The reset event
+        /// </summary>
+        internal AutoResetEvent ResetEvent = new AutoResetEvent(true);
 
         /// <summary>
         ///     Executes the specified command on the debug client
         /// </summary>
-        /// <param name="cmd">The command to run.</param>
+        /// <param name="command">The command to run.</param>
         /// <returns>The result of the command</returns>
+        /// <exception cref="COMException">Error executing " + command</exception>
         /// <example>!runaway</example>
         /// <example>!dumpheap -stat</example>
         /// <example>!dlk</example>
-        public string Execute(string cmd)
+        public string Execute(string command)
         {
-            lock (_builder)
+            try
             {
-                _builder.Clear();
+                ResetEvent.WaitOne(); // todo: wait forever? maybe optional timeout? idk
+                Builder.Clear();
+                Log.Information("Executing {Command}", command);
+                var hr = Control.Execute(DEBUG_OUTCTL.ALL_CLIENTS, command, DEBUG_EXECUTE.NOT_LOGGED);
+                return Builder.ToString();
             }
-
-            var hr = _control.Execute(DEBUG_OUTCTL.THIS_CLIENT, cmd, DEBUG_EXECUTE.NOT_LOGGED);
-            Debug.Assert(hr == 0);
-            //todo:  Something with hr, it may be an error legitimately.
-
-            lock (_builder)
+            catch (Exception e)
             {
-                return _builder.ToString();
+                Log.Error(e, "Error executing {Command}", command);
+                throw new COMException("Error executing " + command, e);
+            }
+            finally
+            {
+                ResetEvent.Set();
             }
         }
 
@@ -106,48 +123,24 @@ namespace Triage.Mortician
         /// <returns>System.Int32.</returns>
         int IDebugOutputCallbacks.Output(DEBUG_OUTPUT mask, string text)
         {
-            // TODO: Check mask and write to appropriate location.
-
-            lock (_builder)
+            switch (mask)
             {
-                _builder.Append(text);
+                case DEBUG_OUTPUT.ERROR:
+                    Log.Error("{CommandError}", text);
+                    break;
+                case DEBUG_OUTPUT.EXTENSION_WARNING:
+                case DEBUG_OUTPUT.WARNING:
+                    Log.Warning("{CommandWarning}", text);
+                    break;
+                case DEBUG_OUTPUT.SYMBOLS:
+                    Log.Information("{SymbolOutput}", text);
+                    break;
+                default:
+                    Builder.Append(text);
+                    break;
             }
 
             return 0;
         }
-
-        #region IDisposable Support
-
-        /// <summary>
-        ///     Internal dispose routine
-        /// </summary>
-        /// <param name="disposing">The disposing.</param>
-        internal void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                _client.SetOutputCallbacks(_oldCallbacks);
-                _disposed = true;
-            }
-        }
-
-        /// <summary>
-        ///     Finalizes an instance of the <see cref="DebuggerProxy" /> class.
-        /// </summary>
-        ~DebuggerProxy()
-        {
-            Dispose(false);
-        }
-
-        /// <summary>
-        ///     Disposes this instance.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        #endregion
     }
 }

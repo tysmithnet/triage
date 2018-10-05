@@ -33,6 +33,6 @@ namespace Triage.Mortician.Core
         ///     Gets this instance.
         /// </summary>
         /// <returns>IEnumerable&lt;DumpModule&gt;.</returns>
-        IEnumerable<DumpModule> Get();
+        IEnumerable<DumpModule> Modules { get; }
     }
 }

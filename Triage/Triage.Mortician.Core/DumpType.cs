@@ -37,6 +37,11 @@ namespace Triage.Mortician.Core
             Key = key ?? throw new ArgumentNullException(nameof(key));
         }
 
+        public DumpType(ulong assemblyId, string typeName)
+        {
+            Key = new DumpTypeKey(assemblyId, typeName);
+        }
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="DumpType" /> class.
         /// </summary>

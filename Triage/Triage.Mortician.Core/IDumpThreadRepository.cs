@@ -34,6 +34,6 @@ namespace Triage.Mortician.Core
         ///     Gets all the threads extracted from the memory dump
         /// </summary>
         /// <returns>All the threads extracted from the memory dump</returns>
-        IEnumerable<DumpThread> Get();
+        IEnumerable<DumpThread> Threads { get; }
     }
 }

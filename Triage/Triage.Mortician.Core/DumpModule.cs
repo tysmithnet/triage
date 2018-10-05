@@ -47,12 +47,12 @@ namespace Triage.Mortician.Core
         /// <summary>
         ///     The app domains for which this module is loaded
         /// </summary>
-        protected internal ISet<DumpAppDomain> AppDomainsInternal = new SortedSet<DumpAppDomain>();
+        internal ISet<DumpAppDomain> AppDomainsInternal = new SortedSet<DumpAppDomain>();
 
         /// <summary>
         ///     The types defined in this module
         /// </summary>
-        protected internal ISet<DumpType> TypesInternal = new SortedSet<DumpType>();
+        internal ISet<DumpType> TypesInternal = new SortedSet<DumpType>();
 
         /// <summary>
         ///     Compares to.

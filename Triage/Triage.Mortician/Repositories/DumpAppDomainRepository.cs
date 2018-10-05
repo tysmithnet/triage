@@ -32,27 +32,27 @@ namespace Triage.Mortician.Repositories
         /// <param name="appDomains">The application domains.</param>
         /// <exception cref="System.ArgumentNullException">appDomains</exception>
         /// <exception cref="ArgumentNullException">appDomains</exception>
-        protected internal DumpAppDomainRepository(Dictionary<ulong, DumpAppDomain> appDomains)
+        internal DumpAppDomainRepository(Dictionary<ulong, DumpAppDomain> appDomains)
         {
-            AppDomains = appDomains ?? throw new ArgumentNullException(nameof(appDomains));
+            AppDomainsInternal = appDomains ?? throw new ArgumentNullException(nameof(appDomains));
         }
 
         /// <summary>
         ///     The application domains index by their address
         /// </summary>
-        protected internal Dictionary<ulong, DumpAppDomain> AppDomains;
+        internal Dictionary<ulong, DumpAppDomain> AppDomainsInternal;
 
         /// <summary>
         ///     Gets the app domain associated with the provided address
         /// </summary>
         /// <param name="address">The address.</param>
         /// <returns>DumpAppDomain.</returns>
-        public DumpAppDomain Get(ulong address) => AppDomains[address];
+        public DumpAppDomain Get(ulong address) => AppDomainsInternal[address];
 
         /// <summary>
         ///     Gets all the extracted appd domains
         /// </summary>
         /// <returns>IEnumerable&lt;DumpAppDomain&gt;.</returns>
-        public IEnumerable<DumpAppDomain> Get() => AppDomains.Values;
+        public IEnumerable<DumpAppDomain> AppDomains => AppDomainsInternal.Values;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using FluentAssertions;
+using Moq;
 using Triage.Mortician.Core;
 using Triage.Mortician.Reports.EeStack;
 using Triage.Testing.Common;
@@ -9,7 +10,7 @@ namespace Triage.Mortician.Test
 {
     public class EeStackReportFactory_Should : BaseTest
     {
-        private const string HELLO_WORLD = @"---------------------------------------------
+        private const string HAPPY_PATH = @"---------------------------------------------
 Thread   0
 Current frame: ntdll!NtGetContextThread+0x14
 Child-SP         RetAddr          Caller, Callee
@@ -678,6 +679,22 @@ Child-SP         RetAddr          Caller, Callee
         }
 
         [Fact]
+        public void Create_The_Report_When_Processed()
+        {
+            // arrange
+            var sut = new EeStackReportFactory();
+            var mock = new Mock<IDebuggerProxy>();
+            mock.Setup(proxy => proxy.Execute("!eestack")).Returns(HAPPY_PATH);
+
+            // act
+            sut.Setup(mock.Object);
+            var report = (EeStackReport)sut.Process();
+
+            // assert
+            report.Threads.Should().HaveCount(2);
+        }
+
+        [Fact]
         public void Extract_Managed_With_No_Callee()
         {
             // arrange
@@ -753,7 +770,7 @@ Child-SP         RetAddr          Caller, Callee
             var processor = new EeStackReportFactory();
 
             // act
-            var report = processor.ProcessOutput(HELLO_WORLD);
+            var report = processor.ProcessOutput(HAPPY_PATH);
 
             // assert
             report.ThreadsInternal.Count.Should().Be(2);

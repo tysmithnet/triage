@@ -20,7 +20,7 @@ namespace Triage.Testing.Common
     /// <summary>
     ///     Class ClrObjectBuilder.
     /// </summary>
-    public class ClrObjectBuilder
+    public class ClrObjectBuilder : Builder<IClrObject>
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrObjectBuilder" /> class.
@@ -31,13 +31,7 @@ namespace Triage.Testing.Common
             TypeMock.SetupAllProperties();
             Mock.Setup(o => o.Type).Returns(TypeMock.Object);
         }
-
-        /// <summary>
-        ///     Builds this instance.
-        /// </summary>
-        /// <returns>IClrObject.</returns>
-        public IClrObject Build() => Mock.Object;
-
+        
         /// <summary>
         ///     Withes the address.
         /// </summary>
@@ -84,17 +78,17 @@ namespace Triage.Testing.Common
             TypeMock.Setup(type => type.Name).Returns(typeName);
             return this;
         }
-
-        /// <summary>
-        ///     Gets the mock.
-        /// </summary>
-        /// <value>The mock.</value>
-        private Mock<IClrObject> Mock { get; } = new Mock<IClrObject>();
-
+        
         /// <summary>
         ///     Gets the type mock.
         /// </summary>
         /// <value>The type mock.</value>
         private Mock<IClrType> TypeMock { get; } = new Mock<IClrType>();
+
+        public ClrObjectBuilder WithType(IClrType typeName)
+        {
+            Mock.Setup(o => o.Type).Returns(typeName);
+            return this;
+        }
     }
 }

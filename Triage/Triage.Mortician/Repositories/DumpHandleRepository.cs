@@ -12,6 +12,7 @@
 // <summary></summary>
 // ***********************************************************************
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Triage.Mortician.Core;
@@ -30,7 +31,7 @@ namespace Triage.Mortician.Repositories
         /// <param name="handleStore">The handle store.</param>
         public DumpHandleRepository(Dictionary<ulong, DumpHandle> handleStore)
         {
-            HandlesInternal = handleStore.Values.ToList();
+            HandlesInternal = handleStore ?? throw new ArgumentNullException(nameof(handleStore));
         }
 
         /// <summary>
@@ -38,12 +39,22 @@ namespace Triage.Mortician.Repositories
         /// </summary>
         /// <returns>IEnumerable&lt;DumpHandle&gt;.</returns>
         /// <inheritdoc />
-        public IEnumerable<DumpHandle> Get() => HandlesInternal;
+        public IEnumerable<DumpHandle> Handles => HandlesInternal.Values;
+
+        /// <inheritdoc />
+        public DumpHandle Get(ulong address)
+        {
+            if (HandlesInternal.TryGetValue(address, out var handle))
+            {
+                return handle;
+            }
+            throw new KeyNotFoundException($"Unable to find handle at {address:x8}");
+        }
 
         /// <summary>
         ///     Gets or sets the handles internal.
         /// </summary>
         /// <value>The handles internal.</value>
-        internal IList<DumpHandle> HandlesInternal { get; set; }
+        internal Dictionary<ulong, DumpHandle> HandlesInternal { get; set; }
     }
 }

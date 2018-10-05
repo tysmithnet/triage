@@ -13,7 +13,9 @@
 // ***********************************************************************
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using Triage.Mortician.Core.ClrMdAbstractions;
 
 namespace Triage.Mortician.Core
 {
@@ -129,5 +131,7 @@ namespace Triage.Mortician.Core
         /// </summary>
         /// <value>The total threads.</value>
         int TotalThreads { get; }
+
+        IEnumerable<IModuleInfo> ModuleInfos { get; }
     }
 }

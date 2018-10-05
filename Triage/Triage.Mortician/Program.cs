@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -32,6 +33,7 @@ namespace Triage.Mortician
     /// <summary>
     ///     Entry point class
     /// </summary>
+    [ExcludeFromCodeCoverage]
     internal class Program
     {
         /// <summary>
@@ -169,6 +171,7 @@ namespace Triage.Mortician
         ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64
         ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\winext
         /// </summary>
+        // todo: what about x86
         internal void WarnIfNoDebuggingKitOnPath()
         {
             var path = Environment.GetEnvironmentVariable("PATH") ?? "";

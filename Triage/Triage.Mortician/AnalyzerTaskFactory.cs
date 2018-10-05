@@ -32,7 +32,9 @@ namespace Triage.Mortician
     [Export(typeof(IAnalyzerTaskFactory))]
     public class AnalyzerTaskFactory : IAnalyzerTaskFactory
     {
-        internal ILogger Log { get; } = Slog.ForContext<AnalyzerTaskFactory>();
+#if DEBUG
+        internal Action StartTestingAction { get; set; }
+#endif
         /// <summary>
         ///     Starts the analyzers.
         /// </summary>
@@ -43,7 +45,11 @@ namespace Triage.Mortician
         {
             var tasks = analyzers.Select(analyzer => Task.Run(async () =>
             {
-                cancellationToken.ThrowIfCancellationRequested();
+#if DEBUG
+                StartTestingAction?.Invoke();
+#endif
+                if (cancellationToken.IsCancellationRequested)
+                    return;
                 var isSetup = false;
                 try
                 {
@@ -52,27 +58,28 @@ namespace Triage.Mortician
                 }
                 catch (Exception e)
                 {
-                    Log.Error(
-                        $"Anayler Setup Exception: {analyzer.GetType().FullName} thew {e.GetType().FullName} - {e.Message}",
-                        e);
+                    Log.Error(e, "Anayler Setup Exception: {FullName} thew {FullName1} - {Message}",
+                        analyzer.GetType().FullName, e.GetType().FullName, e.Message);
                 }
 
                 if (!isSetup)
                     return;
 
-                cancellationToken.ThrowIfCancellationRequested();
+                if (cancellationToken.IsCancellationRequested)
+                    return;
                 try
                 {
                     await analyzer.Process(cancellationToken);
                 }
                 catch (Exception e)
                 {
-                    Log.Error(
-                        $"Analyzer Process Exception: {analyzer.GetType().FullName} threw {e.GetType().FullName} - {e.Message}",
-                        e);
+                    Log.Error(e, "Analyzer Process Exception: {FullName} threw {FullName1} - {Message}",
+                        analyzer.GetType().FullName, e.GetType().FullName, e.Message);
                 }
             }, cancellationToken));
             return Task.WhenAll(tasks);
         }
+
+        internal ILogger Log { get; } = Slog.ForContext<AnalyzerTaskFactory>();
     }
 }

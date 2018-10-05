@@ -16,14 +16,46 @@ using System;
 using System.Collections.Generic;
 using Triage.Mortician.Core.ClrMdAbstractions;
 
-namespace Triage.Mortician
+namespace Triage.Mortician.Core
 {
     /// <summary>
     ///     Class DumpModuleInfo.
     /// </summary>
+    /// <seealso cref="System.IEquatable{Triage.Mortician.Core.DumpModuleInfo}" />
+    /// <seealso cref="System.IComparable{Triage.Mortician.Core.DumpModuleInfo}" />
+    /// <seealso cref="System.IComparable" />
     /// <seealso cref="System.IEquatable{Triage.Mortician.DumpModuleInfo}" />
-    public class DumpModuleInfo : IEquatable<DumpModuleInfo>
+    public class DumpModuleInfo : IEquatable<DumpModuleInfo>, IComparable<DumpModuleInfo>, IComparable
     {
+        /// <summary>
+        ///     Compares to.
+        /// </summary>
+        /// <param name="other">The other.</param>
+        /// <returns>System.Int32.</returns>
+        /// <inheritdoc />
+        public int CompareTo(DumpModuleInfo other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            return string.Compare(FileName, other.FileName, StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        ///     Compares to.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <returns>System.Int32.</returns>
+        /// <exception cref="ArgumentException">DumpModuleInfo</exception>
+        /// <inheritdoc />
+        public int CompareTo(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return 1;
+            if (ReferenceEquals(this, obj)) return 0;
+            if (!(obj is DumpModuleInfo))
+                throw new ArgumentException($"Object must be of type {nameof(DumpModuleInfo)}");
+            return CompareTo((DumpModuleInfo) obj);
+        }
+
         /// <summary>
         ///     Equalses the specified other.
         /// </summary>
@@ -77,16 +109,46 @@ namespace Triage.Mortician
         }
 
         /// <summary>
+        ///     Implements the &gt; operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >(DumpModuleInfo left, DumpModuleInfo right) =>
+            Comparer<DumpModuleInfo>.Default.Compare(left, right) > 0;
+
+        /// <summary>
+        ///     Implements the &gt;= operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator >=(DumpModuleInfo left, DumpModuleInfo right) =>
+            Comparer<DumpModuleInfo>.Default.Compare(left, right) >= 0;
+
+        /// <summary>
+        ///     Implements the &lt; operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <(DumpModuleInfo left, DumpModuleInfo right) =>
+            Comparer<DumpModuleInfo>.Default.Compare(left, right) < 0;
+
+        /// <summary>
+        ///     Implements the &lt;= operator.
+        /// </summary>
+        /// <param name="left">The left.</param>
+        /// <param name="right">The right.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator <=(DumpModuleInfo left, DumpModuleInfo right) =>
+            Comparer<DumpModuleInfo>.Default.Compare(left, right) <= 0;
+
+        /// <summary>
         ///     Gets or sets the name of the file.
         /// </summary>
         /// <value>The name of the file.</value>
         public string FileName { get; set; }
-
-        /// <summary>
-        ///     Gets the file name comparer.
-        /// </summary>
-        /// <value>The file name comparer.</value>
-        public static IEqualityComparer<DumpModuleInfo> FileNameComparer { get; } = new FileNameEqualityComparer();
 
         /// <summary>
         ///     Gets or sets the size of the file.
@@ -136,33 +198,5 @@ namespace Triage.Mortician
         /// <value>The version.</value>
         public VersionInfo Version { get; set; }
 
-        /// <summary>
-        ///     Class FileNameEqualityComparer. This class cannot be inherited.
-        /// </summary>
-        /// <seealso cref="System.Collections.Generic.IEqualityComparer{Triage.Mortician.DumpModuleInfo}" />
-        private sealed class FileNameEqualityComparer : IEqualityComparer<DumpModuleInfo>
-        {
-            /// <summary>
-            ///     Equalses the specified x.
-            /// </summary>
-            /// <param name="x">The x.</param>
-            /// <param name="y">The y.</param>
-            /// <returns><c>true</c> if XXXX, <c>false</c> otherwise.</returns>
-            public bool Equals(DumpModuleInfo x, DumpModuleInfo y)
-            {
-                if (ReferenceEquals(x, y)) return true;
-                if (ReferenceEquals(x, null)) return false;
-                if (ReferenceEquals(y, null)) return false;
-                if (x.GetType() != y.GetType()) return false;
-                return string.Equals(x.FileName, y.FileName);
-            }
-
-            /// <summary>
-            ///     Returns a hash code for this instance.
-            /// </summary>
-            /// <param name="obj">The object.</param>
-            /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-            public int GetHashCode(DumpModuleInfo obj) => obj.FileName != null ? obj.FileName.GetHashCode() : 0;
-        }
     }
 }

@@ -33,16 +33,6 @@ namespace Triage.Mortician.Reports.Runaway
             new Regex(@"^\s*(?<idx>\d+):(?<id>[a-fA-F0-9]+)\s*(?<days>\d+)\s*days\s(?<ts>[\d\.:]+)\s*$",
                 RegexOptions.Compiled | RegexOptions.Multiline);
 
-        /// <summary>
-        /// Creates the report.
-        /// </summary>
-        /// <param name="debugger">The debugger.</param>
-        /// <returns>IReport.</returns>
-        public IReport CreateReport(IDebuggerProxy debugger)
-        {
-            var output = debugger.Execute("!runaway 3");
-            return ProcessOutput(output);
-        }
 
         /// <summary>
         /// Generate the report artifact

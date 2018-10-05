@@ -14,6 +14,7 @@
 
 using System;
 using Triage.Mortician.Core.ClrMdAbstractions;
+using ClrMd = Microsoft.Diagnostics.Runtime;
 
 namespace Triage.Mortician.Adapters
 {
@@ -29,7 +30,7 @@ namespace Triage.Mortician.Adapters
         /// <param name="provider">The provider.</param>
         /// <exception cref="ArgumentNullException">provider</exception>
         /// <inheritdoc />
-        public SymbolProviderAdapter(IConverter converter, Microsoft.Diagnostics.Runtime.ISymbolProvider provider) :
+        public SymbolProviderAdapter(IConverter converter, ClrMd.ISymbolProvider provider) :
             base(converter)
         {
             Provider = provider ?? throw new ArgumentNullException(nameof(provider));
@@ -38,7 +39,7 @@ namespace Triage.Mortician.Adapters
         /// <summary>
         ///     The provider
         /// </summary>
-        internal Microsoft.Diagnostics.Runtime.ISymbolProvider Provider;
+        internal ClrMd.ISymbolProvider Provider;
 
         /// <summary>
         ///     Loads a PDB by its given guid/age and provides an ISymbolResolver for that PDB.

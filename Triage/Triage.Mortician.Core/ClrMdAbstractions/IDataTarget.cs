@@ -84,13 +84,13 @@ namespace Triage.Mortician.Core.ClrMdAbstractions
         ///     Instance to manage the symbol path(s)
         /// </summary>
         /// <value>The symbol locator.</value>
-        ISymbolLocator SymbolLocator { get; set; }
+        ISymbolLocator SymbolLocator { get; }
 
         /// <summary>
         ///     A symbol provider which loads PDBs on behalf of ClrMD.  This should be set so that when ClrMD needs to
         ///     resolve names which can only come from PDBs.  If this is not set, you may have a degraded experience.
         /// </summary>
         /// <value>The symbol provider.</value>
-        ISymbolProvider SymbolProvider { get; set; }
+        ISymbolProvider SymbolProvider { get; }
     }
 }

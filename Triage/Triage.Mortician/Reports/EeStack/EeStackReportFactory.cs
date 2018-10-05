@@ -74,19 +74,7 @@ namespace Triage.Mortician.Reports.EeStack
         private static readonly Regex NativeRegex =
             new Regex(@"(?<mod>[a-zA-Z0-9_\-.]+)!(?<meth>[a-zA-Z0-9_\-.]+)(\+0x)?(?<off>[a-fA-F0-9]+)?",
                 RegexOptions.Compiled);
-
-        /// <summary>
-        ///     Creates the report.
-        /// </summary>
-        /// <param name="debugger">The debugger.</param>
-        /// <returns>IReport.</returns>
-        /// <inheritdoc />
-        public IReport CreateReport(DebuggerProxy debugger)
-        {
-            var output = debugger.Execute("!eestack");
-            return ProcessOutput(output);
-        }
-
+        
         /// <summary>
         ///     Generate the report artifact
         /// </summary>

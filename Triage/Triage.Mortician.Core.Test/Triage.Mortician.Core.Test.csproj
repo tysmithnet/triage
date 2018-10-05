@@ -149,6 +149,7 @@
     <Compile Include="DumpHandle_Should.cs" />
     <Compile Include="DumpHeapSegment_Should.cs" />
     <Compile Include="DumpMemoryRegion_Should.cs" />
+    <Compile Include="DumpModuleInfo_Should.cs" />
     <Compile Include="DumpModuleKey_Should.cs" />
     <Compile Include="DumpModule_Should.cs" />
     <Compile Include="DumpObjectRoot_Should.cs" />

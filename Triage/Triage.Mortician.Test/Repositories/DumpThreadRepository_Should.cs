@@ -6,7 +6,7 @@ using Triage.Mortician.Repositories;
 using Triage.Testing.Common;
 using Xunit;
 
-namespace Triage.Mortician.Test
+namespace Triage.Mortician.Test.Repositories
 {
     public class DumpThreadRepository_Should : BaseTest
     {
@@ -26,14 +26,14 @@ namespace Triage.Mortician.Test
                 }
             };
             var sut = new DumpThreadRepository(threads);
+            Action throws = () => sut.Get(0x123123);
 
             // act
-            var first = sut.Get(0x42);
-            var second = sut.Get(0x1337);
-
             // assert
-            first.Should().Be(threads[0x42]);
-            second.Should().Be(threads[0x1337]);
+            sut.Get(0x42).Should().Be(threads[0x42]);
+            sut.Get(0x1337).Should().Be(threads[0x1337]);
+            sut.Threads.Should().HaveCount(2);
+            throws.Should().Throw<KeyNotFoundException>();
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace Triage.Mortician.Test
 
             // act
             // assert
-            throws.Should().Throw<IndexOutOfRangeException>();
+            throws.Should().Throw<KeyNotFoundException>();
         }
     }
 }

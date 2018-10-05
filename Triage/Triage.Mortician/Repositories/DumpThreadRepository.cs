@@ -59,14 +59,14 @@ namespace Triage.Mortician.Repositories
         {
             if (DumpThreads.ContainsKey(osId))
                 return DumpThreads[osId];
-            Log.Debug($"OsId: {osId} was requested, but not found");
-            throw new IndexOutOfRangeException($"There is no thread with os id = {osId} registered");
+            Log.Debug("OsId: {OsId} was requested, but not found", osId);
+            throw new KeyNotFoundException($"There is no thread with os id = {osId} registered");
         }
 
         /// <summary>
         ///     Gets all the threads extracted from the memory dump
         /// </summary>
         /// <returns>All the threads extracted from the memory dump</returns>
-        public IEnumerable<DumpThread> Get() => DumpThreads.Values;
+        public IEnumerable<DumpThread> Threads => DumpThreads.Values;
     }
 }

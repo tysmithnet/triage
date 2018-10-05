@@ -51,7 +51,7 @@ namespace Triage.Mortician
         public T GetOrAdd<T>(object instance, Func<T> factoryMethod, Action setupFunction = null)
         {
             if (instance == null)
-                return default(T);
+                throw new ArgumentNullException(nameof(instance), "Key cannot be null");
 
             lock (WeakMap)
             {

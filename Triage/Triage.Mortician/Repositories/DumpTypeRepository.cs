@@ -33,18 +33,28 @@ namespace Triage.Mortician.Repositories
         /// <exception cref="ArgumentNullException">dumpTypes</exception>
         protected internal DumpTypeRepository(Dictionary<DumpTypeKey, DumpType> dumpTypes)
         {
-            Types = dumpTypes ?? throw new ArgumentNullException(nameof(dumpTypes));
+            TypesInternal = dumpTypes ?? throw new ArgumentNullException(nameof(dumpTypes));
         }
 
         /// <summary>
         ///     The types extracted from the memory dump
         /// </summary>
-        protected internal Dictionary<DumpTypeKey, DumpType> Types;
+        internal Dictionary<DumpTypeKey, DumpType> TypesInternal;
 
         /// <summary>
         ///     Gets this instance.
         /// </summary>
         /// <returns>IEnumerable&lt;DumpType&gt;.</returns>
-        public IEnumerable<DumpType> Get() => Types.Values;
+        public IEnumerable<DumpType> Types => TypesInternal.Values;
+
+        /// <inheritdoc />
+        public DumpType Get(DumpTypeKey type)
+        {
+            if (TypesInternal.TryGetValue(type, out var res))
+            {
+                return res;
+            }
+            throw new KeyNotFoundException($"Unable to find key {type}");
+        }
     }
 }

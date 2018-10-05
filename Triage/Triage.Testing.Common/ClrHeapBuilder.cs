@@ -20,7 +20,7 @@ namespace Triage.Testing.Common
     /// <summary>
     ///     Class ClrHeapBuilder.
     /// </summary>
-    public class ClrHeapBuilder
+    public class ClrHeapBuilder : Builder<IClrHeap>
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ClrHeapBuilder" /> class.
@@ -29,13 +29,7 @@ namespace Triage.Testing.Common
         {
             Mock.SetupAllProperties();
         }
-
-        /// <summary>
-        ///     Builds this instance.
-        /// </summary>
-        /// <returns>IClrHeap.</returns>
-        public IClrHeap Build() => Mock.Object;
-
+        
         /// <summary>
         ///     Withes the get generation.
         /// </summary>
@@ -47,10 +41,16 @@ namespace Triage.Testing.Common
             return this;
         }
 
-        /// <summary>
-        ///     Gets the mock.
-        /// </summary>
-        /// <value>The mock.</value>
-        public Mock<IClrHeap> Mock { get; } = new Mock<IClrHeap>();
+        public ClrHeapBuilder WithTotalSize(ulong size)
+        {
+            Mock.Setup(heap => heap.TotalHeapSize).Returns(size);
+            return this;
+        }
+
+        public ClrHeapBuilder WithGetObjectType(IClrType objType)
+        {
+            Mock.Setup(heap => heap.GetObjectType(It.IsAny<ulong>())).Returns(objType);
+            return this;
+        }
     }
 }

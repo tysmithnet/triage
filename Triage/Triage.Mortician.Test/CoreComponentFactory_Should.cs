@@ -16,11 +16,11 @@ namespace Triage.Mortician.Test
             // arrange
             var container = new CompositionContainer();
             container.ComposeExportedValue<IConverter>(new Converter());
-            Action throws = () => new CoreComponentFactory(container, new FileInfo(@"C:\this\doesnt\exist.dmp"));
+            Action mightThrow = () => new CoreComponentFactory(container, new FileInfo(@"C:\this\doesnt\exist.dmp"));
 
             // act
             // assert
-            throws.Should().Throw<ApplicationException>();
+            mightThrow.Should().Throw<ApplicationException>();
         }
     }
 }

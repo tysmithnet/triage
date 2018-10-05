@@ -14,6 +14,7 @@
 
 using System;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Diagnostics.Runtime.Utilities;
 using Triage.Mortician.Adapters;
 using Triage.Mortician.Core.ClrMdAbstractions;
