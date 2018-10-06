@@ -52,6 +52,9 @@ namespace Mortician.IntegrationTest
             public IDumpTypeRepository TypeRepo { get; set; }
         }
 
+        // todo: more reports
+        // todo: app setting for native dll? try to load in advance to avoid dll hell problems?
+
         [Fact]
         public void Perform_Basic_Startup_Without_Failure()
         {
