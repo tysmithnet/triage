@@ -262,6 +262,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="README.md" />
+    <None Include="Reports\README.md" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="mex64.dll">
