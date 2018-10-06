@@ -1,0 +1,3 @@
+[submodule "src/clrmd"]
+	path = src/clrmd
+	url = https://github.com/tysmithnet/clrmd.git
