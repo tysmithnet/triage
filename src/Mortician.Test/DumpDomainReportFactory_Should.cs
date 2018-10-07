@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FluentAssertions;
 using Moq;
 using Mortician.Reports.DumpDomain;
@@ -79,7 +80,7 @@ SecurityDescriptor: 0000014c430c1850
             // arrange
             var sut = new DumpDomainReportFactory();
             var proxy = new Mock<IDebuggerProxy>();
-            proxy.Setup(debuggerProxy => debuggerProxy.Execute("!dumpdomain")).Returns(HAPPY_PATH);
+            proxy.Setup(debuggerProxy => debuggerProxy.Execute("!dumpdomain", It.IsAny<TimeSpan?>())).Returns(HAPPY_PATH);
 
             // act
             sut.Setup(proxy.Object);
@@ -94,7 +95,7 @@ SecurityDescriptor: 0000014c430c1850
             // arrange
             var sut = new DumpDomainReportFactory();
             var proxy = new Mock<IDebuggerProxy>();
-            proxy.Setup(debuggerProxy => debuggerProxy.Execute("!dumpdomain")).Returns(HAPPY_PATH);
+            proxy.Setup(debuggerProxy => debuggerProxy.Execute("!dumpdomain", It.IsAny<TimeSpan?>())).Returns(HAPPY_PATH);
 
             // act
             sut.Setup(proxy.Object);

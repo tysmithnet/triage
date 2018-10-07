@@ -54,7 +54,7 @@ namespace Mortician.Test
             // arrange
             var sut = new RunawayReportFactory();
             var mock = new Mock<IDebuggerProxy>();
-            mock.Setup(proxy => proxy.Execute("!runaway 3")).Returns(HAPPY_PATH);
+            mock.Setup(proxy => proxy.Execute("!runaway 3", It.IsAny<TimeSpan?>())).Returns(HAPPY_PATH);
 
             // act
             sut.Setup(mock.Object);

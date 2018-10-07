@@ -879,7 +879,7 @@ namespace Mortician
         ///     Gets or sets the finalizable object addresses.
         /// </summary>
         /// <value>The finalizable object addresses.</value>
-        public ISet<ulong> FinalizableObjectAddresses { get; set; } // todo: cleanup
+        public ISet<ulong> FinalizableObjectAddresses { get; set; }
 
         /// <summary>
         ///     Gets or sets the gc threads.
