@@ -33,12 +33,12 @@ namespace Mortician.Analyzers
         /// <summary>
         ///     The stack frame results
         /// </summary>
-        protected internal List<StackFrameRollupRecord> StackFrameResultsInternal = new List<StackFrameRollupRecord>();
+        internal List<StackFrameRollupRecord> StackFrameResultsInternal = new List<StackFrameRollupRecord>();
 
         /// <summary>
         ///     The unique stack frame results
         /// </summary>
-        protected internal List<UniqueStackFrameRollupRecord> UniqueStackFrameResultsInternal =
+        internal List<UniqueStackFrameRollupRecord> UniqueStackFrameResultsInternal =
             new List<UniqueStackFrameRollupRecord>();
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Mortician.Analyzers
         /// <inheritdoc />
         public Task Setup(CancellationToken cancellationToken)
         {
-            var task1 = Task.Run(() =>
+            var uniqueStacksTask = Task.Run(() =>
             {
                 var result = DumpThreadRepository.Threads
                     .Where(t => t.ManagedStackFrames != null)
@@ -88,9 +88,10 @@ namespace Mortician.Analyzers
                 UniqueStackFrameResultsInternal.AddRange(result);
             }, cancellationToken);
 
-            var task2 = Task.Run(() =>
+            var stackFrameRollupTask = Task.Run(() =>
             {
-                var results = DumpThreadRepository.Threads.Where(t => t.ManagedStackFrames != null)
+                var results = DumpThreadRepository.Threads
+                    .Where(t => t.ManagedStackFrames != null)
                     .SelectMany(t => t.ManagedStackFrames)
                     .GroupBy(f => f.DisplayString)
                     .Select(g => new StackFrameRollupRecord
@@ -103,7 +104,7 @@ namespace Mortician.Analyzers
                 StackFrameResultsInternal.AddRange(results);
             }, cancellationToken);
 
-            return Task.WhenAll(task1, task2);
+            return Task.WhenAll(uniqueStacksTask, stackFrameRollupTask);
         }
 
         /// <summary>
@@ -111,13 +112,13 @@ namespace Mortician.Analyzers
         /// </summary>
         /// <value>The dump thread repository.</value>
         [Import]
-        protected internal IDumpThreadRepository DumpThreadRepository { get; set; }
+        internal IDumpThreadRepository DumpThreadRepository { get; set; }
 
         /// <summary>
         ///     Gets or sets the event hub.
         /// </summary>
         /// <value>The event hub.</value>
         [Import]
-        protected internal IEventHub EventHub { get; set; }
+        internal IEventHub EventHub { get; set; }
     }
 }

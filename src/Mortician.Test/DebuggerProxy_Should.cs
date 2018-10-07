@@ -110,14 +110,7 @@ namespace Mortician.Test
             // act
             var tasks = Enumerable.Range(0, 3).Select(i => Task.Run(() =>
             {
-                try
-                {
-                    proxy.Execute("whatever", TimeSpan.FromMilliseconds(10));
-                }
-                catch (TimeoutException)
-                {
-                    isSuccess = true;
-                }
+                proxy.Execute("whatever", TimeSpan.FromMilliseconds(10));
             }));
 
             try

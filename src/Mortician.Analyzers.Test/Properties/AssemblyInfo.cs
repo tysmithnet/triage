@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Mortician.Core")]
+[assembly: AssemblyTitle("Mortician.Analyzers.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Mortician.Core")]
+[assembly: AssemblyProduct("Mortician.Analyzers.Test")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("2f433d34-bac1-4a64-aec9-46eb112946ea")]
+[assembly: Guid("e0ef2732-a144-4686-8477-2cc74ec8a8eb")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,11 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.0.1.0")]
-[assembly: AssemblyFileVersion("0.0.1.0")]
-
-[assembly: InternalsVisibleTo("Mortician")]
-[assembly: InternalsVisibleTo("Mortician.Test")]
-[assembly: InternalsVisibleTo("Mortician.IntegrationTest")]
-[assembly: InternalsVisibleTo("Mortician.Core.Test")]
-[assembly: InternalsVisibleTo("Mortician.Analyzers.Test")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
