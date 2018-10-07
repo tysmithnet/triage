@@ -4,7 +4,7 @@
 // Created          : 12-17-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-24-2018
+// Last Modified On : 10-06-2018
 // ***********************************************************************
 // <copyright file="DefaultOptions.cs" company="">
 //     Copyright ©  2017
@@ -13,7 +13,6 @@
 // ***********************************************************************
 
 using System;
-using System.Collections.Generic;
 using CommandLine;
 
 namespace Mortician
@@ -60,6 +59,10 @@ namespace Mortician
         [Option('s', "settings", HelpText = "Settings for Mortician and its plugins")]
         public string SettingsFile { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the additional types.
+        /// </summary>
+        /// <value>The additional types.</value>
         internal Type[] AdditionalTypes { get; set; } = new Type[0];
     }
 }
