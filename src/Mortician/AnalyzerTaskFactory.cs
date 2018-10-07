@@ -4,7 +4,7 @@
 // Created          : 09-18-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 09-24-2018
+// Last Modified On : 10-06-2018
 // ***********************************************************************
 // <copyright file="AnalyzerTaskFactory.cs" company="">
 //     Copyright ©  2017
@@ -18,8 +18,8 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Serilog;
 using Mortician.Core;
+using Serilog;
 using Slog = Serilog.Log;
 
 namespace Mortician
@@ -32,9 +32,6 @@ namespace Mortician
     [Export(typeof(IAnalyzerTaskFactory))]
     public class AnalyzerTaskFactory : IAnalyzerTaskFactory
     {
-#if DEBUG
-        internal Action StartTestingAction { get; set; }
-#endif
         /// <summary>
         ///     Starts the analyzers.
         /// </summary>
@@ -58,7 +55,7 @@ namespace Mortician
                 }
                 catch (Exception e)
                 {
-                    Log.Error(e, "Anayler Setup Exception: {FullName} thew {FullName1} - {Message}",
+                    Log.Error(e, "Analyzer Setup Exception: {AnalyzerType} threw {ExceptionType} - {Message}",
                         analyzer.GetType().FullName, e.GetType().FullName, e.Message);
                 }
 
@@ -73,13 +70,24 @@ namespace Mortician
                 }
                 catch (Exception e)
                 {
-                    Log.Error(e, "Analyzer Process Exception: {FullName} threw {FullName1} - {Message}",
-                        analyzer.GetType().FullName, e.GetType().FullName, e.Message);
+                    Log.Error(e, "Analyzer Process Exception: {AnalyzerType} threw {ExceptionType} - {Message}",
+                        analyzer.GetType().AssemblyQualifiedName, e.GetType().AssemblyQualifiedName, e.Message);
                 }
             }, cancellationToken));
             return Task.WhenAll(tasks);
         }
 
+        /// <summary>
+        ///     Gets the log.
+        /// </summary>
+        /// <value>The log.</value>
         internal ILogger Log { get; } = Slog.ForContext<AnalyzerTaskFactory>();
+#if DEBUG
+        /// <summary>
+        ///     Gets or sets the start testing action.
+        /// </summary>
+        /// <value>The start testing action.</value>
+        internal Action StartTestingAction { get; set; }
+#endif
     }
 }
