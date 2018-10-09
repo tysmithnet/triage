@@ -4,7 +4,7 @@
 // Created          : 12-10-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 10-08-2018
+// Last Modified On : 10-09-2018
 // ***********************************************************************
 // <copyright file="Program.cs" company="">
 //     Copyright ©  2017
@@ -22,7 +22,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using Commander.NET;
+using CommandLine;
 using Mortician.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -38,18 +38,68 @@ namespace Mortician
     internal class Program
     {
         /// <summary>
+        ///     Creates the composition container.
+        /// </summary>
+        /// <param name="aggregateCatalog">The aggregate catalog.</param>
+        /// <param name="inflatedSettings">The inflated settings.</param>
+        /// <returns>CompositionContainer.</returns>
+        internal CompositionContainer CreateCompositionContainer(AggregateCatalog aggregateCatalog,
+            List<ISettings> inflatedSettings)
+        {
+            var typesToLoad = Assembly.GetExecutingAssembly().DefinedTypes;
+            aggregateCatalog.Catalogs.Add(new TypeCatalog(typesToLoad));
+            var batch = new CompositionBatch();
+            foreach (var setting in inflatedSettings) batch.AddPart(setting);
+
+            var compositionContainer = new CompositionContainer(aggregateCatalog);
+            compositionContainer.Compose(batch);
+            return compositionContainer;
+        }
+
+        /// <summary>
         ///     The log
         /// </summary>
         /// <param name="options">The options.</param>
         /// <param name="dependencyInjectionTransformer">The dependency injection transformer.</param>
         /// <returns>Program status code</returns>
-        internal int DefaultExecution(Options options,
+        internal int DefaultExecution(RunOptions options,
             Func<CompositionContainer, CompositionContainer> dependencyInjectionTransformer = null)
         {
             var compositionContainer = SetupCompositionContainer(options, dependencyInjectionTransformer);
             var engine = compositionContainer.GetExportedValue<IEngine>();
             engine.Process().Wait();
             return 0;
+        }
+
+        /// <summary>
+        ///     Gets the assembly files to load.
+        /// </summary>
+        /// <param name="morticianAssemblyFiles">The mortician assembly files.</param>
+        /// <returns>IEnumerable&lt;FileInfo&gt;.</returns>
+        internal IEnumerable<FileInfo> GetAssemblyFilesToLoad(IEnumerable<string> morticianAssemblyFiles)
+        {
+            var toLoad =
+                morticianAssemblyFiles
+                    .Except(AppDomain.CurrentDomain.GetAssemblies()
+                        .Where(a => !a.IsDynamic)
+                        .Select(x => x.Location))
+                    .Select(x => new FileInfo(x));
+            return toLoad;
+        }
+
+        /// <summary>
+        ///     Gets the mortician assemblies.
+        /// </summary>
+        /// <param name="executionLocation">The execution location.</param>
+        /// <returns>IEnumerable&lt;System.String&gt;.</returns>
+        internal IEnumerable<string> GetMorticianAssemblies(string executionLocation)
+        {
+            var morticianAssemblyFiles =
+                Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation),
+                        "Mortician.*.*")
+                    .Where(f => Regex.IsMatch(f, "(dll|exe)$",
+                        RegexOptions.IgnoreCase));
+            return morticianAssemblyFiles;
         }
 
         /// <summary>
@@ -124,110 +174,6 @@ namespace Mortician
         }
 
         /// <summary>
-        ///     Defines the entry point of the application.
-        /// </summary>
-        /// <param name="args">The arguments.</param>
-        internal static void Main(string[] args)
-        {
-            // print help
-            var parser = new CommanderParser<Options>();
-            if (!args?.Any() ?? false)
-            {
-                Console.WriteLine(parser.Usage());
-                return;
-            }
-
-            var program = new Program();
-
-            // todo: better way to configure logging
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .Enrich.WithThreadId()
-                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
-                {
-                    AutoRegisterTemplate = true,
-                    AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6,
-                    QueueSizeLimit = 1
-                }).CreateLogger();
-
-            Log.Information("Starting mortician at {UtcNow} UTC", DateTime.UtcNow);
-
-            program.WarnIfNoDebuggingKitOnPath(); // todo: do better
-            var options = parser.Parse(args); // todo: handle error with args
-            program.DefaultExecution(options);
-        }
-
-        /// <summary>
-        ///     CLRMd relies on certain debugging specific assemblies to inspect memory dumps. You get these assemblies
-        ///     with the Windows Debugging Kit. Install it from https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/
-        ///     Then you must add to your path where these assemblies are:
-        ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64
-        ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\winext
-        /// </summary>
-        // todo: what about x86
-        internal void WarnIfNoDebuggingKitOnPath()
-        {
-            var path = Environment.GetEnvironmentVariable("PATH") ?? "";
-            if (!Regex.IsMatch(path, @"[Dd]ebuggers[/\\]x64"))
-                Log.Warning(
-                    "Did not find Debuggers\\x64 in PATH. Did you install the Windows Debugging Kit and set Debuggers\\x64 as part of PATH?");
-
-            if (!Regex.IsMatch(path, @"[Dd]ebuggers[/\\]x64[/\\]winext"))
-                Log.Warning(
-                    "Did not find Debuggers\\x64\\winext in PATH. Did you install the Windows Debugging Kit and set Debuggers\\x64\\winext as part of PATH?");
-        }
-
-        /// <summary>
-        ///     Creates the composition container.
-        /// </summary>
-        /// <param name="aggregateCatalog">The aggregate catalog.</param>
-        /// <param name="inflatedSettings">The inflated settings.</param>
-        /// <returns>CompositionContainer.</returns>
-        internal CompositionContainer CreateCompositionContainer(AggregateCatalog aggregateCatalog,
-            List<ISettings> inflatedSettings)
-        {
-            var typesToLoad = Assembly.GetExecutingAssembly().DefinedTypes;
-            aggregateCatalog.Catalogs.Add(new TypeCatalog(typesToLoad));
-            var batch = new CompositionBatch();
-            foreach (var setting in inflatedSettings) batch.AddPart(setting);
-
-            var compositionContainer = new CompositionContainer(aggregateCatalog);
-            compositionContainer.Compose(batch);
-            return compositionContainer;
-        }
-
-        /// <summary>
-        ///     Gets the assembly files to load.
-        /// </summary>
-        /// <param name="morticianAssemblyFiles">The mortician assembly files.</param>
-        /// <returns>IEnumerable&lt;FileInfo&gt;.</returns>
-        internal IEnumerable<FileInfo> GetAssemblyFilesToLoad(IEnumerable<string> morticianAssemblyFiles)
-        {
-            var toLoad =
-                morticianAssemblyFiles
-                    .Except(AppDomain.CurrentDomain.GetAssemblies()
-                        .Where(a => !a.IsDynamic)
-                        .Select(x => x.Location))
-                    .Select(x => new FileInfo(x));
-            return toLoad;
-        }
-
-        /// <summary>
-        ///     Gets the mortician assemblies.
-        /// </summary>
-        /// <param name="executionLocation">The execution location.</param>
-        /// <returns>IEnumerable&lt;System.String&gt;.</returns>
-        internal IEnumerable<string> GetMorticianAssemblies(string executionLocation)
-        {
-            var morticianAssemblyFiles =
-                Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation),
-                        "Mortician.*.*")
-                    .Where(f => Regex.IsMatch(f, "(dll|exe)$",
-                        RegexOptions.IgnoreCase));
-            return morticianAssemblyFiles;
-        }
-
-        /// <summary>
         ///     Loads the types.
         /// </summary>
         /// <param name="toLoad">To load.</param>
@@ -255,12 +201,48 @@ namespace Mortician
         }
 
         /// <summary>
+        ///     Defines the entry point of the application.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
+        internal static void Main(string[] args)
+        {
+            Parser.Default.ParseArguments<RunOptions>(args)
+                .MapResult(runOptions =>
+                {
+                    var program = new Program();
+
+                    // todo: better way to configure logging
+                    Log.Logger = new LoggerConfiguration()
+                        .MinimumLevel.Debug()
+                        .Enrich.WithThreadId()
+                        .WriteTo.Console()
+                        .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
+                        {
+                            AutoRegisterTemplate = true,
+                            AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6,
+                            QueueSizeLimit = 1
+                        }).CreateLogger();
+
+                    Log.Information("Starting mortician at {UtcNow} UTC", DateTime.UtcNow);
+
+                    program.WarnIfNoDebuggingKitOnPath(); // todo: do better
+                    return program.DefaultExecution(runOptions);
+                }, errors =>
+                {
+                    foreach (var error in errors)
+                        Log.Fatal("{CommandLineParsingError}", Enum.GetName(typeof(ErrorType), error.Tag));
+
+                    return -1;
+                });
+        }
+
+        /// <summary>
         ///     Setups the composition container.
         /// </summary>
         /// <param name="options">The options.</param>
         /// <param name="dependencyInjectionTransformer">The dependency injection transformer.</param>
         /// <returns>CompositionContainer.</returns>
-        internal CompositionContainer SetupCompositionContainer(Options options,
+        internal CompositionContainer SetupCompositionContainer(RunOptions options,
             Func<CompositionContainer, CompositionContainer> dependencyInjectionTransformer)
         {
             var config = InflateConfig(options);
@@ -274,11 +256,31 @@ namespace Mortician
             var inflatedSettings = InflateSettings(options).ToList();
             var compositionContainer = CreateCompositionContainer(aggregateCatalog, inflatedSettings);
             var componentFactory =
-                new CoreComponentFactory(compositionContainer, new FileInfo(options.RunOptions.DumpLocation));
+                new CoreComponentFactory(compositionContainer, new FileInfo(options.DumpLocation));
             componentFactory.Setup();
             componentFactory.RegisterRepositories(options);
             compositionContainer = dependencyInjectionTransformer?.Invoke(compositionContainer) ?? compositionContainer;
             return compositionContainer;
+        }
+
+        /// <summary>
+        ///     CLRMd relies on certain debugging specific assemblies to inspect memory dumps. You get these assemblies
+        ///     with the Windows Debugging Kit. Install it from https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/
+        ///     Then you must add to your path where these assemblies are:
+        ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64
+        ///     C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\winext
+        /// </summary>
+        // todo: what about x86
+        internal void WarnIfNoDebuggingKitOnPath()
+        {
+            var path = Environment.GetEnvironmentVariable("PATH") ?? "";
+            if (!Regex.IsMatch(path, @"[Dd]ebuggers[/\\]x64"))
+                Log.Warning(
+                    "Did not find Debuggers\\x64 in PATH. Did you install the Windows Debugging Kit and set Debuggers\\x64 as part of PATH?");
+
+            if (!Regex.IsMatch(path, @"[Dd]ebuggers[/\\]x64[/\\]winext"))
+                Log.Warning(
+                    "Did not find Debuggers\\x64\\winext in PATH. Did you install the Windows Debugging Kit and set Debuggers\\x64\\winext as part of PATH?");
         }
     }
 }

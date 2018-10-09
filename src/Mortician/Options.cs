@@ -13,27 +13,27 @@
 // ***********************************************************************
 
 using System;
-using Commander.NET.Attributes;
+using CommandLine;
 
 namespace Mortician
 {
     public class Options
     {
-        [Parameter("-c", "--config", Description = "Location of the config file", Required = Required.No)]
+        // todo: document difference between config and settings
+        [Option('c', "config", HelpText = "Config file to use")]
         public string ConfigFile { get; set; }
 
-        [Parameter("-s", "--settings", Description = "Location of the settings file", Required = Required.No)]
+        [Option('s', "settings", HelpText = "Path to the settings file")]
         public string SettingsFile { get; set; }
-
-        [Command("run", Description = "Process a memory dump")]
-        public RunOptions RunOptions { get; set; }
 
         internal Type[] AdditionalTypes { get; set; }
     }
 
-    public class RunOptions
+    [Verb("run")]
+    public class RunOptions : Options
     {
-        [Parameter("-f", "--file", Description = "File to process", Required = Required.Yes)]
+        [Option('f',"file", Required = true, HelpText = "Dump file to process")]
         public string DumpLocation { get; set; }
+
     }
 }
