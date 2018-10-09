@@ -4,7 +4,7 @@
 // Created          : 12-10-2017
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 10-01-2018
+// Last Modified On : 10-08-2018
 // ***********************************************************************
 // <copyright file="Program.cs" company="">
 //     Copyright ©  2017
@@ -22,11 +22,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using CommandLine;
+using Commander.NET;
+using Mortician.Core;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
-using Mortician.Core;
 
 namespace Mortician
 {
@@ -42,58 +43,44 @@ namespace Mortician
         /// <param name="options">The options.</param>
         /// <param name="dependencyInjectionTransformer">The dependency injection transformer.</param>
         /// <returns>Program status code</returns>
-        internal int DefaultExecution(DefaultOptions options,
+        internal int DefaultExecution(Options options,
             Func<CompositionContainer, CompositionContainer> dependencyInjectionTransformer = null)
         {
-            // todo: this feels like an awkward interface, it can probably be better
-            var blacklistedAssemblies = options.BlackListedAssemblies;
-            var blacklistedTypes = options.BlackListedTypes;
-            var executionLocation = typeof(Program).Assembly.Location;
-            var aggregateCatalog = new AggregateCatalog();
-            var morticianAssemblyFiles =
-                Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation),
-                        "Mortician.*.*")
-                    .Where(f => Regex.IsMatch(f, "(dll|exe)$",
-                        RegexOptions.IgnoreCase)); // todo: not ideal to require assembly name
-            var toLoad =
-                morticianAssemblyFiles
-                    .Except(AppDomain.CurrentDomain.GetAssemblies()
-                        .Where(a => !a.IsDynamic)
-                        .Select(x => x.Location))
-                    .Select(x => new FileInfo(x))
-                    .Where(x => !blacklistedAssemblies.Contains(x.Name));
-
-            aggregateCatalog.Catalogs.Add(new TypeCatalog(options.AdditionalTypes));
-            foreach (var assembly in toLoad)
-                try
-                {
-                    var addedAssembly = Assembly.LoadFile(assembly.FullName);
-                    var definedTypes = addedAssembly.DefinedTypes;
-                    var filteredTypes = definedTypes.Where(t =>
-                        !blacklistedTypes.Select(x => x.ToLower()).Contains(t?.FullName?.ToLower()));
-                    var typeCatalog = new TypeCatalog(filteredTypes);
-                    aggregateCatalog.Catalogs.Add(typeCatalog);
-                }
-                catch (Exception e)
-                {
-                    Log.Error("Unable to load {FullName}, it will not be available because {Message}",
-                        assembly.FullName, e.Message);
-                }
-
-            var typesToLoad = Assembly.GetExecutingAssembly().DefinedTypes;
-            aggregateCatalog.Catalogs.Add(new TypeCatalog(typesToLoad));
-            var batch = new CompositionBatch();
-            foreach (var setting in InflateSettings(options)) batch.AddPart(setting);
-
-            var compositionContainer = new CompositionContainer(aggregateCatalog);
-            compositionContainer.Compose(batch);
-            var componentFactory = new CoreComponentFactory(compositionContainer, new FileInfo(options.DumpFile));
-            componentFactory.Setup();
-            componentFactory.RegisterRepositories(options);
-            compositionContainer = dependencyInjectionTransformer?.Invoke(compositionContainer) ?? compositionContainer;
+            var compositionContainer = SetupCompositionContainer(options, dependencyInjectionTransformer);
             var engine = compositionContainer.GetExportedValue<IEngine>();
             engine.Process().Wait();
             return 0;
+        }
+
+        /// <summary>
+        ///     Inflates the configuration.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <returns>IConfig.</returns>
+        internal IConfig InflateConfig(Options options)
+        {
+            var json = File.ReadAllText(options.ConfigFile ?? "config.json");
+            var jobj = JObject.Parse(json);
+            var config = new Config();
+            foreach (var prop in jobj)
+                switch (prop.Key)
+                {
+                    case "black_listed_assemblies":
+                        config.BlackListedAssemblies = prop.Value.Values<string>().ToArray();
+                        break;
+                    case "black_listed_types":
+                        config.BlackListedTypes = prop.Value.Values<string>().ToArray();
+                        break;
+                    case "additional_assemblies":
+                        config.AdditionalAssemblies = prop.Value.Values<string>().ToArray();
+                        break;
+                    case "contract_mapping":
+                        foreach (var contract in (JObject) prop.Value)
+                            config.ContractMapping.Add(contract.Key, contract.Value.Values<string>().ToArray());
+                        break;
+                }
+
+            return config;
         }
 
         /// <summary>
@@ -101,7 +88,7 @@ namespace Mortician
         /// </summary>
         /// <param name="options">The options.</param>
         /// <returns>IEnumerable&lt;ISettings&gt;.</returns>
-        internal IEnumerable<ISettings> InflateSettings(DefaultOptions options)
+        internal IEnumerable<ISettings> InflateSettings(Options options)
         {
             var serializer = new SettingsJsonConverter();
 
@@ -142,6 +129,14 @@ namespace Mortician
         /// <param name="args">The arguments.</param>
         internal static void Main(string[] args)
         {
+            // print help
+            var parser = new CommanderParser<Options>();
+            if (!args?.Any() ?? false)
+            {
+                Console.WriteLine(parser.Usage());
+                return;
+            }
+
             var program = new Program();
 
             // todo: better way to configure logging
@@ -157,11 +152,9 @@ namespace Mortician
 
             Log.Information("Starting mortician at {UtcNow} UTC", DateTime.UtcNow);
 
-            program.WarnIfNoDebuggingKitOnPath();
-            Parser.Default.ParseArguments<DefaultOptions>(args).MapResult(
-                options => program.DefaultExecution(options),
-                errs => -1
-            );
+            program.WarnIfNoDebuggingKitOnPath(); // todo: do better
+            var options = parser.Parse(args); // todo: handle error with args
+            program.DefaultExecution(options);
         }
 
         /// <summary>
@@ -182,6 +175,110 @@ namespace Mortician
             if (!Regex.IsMatch(path, @"[Dd]ebuggers[/\\]x64[/\\]winext"))
                 Log.Warning(
                     "Did not find Debuggers\\x64\\winext in PATH. Did you install the Windows Debugging Kit and set Debuggers\\x64\\winext as part of PATH?");
+        }
+
+        /// <summary>
+        ///     Creates the composition container.
+        /// </summary>
+        /// <param name="aggregateCatalog">The aggregate catalog.</param>
+        /// <param name="inflatedSettings">The inflated settings.</param>
+        /// <returns>CompositionContainer.</returns>
+        internal CompositionContainer CreateCompositionContainer(AggregateCatalog aggregateCatalog,
+            List<ISettings> inflatedSettings)
+        {
+            var typesToLoad = Assembly.GetExecutingAssembly().DefinedTypes;
+            aggregateCatalog.Catalogs.Add(new TypeCatalog(typesToLoad));
+            var batch = new CompositionBatch();
+            foreach (var setting in inflatedSettings) batch.AddPart(setting);
+
+            var compositionContainer = new CompositionContainer(aggregateCatalog);
+            compositionContainer.Compose(batch);
+            return compositionContainer;
+        }
+
+        /// <summary>
+        ///     Gets the assembly files to load.
+        /// </summary>
+        /// <param name="morticianAssemblyFiles">The mortician assembly files.</param>
+        /// <returns>IEnumerable&lt;FileInfo&gt;.</returns>
+        internal IEnumerable<FileInfo> GetAssemblyFilesToLoad(IEnumerable<string> morticianAssemblyFiles)
+        {
+            var toLoad =
+                morticianAssemblyFiles
+                    .Except(AppDomain.CurrentDomain.GetAssemblies()
+                        .Where(a => !a.IsDynamic)
+                        .Select(x => x.Location))
+                    .Select(x => new FileInfo(x));
+            return toLoad;
+        }
+
+        /// <summary>
+        ///     Gets the mortician assemblies.
+        /// </summary>
+        /// <param name="executionLocation">The execution location.</param>
+        /// <returns>IEnumerable&lt;System.String&gt;.</returns>
+        internal IEnumerable<string> GetMorticianAssemblies(string executionLocation)
+        {
+            var morticianAssemblyFiles =
+                Directory.EnumerateFiles(Path.GetDirectoryName(executionLocation),
+                        "Mortician.*.*")
+                    .Where(f => Regex.IsMatch(f, "(dll|exe)$",
+                        RegexOptions.IgnoreCase));
+            return morticianAssemblyFiles;
+        }
+
+        /// <summary>
+        ///     Loads the types.
+        /// </summary>
+        /// <param name="toLoad">To load.</param>
+        /// <param name="config">The configuration.</param>
+        /// <param name="aggregateCatalog">The aggregate catalog.</param>
+        internal void LoadTypes(IEnumerable<FileInfo> toLoad, IConfig config, AggregateCatalog aggregateCatalog)
+        {
+            foreach (var assembly in toLoad)
+                try
+                {
+                    var addedAssembly = Assembly.LoadFile(assembly.FullName);
+                    var definedTypes = addedAssembly.DefinedTypes;
+                    var filteredTypes = definedTypes.Where(t =>
+                        !config.BlackListedTypes.Select(x => x.ToLower()).Contains(t?.FullName?.ToLower())).Where(t =>
+                        config.BlackListedAssemblies.Select(x => x.ToLower())
+                            .Contains(t?.Assembly?.FullName?.ToLower()));
+                    var typeCatalog = new TypeCatalog(filteredTypes);
+                    aggregateCatalog.Catalogs.Add(typeCatalog);
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Unable to load {FullName}, it will not be available because {Message}",
+                        assembly.FullName, e.Message);
+                }
+        }
+
+        /// <summary>
+        ///     Setups the composition container.
+        /// </summary>
+        /// <param name="options">The options.</param>
+        /// <param name="dependencyInjectionTransformer">The dependency injection transformer.</param>
+        /// <returns>CompositionContainer.</returns>
+        internal CompositionContainer SetupCompositionContainer(Options options,
+            Func<CompositionContainer, CompositionContainer> dependencyInjectionTransformer)
+        {
+            var config = InflateConfig(options);
+            var executionLocation = typeof(Program).Assembly.Location;
+            var morticianAssemblyFiles = GetMorticianAssemblies(executionLocation);
+            var toLoad = GetAssemblyFilesToLoad(morticianAssemblyFiles);
+            var aggregateCatalog = new AggregateCatalog();
+            if (options.AdditionalTypes?.Any() ?? false)
+                aggregateCatalog.Catalogs.Add(new TypeCatalog(options.AdditionalTypes));
+            LoadTypes(toLoad, config, aggregateCatalog);
+            var inflatedSettings = InflateSettings(options).ToList();
+            var compositionContainer = CreateCompositionContainer(aggregateCatalog, inflatedSettings);
+            var componentFactory =
+                new CoreComponentFactory(compositionContainer, new FileInfo(options.RunOptions.DumpLocation));
+            componentFactory.Setup();
+            componentFactory.RegisterRepositories(options);
+            compositionContainer = dependencyInjectionTransformer?.Invoke(compositionContainer) ?? compositionContainer;
+            return compositionContainer;
         }
     }
 }

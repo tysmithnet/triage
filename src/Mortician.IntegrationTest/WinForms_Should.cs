@@ -209,14 +209,17 @@ namespace Mortician.IntegrationTest
             // arrange
             var program = new Program();
             var dumpFile = Scenario.WinForms.GetDumpFile();
-            var options = new DefaultOptions
+            var options = new Options
             {
                 AdditionalTypes = new[]
                 {
                     typeof(ButtonExtractor),
                     typeof(TestAnalyzer)
                 },
-                DumpFile = dumpFile.FullName,
+                RunOptions = new RunOptions()
+                {
+                    DumpLocation = dumpFile.FullName
+                },
                 SettingsFile = "Settings/Mortician_Should.json"
             };
 

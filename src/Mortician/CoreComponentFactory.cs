@@ -159,7 +159,7 @@ namespace Mortician
         ///     Registers the repositories.
         /// </summary>
         /// <param name="options">The options.</param>
-        public void RegisterRepositories(DefaultOptions options)
+        public void RegisterRepositories(Options options)
         {
             var objRepo = new DumpObjectRepository(Objects, Roots, BlockingObjects, FinalizerQueueObjects);
             var typeRepo = new DumpTypeRepository(Types);

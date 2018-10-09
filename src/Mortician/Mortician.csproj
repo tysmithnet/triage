@@ -88,8 +88,8 @@
     <Reference Include="AWSSDK.S3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\packages\AWSSDK.S3.3.3.24.3\lib\net45\AWSSDK.S3.dll</HintPath>
     </Reference>
-    <Reference Include="CommandLine, Version=2.3.0.0, Culture=neutral, PublicKeyToken=de6f01bd326f8c32, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommandLineParser.2.3.0\lib\net45\CommandLine.dll</HintPath>
+    <Reference Include="Commander.NET, Version=1.1.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Commander.NET.1.1.11\lib\net47\Commander.NET.dll</HintPath>
     </Reference>
     <Reference Include="Elasticsearch.Net, Version=6.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
       <HintPath>..\packages\Elasticsearch.Net.6.3.1\lib\net461\Elasticsearch.Net.dll</HintPath>
@@ -222,7 +222,8 @@
     <Compile Include="Adapters\DataTargetAdapter.cs" />
     <Compile Include="CoreComponentFactory.cs" />
     <Compile Include="DefaultConverterCache.cs" />
-    <Compile Include="DefaultOptions.cs" />
+    <Compile Include="IConfig.cs" />
+    <Compile Include="Options.cs" />
     <Compile Include="DebuggerProxy.cs" />
     <Compile Include="DefaultObjectExtractor.cs" />
     <Compile Include="IDebuggerProxy.cs" />
@@ -278,6 +279,12 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="config.schema.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -312,4 +319,9 @@
     <Analyzer Include="..\packages\AWSSDK.S3.3.3.24.3\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties config_1schema_1json__JSONSchema="http://json-schema.org/draft-04/schema" config_1json__JSONSchema="" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

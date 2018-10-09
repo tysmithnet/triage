@@ -61,9 +61,12 @@ namespace Mortician.IntegrationTest
             // arrange
             var program = new Program();
             var dumpFile = Scenario.HelloWorld.GetDumpFile();
-            var options = new DefaultOptions
+            var options = new Options
             {
-                DumpFile = dumpFile.FullName,
+                RunOptions = new RunOptions()
+                {
+                    DumpLocation = dumpFile.FullName,
+                },
                 SettingsFile = "Settings/Mortician_Should.json"
             };
             var analyzer = new TestAnalyzer();
