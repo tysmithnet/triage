@@ -13,6 +13,7 @@
 // ***********************************************************************
 
 using System;
+using System.Collections.Generic;
 using CommandLine;
 
 namespace Mortician
@@ -34,6 +35,5 @@ namespace Mortician
     {
         [Option('f',"file", Required = true, HelpText = "Dump file to process")]
         public string DumpLocation { get; set; }
-
     }
 }

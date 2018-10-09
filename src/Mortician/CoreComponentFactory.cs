@@ -4,7 +4,7 @@
 // Created          : 09-27-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 10-01-2018
+// Last Modified On : 10-07-2018
 // ***********************************************************************
 // <copyright file="CoreComponentFactory.cs" company="">
 //     Copyright ©  2017
@@ -19,11 +19,11 @@ using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
 using Mortician.Core;
 using Mortician.Core.ClrMdAbstractions;
 using Mortician.Reports;
 using Mortician.Repositories;
+using Serilog;
 using Slog = Serilog.Log;
 
 namespace Mortician
@@ -43,25 +43,25 @@ namespace Mortician
         /// </summary>
         /// <param name="compositionContainer">The composition container.</param>
         /// <param name="dumpFile">The dump file.</param>
-        /// <exception cref="ArgumentNullException">
-        ///     compositionContainer
-        ///     or
-        ///     dumpFile
-        /// </exception>
-        /// <exception cref="ApplicationException">Memory dump was not found. Is the path correct? Is it read only?</exception>
         /// <exception cref="System.ArgumentNullException">
         ///     compositionContainer
         ///     or
         ///     dumpFile
         /// </exception>
         /// <exception cref="System.ApplicationException">Memory dump was not found. Is the path correct? Is it read only?</exception>
+        /// <exception cref="ArgumentNullException">
+        ///     compositionContainer
+        ///     or
+        ///     dumpFile
+        /// </exception>
+        /// <exception cref="ApplicationException">Memory dump was not found. Is the path correct? Is it read only?</exception>
         /// <inheritdoc />
         public CoreComponentFactory(CompositionContainer compositionContainer, FileInfo dumpFile)
         {
             CompositionContainer =
                 compositionContainer ?? throw new ArgumentNullException(nameof(compositionContainer));
             DumpFile = dumpFile ?? throw new ArgumentNullException(nameof(dumpFile));
-
+            Settings = CompositionContainer.GetExportedValue<CoreComponentSettings>();
             try
             {
                 var dt = Microsoft.Diagnostics.Runtime.DataTarget.LoadCrashDump(dumpFile.FullName);
@@ -87,6 +87,8 @@ namespace Mortician
             DumpObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>()
                 .Concat(new[] {new DefaultObjectExtractor()});
         }
+
+        internal CoreComponentSettings Settings { get; set; }
 
         /// <summary>
         ///     Connects the handles.
@@ -562,14 +564,11 @@ namespace Mortician
                 CreateObject(cur);
                 if (!ObjectAddressesInFinalizerQueue.Contains(cur.Address) ||
                     FinalizerQueueObjects.ContainsKey(cur.Address)) continue;
-                if (Objects.TryGetValue(cur.Address, out var o))
-                {
-                    FinalizerQueueObjects.Add(cur.Address, o);
-                }
-            };
-        }
+                if (Objects.TryGetValue(cur.Address, out var o)) FinalizerQueueObjects.Add(cur.Address, o);
+            }
 
-        public Dictionary<ulong, DumpObject> FinalizerQueueObjects { get; set; }
+            ;
+        }
 
         /// <summary>
         ///     Creates the reports.
@@ -786,7 +785,8 @@ namespace Mortician
                         ElementType = field.ElementType
                     };
                     t.InstanceFields.Add(newField);
-                    if (field.Type != null && field.Type?.Name != ERROR_TYPE && !InstanceFieldToTypeMapping.ContainsKey(newField))
+                    if (field.Type != null && field.Type?.Name != ERROR_TYPE &&
+                        !InstanceFieldToTypeMapping.ContainsKey(newField))
                         InstanceFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
                 }
 
@@ -880,6 +880,12 @@ namespace Mortician
         /// </summary>
         /// <value>The finalizable object addresses.</value>
         public ISet<ulong> FinalizableObjectAddresses { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the finalizer queue objects.
+        /// </summary>
+        /// <value>The finalizer queue objects.</value>
+        public Dictionary<ulong, DumpObject> FinalizerQueueObjects { get; set; }
 
         /// <summary>
         ///     Gets or sets the gc threads.

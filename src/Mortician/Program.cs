@@ -138,7 +138,7 @@ namespace Mortician
         /// </summary>
         /// <param name="options">The options.</param>
         /// <returns>IEnumerable&lt;ISettings&gt;.</returns>
-        internal IEnumerable<ISettings> InflateSettings(Options options)
+        internal IEnumerable<ISettings> GetOrCreateSettings(Options options)
         {
             var serializer = new SettingsJsonConverter();
 
@@ -253,7 +253,7 @@ namespace Mortician
             if (options.AdditionalTypes?.Any() ?? false)
                 aggregateCatalog.Catalogs.Add(new TypeCatalog(options.AdditionalTypes));
             LoadTypes(toLoad, config, aggregateCatalog);
-            var inflatedSettings = InflateSettings(options).ToList();
+            var inflatedSettings = GetOrCreateSettings(options).ToList();
             var compositionContainer = CreateCompositionContainer(aggregateCatalog, inflatedSettings);
             var componentFactory =
                 new CoreComponentFactory(compositionContainer, new FileInfo(options.DumpLocation));
@@ -283,4 +283,5 @@ namespace Mortician
                     "Did not find Debuggers\\x64\\winext in PATH. Did you install the Windows Debugging Kit and set Debuggers\\x64\\winext as part of PATH?");
         }
     }
+
 }
