@@ -31,12 +31,12 @@ namespace Mortician.Core
         ///     there are numerous cases where the assembly has multiple modules. This is
         ///     the mutable internal version
         /// </summary>
-        protected internal List<DumpModule> LoadedModulesInternal = new List<DumpModule>();
+        internal Dictionary<DumpModuleKey, DumpModule> LoadedModulesInternal = new Dictionary<DumpModuleKey, DumpModule>();
 
         /// <summary>
         ///     The handles
         /// </summary>
-        internal ISet<DumpHandle> HandlesInternal = new SortedSet<DumpHandle>();
+        internal Dictionary<ulong, DumpHandle> HandlesInternal = new Dictionary<ulong, DumpHandle>();
 
         /// <summary>
         ///     Adds the handle.
@@ -44,7 +44,12 @@ namespace Mortician.Core
         /// <param name="handle">The handle.</param>
         public void AddHandle(DumpHandle handle)
         {
-            HandlesInternal.Add(handle);
+            lock (HandlesInternal)
+            {
+                if(HandlesInternal.ContainsKey(handle.Address))
+                    return;
+                HandlesInternal.Add(handle.Address, handle);
+            }
         }
 
         /// <summary>
@@ -53,7 +58,12 @@ namespace Mortician.Core
         /// <param name="module">The module.</param>
         public void AddModule(DumpModule module)
         {
-            LoadedModulesInternal.Add(module);
+            lock (LoadedModulesInternal)
+            {
+                if (LoadedModulesInternal.ContainsKey(module.Key))
+                    return;
+                LoadedModulesInternal.Add(module.Key, module);
+            }
         }
 
         /// <summary>
@@ -176,13 +186,15 @@ namespace Mortician.Core
         ///     Gets the handles.
         /// </summary>
         /// <value>The handles.</value>
-        public IEnumerable<DumpHandle> Handles => HandlesInternal;
+        // ReSharper disable once InconsistentlySynchronizedField
+        public IEnumerable<DumpHandle> Handles => HandlesInternal.Values;
 
         /// <summary>
         ///     Gets or sets the loaded modules.
         /// </summary>
         /// <value>The loaded modules.</value>
-        public IEnumerable<DumpModule> LoadedModules => LoadedModulesInternal;
+        // ReSharper disable once InconsistentlySynchronizedField
+        public IEnumerable<DumpModule> LoadedModules => LoadedModulesInternal.Values;
 
         /// <summary>
         ///     Gets or sets the name of this module e.g. System.Net

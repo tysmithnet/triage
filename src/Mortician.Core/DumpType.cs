@@ -53,7 +53,13 @@ namespace Mortician.Core
         /// <summary>
         ///     The objects of this type
         /// </summary>
-        protected internal Dictionary<ulong, DumpObject> ObjectsInternal = new Dictionary<ulong, DumpObject>();
+        internal Dictionary<ulong, DumpObject> ObjectsInternal = new Dictionary<ulong, DumpObject>();
+
+        internal void AddObject(DumpObject o)
+        {
+            lock (ObjectsInternal)
+                ObjectsInternal.Add(o.Address, o);
+        }
 
         /// <summary>
         ///     Compares to.
@@ -205,19 +211,17 @@ namespace Mortician.Core
         ///     Gets or sets the inheriting types.
         /// </summary>
         /// <value>The inheriting types.</value>
-        public List<DumpType> InheritingTypes { get; set; } = new List<DumpType>();
+        public IEnumerable<DumpType> InheritingTypes => InheritingTypesInternal.Values;
 
-        /// <summary>
-        ///     Gets or sets the instance fields.
-        /// </summary>
-        /// <value>The instance fields.</value>
-        public List<DumpTypeField> InstanceFields { get; set; }
+        internal Dictionary<DumpTypeKey, DumpType> InheritingTypesInternal { get; set; } = new Dictionary<DumpTypeKey, DumpType>();
 
         /// <summary>
         ///     Gets or sets the interfaces.
         /// </summary>
         /// <value>The interfaces.</value>
-        public List<string> Interfaces { get; set; }
+        public IEnumerable<string> Interfaces => InterfacesInternal;
+
+        internal ISet<string> InterfacesInternal { get; set; } = new HashSet<string>();
 
         /// <summary>
         ///     Gets or sets a value indicating whether this instance is abstract.
@@ -360,13 +364,36 @@ namespace Mortician.Core
         /// <summary>
         ///     Gets or sets the objects.
         /// </summary>
+        /// <remarks>It is ok that this is not in a lock because it is only accessed after setup has occurred</remarks>
         /// <value>The objects.</value>
-        public IEnumerable<DumpObject> Objects { get; protected internal set; }
+        // ReSharper disable once InconsistentlySynchronizedField
+        public IEnumerable<DumpObject> Objects => ObjectsInternal.Values;
 
-        /// <summary>
-        ///     Gets or sets the static fields.
-        /// </summary>
-        /// <value>The static fields.</value>
-        public List<DumpTypeField> StaticFields { get; set; } = new List<DumpTypeField>();
+        internal void AddInheritingType(DumpType type)
+        {
+            lock (InheritingTypesInternal)
+            {
+                if (InheritingTypesInternal.ContainsKey(type.Key))
+                    return;
+                InheritingTypesInternal.Add(type.Key, type);
+            }
+        }
+
+        internal ISet<DumpTypeField> InstanceFieldsInternal = new HashSet<DumpTypeField>();
+        internal ISet<DumpTypeField> StaticFieldsInternal = new HashSet<DumpTypeField>();
+        public IEnumerable<DumpTypeField> InstanceFields => InstanceFieldsInternal;
+
+        public IEnumerable<DumpTypeField> StaticFields => StaticFieldsInternal;
+        internal void AddInstanceField(DumpTypeField field)
+        {
+                InstanceFieldsInternal.Add(field);
+
+        }
+
+        internal void AddStaticField(DumpTypeField field)
+        {
+                StaticFieldsInternal.Add(field);
+ 
+        }
     }
 }

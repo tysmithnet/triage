@@ -12,7 +12,10 @@ namespace Mortician.Core.Test
         {
             // arrange
             var appDomain = new DumpAppDomain();
-            var module = new DumpModule();
+            var module = new DumpModule()
+            {
+                Key = new DumpModuleKey(0x10, "")
+            };
 
             // act
             appDomain.AddModule(module);

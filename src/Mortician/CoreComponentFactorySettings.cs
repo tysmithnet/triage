@@ -4,7 +4,7 @@ using Mortician.Core;
 namespace Mortician
 {
     [Export(typeof(ISettings))]
-    internal class CoreComponentSettings : ISettings
+    internal class CoreComponentFactorySettings : ISettings
     {
         internal abstract class SubSettings
         {

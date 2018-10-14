@@ -221,7 +221,7 @@
     <Compile Include="Adapters\DataReaderAdapter.cs" />
     <Compile Include="Adapters\DataTargetAdapter.cs" />
     <Compile Include="CoreComponentFactory.cs" />
-    <Compile Include="CoreComponentSettings.cs" />
+    <Compile Include="CoreComponentFactorySettings.cs" />
     <Compile Include="DefaultConverterCache.cs" />
     <Compile Include="IConfig.cs" />
     <Compile Include="Options.cs" />

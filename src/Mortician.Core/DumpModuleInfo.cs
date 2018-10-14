@@ -21,10 +21,10 @@ namespace Mortician.Core
     /// <summary>
     ///     Class DumpModuleInfo.
     /// </summary>
-    /// <seealso cref="System.IEquatable{Mortician.Core.DumpModuleInfo}" />
-    /// <seealso cref="System.IComparable{Mortician.Core.DumpModuleInfo}" />
-    /// <seealso cref="System.IComparable" />
-    /// <seealso cref="System.IEquatable{Mortician.DumpModuleInfo}" />
+    /// <seealso cref="DumpModuleInfo" />
+    /// <seealso cref="DumpModuleInfo" />
+    /// <seealso cref="IComparable" />
+    /// <seealso cref="DumpModuleInfo" />
     public class DumpModuleInfo : IEquatable<DumpModuleInfo>, IComparable<DumpModuleInfo>, IComparable
     {
         /// <summary>
