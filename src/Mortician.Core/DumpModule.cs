@@ -52,7 +52,7 @@ namespace Mortician.Core
         /// <summary>
         ///     The types defined in this module
         /// </summary>
-        internal ISet<DumpType> TypesInternal = new SortedSet<DumpType>();
+        internal Dictionary<DumpTypeKey, DumpType> TypesInternal = new Dictionary<DumpTypeKey, DumpType>();
 
         /// <summary>
         ///     Compares to.
@@ -131,7 +131,12 @@ namespace Mortician.Core
         /// <param name="type">The type.</param>
         internal void AddType(DumpType type)
         {
-            TypesInternal.Add(type);
+            lock (TypesInternal)
+            {
+                if (TypesInternal.ContainsKey(type.Key))
+                    return;
+                TypesInternal.Add(type.Key, type);
+            }
         }
 
         /// <summary>
@@ -241,6 +246,7 @@ namespace Mortician.Core
         ///     Gets the types.
         /// </summary>
         /// <value>The types.</value>
-        public IEnumerable<DumpType> Types => TypesInternal;
+        // ReSharper disable once InconsistentlySynchronizedField
+        public IEnumerable<DumpType> Types => TypesInternal.Values;
     }
 }

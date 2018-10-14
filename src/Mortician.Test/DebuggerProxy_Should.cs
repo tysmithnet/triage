@@ -25,7 +25,7 @@ namespace Mortician.Test
         {
             // arrange
             var mock = new Mock<IComposite>();
-            
+
             Func<DEBUG_OUTCTL, string, DEBUG_EXECUTE, int> valueFunction = (o, c, e) =>
             {
                 Thread.Sleep(1000);
@@ -65,7 +65,7 @@ namespace Mortician.Test
             var proxy = new DebuggerProxy(mock.Object);
 
             // act
-            ((IDebugOutputCallbacks) proxy).Output(DEBUG_OUTPUT.ERROR, "a");
+            ((IDebugOutputCallbacks)proxy).Output(DEBUG_OUTPUT.ERROR, "a");
             ((IDebugOutputCallbacks)proxy).Output(DEBUG_OUTPUT.WARNING, "b");
             ((IDebugOutputCallbacks)proxy).Output(DEBUG_OUTPUT.EXTENSION_WARNING, "c");
             ((IDebugOutputCallbacks)proxy).Output(DEBUG_OUTPUT.SYMBOLS, "d");
@@ -89,6 +89,47 @@ namespace Mortician.Test
             // act
             // assert
             mightThrow.Should().Throw<COMException>();
+        }
+
+        [Fact]
+        public void Throw_If_The_Wait_Timeout_Expired()
+        {
+            // arrange
+            var mock = new Mock<IComposite>();
+            Func<DEBUG_OUTCTL, string, DEBUG_EXECUTE, int> valueFunction = (o, c, e) =>
+            {
+                Thread.Sleep(1000);
+                return 0;
+            };
+            mock.Setup(
+                    client => client.Execute(It.IsAny<DEBUG_OUTCTL>(), It.IsAny<string>(), It.IsAny<DEBUG_EXECUTE>()))
+                .Returns(valueFunction);
+            var proxy = new DebuggerProxy(mock.Object);
+            bool isSuccess = false;
+
+            // act
+            var tasks = Enumerable.Range(0, 3).Select(i => Task.Run(() =>
+            {
+                proxy.Execute("whatever", TimeSpan.FromMilliseconds(10));
+            }));
+
+            try
+            {
+                Task.WaitAll(tasks.ToArray());
+            }
+            catch (AggregateException ae)
+            {
+                ae.Flatten().Handle(exception =>
+                {
+                    if (exception is TimeoutException || exception.InnerException is TimeoutException)
+                    {
+                        isSuccess = true;
+                    }
+                    return true;
+                });
+            }
+            // assert
+            isSuccess.Should().BeTrue();
         }
     }
 }

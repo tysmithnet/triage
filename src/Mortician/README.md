@@ -1,4 +1,4 @@
-﻿# Triage.Mortician
+﻿# Mortician
 Herein lies the plumbing code. It is primarily responsible for creating an environment in which plugins can cooperate to analyze a memory dump.
 
 ### Process Overview
@@ -19,3 +19,9 @@ the CoreComponentFactory.
 1. Memory dump is used to create the DataTarget for CLRMd
 1. An adapter is wrapped around the DataTarget and all items produced from it so they have a Triage interface
 1. tbd
+
+### Features
+- [x] Structured logging
+- [ ] Performance counters
+- [ ] Managed abstraction over 
+- [ ] Minidump testing and support 

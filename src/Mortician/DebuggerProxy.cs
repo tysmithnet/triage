@@ -94,11 +94,22 @@ namespace Mortician
         /// <example>!runaway</example>
         /// <example>!dumpheap -stat</example>
         /// <example>!dlk</example>
-        public string Execute(string command)
+        public string Execute(string command, TimeSpan? waitTimeout = null)
         {
             try
             {
-                ResetEvent.WaitOne(); // todo: wait forever? maybe optional timeout? idk
+                if (waitTimeout.HasValue)
+                {
+                    if(!ResetEvent.WaitOne(waitTimeout.Value))
+                    {
+                        throw new TimeoutException($"Command {command} did not get a chance to use the proxy before its timeout of {waitTimeout} expired");
+                    }
+                }
+                else
+                {
+                    ResetEvent.WaitOne();
+                }
+                
                 Builder.Clear();
                 Log.Information("Executing {Command}", command);
                 var hr = Control.Execute(DEBUG_OUTCTL.ALL_CLIENTS, command, DEBUG_EXECUTE.NOT_LOGGED);

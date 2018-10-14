@@ -38,7 +38,8 @@ namespace Mortician.Core
         /// <param name="dumpBlockingObject">The dump blocking object.</param>
         public void AddBlockingObject(DumpBlockingObject dumpBlockingObject)
         {
-            BlockingObjectsInternal.Add(dumpBlockingObject);
+            lock (BlockingObjectsInternal)
+                BlockingObjectsInternal.Add(dumpBlockingObject);
         }
 
         /// <summary>
@@ -47,7 +48,8 @@ namespace Mortician.Core
         /// <param name="dumpObjectRoot">The dump object root.</param>
         public void AddRoot(DumpObjectRoot dumpObjectRoot)
         {
-            RootsInternal.Add(dumpObjectRoot);
+            lock(RootsInternal)
+                RootsInternal.Add(dumpObjectRoot);
         }
 
         /// <summary>

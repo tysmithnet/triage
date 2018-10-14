@@ -54,7 +54,7 @@ namespace Mortician.Core
         ///     The objects that reference this object
         /// </summary>
         protected internal Dictionary<ulong, DumpObject> ReferencersInternal =
-            new Dictionary<ulong, DumpObject>(); // todo: don't use concurrent dictionary.. write happens single threaded and reads happen read only
+            new Dictionary<ulong, DumpObject>(); 
 
         /// <summary>
         ///     The references that this object has
@@ -68,7 +68,12 @@ namespace Mortician.Core
         /// <param name="thread">The thread.</param>
         public void AddThread(DumpThread thread)
         {
-            ThreadsInternal.Add(thread);
+            lock (ThreadsInternal)
+            {
+                if (ThreadsInternal.ContainsKey(thread.OsId))
+                    return;
+                ThreadsInternal.Add(thread.OsId, thread);
+            }
         }
 
         /// <summary>
@@ -146,8 +151,11 @@ namespace Mortician.Core
         /// <param name="obj">The object to add.</param>
         protected internal void AddReference(DumpObject obj)
         {
-            if (!ReferencesInternal.ContainsKey(obj.Address))
-                ReferencesInternal.Add(obj.Address, obj);
+            lock (ReferencesInternal)
+            {
+                if (!ReferencesInternal.ContainsKey(obj.Address))
+                    ReferencesInternal.Add(obj.Address, obj);
+            }
         }
 
         /// <summary>
@@ -156,8 +164,11 @@ namespace Mortician.Core
         /// <param name="obj">The object.</param>
         protected internal void AddReferencer(DumpObject obj)
         {
-            if (!ReferencersInternal.ContainsKey(obj.Address))
-                ReferencersInternal.Add(obj.Address, obj);
+            lock (ReferencersInternal)
+            {
+                if (!ReferencersInternal.ContainsKey(obj.Address))
+                    ReferencersInternal.Add(obj.Address, obj);
+            }
         }
 
         /// <summary>
@@ -285,8 +296,9 @@ namespace Mortician.Core
         ///     Gets or sets the threads.
         /// </summary>
         /// <value>The threads.</value>
-        internal ISet<DumpThread> ThreadsInternal { get; set; } = new SortedSet<DumpThread>();
+        internal Dictionary<uint, DumpThread> ThreadsInternal = new Dictionary<uint, DumpThread>();
 
-        public IEnumerable<DumpThread> Threads => ThreadsInternal;
+        // ReSharper disable once InconsistentlySynchronizedField
+        public IEnumerable<DumpThread> Threads => ThreadsInternal.Values;
     }
 }

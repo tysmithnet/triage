@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FluentAssertions;
 using Moq;
 using Mortician.Core;
@@ -684,7 +685,7 @@ Child-SP         RetAddr          Caller, Callee
             // arrange
             var sut = new EeStackReportFactory();
             var mock = new Mock<IDebuggerProxy>();
-            mock.Setup(proxy => proxy.Execute("!eestack")).Returns(HAPPY_PATH);
+            mock.Setup(proxy => proxy.Execute("!eestack", It.IsAny<TimeSpan?>())).Returns(HAPPY_PATH);
 
             // act
             sut.Setup(mock.Object);

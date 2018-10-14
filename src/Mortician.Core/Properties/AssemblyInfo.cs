@@ -39,3 +39,4 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("Mortician.Test")]
 [assembly: InternalsVisibleTo("Mortician.IntegrationTest")]
 [assembly: InternalsVisibleTo("Mortician.Core.Test")]
+[assembly: InternalsVisibleTo("Mortician.Analyzers.Test")]

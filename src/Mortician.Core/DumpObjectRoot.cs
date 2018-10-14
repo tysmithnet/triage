@@ -33,7 +33,12 @@ namespace Mortician.Core
         /// <param name="thread">The thread.</param>
         public void AddThread(DumpThread thread)
         {
-            ThreadsInternal.Add(thread);
+            lock (ThreadsInternal)
+            {
+                if (ThreadsInternal.ContainsKey(thread.OsId))
+                    return;
+                ThreadsInternal.Add(thread.OsId, thread);
+            }
         }
 
         /// <summary>
@@ -198,7 +203,7 @@ namespace Mortician.Core
         ///     Gets the threads.
         /// </summary>
         /// <value>The threads.</value>
-        public IEnumerable<DumpThread> Threads => ThreadsInternal;
+        public IEnumerable<DumpThread> Threads => ThreadsInternal.Values;
 
         /// <summary>
         ///     Gets or sets the type.
@@ -210,6 +215,6 @@ namespace Mortician.Core
         ///     Gets or sets the threads.
         /// </summary>
         /// <value>The threads.</value>
-        internal ISet<DumpThread> ThreadsInternal { get; set; } = new SortedSet<DumpThread>();
+        internal Dictionary<ulong, DumpThread> ThreadsInternal { get; set; } = new Dictionary<ulong, DumpThread>();
     }
 }

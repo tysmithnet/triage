@@ -4,7 +4,7 @@
 // Created          : 09-27-2018
 //
 // Last Modified By : @tysmithnet
-// Last Modified On : 10-01-2018
+// Last Modified On : 10-07-2018
 // ***********************************************************************
 // <copyright file="CoreComponentFactory.cs" company="">
 //     Copyright ©  2017
@@ -19,11 +19,11 @@ using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Serilog;
 using Mortician.Core;
 using Mortician.Core.ClrMdAbstractions;
 using Mortician.Reports;
 using Mortician.Repositories;
+using Serilog;
 using Slog = Serilog.Log;
 
 namespace Mortician
@@ -36,35 +36,48 @@ namespace Mortician
         /// <summary>
         ///     The error type
         /// </summary>
-        private const string ERROR_TYPE = "ERROR";
+        public const string ERROR_TYPE = "ERROR";
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="CoreComponentFactory" /> class.
         /// </summary>
         /// <param name="compositionContainer">The composition container.</param>
         /// <param name="dumpFile">The dump file.</param>
-        /// <exception cref="ArgumentNullException">
-        ///     compositionContainer
-        ///     or
-        ///     dumpFile
-        /// </exception>
-        /// <exception cref="ApplicationException">Memory dump was not found. Is the path correct? Is it read only?</exception>
         /// <exception cref="System.ArgumentNullException">
         ///     compositionContainer
         ///     or
         ///     dumpFile
         /// </exception>
         /// <exception cref="System.ApplicationException">Memory dump was not found. Is the path correct? Is it read only?</exception>
+        /// <exception cref="ArgumentNullException">
+        ///     compositionContainer
+        ///     or
+        ///     dumpFile
+        /// </exception>
+        /// <exception cref="ApplicationException">Memory dump was not found. Is the path correct? Is it read only?</exception>
         /// <inheritdoc />
         public CoreComponentFactory(CompositionContainer compositionContainer, FileInfo dumpFile)
         {
             CompositionContainer =
                 compositionContainer ?? throw new ArgumentNullException(nameof(compositionContainer));
             DumpFile = dumpFile ?? throw new ArgumentNullException(nameof(dumpFile));
+            SetupSettings();
+            SetupDataTarget();
+            SetRuntime();
+            DumpObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>()
+                .Concat(new[] {new DefaultObjectExtractor()});
+        }
 
+        public void SetRuntime()
+        {
+            Runtime = DataTarget.ClrVersions.Single().CreateRuntime();
+        }
+
+        public void SetupDataTarget()
+        {
             try
             {
-                var dt = Microsoft.Diagnostics.Runtime.DataTarget.LoadCrashDump(dumpFile.FullName);
+                var dt = Microsoft.Diagnostics.Runtime.DataTarget.LoadCrashDump(DumpFile.FullName);
                 DataTarget =
                     Converter.Convert(dt);
                 DebuggerProxy = new DebuggerProxy(dt.DebuggerInterface);
@@ -82,11 +95,21 @@ namespace Mortician
             {
                 throw new ApplicationException("Memory dump was not found. Is the path correct? Is it read only?", e);
             }
-
-            Runtime = DataTarget.ClrVersions.Single().CreateRuntime();
-            DumpObjectExtractors = CompositionContainer.GetExportedValues<IDumpObjectExtractor>()
-                .Concat(new[] {new DefaultObjectExtractor()});
         }
+
+        public void SetupSettings()
+        {
+            try
+            {
+                Settings = CompositionContainer.GetExportedValue<CoreComponentFactorySettings>();
+            }
+            catch (Exception e)
+            {
+                Settings = new CoreComponentFactorySettings();
+            }
+        }
+
+        public CoreComponentFactorySettings Settings { get; set; }
 
         /// <summary>
         ///     Connects the handles.
@@ -159,7 +182,7 @@ namespace Mortician
         ///     Registers the repositories.
         /// </summary>
         /// <param name="options">The options.</param>
-        public void RegisterRepositories(DefaultOptions options)
+        public void RegisterRepositories(Options options)
         {
             var objRepo = new DumpObjectRepository(Objects, Roots, BlockingObjects, FinalizerQueueObjects);
             var typeRepo = new DumpTypeRepository(Types);
@@ -214,7 +237,7 @@ namespace Mortician
         /// <summary>
         ///     Connects the application domains and modules.
         /// </summary>
-        internal void ConnectAppDomainsAndModules()
+        public void ConnectAppDomainsAndModules()
         {
             foreach (var kvp in AppDomainToModuleMapping)
             {
@@ -228,7 +251,7 @@ namespace Mortician
         /// <summary>
         ///     Connects the blocking objects.
         /// </summary>
-        internal void ConnectBlockingObjects()
+        public void ConnectBlockingObjects()
         {
             foreach (var kvp in BlockingObjectToThreadMapping)
             {
@@ -242,65 +265,61 @@ namespace Mortician
         /// <summary>
         ///     Connects the objects.
         /// </summary>
-        internal void ConnectObjects()
+        public void ConnectObjects()
         {
-            foreach (var kvp in ObjectGraph)
+            Parallel.ForEach(ObjectGraph, pair =>
             {
-                var address = kvp.Key;
-                var references = kvp.Value;
+                var address = pair.Key;
+                var references = pair.Value;
                 var current = Objects[address];
-
                 foreach (var refAddr in references)
                 {
                     var reference = Objects[refAddr];
                     current.AddReference(reference);
                     reference.AddReferencer(current);
                 }
-            }
+            });
         }
 
         /// <summary>
         ///     Connects the objects to types.
         /// </summary>
-        internal void ConnectObjectsToTypes()
+        public void ConnectObjectsToTypes()
         {
-            foreach (var kvp in ObjectToTypeMapping)
+            Parallel.ForEach(ObjectToTypeMapping, pair =>
             {
-                var o = Objects[kvp.Key];
-                var type = Types[kvp.Value];
+                var o = Objects[pair.Key];
+                var type = Types[pair.Value];
                 o.Type = type;
-                type.ObjectsInternal.Add(o.Address, o);
-            }
+                type.AddObject(o);
+            });
         }
 
         /// <summary>
         ///     Connects the roots.
         /// </summary>
-        internal void ConnectRoots()
+        public void ConnectRoots()
         {
-            foreach (var kvp in RootToTypeMapping)
+            Parallel.ForEach(RootToTypeMapping, kvp =>
             {
                 var root = Roots[kvp.Key];
                 if (Types.TryGetValue(kvp.Value, out var type))
                     root.Type = type;
-            }
+            });
         }
 
         /// <summary>
         ///     Connects the types.
         /// </summary>
-        internal void ConnectTypes()
+        public void ConnectTypes()
         {
-            foreach (var kvp in TypeToBaseTypeMapping)
+            Parallel.ForEach(TypeToBaseTypeMapping, kvp =>
             {
                 var type = Types[kvp.Key];
-
-                if (Types.TryGetValue(kvp.Value, out var baseType))
-                {
-                    type.BaseType = baseType;
-                    baseType.InheritingTypes.Add(type);
-                }
-            }
+                if (!Types.TryGetValue(kvp.Value, out var baseType) || baseType == null) return;
+                type.BaseType = baseType;
+                baseType.AddInheritingType(type);
+            });
 
             foreach (var kvp in TypeToComponentTypeMapping)
             {
@@ -309,7 +328,7 @@ namespace Mortician
                     type.ComponentType = componentType;
             }
 
-            foreach (var kvp in TypeToModuleMapping)
+            Parallel.ForEach(TypeToModuleMapping, kvp =>
             {
                 var type = Types[kvp.Key];
                 var module =
@@ -318,27 +337,13 @@ namespace Mortician
                         .Value;
                 type.Module = module;
                 module.AddType(type);
-            }
-
-            foreach (var kvp in InstanceFieldToTypeMapping)
-            {
-                var field = kvp.Key;
-                if (Types.TryGetValue(kvp.Value, out var type))
-                    field.Type = type;
-            }
-
-            foreach (var kvp in StaticFieldToTypeMapping)
-            {
-                var field = kvp.Key;
-                if (Types.TryGetValue(kvp.Value, out var type))
-                    field.Type = type;
-            }
+            });
         }
 
         /// <summary>
         ///     Creates the application domains.
         /// </summary>
-        internal void CreateAppDomains()
+        public void CreateAppDomains()
         {
             AppDomains = new Dictionary<ulong, DumpAppDomain>();
             AppDomainToModuleMapping = new Dictionary<ulong, IList<DumpModuleKey>>();
@@ -360,7 +365,7 @@ namespace Mortician
         /// <summary>
         ///     Creates the blocking objects.
         /// </summary>
-        internal void CreateBlockingObjects()
+        public void CreateBlockingObjects()
         {
             BlockingObjects = new Dictionary<ulong, DumpBlockingObject>();
             BlockingObjectToThreadMapping = new Dictionary<ulong, IList<uint>>();
@@ -391,7 +396,7 @@ namespace Mortician
         /// <summary>
         ///     Creates the color modules.
         /// </summary>
-        internal void CreateClrModules()
+        public void CreateClrModules()
         {
             var modules = new Dictionary<DumpModuleKey, DumpModule>();
 
@@ -417,7 +422,7 @@ namespace Mortician
         /// <summary>
         ///     Creates the dump module information.
         /// </summary>
-        internal void CreateDumpModuleInfo()
+        public void CreateDumpModuleInfo()
         {
             ModuleInfos = new Dictionary<string, DumpModuleInfo>();
 
@@ -442,7 +447,7 @@ namespace Mortician
         /// <summary>
         ///     Creates the handles.
         /// </summary>
-        internal void CreateHandles()
+        public void CreateHandles()
         {
             Handles = new Dictionary<ulong, DumpHandle>();
             HandleToTypeMapping = new Dictionary<ulong, DumpTypeKey>();
@@ -478,7 +483,7 @@ namespace Mortician
         /// <summary>
         ///     Creates the heap segments.
         /// </summary>
-        internal void CreateHeapSegments()
+        public void CreateHeapSegments()
         {
             var segments = new Dictionary<ulong, DumpHeapSegment>();
 
@@ -513,7 +518,7 @@ namespace Mortician
         /// <summary>
         ///     Creates the memory regions.
         /// </summary>
-        internal void CreateMemoryRegions()
+        public void CreateMemoryRegions()
         {
             var regions = new Dictionary<ulong, DumpMemoryRegion>();
             foreach (var region in Runtime.EnumerateMemoryRegions())
@@ -537,7 +542,7 @@ namespace Mortician
         ///     Creates the object.
         /// </summary>
         /// <param name="cur">The current.</param>
-        internal void CreateObject(IClrObject cur)
+        public void CreateObject(IClrObject cur)
         {
             var handler = DumpObjectExtractors.FirstOrDefault(h => h.CanExtract(cur, Runtime));
             if (handler == null)
@@ -551,7 +556,7 @@ namespace Mortician
         /// <summary>
         ///     Creates the objects.
         /// </summary>
-        internal void CreateObjects()
+        public void CreateObjects()
         {
             Objects = new Dictionary<ulong, DumpObject>();
             ObjectGraph = new Dictionary<ulong, IList<ulong>>();
@@ -562,19 +567,16 @@ namespace Mortician
                 CreateObject(cur);
                 if (!ObjectAddressesInFinalizerQueue.Contains(cur.Address) ||
                     FinalizerQueueObjects.ContainsKey(cur.Address)) continue;
-                if (Objects.TryGetValue(cur.Address, out var o))
-                {
-                    FinalizerQueueObjects.Add(cur.Address, o);
-                }
-            };
-        }
+                if (Objects.TryGetValue(cur.Address, out var o)) FinalizerQueueObjects.Add(cur.Address, o);
+            }
 
-        public Dictionary<ulong, DumpObject> FinalizerQueueObjects { get; set; }
+            ;
+        }
 
         /// <summary>
         ///     Creates the reports.
         /// </summary>
-        internal void CreateReports()
+        public void CreateReports()
         {
             var factories = CompositionContainer.GetExportedValues<IReportFactory>().ToList();
             if (!factories.Any())
@@ -604,7 +606,7 @@ namespace Mortician
         /// <summary>
         ///     Creates the roots.
         /// </summary>
-        internal void CreateRoots()
+        public void CreateRoots()
         {
             var roots = new Dictionary<ulong, DumpObjectRoot>();
             RootToTypeMapping = new Dictionary<ulong, DumpTypeKey>();
@@ -633,7 +635,7 @@ namespace Mortician
         /// <summary>
         ///     Creates the threads.
         /// </summary>
-        internal void CreateThreads()
+        public void CreateThreads()
         {
             Threads = new Dictionary<uint, DumpThread>();
             ThreadToExceptionMapping = new Dictionary<uint, ulong>();
@@ -699,7 +701,7 @@ namespace Mortician
         /// <summary>
         ///     Creates the types.
         /// </summary>
-        internal void CreateTypes()
+        public void CreateTypes()
         {
             Types = new Dictionary<DumpTypeKey, DumpType>();
             TypeToBaseTypeMapping = new Dictionary<DumpTypeKey, DumpTypeKey>();
@@ -739,7 +741,7 @@ namespace Mortician
                     Name = cur.Name,
                     ElementSize = cur.ElementSize,
                     ElementType = cur.ElementType,
-                    Interfaces = cur.Interfaces.Select(x => x.Name).ToList()
+                    InterfacesInternal = new HashSet<string>(cur.Interfaces.Select(x => x.Name))
                 };
                 {
                     var key = new DumpTypeKey(t.AssemblyId, t.Name);
@@ -766,7 +768,6 @@ namespace Mortician
                             new DumpTypeKey(cur.Module.AssemblyId, cur.Module.Name));
                 }
 
-                t.InstanceFields = new List<DumpTypeField>();
                 foreach (var field in cur.Fields)
                 {
                     var newField = new DumpTypeField
@@ -785,8 +786,9 @@ namespace Mortician
                         Token = field.Token,
                         ElementType = field.ElementType
                     };
-                    t.InstanceFields.Add(newField);
-                    if (field.Type != null && field.Type?.Name != ERROR_TYPE && !InstanceFieldToTypeMapping.ContainsKey(newField))
+                    t.AddInstanceField(newField);
+                    if (field.Type != null && field.Type?.Name != ERROR_TYPE &&
+                        !InstanceFieldToTypeMapping.ContainsKey(newField))
                         InstanceFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
                 }
 
@@ -808,7 +810,7 @@ namespace Mortician
                         Token = field.Token,
                         ElementType = field.ElementType
                     };
-                    t.StaticFields.Add(newField);
+                    t.AddStaticField(newField);
                     if (field.Type != null && !StaticFieldToTypeMapping.ContainsKey(newField))
                         StaticFieldToTypeMapping.Add(newField, field.Type.ToKeyType());
                 }
@@ -849,7 +851,7 @@ namespace Mortician
         ///     Gets or sets the converter.
         /// </summary>
         /// <value>The converter.</value>
-        public IConverter Converter { get; set; } = new Converter(); // todo: doesn't feel great
+        public IConverter Converter { get; set; } = new Converter(); 
 
         /// <summary>
         ///     Gets or sets the data target.
@@ -879,7 +881,13 @@ namespace Mortician
         ///     Gets or sets the finalizable object addresses.
         /// </summary>
         /// <value>The finalizable object addresses.</value>
-        public ISet<ulong> FinalizableObjectAddresses { get; set; } // todo: cleanup
+        public ISet<ulong> FinalizableObjectAddresses { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the finalizer queue objects.
+        /// </summary>
+        /// <value>The finalizer queue objects.</value>
+        public Dictionary<ulong, DumpObject> FinalizerQueueObjects { get; set; }
 
         /// <summary>
         ///     Gets or sets the gc threads.
@@ -1053,6 +1061,6 @@ namespace Mortician
         ///     Gets the log.
         /// </summary>
         /// <value>The log.</value>
-        internal ILogger Log { get; } = Slog.ForContext<CoreComponentFactory>();
+        public ILogger Log { get; } = Slog.ForContext<CoreComponentFactory>();
     }
 }
