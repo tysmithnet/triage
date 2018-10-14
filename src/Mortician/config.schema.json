@@ -1,0 +1,45 @@
+{
+  "title": "Schema for Mortician configuration files",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": [
+    "black_listed_assemblies",
+    "black_listed_types",
+    "additional_assemblies",
+    "type_mappings"
+  ],
+  "additional_properties": false,
+  "properties": {
+    "black_listed_assemblies": {
+      "description": "All types from these assemblies are excluded from being included in the IoC container",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "black_listed_types": {
+      "description": "Types to be excluded from the IoC container",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "additional_assemblies": {
+      "description": "File paths to assemblies you want loaded into the app domain. Types from these assemblies can be blacklisted",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "contract_mapping": {
+      "description": "Overriding mapping of contract type to implementations",
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

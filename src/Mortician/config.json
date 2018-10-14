@@ -1,0 +1,17 @@
+{
+  "black_listed_assemblies": [
+    //"DontLoadMe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+  ],
+  "black_listed_types": [
+    //"Whatever.Blah.BadThing, Whatever, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+  ],
+  "additional_assemblies": [
+    // "Something, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+    // "Whatever, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"
+  ],
+  "contract_mapping": {
+    //"Something.Else.IThing, Something, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089": [
+    //"Whatever.Blah.Thing, Whatever, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", ...
+    //]
+  }
+}
